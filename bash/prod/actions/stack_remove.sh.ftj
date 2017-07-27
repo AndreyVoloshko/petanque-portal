@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+docker stack rm {{ deployment_stack_name }}

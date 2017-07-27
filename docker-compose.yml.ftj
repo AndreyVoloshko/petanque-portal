@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+  {{ web_api_container_name }}:
+    build:
+      context: ./components/web-api/
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+     - "{{ web_api_container_external_port }}:{{ web_api_container_internal_port }}"
+    depends_on:
+     - {{ db_container_name }}
+
+  {{ nginx_container_name }}:
+    build: ./components/nginx/
+    ports:
+     - "{{ nginx_container_external_port }}:{{ nginx_container_internal_port }}"
+    depends_on:
+     - {{ web_api_container_name }}
+
+  {{ db_container_name }}:
+    image: postgres
+    volumes:
+     - {{ db_container_data_volume_name }}:/var/lib/postgresql/data
+
+volumes:
+  {{ db_container_data_volume_name }}:

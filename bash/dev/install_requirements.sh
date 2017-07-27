@@ -1,0 +1,1 @@
+pip3 install git+https://bitbucket.org/pixellu-open-source/python-ftj.git#egg=ftjs

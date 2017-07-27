@@ -1,0 +1,13 @@
+FROM python:3
+ENV PYTHONUNBUFFERED 1
+
+# Copy requirements.txt to application
+ADD ./application/requirements.txt {{ application_home_dir }}requirements.txt
+
+# Install requirements
+RUN pip install -r {{ application_home_dir }}requirements.txt
+
+# Copy application files into container
+ADD ./application {{ application_home_dir }}
+
+WORKDIR {{ application_home_dir }}
