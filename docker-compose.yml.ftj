@@ -3,7 +3,7 @@ services:
   {{ web_api_container_name }}:
     build:
       context: ./components/web-api/
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: bash -c "python manage.py runserver 0.0.0.0:{{ web_api_container_internal_port }} && python manage.py makemigrations && python manage.py migrate"
     ports:
      - "{{ web_api_container_external_port }}:{{ web_api_container_internal_port }}"
     depends_on:

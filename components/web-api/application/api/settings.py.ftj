@@ -27,7 +27,7 @@ SECRET_KEY = 'k1n!-r2wazl!q#2dn3wa9_lm5v2))#n-k8veqn_u@+^0-@4m$w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['portal.petanque.org.loc']
+ALLOWED_HOSTS = ['{{ application_domain }}']
 
 
 # Application definition
@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'UK-uk'
+LANGUAGE_CODE = '{{ application_language }}'
 
 TIME_ZONE = 'UTC'
 
