@@ -3,9 +3,10 @@ services:
   {{ web_api_container_name }}:
     build:
       context: ./components/web-api/
-    command: bash -c "python manage.py runserver 0.0.0.0:{{ web_api_container_internal_port }} && python manage.py makemigrations && python manage.py migrate"
     ports:
      - "{{ web_api_container_external_port }}:{{ web_api_container_internal_port }}"
+    volumes:
+     - {{ uploaded_files_volume_name }}:{{ uploaded_file_volume_mounting_point }}
     depends_on:
      - {{ db_container_name }}
 
@@ -13,6 +14,8 @@ services:
     build: ./components/nginx/
     ports:
      - "{{ nginx_container_external_port }}:{{ nginx_container_internal_port }}"
+    volumes:
+     - {{ uploaded_files_volume_name }}:{{ uploaded_file_volume_mounting_point }}
     depends_on:
      - {{ web_api_container_name }}
 
@@ -23,3 +26,4 @@ services:
 
 volumes:
   {{ db_container_data_volume_name }}:
+  {{ uploaded_files_volume_name }}:

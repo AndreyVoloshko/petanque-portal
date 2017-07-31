@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'django_countries',
+    'django_bootstrap_carousel',
     'federation'
 ]
 
@@ -128,10 +129,17 @@ USE_TZ = True
 
 STATIC_URL = os.path.join(BASE_DIR, 'static/')
 
-PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
-MEDIA_RELATIVE_ROOT = 'static/images/'
-MEDIA_ROOT = PROJECT_ROOT + '/' + MEDIA_RELATIVE_ROOT
-MEDIA_URL = STATIC_URL + 'images/'
+MEDIA_RELATIVE_ROOT = 'images/'
+MEDIA_BASE = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = MEDIA_BASE + MEDIA_RELATIVE_ROOT
+MEDIA_URL = MEDIA_ROOT
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    MEDIA_BASE,
+    MEDIA_ROOT,
+]
+
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),

@@ -17,6 +17,11 @@ server {
     # max upload size
     client_max_body_size 1024M;   # adjust to taste
 
+    # Static
+    location /application/media/ {
+        root /; # this is a mounted volume with web-application static files
+    }
+
     # Finally, send all non-media requests to the Flask server.
     location / {
         proxy_pass  http://django;

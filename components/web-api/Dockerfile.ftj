@@ -1,13 +1,31 @@
 FROM python:3
 ENV PYTHONUNBUFFERED 1
 
+# Install software
+RUN apt-get update -y && apt-get install -y supervisor
+
+# Install gunicorn
+RUN pip install gunicorn
+
 # Copy requirements.txt to application
 ADD ./application/requirements.txt {{ application_home_dir }}requirements.txt
 
 # Install requirements
 RUN pip install -r {{ application_home_dir }}requirements.txt
 
+# Copy server configurations
+ADD ./conf/ /conf/
+
+# setup all the configfiles
+RUN ln -s /conf/supervisor-app.conf /etc/supervisor/conf.d/
+
 # Copy application files into container
 ADD ./application {{ application_home_dir }}
 
+# Make launch script executable
+RUN chmod 777 {{ application_home_dir }}/gunicorn_start
+
 WORKDIR {{ application_home_dir }}
+
+# Run application
+ENTRYPOINT ["supervisord", "-n"]
