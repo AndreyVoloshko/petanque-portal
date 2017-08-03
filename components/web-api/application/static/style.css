@@ -1,6 +1,15 @@
 h2 {
     font-size: 15px;
 }
+input[type="file"] {
+    width: 100%;
+    overflow: hidden;
+}
+form .row {
+    height: 90px;
+}
+
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 

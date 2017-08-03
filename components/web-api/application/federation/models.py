@@ -2,7 +2,7 @@ from django.db import models
 from django_countries.fields import CountryField
 from django.utils import timezone
 from django.contrib.auth.models import User
-from federation.storage import OverwriteStorage
+from .storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
 
 # Cities
@@ -20,7 +20,7 @@ class City (models.Model):
 # Clubs
 class Club (models.Model):
     name            = models.CharField(_('name'), max_length=150)
-    logo            = models.ImageField(_('avatar'), blank=True, null=True, storage=OverwriteStorage())
+    logo            = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
     short_name      = models.CharField(_('short_name'), max_length=50)
     date_registered = models.DateTimeField(_('date_registered'), default=timezone.now)
     date_created    = models.DateTimeField(_('date_created'), default=timezone.now)
@@ -48,7 +48,7 @@ class Player(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar          = models.ImageField(_('avatar'), blank=True, null=True, storage=OverwriteStorage())
+    avatar          = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
     name            = models.CharField(_('name'), max_length=100)
     surname         = models.CharField(_('surname'), max_length=100)
     birth_date      = models.DateField(_('birth_date'))

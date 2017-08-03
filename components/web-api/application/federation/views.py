@@ -5,8 +5,8 @@ from django.http import *
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from federation.models import Player, Club
-from django_countries.data import COUNTRIES
+from federation.models import Player
+from .forms import PlayerForm
 
 # Create your views here.
 def federation_main_page(request):
@@ -40,10 +40,18 @@ def federation_logout(request):
 def federation_profile(request):
     player = get_object_or_404(Player, user=request.user)
 
-    clubs = Club.objects.all()
-    countries = COUNTRIES
+    if request.method == "POST":
+        profile_form = PlayerForm(request.POST, request.FILES, instance=player)
+        if profile_form.is_valid():
+            updated_player = profile_form.save(commit=False)
+            updated_player.avatar = profile_form.cleaned_data['avatar']
+            updated_player.save()
+
+            profile_form = PlayerForm(instance=updated_player)
+    else:
+        profile_form = PlayerForm(instance=player)
+
     return render(request, 'profile.html', {
             'user': player,
-            'clubs': clubs,
-            'countries': countries
+            'profile_form': profile_form
         })

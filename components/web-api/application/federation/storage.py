@@ -1,7 +1,7 @@
 from django.core.files.storage import FileSystemStorage
 import time, hashlib, os
 
-class OverwriteStorage(FileSystemStorage):
+class AvatarsStorage(FileSystemStorage):
 
     def get_available_name(self, name, max_length=500):
         # User hashed timestamp as a name

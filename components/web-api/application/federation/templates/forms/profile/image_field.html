@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load staticfiles %}
+
+{% if value.url %}
+    <img class="img-thumbnail avatar" src="{{ value.url }}" />
+    {% if not required %}
+        <div class="form-group">
+            <input type="checkbox" name="{{ checkbox_name }}" id="{{ checkbox_id }}">
+            <label class="control-label" for="{{ checkbox_id }}">Видалити</label>
+        </div>
+    {% else %}
+        <br/>
+    {% endif %}
+{% else %}
+    <img class="img-thumbnail avatar" src="{% static 'default.png' %}" />
+{% endif %}
+<h6>Обрати нову фотографію</h6>
+<input type="{{ type }}" accept="image/*" name="{{ name }}"{% if required %} required{% endif %} />

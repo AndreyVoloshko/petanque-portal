@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <html>
     <head>
 
@@ -8,7 +9,7 @@
         <meta name="description" content="Портал Федерації Петанку України. Інформація про клуби, гравців та турніри.">
 
         <!-- Favicons -->
-        <link rel="shortcut icon" href="/application/static/favicon.ico">
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
         <link rel="apple-touch-icon" href="/application/static/favicon.ico">
         <link rel="apple-touch-icon" sizes="72x72" href="/application/static/favicon.ico">
         <link rel="apple-touch-icon" sizes="114x114" href="/application/static/favicon.ico">
@@ -17,7 +18,7 @@
         <link rel="stylesheet" href="//getbootstrap.com/dist/css/bootstrap.min.css" />
 
         <!-- Custom Scripts -->
-        <link rel="stylesheet" href="/application/static/style.css" />
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
 
     </head>
     <body>
