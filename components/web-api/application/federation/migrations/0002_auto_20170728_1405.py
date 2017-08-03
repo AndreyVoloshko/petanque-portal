@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='club',
             name='logo',
-            field=models.ImageField(blank=True, null=True, storage=federation.storage.OverwriteStorage(), upload_to='', verbose_name='avatar'),
+            field=models.ImageField(blank=True, null=True, storage=federation.storage.AvatarsStorage(), upload_to='', verbose_name='avatar'),
         ),
         migrations.AlterField(
             model_name='club',
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='avatar',
-            field=models.ImageField(blank=True, null=True, storage=federation.storage.OverwriteStorage(), upload_to='', verbose_name='avatar'),
+            field=models.ImageField(blank=True, null=True, storage=federation.storage.AvatarsStorage(), upload_to='', verbose_name='avatar'),
         ),
         migrations.AlterField(
             model_name='player',
