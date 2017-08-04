@@ -1,12 +1,30 @@
 {% extends "common/page_base.html" %}
 {% load app_filters %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 
-<h2>Профіль гравця</h2>
-<hr />
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Профіль гравця</a>
+        </li>
+        <li role="presentation">
+            <a href="#authorization_form" aria-controls="authorization_form" role="tab" data-toggle="tab">Даннi авторизації</a>
+        </li>
+    </ul>
 
-{% crispy profile_form %}
+  <!-- Tab panes -->
+  <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="profile">
+        {% crispy profile_form %}
+      </div>
+      <div role="tabpanel" class="tab-pane" id="authorization_form">
+        {% crispy authorization_profile_form %}
+      </div>
+  </div>
+</div>
 
 {% endblock %}

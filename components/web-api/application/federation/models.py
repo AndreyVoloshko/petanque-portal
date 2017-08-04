@@ -67,7 +67,7 @@ class Player(models.Model):
     b_tournament_points         = models.FloatField(_('b_tournament_points'), default=0)
 
     def __str__(self):
-        return self.name
+        return self.name + " " + self.surname
 
     class Meta:
         verbose_name = 'Гравець'

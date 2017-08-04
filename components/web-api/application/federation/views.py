@@ -5,8 +5,10 @@ from django.http import *
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from federation.models import Player
-from .forms import PlayerForm
+from .models import Player
+from .forms import PlayerForm, AuthorizationProfileForm
+from django.contrib.auth import update_session_auth_hash
+
 
 # Create your views here.
 def federation_main_page(request):
@@ -41,17 +43,25 @@ def federation_profile(request):
     player = get_object_or_404(Player, user=request.user)
 
     if request.method == "POST":
-        profile_form = PlayerForm(request.POST, request.FILES, instance=player)
-        if profile_form.is_valid():
-            updated_player = profile_form.save(commit=False)
-            updated_player.avatar = profile_form.cleaned_data['avatar']
-            updated_player.save()
+        if 'name' in request.POST:
+            profile_form = PlayerForm(request.POST, request.FILES, instance=player)
+            if profile_form.is_valid():
+                player = profile_form.save(commit=False)
+                player.avatar = profile_form.cleaned_data['avatar']
+                player.save()
 
-            profile_form = PlayerForm(instance=updated_player)
-    else:
-        profile_form = PlayerForm(instance=player)
+        if 'old_password' in request.POST:
+            authorization_profile_form = AuthorizationProfileForm(request.user, request.POST)
+            if authorization_profile_form.is_valid():
+                user = authorization_profile_form.save()
+                update_session_auth_hash(request, user)
+
+
+    profile_form = PlayerForm(instance=player)
+    authorization_profile_form = AuthorizationProfileForm(request.user)
 
     return render(request, 'profile.html', {
             'user': player,
-            'profile_form': profile_form
+            'profile_form': profile_form,
+            'authorization_profile_form': authorization_profile_form
         })
