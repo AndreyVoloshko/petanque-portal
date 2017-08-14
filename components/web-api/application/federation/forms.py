@@ -20,7 +20,7 @@ class PlayerForm(forms.ModelForm):
         super(PlayerForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_action = '/profile/'
+        self.helper.form_action = '/profile/#profile'
 
         self.helper.layout = Layout(
             Div(
@@ -196,7 +196,7 @@ class AuthorizationProfileForm(PasswordChangeForm):
         super(AuthorizationProfileForm, self).__init__(user, *args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.form_action = '/profile/'
+        self.helper.form_action = '/profile/#authorization_form'
 
         self.helper.layout = Layout(
             Div(
@@ -205,7 +205,7 @@ class AuthorizationProfileForm(PasswordChangeForm):
                         Div(
                             HTML("""
                                 <label class='control-label'>Ім'я користувача:</label>
-                                <input class="textinput textInput form-control" type="text" readonly="readonly" value="{{ user.user.username }}" />
+                                <input class="textinput textInput form-control" type="text" readonly="readonly" value="{{ user.username }}" />
                             """),
                             css_class="col-md-12 form-group"
                         ),
@@ -227,7 +227,10 @@ class AuthorizationProfileForm(PasswordChangeForm):
                 ),
                 css_class="row"
             ),
-            HTML('<div class="clearfix"></div><hr />'),
+            Div(
+                css_class="clearfix"
+            ),
+            HTML('<hr />'),
             Div(
                 Submit('submit', 'Зберігти', css_class='btn btn-success'),
                 css_class="col-md-12 text-center form-group"

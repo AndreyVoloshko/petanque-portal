@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django_bootstrap_carousel.models import Carousel
 
 from django.http import *
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -16,6 +17,7 @@ def federation_main_page(request):
     return render(request, 'main_page.html', {
             'carousel': carousel,
         })
+
 
 def federation_login(request):
     if request.user.is_authenticated():
@@ -33,14 +35,19 @@ def federation_login(request):
 
     return render(request, 'login.html', {})
 
+
 @login_required(login_url='/login/')
 def federation_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+
 @login_required(login_url='/login/')
 def federation_profile(request):
     player = get_object_or_404(Player, user=request.user)
+
+    profile_form = PlayerForm(instance=player)
+    authorization_profile_form = AuthorizationProfileForm(request.user)
 
     if request.method == "POST":
         if 'name' in request.POST:
@@ -49,19 +56,17 @@ def federation_profile(request):
                 player = profile_form.save(commit=False)
                 player.avatar = profile_form.cleaned_data['avatar']
                 player.save()
+                messages.success(request, 'Профiль змiнено.')
 
         if 'old_password' in request.POST:
             authorization_profile_form = AuthorizationProfileForm(request.user, request.POST)
             if authorization_profile_form.is_valid():
                 user = authorization_profile_form.save()
                 update_session_auth_hash(request, user)
-
-
-    profile_form = PlayerForm(instance=player)
-    authorization_profile_form = AuthorizationProfileForm(request.user)
+                messages.success(request, 'Пароль змiнено.')
 
     return render(request, 'profile.html', {
-            'user': player,
+            'player': player,
             'profile_form': profile_form,
             'authorization_profile_form': authorization_profile_form
         })
