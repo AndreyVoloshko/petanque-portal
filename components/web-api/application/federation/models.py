@@ -173,7 +173,7 @@ class Tournament(models.Model):
 
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters')
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership')
-
+    notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
     def __str__(self):
         return self.get_name()
