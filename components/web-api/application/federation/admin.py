@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import *
+from .models.city import City
+from .models.club import Club
+from .models.player import Player
+from .models.team import Team, TeamAdmin, PlayerAdmin
+from .models.tournament import Tournament, ArbiterTeamTournamentAdminInline
 
 # Register your models here.
 admin.site.register(City)
