@@ -34,6 +34,7 @@ class PlayerNational_teamMembership(models.Model):
         ('coach', 'Тренер'),
         ('main_coach', 'Головний тренер'),
         ('capitan', 'Капітан'),
+        ('selection', 'Основний склад'),
     )
 
     player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi")
