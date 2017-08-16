@@ -54,7 +54,7 @@ class MembershipInline(admin.TabularInline):
     class Meta:
         verbose_name = 'Належнiсть до команд'
         verbose_name_plural = 'Належнiсть до команд'
-        
+
 
 class National_teamAdmin(admin.ModelAdmin):
     def team_get_full_name(self, obj):
