@@ -30,6 +30,6 @@ class Club (models.Model):
 
 class ClubAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'city', 'president', 'logo',)
-    search_fields = ('name', 'city__name', )
+    search_fields = ('name', 'city__name', 'president__name', 'president__surname' )
     list_per_page = 25
 

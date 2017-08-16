@@ -57,7 +57,7 @@ class MembershipInline(admin.TabularInline):
         verbose_name_plural = 'Належнiсть до команд'
 
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'surname', 'licence_number', 'gender', 'arbiter_level', 'current_club', 'birth_date')
+    list_display = ('id', 'name', 'surname', 'licence_number', 'gender', 'arbiter_level', 'current_club', 'birth_date', 'prefred_position', )
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     inlines = (MembershipInline,)
