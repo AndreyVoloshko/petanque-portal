@@ -24,12 +24,12 @@ class Player(models.Model):
 
     avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
     name = models.CharField(_('name'), max_length=100)
-    surname = models.CharField(_('surname'), max_length=100)
-    birth_date = models.DateField(_('birth_date'))
-    current_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True)
-    country = CountryField(blank_label=_('(select country)'))
-    licence_number = models.CharField(_('licence_number'), max_length=50, blank=True, null=True)
-    gender = models.CharField(_('gender'), max_length=1, choices=GENDER_CHOICES)
+    surname = models.CharField(_('Прізвищє'), max_length=100)
+    birth_date = models.DateField(_('Дата народження'))
+    current_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб")
+    country = CountryField(blank_label=_('(select country)'), verbose_name="Країна")
+    licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
+    gender = models.CharField(_('Стать'), max_length=1, choices=GENDER_CHOICES)
 
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)
     twitter = models.CharField(_('twitter'), max_length=500, blank=True, null=True)

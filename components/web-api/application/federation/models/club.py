@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from django.utils import timezone
 from federation.storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
@@ -6,14 +7,14 @@ from django.utils.translation import ugettext_lazy as _
 
 # Clubs
 class Club (models.Model):
-    name = models.CharField(_('name'), max_length=150)
+    name = models.CharField(_('Повна назва'), max_length=150)
     logo  = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
-    short_name = models.CharField(_('short_name'), max_length=50)
-    date_registered = models.DateTimeField(_('date_registered'), default=timezone.now)
-    date_created = models.DateTimeField(_('date_created'), default=timezone.now)
-    address = models.CharField(_('address'), max_length=500)
-    city = models.ForeignKey('City')
-    president = models.ForeignKey('Player')
+    short_name = models.CharField(_('Коротка назва'), max_length=50)
+    date_registered = models.DateTimeField(_('Дата реєстрації'), default=timezone.now)
+    date_created = models.DateTimeField(_('Дата створення'), default=timezone.now)
+    address = models.CharField(_('Адреса'), max_length=500)
+    city = models.ForeignKey('City', verbose_name="Мiсто")
+    president = models.ForeignKey('Player', verbose_name="Президент")
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)
     twitter = models.CharField(_('twitter'), max_length=500, blank=True, null=True)
     instagram = models.CharField(_('instagram'), max_length=500, blank=True, null=True)
@@ -25,3 +26,10 @@ class Club (models.Model):
     class Meta:
         verbose_name = 'Клуб'
         verbose_name_plural = 'Клуби'
+
+
+class ClubAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'city', 'president', 'logo',)
+    search_fields = ('name', 'city__name', )
+    list_per_page = 25
+

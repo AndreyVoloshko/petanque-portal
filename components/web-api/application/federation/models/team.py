@@ -9,8 +9,8 @@ class Team(models.Model):
     default_name = "-"
 
     name            = models.CharField(_('name'), max_length=150, blank=True, null=True)
-    players         = models.ManyToManyField(Player, through='PlayerTeamMembership')
-    date_created    = models.DateTimeField(_('date_created'), default=timezone.now)
+    players         = models.ManyToManyField(Player, through='PlayerTeamMembership', verbose_name="Гравці")
+    date_created    = models.DateTimeField(_('Дата створення'), default=timezone.now)
 
     def __str__(self):
         return self.get_full_name()
@@ -57,7 +57,21 @@ class MembershipInline(admin.TabularInline):
         verbose_name_plural = 'Належнiсть до команд'
 
 class PlayerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'surname', 'licence_number', 'gender', 'arbiter_level', 'current_club', 'birth_date')
+    search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
+    list_per_page = 25
     inlines = (MembershipInline,)
 
 class TeamAdmin(admin.ModelAdmin):
+    def team_get_full_name(self, obj):
+        return obj.get_full_name()
+    team_get_full_name.short_description = "Гравці"
+
+    def team_get_capitan(self, obj):
+        return obj.get_capitan()
+    team_get_capitan.short_description = "Капітан"
+
+    list_display = ('id', 'name', 'team_get_full_name', 'team_get_capitan', )
+    search_fields = ('name', 'players__name', 'players__surname', )
+    list_per_page = 25
     inlines = (MembershipInline,)
