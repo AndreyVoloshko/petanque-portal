@@ -20,6 +20,12 @@ class Player(models.Model):
         ('fipjp', 'Міжнародний'),
     )
 
+    POSITIONS = (
+        ('point', 'Поінтер'),
+        ('middle', 'Мідл'),
+        ('shooter', 'Шутер'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
@@ -30,6 +36,7 @@ class Player(models.Model):
     country = CountryField(blank_label=_('(select country)'), verbose_name="Країна")
     licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
     gender = models.CharField(_('Стать'), max_length=1, choices=GENDER_CHOICES)
+    prefred_position = models.CharField(_('Позиція'), max_length=10, choices=POSITIONS, blank=True, null=True)
 
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)
     twitter = models.CharField(_('twitter'), max_length=500, blank=True, null=True)
@@ -41,6 +48,10 @@ class Player(models.Model):
     b_tournament_points = models.FloatField(_('b_tournament_points'), default=0)
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
+
+    is_in_national_team_selection = models.BooleanField(_('Чи є в збірній України?'), default=False)
+    is_in_national_team_elimination = models.BooleanField(_('Чи є в основному складі збірної України?'), default=False)
+    position_in_selection = models.CharField(_('Позиція в збірній'), max_length=10, choices=POSITIONS, blank=True, null=True)
 
     def __str__(self):
         return self.get_name()

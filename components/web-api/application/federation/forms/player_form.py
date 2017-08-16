@@ -96,25 +96,8 @@ class PlayerForm(forms.ModelForm):
                     ),
                     Div(
                         Div(
-                            HTML("""
-                                <label class='control-label'>Пункти за українські турніри:</label>
-                                <span class="label label-primary">{{ user.local_tournament_points }}</span>
-                            """),
-                            css_class="col-md-4"
-                        ),
-                        Div(
-                            HTML("""
-                                <label class='control-label'>Пункти за зарубіжні турніри:</label>
-                                <span class="label label-primary">{{ user.foreign_tournament_points }}</span>
-                            """),
-                            css_class="col-md-4"
-                        ),
-                        Div(
-                            HTML("""
-                                <label class='control-label'>Пункти за турніри B:</label>
-                                <span class="label label-primary">{{ user.b_tournament_points }}</span>
-                            """),
-                            css_class="col-md-4"
+                            'prefred_position',
+                            css_class="col-md-12 form-group"
                         ),
                         css_class="row"
                     ),
@@ -168,7 +151,8 @@ class PlayerForm(forms.ModelForm):
                   'facebook',
                   'twitter',
                   'instagram',
-                  'website')
+                  'website',
+                  'prefred_position')
         labels = {
             "avatar": "Аватар",
             "name": "Iм'я",
@@ -182,6 +166,7 @@ class PlayerForm(forms.ModelForm):
             "twitter": "Сторінка Twitter",
             "instagram": "Сторінка Instagram",
             "website": "Пенсональна Web-сторінка",
+            "prefred_position": "Позиція"
         }
         widgets = {
             'avatar': ImageThumbnailFileInput
