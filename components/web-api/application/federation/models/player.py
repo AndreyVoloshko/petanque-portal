@@ -49,10 +49,6 @@ class Player(models.Model):
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
 
-    is_in_national_team_selection = models.BooleanField(_('Чи є в збірній України?'), default=False)
-    is_in_national_team_elimination = models.BooleanField(_('Чи є в основному складі збірної України?'), default=False)
-    position_in_selection = models.CharField(_('Позиція в збірній'), max_length=10, choices=POSITIONS, blank=True, null=True)
-
     def __str__(self):
         return self.get_name()
 
