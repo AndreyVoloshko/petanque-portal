@@ -25,7 +25,7 @@ GEOS_LIBRARY_PATH = '/usr/lib/libgeos_c.so.1'
 SECRET_KEY = 'k1n!-r2wazl!q#2dn3wa9_lm5v2))#n-k8veqn_u@+^0-@4m$w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = {{ application_debug }}
 
 ALLOWED_HOSTS = ['{{ application_domain }}']
 
