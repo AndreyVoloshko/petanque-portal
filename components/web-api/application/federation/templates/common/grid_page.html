@@ -1,0 +1,13 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">{{ page_title }}</div>
+    <div class="panel-body">
+        {% for item in items %}
+            {% if forloop.first %}<div class="row">{% endif %}
+
+            {% include item_template with item=item %}
+
+            {% if forloop.counter|divisibleby:items_per_row %}</div><div class="row">{% endif %}
+            {% if forloop.last %}</div>{% endif %}
+        {% endfor %}
+    </div>
+</div>

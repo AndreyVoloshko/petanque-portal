@@ -55,6 +55,7 @@ class Player(models.Model):
     def get_name(self):
         return self.name + " " + self.surname.upper()
 
+
     class Meta:
         verbose_name = 'Гравець'
         verbose_name_plural = 'Гравці'

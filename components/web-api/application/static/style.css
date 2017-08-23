@@ -17,6 +17,34 @@ form .row {
     margin: 50px 0;
 }
 
+.icon-flag {
+    display: block;
+}
+
+.logo-container {
+    overflow: hidden;
+    text-align: center;
+    vertical-align: top;
+}
+
+.logo-container.big {
+    width: 100px;
+    height: 100px;
+}
+
+.logo-container img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.sentence-line-break {
+    word-spacing: 100vw;
+}
+
+.center {
+    text-align: center;
+}
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 

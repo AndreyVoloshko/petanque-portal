@@ -12,20 +12,49 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Клуби</a></li>
-                <li><a href="#about">Турніри</a></li>
-                <li><a href="#contact">Результати</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Рейтинги <span class="caret"></span></a>
+                       aria-expanded="false"><i class="glyphicon glyphicon-home"></i> Федерація <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
+                        <li><a href="/clubs"><i class="glyphicon glyphicon-star-empty"></i> Клуби</a></li>
+                        <li><a href="/players"><i class="glyphicon glyphicon-user"></i> Гравці</a></li>
                         <li role="separator" class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
+                        <li><a href="/arbiters"><i class="glyphicon glyphicon-education"></i> Арбітри</a></li>
+                        <li><a href="/national_teams"><i class="glyphicon glyphicon-thumbs-up"></i> Національні збірні</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#tournaments" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="glyphicon glyphicon-calendar"></i> Майбутні турніри <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#tournaments/future/"><i class="glyphicon glyphicon-calendar"></i> Усі майбутні турніри</a></li>
+                        <li><a href="#tournaments/future/rating"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
+                        <li><a href="#tournaments/future/away"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
+                        <li><a href="#tournaments/future/non"><i class="glyphicon glyphicon-cd"></i> Нерейтингові турніри ФПУ</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#tournaments" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="glyphicon glyphicon-check"></i> Результати <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#tournaments/past/"><i class="glyphicon glyphicon-check"></i> Усі попередні турніри</a></li>
+                        <li><a href="#tournaments/past/rating"><i class="glyphicon glyphicon-star-empty"></i> Попередні рейтингові турніри ФПУ</a></li>
+                        <li><a href="#tournaments/past/away"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
+                        <li><a href="#tournaments/past/non"><i class="glyphicon glyphicon-cd"></i> Попередні нерейтингові турніри ФПУ</a></li>
+                        <li><a href="#tournaments/past/b"><i class="glyphicon glyphicon-record"></i> Турніри "Б"</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#ratings" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="glyphicon glyphicon-stats"></i> Рейтинги <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">Офіційні рейтинги</li>
+                        <li><a href="#rating"><i class="glyphicon glyphicon-home"></i> Рейтинг ФПУ</a></li>
+                        <li><a href="#rating/b"><i class="glyphicon glyphicon-record"></i> Рейтинг турнірів "Б"</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Неофіційні рейтинги</li>
+                        <li><a href="#rating/full"><i class="glyphicon glyphicon-stats"></i> Повний рейтинг порталу</a></li>
+                        <li><a href="#rating/away"><i class="glyphicon glyphicon-plane"></i> Рейтинг за іноземні турніри</a></li>
                     </ul>
                 </li>
             </ul>
@@ -37,6 +66,11 @@
                         {% if user.is_authenticated %}
                             <li><a href="/profile/"><i class="glyphicon glyphicon-user"></i> Профіль</a></li>
                             <li><a href="/logout/"><i class="glyphicon glyphicon-log-out"></i> Вийти</a></li>
+                            {% if user.is_superuser %}
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">Додаткові можливості</li>
+                            <li><a href="/admin/"><i class="glyphicon glyphicon-globe"></i> Адмін панель</a></li>
+                            {% endif %}
                         {% else %}
                             <li><a href="/login"><i class="glyphicon glyphicon-log-in"></i> Увійти</a></li>
                         {% endif %}

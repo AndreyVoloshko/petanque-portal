@@ -1,0 +1,7 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+    {% include "common/grid_page.html" with page_title=page_title items_per_row=clubs_per_row item_template="clubs/club.html" items=clubs %}
+{% endblock %}
