@@ -1,0 +1,9 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+    {% include "common/table_page.html" with page_title=page_title table_template="players/players_table.html" items=players %}
+
+{% endblock %}

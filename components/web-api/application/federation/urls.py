@@ -4,6 +4,7 @@ from .views.logout import application_logout
 from .views.main_page import main_page
 from .views.profile import profile
 from .views.clubs import clubs, club
+from .views.players import players, player
 
 
 urlpatterns = [
@@ -17,6 +18,6 @@ urlpatterns = [
     url(r'^clubs/$',    clubs,                     name='clubs'),
     url(r'^club/(?P<id>[0-9]+)$', club,            name='club'),
 
-    url(r'^players/$',  clubs,                     name='players'),
-    url(r'^player/(?P<id>[0-9]+)$', club,          name='player'),
+    url(r'^players/$',  players,                   name='players'),
+    url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
 ]

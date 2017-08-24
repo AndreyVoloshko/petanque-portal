@@ -59,6 +59,11 @@ form .row {
     display: inline-block;
 }
 
+.inactive {
+    background: rgba(128, 128, 128, 0.2) none repeat scroll 0 0;
+    opacity: 0.4;
+}
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 

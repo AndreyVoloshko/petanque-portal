@@ -17,13 +17,19 @@
         </thead>
         <tbody>
             {% for item in items %}
-					<tr>
+					<tr class="{{ item|is_active_player_class }}">
                         <td align="left">{{ item.pk }}</td>
 						<td align="left">{{ item|user_profile_link|safe }}</td>
                         <td align="center">{{ item|gender|safe }}</td>
 						<td align="center">{{ item|player_age_category|safe }}</td>
 						<td align="center">{{ item|licence_number|safe }}</td>
-						<td align="left"><a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a></td>
+						<td align="left">
+                            {% if item.current_club %}
+                                <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                            {% else %}
+                                <span class="label label-danger">Без клубу</span>
+                            {%endif%}
+                        </td>
 						<td align="center">0</td>
                         <td align="center">0</td>
 						<td align="right">
@@ -50,7 +56,7 @@ $(document).ready(function() {
 					{ sWidth:  "10%", bSearchable: false, bSortable: true }, // points
 					{ sWidth:  "5%", bSearchable: false, bSortable: false }, // actions
 		       ],
-                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Усіx"]],
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
                 "oLanguage": {
                         "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
                         "sZeroRecords":  "Гравців не знайдено",
