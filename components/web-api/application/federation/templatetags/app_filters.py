@@ -129,6 +129,8 @@ def gender (item):
 
 @register.filter(name="licence_number")
 def licence_number(item):
+    if not item.licence_number:
+        return '-'
     return '<span class="label label-info">' + item.licence_number + '</span>'
 
 
