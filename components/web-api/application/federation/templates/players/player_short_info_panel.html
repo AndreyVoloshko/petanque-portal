@@ -1,0 +1,60 @@
+{% load app_filters %}
+
+<div class="col-sm-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            {% if page_title %}
+                {{ page_title }}
+            {% else %}
+                {{ item|user_profile_link:False|safe }}
+            {% endif %}
+        </div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div align="center">
+                            {{ item|user_avatar:"big"|safe }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div align="center" class="sentence-line-break">
+                            {{ item|user_profile_link|safe }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    {% if item.licence_number %}
+                    <div class="row">
+                        <div class="col-sm-4">Лiцензiя</div>
+                        <div class="col-sm-8">{{ item|licence_number|safe }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-4">Стать</div>
+                        <div class="col-sm-8">{{ item|gender|safe }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Вік</div>
+                        <div class="col-sm-8">{{ item|player_age_category|safe }}</div>
+                    </div>
+                    {% if item.current_club %}
+                    <div class="row">
+                        <div class="col-sm-4">Клуб</div>
+                        <div class="col-sm-8">
+                            <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-4">Країна</div>
+                        <div class="col-sm-8">{{ item.country|country_icon|safe }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,6 +2,7 @@ from django import template
 from django.conf import settings
 import os.path
 from federation.models.player import Player
+from datetime import date
 
 register = template.Library()
 
@@ -31,7 +32,7 @@ def get_year(value):
 @register.filter(name='country_icon')
 def country_icon(country):
     return '''
-        <i class="icon-flag icon-flag-'''+country.code+'''"></i>
+        ''' + str(country.name) + '''&nbsp;<i class="icon-flag icon-flag-'''+country.code+'''"></i>
     '''
 
 
@@ -68,16 +69,66 @@ def user_avatar(user, additional_class=''):
 
 
 @register.filter(name='user_profile_link')
-def user_profile_link(user):
-    url = settings.MEDIA_ROOT + str(user.avatar)
-
-    if not os.path.isfile(url):
-        url = settings.STATIC_URL + 'default.png'
-
+def user_profile_link(user, is_link=True):
+    if not is_link:
+        return user.get_name()
     return '<a href="/player/' + str(user.id) + '">' + user.get_name() + '</a>'
+
 
 @register.filter(name="get_number_of_players")
 def get_number_of_players (club):
     number_of_players = Player.objects.filter(current_club=club).count()
     return number_of_players
+
+
+@register.filter(name="social_field")
+def social_field (item, field):
+    value = getattr(item,field)
+
+    if not value :
+        return ''
+
+    return '''
+        <div class="row social-field">
+            <div class="col-sm-4">''' + field.title() + '''</div>
+            <div class="col-sm-8">
+                <a target="_blank" title="''' + value + '''" href="''' + value + '''">''' + value + '''</a>
+            </div>
+        </div>    
+    '''
+
+@register.filter(name="player_age_category")
+def player_age_category (player):
+    categories = {
+        'JUN': [0,18],
+        'ESP': [19,23],
+        'SEN': [24,55],
+        'VET': [56, 1000]
+    }
+
+    today = date.today()
+    born = player.birth_date
+    age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+    for category, ages in categories.items():
+        if ages[0] <= age <= ages[1]:
+            return '<span class="label label-warning">' + category + '</span>'
+
+    return ''
+
+
+@register.filter(name="gender")
+def gender (item):
+    gender = item.gender
+
+    gender_class = 'primary'
+    if gender == 'M':
+        gender_class = 'success'
+    return '<span class="label label-' + gender_class + '">' + gender + '</span>'
+
+
+@register.filter(name="licence_number")
+def licence_number(item):
+    return '<span class="label label-info">' + item.licence_number + '</span>'
+
 

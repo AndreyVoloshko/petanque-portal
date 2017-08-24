@@ -1,55 +1,13 @@
+{% extends "common/page_base.html" %}
 {% load app_filters %}
+{% load i18n %}
 
-<div class="col-sm-6">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            {{ item.name }}
-        </div>
-        <div class="panel-body">
-
-            <div class="row">
-
-                <div class="col-sm-3">{{ item|club_logo:"big"|safe }}</div>
-
-                <div class="col-sm-3">
-                    <div class="row">
-                        <div align="center">
-                            {{ item.president|user_avatar:"big"|safe }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div align="center" class="sentence-line-break">
-                            {{ item.president|user_profile_link|safe }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="row">
-                        <div class="col-sm-4">Назва</div>
-                        <div class="col-sm-8"><strong>{{ item.short_name }}</strong></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">Місто</div>
-                        <div class="col-sm-8">{{ item.city }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">Країна</div>
-                        <div class="col-sm-8">{{ item.city.country|country_icon|safe }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">Заснування</div>
-                        <div class="col-sm-8">{{ item.date_created|get_year }} р.</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">Гравців</div>
-                        <div class="col-sm-8">
-                            {{ item|get_number_of_players }}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+{% block content %}
+    <div class="row">
+        {% include "clubs/club_info_panel.html" with item=club %}
+        {% include "players/player_short_info_panel.html" with item=club.president page_title="Президент клубу" %}
     </div>
-</div>
+
+    {% include "common/table_page.html" with page_title="Гравцi клубу" table_template="players/players_table.html" items=players %}
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% load app_filters %}
+
+<div class="col-sm-8">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            {{ item.name }}
+        </div>
+        <div class="panel-body">
+
+            <div class="row">
+
+                <div class="col-sm-2">{{ item|club_logo:"big"|safe }}</div>
+
+                <div class="col-sm-5">
+                    <div class="row">
+                        <div class="col-sm-4">Назва</div>
+                        <div class="col-sm-8"><strong>{{ item.short_name }}</strong></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Місто</div>
+                        <div class="col-sm-8">{{ item.city }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Країна</div>
+                        <div class="col-sm-8">{{ item.city.country|country_icon|safe }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Заснування</div>
+                        <div class="col-sm-8">{{ item.date_created|get_year }} р.</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Гравців</div>
+                        <div class="col-sm-8">
+                            <a href="{% url 'club' id=item.pk %}">{{ item|get_number_of_players }}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-5">
+                    <div class="row">
+                        <div class="col-sm-4">Мiсто</div>
+                        <div class="col-sm-8"><strong>{{ item.city }}</strong></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">Адреса</div>
+                        <div class="col-sm-8">{{ item.address }}</div>
+                    </div>
+                    {{ item|social_field:"website"|safe }}
+                    {{ item|social_field:"facebook"|safe }}
+                    {{ item|social_field:"instagram"|safe }}
+                    {{ item|social_field:"twitter"|safe }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

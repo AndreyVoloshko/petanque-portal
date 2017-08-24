@@ -1,0 +1,70 @@
+{% load app_filters %}
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed table-striped" id="players">
+        <thead>
+            <tr>
+                <th align="left">ID</th>
+                <th align="left">Ім'я</th>
+                <th align="center">Стать</th>
+                <th align="center">Вік</th>
+                <th align="center">Ліцензія</th>
+                <th align="left">Клуб</th>
+                <th align="center">Рейтинг</th>
+                <th align="center">Бали</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+					<tr>
+                        <td align="left">{{ item.pk }}</td>
+						<td align="left">{{ item|user_profile_link|safe }}</td>
+                        <td align="center">{{ item|gender|safe }}</td>
+						<td align="center">{{ item|player_age_category|safe }}</td>
+						<td align="center">{{ item|licence_number|safe }}</td>
+						<td align="left"><a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a></td>
+						<td align="center">0</td>
+                        <td align="center">0</td>
+						<td align="right">
+							<a href="{% url 'player' id=item.pk %}"><button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Показати гравця"><span class="glyphicon glyphicon glyphicon-user"> </span></button></a>
+						</td>
+					</tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#players').dataTable({
+               'aoColumns': [
+		            { sWidth: "5%", bSearchable: true, bSortable: true }, //ID
+		            { sWidth: "20%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, // gender
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //age
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, // license
+		            { sWidth: "20%", bSearchable: true, bSortable: true }, //club
+		            { sWidth: "5%", bSearchable: false, bSortable: true }, //rating
+					{ sWidth:  "10%", bSearchable: false, bSortable: true }, // points
+					{ sWidth:  "10%", bSearchable: false, bSortable: false }, // actions
+		       ],
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Усі"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
+                        "sZeroRecords":  "Гравців не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ гравців",
+                        "sInfoEmpty":    "Показано 0 з 0 гравців",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ гравців)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перша",
+                            "last":       "Остання",
+                            "next":       "Наступна",
+                            "previous":   "Попередня"
+                        },
+                },
+        });
+});
+</script>
