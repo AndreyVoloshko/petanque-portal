@@ -13,7 +13,7 @@ form .row {
     margin: 20px 0px;
 }
 
-.tab-content {
+.tab-content.profile {
     margin: 50px 0;
 }
 
@@ -62,6 +62,14 @@ form .row {
 .inactive {
     background: rgba(128, 128, 128, 0.2) none repeat scroll 0 0;
     opacity: 0.4;
+}
+
+.empty_club_label {
+    display: block;
+    float: none;
+    font-size: 16px;
+    margin: auto;
+    width: 130px;
 }
 
 /* CUSTOMIZE THE CAROUSEL

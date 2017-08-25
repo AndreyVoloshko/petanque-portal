@@ -43,10 +43,6 @@ class Player(models.Model):
     instagram = models.CharField(_('instagram'), max_length=500, blank=True, null=True)
     website  = models.CharField(_('website'), max_length=500, blank=True, null=True)
 
-    local_tournament_points = models.FloatField(_('local_tournament_points'), default=0)
-    foreign_tournament_points = models.FloatField(_('foreign_tournament_points'), default=0)
-    b_tournament_points = models.FloatField(_('b_tournament_points'), default=0)
-
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
 
     def __str__(self):

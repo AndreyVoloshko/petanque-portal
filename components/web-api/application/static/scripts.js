@@ -19,11 +19,11 @@ $(function() {
     $('[data-toggle="tooltip"]').tooltip();
 
     //init tabs
-    $('.nav-tabs a').click(function (e) {
+    $('.nav-tabs a, .nav-pills a').click(function (e) {
       e.preventDefault();
       $(this).tab('show');
     });
-    $('.nav-tabs a.active').click();
+    $('.nav-tabs a.active, .nav-pills li.active a').click();
 
     // Javascript to enable link to tab
     var url = document.location.toString();

@@ -1,0 +1,32 @@
+{% load app_filters %}
+
+<div class="col-sm-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Клуб</div>
+        <div class="panel-body">
+
+            <div class="row">
+                {% if item %}
+                    <div class="col-sm-5">{{ item|club_logo:"big"|safe }}</div>
+
+                    <div class="col-sm-7">
+                        <div class="row">
+                            <div class="col-sm-4">Назва</div>
+                            <div class="col-sm-8"><a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">Місто</div>
+                            <div class="col-sm-8">{{ item.city }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">Країна</div>
+                            <div class="col-sm-8">{{ item.city.country|country_icon|safe }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="label label-danger empty_club_label">Без клубу</div>
+                {% endif%}
+            </div>
+        </div>
+    </div>
+</div>

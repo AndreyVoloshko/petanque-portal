@@ -1,0 +1,49 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        {% include "players/player_info_panel.html" with item=player %}
+        {% include "clubs/club_short_info_panel.html" with item=player.current_club page_title="Клуб" %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+
+            <div class="panel panel-primary">
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#player_ratings" aria-controls="player_ratings" role="tab" data-toggle="tab">
+                            <span class="glyphicon glyphicon-star"></span>&nbsp;Профіль та рейтинги
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#player_tournaments" aria-controls="player_tournaments" role="tab" data-toggle="tab">
+                            <span class="glyphicon glyphicon-list"></span>&nbsp;Турніри
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#player_seasons" aria-controls="player_seasons" role="tab" data-toggle="tab">
+                            <span class="glyphicon glyphicon-align-left"></span>&nbsp;Сезони
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="player_ratings">
+                    {% include "players/player_info_panel.html" with item=player %}
+                </div>
+                <div role="tabpanel" class="tab-pane" id="player_tournaments">
+                    Турніри
+                </div>
+                <div role="tabpanel" class="tab-pane" id="player_seasons">
+                    Сезони
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
