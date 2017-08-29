@@ -2,6 +2,8 @@ from django import template
 from django.conf import settings
 import os.path
 from federation.models.player import Player
+from federation.models.record import Record
+from federation.models.national_teams import National_team
 from datetime import date
 
 register = template.Library()
@@ -97,6 +99,7 @@ def social_field (item, field):
         </div>    
     '''
 
+
 @register.filter(name="player_age_category")
 def player_age_category (player):
     categories = {
@@ -139,4 +142,59 @@ def is_active_player_class(item):
     if not item.licence_number:
         return 'inactive'
     return ''
+
+
+@register.filter(name="arbiter_label")
+def arbiter_label (player):
+    if not player.arbiter_level :
+        return ''
+
+    return '''
+        <div class="row social-field">
+            <div class="col-sm-12">
+                Арбітр рівня <a target="_blank" href="/arbiters/"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                <div class="label label-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
+            </div>
+        </div>    
+    '''
+
+
+@register.filter(name="player_national_teams")
+def player_national_teams(player):
+    teams = National_team.objects.filter(players__in=[player])
+
+    if not teams:
+        return ''
+
+    html = '''
+        <div class="row social-field">
+            <div class="col-sm-12">
+            Збірні команди України <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+
+    for team in teams:
+        html += '''<div class="label label-primary label-list-record">''' + team.name + '''</div><br />'''
+
+    html += '</div></div>'
+
+    return html
+
+
+@register.filter(name="player_records")
+def player_records(player):
+    records = Record.objects.filter(player=player)
+
+    if not records:
+        return ''
+
+    html = '''
+        <div class="row social-field">
+            <div class="col-sm-12">
+            Рекорди України <a target="_blank" href="/records/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+
+    for record in records:
+        html += '''<div class="label label-warning label-list-record">''' + record.name + ''': ''' + record.description + '''</div><br />'''
+
+    html += '</div></div>'
+
+    return html
 

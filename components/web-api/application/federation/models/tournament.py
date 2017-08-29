@@ -48,6 +48,8 @@ class Tournament(models.Model):
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership')
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
+    is_processed_by_system = models.BooleanField(_('Оправцьовано системою (рейтингові бали нараховано)'), default=False)
+
     def __str__(self):
         return self.get_name()
 

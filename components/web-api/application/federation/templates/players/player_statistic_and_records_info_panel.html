@@ -1,0 +1,64 @@
+{% load app_filters %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        {% if page_title %}
+            {{ page_title }}
+        {% else %}
+            {{ item|user_profile_link:False|safe }}
+        {% endif %}
+    </div>
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-6">Поточний рейтинг:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-stats"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Рейтингові бали:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Турнірів цього року:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-flag"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Турніри ФПУ:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-home"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Закордонні турніри:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-globe"></i> 0</div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-6">Поточний рейтинг "Б":</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-stats"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Рейтингові бали:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Турнірів цього року:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-flag"></i> 0</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">Нерейтингових турнірів цього року:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-home"></i> 0</div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                {{ item|arbiter_label|safe }}
+                {{ item|player_national_teams|safe }}
+                {{ item|player_records|safe }}
+            </div>
+
+        </div>
+    </div>
+</div>

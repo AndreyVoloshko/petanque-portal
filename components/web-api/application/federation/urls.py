@@ -20,4 +20,8 @@ urlpatterns = [
 
     url(r'^players/$',  players,                   name='players'),
     url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
+
+    url(r'^national_teams/$', clubs,               name='national_teams'),
+    url(r'^arbiters/$',     clubs,                 name='arbiters'),
+    url(r'^records/$',     clubs,                  name='records'),
 ]

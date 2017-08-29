@@ -18,8 +18,10 @@
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'clubs' %}"><i class="glyphicon glyphicon-star-empty"></i> Клуби</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="/arbiters"><i class="glyphicon glyphicon-education"></i> Арбітри</a></li>
-                        <li><a href="/national_teams"><i class="glyphicon glyphicon-thumbs-up"></i> Національні збірні</a></li>
+                        <li><a href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-education"></i> Арбітри</a></li>
+                        <li><a href="{% url 'national_teams' %}"><i class="glyphicon glyphicon-thumbs-up"></i> Національні збірні</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'records' %}"><i class="glyphicon glyphicon-fire"></i> Рекорди України</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
