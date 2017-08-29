@@ -12,6 +12,7 @@ class Tournament(models.Model):
         ('open', 'Вiдктитий'),
         ('fpu', 'ФПУ'),
         ('away', 'Закордонний'),
+        ('other', 'Інше'),
     )
 
     FORMAT_CHOICES = (
@@ -26,6 +27,7 @@ class Tournament(models.Model):
     category = models.CharField(_('Категорія'), max_length=5, choices=TYPE_CHOICES)
     is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
     is_goes_to_rating = models.BooleanField(_('Рейтинговий'), default=False)
+    is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
     place = models.CharField(_('Місце проведення'), max_length=500)
