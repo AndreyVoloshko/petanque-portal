@@ -3,7 +3,7 @@ from django.conf import settings
 import os.path
 from federation.models.player import Player
 from federation.models.record import Record
-from federation.models.national_teams import National_team
+from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from datetime import date
 
 register = template.Library()
@@ -161,9 +161,9 @@ def arbiter_label (player):
 
 @register.filter(name="player_national_teams")
 def player_national_teams(player):
-    teams = National_team.objects.filter(players__in=[player])
+    memberships = PlayerNational_teamMembership.objects.filter(player__in=[player])
 
-    if not teams:
+    if not memberships:
         return ''
 
     html = '''
@@ -171,8 +171,10 @@ def player_national_teams(player):
             <div class="col-sm-12">
             Збірні команди України <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
 
-    for team in teams:
-        html += '''<div class="label label-primary label-list-record">''' + team.name + '''</div><br />'''
+    for membership in memberships:
+        html += '''<div class="label label-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
+
+        html += '''</div><br />'''
 
     html += '</div></div>'
 
