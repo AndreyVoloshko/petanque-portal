@@ -1,0 +1,66 @@
+{% load app_filters %}
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed table-striped" id="records">
+        <thead>
+            <tr>
+                <th align="left">Рекорд</th>
+                <th align="left">Значення</th>
+                <th align="left">Гравець</th>
+                <th align="left">Клуб</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+					<tr>
+                        <td align="left">{{ item.name }}</td>
+                        <td align="left">{{ item.description }}</td>
+						<td align="left">
+                            {% if item.player %}
+                                {{ item.player|user_profile_link|safe }}
+                            {% else %}
+                                -
+                            {%endif%}
+                        </td>
+						<td align="left">
+                            {% if item.club %}
+                                <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                            {% else %}
+                                -
+                            {%endif%}
+                        </td>
+					</tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#records').dataTable({
+               'aoColumns': [
+		            { sWidth: "50%", bSearchable: true, bSortable: true }, //name
+		            { sWidth: "10%", bSearchable: true,  bSortable: true }, //description
+		            { sWidth: "20%", bSearchable: true, bSortable: true }, // player
+		            { sWidth: "20%", bSearchable: true, bSortable: true }, //club
+		       ],
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ рекордів на сторінку",
+                        "sZeroRecords":  "Рекордів не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ рекордів",
+                        "sInfoEmpty":    "Показано 0 з 0 рекордів",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ рекордів)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перший",
+                            "last":       "Останій",
+                            "next":       "Наступий",
+                            "previous":   "Попередій"
+                        },
+                },
+        });
+});
+</script>

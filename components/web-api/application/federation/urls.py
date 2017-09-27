@@ -5,6 +5,8 @@ from .views.main_page import main_page
 from .views.profile import profile
 from .views.clubs import clubs, club
 from .views.players import players, player
+from .views.arbiters import arbiters
+from .views.records import records
 
 
 urlpatterns = [
@@ -22,6 +24,6 @@ urlpatterns = [
     url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
 
     url(r'^national_teams/$', clubs,               name='national_teams'),
-    url(r'^arbiters/$',     clubs,                 name='arbiters'),
-    url(r'^records/$',     clubs,                  name='records'),
+    url(r'^arbiters/$',     arbiters,              name='arbiters'),
+    url(r'^records/$',     records,                name='records'),
 ]

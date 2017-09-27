@@ -1,0 +1,33 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">{{ page_title }}</div>
+    <div class="panel-body">
+
+            {% for arbiter_level, arbiters in arbiters_by_levels.items %}
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Рiвень: {{ arbiter_level }}</div>
+                <div class="panel-body">
+                    {% for arbiter in arbiters %}
+
+                        {% if forloop.first %}<div class="row">{% endif %}
+
+                        {% include "players/player_short_info_panel.html" with item=arbiter page_title=arbiter|user_profile_link:False|safe %}
+
+                        {% if forloop.counter|divisibleby:items_per_row %}</div><div class="row">{% endif %}
+
+                        {% if forloop.last %}</div>{% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
