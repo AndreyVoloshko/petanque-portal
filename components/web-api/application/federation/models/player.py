@@ -49,7 +49,7 @@ class Player(models.Model):
         return self.get_name()
 
     def get_name(self):
-        return self.name + " " + self.surname.upper()
+        return self.surname.upper() + " " +self.name
 
 
     class Meta:
