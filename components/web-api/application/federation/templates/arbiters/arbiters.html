@@ -17,7 +17,7 @@
 
                         {% if forloop.first %}<div class="row">{% endif %}
 
-                        {% include "players/player_short_info_panel.html" with item=arbiter page_title=arbiter|user_profile_link:False|safe %}
+                        {% include "players/player_short_info_panel.html" with item=arbiter page_title="No title" %}
 
                         {% if forloop.counter|divisibleby:items_per_row %}</div><div class="row">{% endif %}
 

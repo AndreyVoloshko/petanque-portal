@@ -2,13 +2,15 @@
 
 <div class="col-sm-4">
     <div class="panel panel-primary">
-        <div class="panel-heading">
-            {% if page_title %}
-                {{ page_title }}
-            {% else %}
-                {{ item|user_profile_link:False|safe }}
-            {% endif %}
-        </div>
+        {% if page_title != 'No title' %}
+            <div class="panel-heading">
+                {% if page_title %}
+                    {{ page_title }}
+                {% else %}
+                    {{ item|user_profile_link:False|safe }}
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="panel-body">
 
             <div class="row">
