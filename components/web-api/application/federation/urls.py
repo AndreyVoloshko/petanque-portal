@@ -7,6 +7,7 @@ from .views.clubs import clubs, club
 from .views.players import players, player
 from .views.arbiters import arbiters
 from .views.records import records
+from .views.tournaments import tournaments, tournament
 
 
 urlpatterns = [
@@ -22,6 +23,11 @@ urlpatterns = [
 
     url(r'^players/$',  players,                   name='players'),
     url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
+
+    url(r'^tournament/(?P<id>[0-9]+)$', tournament,        name='tournament'),
+    url(r'^tournaments/$',                            tournaments, name='tournaments'),
+    url(r'^tournaments/(?P<date_filter>\w+)/?$',               tournaments, name='tournaments'),
+    url(r'^tournaments/(?P<date_filter>\w+)/(?P<type_filter>\w+)/?$', tournaments, name='tournaments'),
 
     url(r'^national_teams/$', clubs,               name='national_teams'),
     url(r'^arbiters/$',     arbiters,              name='arbiters'),

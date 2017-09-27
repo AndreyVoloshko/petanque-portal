@@ -25,24 +25,24 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#tournaments" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    <a href="{% url 'tournaments' date_filter='future' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="glyphicon glyphicon-calendar"></i> Майбутні турніри <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#tournaments/future/"><i class="glyphicon glyphicon-calendar"></i> Усі майбутні турніри</a></li>
-                        <li><a href="#tournaments/future/rating"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
-                        <li><a href="#tournaments/future/away"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
-                        <li><a href="#tournaments/future/non"><i class="glyphicon glyphicon-cd"></i> Нерейтингові турніри ФПУ</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='future' %}"><i class="glyphicon glyphicon-calendar"></i> Усі майбутні турніри</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='future' type_filter='non' %}"><i class="glyphicon glyphicon-cd"></i> Нерейтингові турніри ФПУ</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#tournaments" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    <a href="{% url 'tournaments' date_filter='past' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="glyphicon glyphicon-check"></i> Результати <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#tournaments/past/"><i class="glyphicon glyphicon-check"></i> Усі попередні турніри</a></li>
-                        <li><a href="#tournaments/past/rating"><i class="glyphicon glyphicon-star-empty"></i> Попередні рейтингові турніри ФПУ</a></li>
-                        <li><a href="#tournaments/past/away"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
-                        <li><a href="#tournaments/past/non"><i class="glyphicon glyphicon-cd"></i> Попередні нерейтингові турніри ФПУ</a></li>
-                        <li><a href="#tournaments/past/b"><i class="glyphicon glyphicon-record"></i> Турніри "Б"</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='past' %}"><i class="glyphicon glyphicon-check"></i> Усі попередні турніри</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Попередні рейтингові турніри ФПУ</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='non' %}"><i class="glyphicon glyphicon-cd"></i> Попередні нерейтингові турніри ФПУ</a></li>
+                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='b' %}"><i class="glyphicon glyphicon-record"></i> Турніри "Б"</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">

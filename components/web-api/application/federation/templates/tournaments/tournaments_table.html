@@ -1,0 +1,84 @@
+{% load app_filters %}
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed table-striped" id="tournaments">
+        <thead>
+            <tr>
+                <th align="left">Дата</th>
+                <th align="left">Назва</th>
+                <th align="left">Місце</th>
+                <th align="left">Тип</th>
+                <th align="left">Організатор</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+					<tr>
+                        <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
+                        <td align="left">
+                            <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
+                        </td>
+                        <td align="left">
+                            <a target="_blank" href="https://maps.google.com?q={{ item.place }}"><span class="glyphicon glyphicon glyphicon-globe"></span></a>
+                            {{ item.place }}
+                        </td>
+						<td align="left">
+                            {% if item.number_of_players_in_team_min == item.number_of_players_in_team_max %}
+
+                                {% if item.number_of_players_in_team_min <= 3 %}
+                                    {% for i in "x"|rjust:item.number_of_players_in_team_min %}
+                                        <i class="glyphicon glyphicon-user"></i>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ item.number_of_players_in_team_min }} <i class="glyphicon glyphicon-user"></i>
+                                {% endif %}
+
+                            {% else %}
+                                {{ item.number_of_players_in_team_min }}-{{ item.number_of_players_in_team_max }} <i class="glyphicon glyphicon-user"></i>
+                            {% endif %}
+                        </td>
+						<td align="left">
+                            {% if item.organizer_club %}
+                                <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>Actions</td>
+					</tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#tournaments').dataTable({
+               'aoColumns': [
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
+		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //orginizer
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
+		       ],
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ турнірів на сторінку",
+                        "sZeroRecords":  "Турнірів не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ турнірів",
+                        "sInfoEmpty":    "Показано 0 з 0 турнірів",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ турнірів)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перший",
+                            "last":       "Останій",
+                            "next":       "Наступий",
+                            "previous":   "Попередій"
+                        },
+                },
+        });
+});
+</script>
