@@ -1,0 +1,56 @@
+{% load app_filters %}
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed table-striped" id="{{ table_id }}">
+        <thead>
+            <tr>
+                <th width="10%" align="left">Дата</th>
+                <th width="50%" align="left">Назва</th>
+                <th width="25%" align="left">Команда</th>
+                <th width="15%" align="left">Сила команди</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+					<tr>
+                        <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
+                        <td align="left">
+                            <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
+                        </td>
+                        <td align="left">Команда</td>
+						<td align="left">0</td>
+					</tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#{{ table_id }}').dataTable({
+               'aoColumns': [
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
+		            { sWidth: "50%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "25%", bSearchable: true, bSortable: true }, // team
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //team power
+		       ],
+		       "autoWidth": false,
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ турнірів на сторінку",
+                        "sZeroRecords":  "Турнірів не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ турнірів",
+                        "sInfoEmpty":    "Показано 0 з 0 турнірів",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ турнірів)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перший",
+                            "last":       "Останій",
+                            "next":       "Наступий",
+                            "previous":   "Попередій"
+                        },
+                },
+        });
+});
+</script>

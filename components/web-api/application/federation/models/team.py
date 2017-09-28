@@ -32,6 +32,10 @@ class Team(models.Model):
     def get_capitan(self):
         return self.players.filter(playerteammembership__is_capitan=True).first()
 
+    @classmethod
+    def get_list_by_player(self, player):
+        return self.objects.filter(playerteammembership__player=player)
+
     class Meta:
         verbose_name = 'Команда'
         verbose_name_plural = 'Команди'

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+import datetime
 from django.contrib import admin
 from federation.storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
@@ -20,6 +21,7 @@ class Tournament(models.Model):
         ('swiko', 'Швейцарська система + На виліт'),
         ('ko', 'На виліт'),
         ('each', 'Кожен з кожним'),
+        ('mele', 'Супер-меле'),
     )
 
     name = models.CharField(_('name'), max_length=150)
@@ -55,6 +57,65 @@ class Tournament(models.Model):
 
     def get_name(self):
         return self.name
+
+    @classmethod
+    def get_list(self, date_filter=None, type_filter=None):
+        now = datetime.datetime.now()
+
+        tournaments = self.objects.all()
+
+        if date_filter == 'past':
+            tournaments = tournaments.filter(start_date__year=now.year)
+            tournaments = tournaments.filter(start_date__lte=now)
+        elif date_filter == 'future':
+            tournaments = tournaments.filter(start_date__gte=now)
+        elif date_filter and date_filter.is_integer():
+            tournaments = tournaments.filter(start_date__year=date_filter)
+
+        if type_filter == 'rating':
+            tournaments = tournaments.filter(is_goes_to_rating=True)
+        elif type_filter == 'away':
+            tournaments = tournaments.filter(category='away')
+        elif type_filter == 'b':
+            tournaments = tournaments.filter(is_b_tournament=True)
+        elif type_filter == 'non':
+            tournaments = tournaments.filter(is_goes_to_rating=False)
+            tournaments = tournaments.filter(is_b_tournament=False)
+        elif type_filter == 'except_b':
+            tournaments = tournaments.filter(is_b_tournament=False)
+
+        return tournaments.order_by('start_date')
+
+    @classmethod
+    def get_list_by_player(self, player, date_filter=None, type_filter=None):
+        now = datetime.datetime.now()
+
+        tournaments = self.objects.all()
+
+        user_teams = Team.get_list_by_player(player=player)
+        tournaments = tournaments.filter(teamtournamentmembership__team__in=user_teams)
+
+        if date_filter == 'past':
+            tournaments = tournaments.filter(start_date__year=now.year)
+            tournaments = tournaments.filter(start_date__lte=now)
+        elif date_filter == 'future':
+            tournaments = tournaments.filter(start_date__gte=now)
+        elif date_filter and date_filter.is_integer():
+            tournaments = tournaments.filter(start_date__year=date_filter)
+
+        if type_filter == 'rating':
+            tournaments = tournaments.filter(is_goes_to_rating=True)
+        elif type_filter == 'away':
+            tournaments = tournaments.filter(category='away')
+        elif type_filter == 'b':
+            tournaments = tournaments.filter(is_b_tournament=True)
+        elif type_filter == 'non':
+            tournaments = tournaments.filter(is_goes_to_rating=False)
+            tournaments = tournaments.filter(is_b_tournament=False)
+        elif type_filter == 'except_b':
+            tournaments = tournaments.filter(is_b_tournament=False)
+
+        return tournaments.order_by('start_date')
 
     class Meta:
         verbose_name = 'Турнір'
