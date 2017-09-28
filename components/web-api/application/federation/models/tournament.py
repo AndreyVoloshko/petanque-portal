@@ -84,7 +84,7 @@ class Tournament(models.Model):
         elif type_filter == 'except_b':
             tournaments = tournaments.filter(is_b_tournament=False)
 
-        return tournaments.order_by('start_date')
+        return tournaments.order_by('-start_date')
 
     @classmethod
     def get_list_by_player(self, player, date_filter=None, type_filter=None):
@@ -115,7 +115,7 @@ class Tournament(models.Model):
         elif type_filter == 'except_b':
             tournaments = tournaments.filter(is_b_tournament=False)
 
-        return tournaments.order_by('start_date')
+        return tournaments.order_by('-start_date')
 
     class Meta:
         verbose_name = 'Турнір'
