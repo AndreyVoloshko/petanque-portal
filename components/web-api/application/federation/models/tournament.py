@@ -44,8 +44,8 @@ class Tournament(models.Model):
     federation_delegat = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Делегат федерації",
                                            related_name='tournament_federation_delegat')
 
-    arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters')
-    teams = models.ManyToManyField(Team, through='TeamTournamentMembership')
+    arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
+    teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
     is_processed_by_system = models.BooleanField(_('Оправцьовано системою (рейтингові бали нараховано)'), default=False)
@@ -86,7 +86,7 @@ class ArbiterTournamentMembership(models.Model):
 # Classes for admin
 class ArbiterTournamentMembershipInline(admin.TabularInline):
     model = ArbiterTournamentMembership
-    extra = 1
+    extra = 0
 
     class Meta:
         verbose_name = 'Арбітри турніру'
@@ -95,7 +95,7 @@ class ArbiterTournamentMembershipInline(admin.TabularInline):
 # Classes for admin
 class TeamsTournamentMembershipInline(admin.TabularInline):
     model = TeamTournamentMembership
-    extra = 1
+    extra = 0
 
     class Meta:
         verbose_name = 'Команди турніру'
