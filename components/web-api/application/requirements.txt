@@ -6,3 +6,4 @@ django-extensions
 django_bootstrap_carousel
 django-crispy-forms
 django-floppyforms
+django-simple-poll

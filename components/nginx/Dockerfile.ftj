@@ -4,5 +4,3 @@ FROM nginx
 ADD ./conf/web-service-server.conf /etc/nginx/conf.d/
 
 EXPOSE 8080
-
-ENTRYPOINT ["nginx", "-g", "daemon off;"]

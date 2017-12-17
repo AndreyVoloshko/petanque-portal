@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from .views.login import application_login
 from .views.logout import application_logout
 from .views.main_page import main_page
@@ -8,6 +8,7 @@ from .views.players import players, player
 from .views.arbiters import arbiters
 from .views.records import records
 from .views.tournaments import tournaments, tournament
+from .views.polls import poll, vote, result
 
 
 urlpatterns = [
@@ -32,4 +33,8 @@ urlpatterns = [
     url(r'^national_teams/$', clubs,               name='national_teams'),
     url(r'^arbiters/$',     arbiters,              name='arbiters'),
     url(r'^records/$',     records,                name='records'),
+
+    url(r'^polls/vote/(?P<poll_pk>\d+)/$', vote, name='poll_ajax_vote'),
+    url(r'^polls/poll/(?P<poll_pk>\d+)/$', poll, name='poll'),
+    url(r'^polls/result/(?P<poll_pk>\d+)/$', result, name='poll_result'),
 ]
