@@ -10,9 +10,9 @@
 
         <!-- Favicons -->
         <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
-        <link rel="apple-touch-icon" href="/application/static/favicon.ico">
-        <link rel="apple-touch-icon" sizes="72x72" href="/application/static/favicon.ico">
-        <link rel="apple-touch-icon" sizes="114x114" href="/application/static/favicon.ico">
+        <link rel="apple-touch-icon" href="{% static 'favicon.ico' %}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{% static 'favicon.ico' %}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{% static 'favicon.ico' %}">
 
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -30,12 +30,12 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="//getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
-        <script src="/application/static/scripts.js"></script>
+        <script src="{% static 'scripts.js' %}"></script>
 
         <!-- DataTables -->
-        <link rel="stylesheet" href="/application/static/dataTables.bootstrap.css" />
-        <script src="/application/static/jquery.dataTables.js"></script>
-        <script src="/application/static/dataTables.bootstrap.js"></script>
+        <link rel="stylesheet" href="{% static 'dataTables.bootstrap.css' %}" />
+        <script src="{% static 'jquery.dataTables.js' %}"></script>
+        <script src="{% static 'dataTables.bootstrap.js' %}"></script>
 
     </head>
     <body>

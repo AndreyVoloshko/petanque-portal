@@ -3,6 +3,7 @@ services:
   {{ web_api_container_name }}:
     build:
       context: ./components/web-api/
+      dockerfile: Dockerfile.service
     ports:
      - "{{ web_api_container_external_port }}:{{ web_api_container_internal_port }}"
     volumes:
@@ -11,7 +12,9 @@ services:
      - {{ db_container_name }}
 
   {{ nginx_container_name }}:
-    build: ./components/nginx/
+    build:
+      context: ./components/web-api/
+      dockerfile: Dockerfile.nginx
     ports:
      - "{{ nginx_container_external_port }}:{{ nginx_container_internal_port }}"
     volumes:

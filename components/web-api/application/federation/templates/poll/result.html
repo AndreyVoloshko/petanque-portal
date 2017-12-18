@@ -5,14 +5,14 @@
 
 {% block poll_content %}
 <div class="poll_style">
-	<p class="title">{{ poll.title }}</p>
+	<h1 class="title">{{ poll.title }}</h1>
 	<ul>
 		{% for i in items %}
-		<li>{{ i.value }}: <b>{% filter floatformat %}{% percentage poll i %}{% endfilter %}%</b><br>
-			<div style="background: #D1B692; border: 1px solid #AD8346; height: 8px; width: {% percentage poll i %}%;"></div>
+		<li class="vote_option">{{ i.value }}: <b>{% filter floatformat %}{% percentage poll i %}{% endfilter %}%</b><br>
+			<div class="vote_line" style="width: {% percentage poll i %}%;"></div>
 		</li>
 		{% endfor %}
 	</ul>
-	<p>{% trans "Total votes" %}: <b>{{ poll.get_vote_count }}</b></p><br>
+	<p>{% trans "Всього голосів" %}: <b>{{ poll.get_vote_count }}</b></p><br>
 </div>
 {% endblock %}

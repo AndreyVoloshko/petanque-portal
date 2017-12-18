@@ -206,3 +206,31 @@ form .row {
 .avatar {
     width: 100px;
 }
+
+.icon-404 {
+    width: 50%;
+    margin: 50px auto;
+    display: block;
+}
+
+.poll_style ul {
+    list-style: none;
+    margin: 20px 0px;
+    padding: 0px;
+}
+
+.poll_style label {
+    margin: 15px 0px 0px 10px;
+}
+
+.poll_style .vote_option {
+    margin: 15px 0px 0px 10px;
+}
+
+.poll_style .vote_line {
+    background: #5cb85c;
+    border: 1px solid #4cae4c;
+    height: 15px;
+    margin-top: 5px;
+}
+

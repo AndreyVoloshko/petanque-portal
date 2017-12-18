@@ -1,3 +1,8 @@
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.conf import settings
+from django.conf.urls.static import static
+
 from django.conf.urls import url, include
 from .views.login import application_login
 from .views.logout import application_logout
@@ -37,4 +42,18 @@ urlpatterns = [
     url(r'^polls/vote/(?P<poll_pk>\d+)/$', vote, name='poll_ajax_vote'),
     url(r'^polls/poll/(?P<poll_pk>\d+)/$', poll, name='poll'),
     url(r'^polls/result/(?P<poll_pk>\d+)/$', result, name='poll_result'),
-]
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+def handler404(request):
+    response = render_to_response('404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+
+def handler500(request):
+    response = render_to_response('500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response

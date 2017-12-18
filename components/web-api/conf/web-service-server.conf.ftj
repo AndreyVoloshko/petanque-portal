@@ -18,8 +18,19 @@ server {
     client_max_body_size 1024M;   # adjust to taste
 
     # Static
-    location /application/media/ {
-        root /; # this is a mounted volume with web-application static files
+    location /static/ {
+        alias /application/static/;
+        gzip_static on;
+        expires max;
+        add_header Cache-Control public;
+    }
+
+    # Static
+    location /media/images/ {
+        alias /application/media/images/;
+        gzip_static on;
+        expires max;
+        add_header Cache-Control public;
     }
 
     # Finally, send all non-media requests to the Flask server.

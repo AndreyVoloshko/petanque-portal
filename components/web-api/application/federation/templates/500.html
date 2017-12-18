@@ -1,0 +1,14 @@
+{% extends "common/page_base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>Вибачте, виникла помилка.</h1>
+        <h2>{{ exception }}</h2>
+        <img class="icon-404" src="{% static '404.jpg' %}" />
+    </div>
+</div>
+
+{% endblock %}
