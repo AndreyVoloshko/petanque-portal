@@ -14,6 +14,11 @@ def application_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('/profile/')
+
+                next_url = '/profile/'
+                if request.POST['next']:
+                    next_url = request.POST['next']
+
+                return HttpResponseRedirect(next_url)
 
     return render(request, 'login.html', {})
