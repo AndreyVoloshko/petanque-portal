@@ -7,8 +7,8 @@ def application_login(request):
         return HttpResponseRedirect('/profile/')
 
     if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -16,8 +16,8 @@ def application_login(request):
                 login(request, user)
 
                 next_url = '/profile/'
-                if request.POST['next']:
-                    next_url = request.POST['next']
+                if request.POST.get('next', ''):
+                    next_url = request.POST.get('next', '')
 
                 return HttpResponseRedirect(next_url)
 
