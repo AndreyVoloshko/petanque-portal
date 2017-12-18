@@ -21,4 +21,8 @@ def application_login(request):
 
                 return HttpResponseRedirect(next_url)
 
-    return render(request, 'login.html', {})
+    next = request.GET.get('next', '')
+
+    return render(request, 'login.html', {
+        'next': next
+    })
