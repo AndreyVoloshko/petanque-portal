@@ -27,9 +27,12 @@ class Tournament(models.Model):
     name = models.CharField(_('name'), max_length=150)
 
     category = models.CharField(_('Категорія'), max_length=5, choices=TYPE_CHOICES)
-    is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
     is_goes_to_rating = models.BooleanField(_('Рейтинговий'), default=False)
+    is_ukrainian_league = models.BooleanField(_('Турнір Української Ліги Петанку'), default=False)
+    is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
     is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
+
+    total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
     place = models.CharField(_('Місце проведення'), max_length=500)
@@ -49,10 +52,6 @@ class Tournament(models.Model):
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
-
-    total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
-
-    is_processed_by_system = models.BooleanField(_('Оправцьовано системою (рейтингові бали нараховано)'), default=False)
 
     def __str__(self):
         return self.get_name()
