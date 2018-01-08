@@ -1,0 +1,51 @@
+{% load app_filters %}
+
+<div class="col-sm-7">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Турнір: {{ tournament.name }}
+        </div>
+        <div class="panel-body">
+
+            <div class="row">
+                <dl class="dl-horizontal tournament_summary">
+                    {{ tournament|tournament_field:"category"|safe }}
+                    {{ tournament|tournament_field:"place"|safe }}
+                    <dt>
+                        Клуб-організатор
+                    </dt>
+                    <dd>
+                        <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
+                    </dd>
+                    <dt>
+                        Тип
+                    </dt>
+                    <dd>
+                        {% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
+
+                            {% if tournament.number_of_players_in_team_min <= 3 %}
+                                {% for i in "x"|rjust:tournament.number_of_players_in_team_min %}
+                                    <i class="glyphicon glyphicon-user"></i>
+                                {% endfor %}
+                            {% else %}
+                                {{ tournament.number_of_players_in_team_min }} <i class="glyphicon glyphicon-user"></i>
+                            {% endif %}
+
+                        {% else %}
+                            {{ tournament.number_of_players_in_team_min }}-{{ tournament.number_of_players_in_team_max }} <i class="glyphicon glyphicon-user"></i>
+                        {% endif %}
+                    </dd>
+                    {{ tournament|tournament_field:"start_date"|safe }}
+                    {{ tournament|tournament_field:"start_time"|safe }}
+                    {{ tournament|tournament_field:"date_registration_stop"|safe }}
+                    {{ tournament|tournament_field:"format"|safe }}
+                    {{ tournament|tournament_field:"terms"|safe }}
+                    {{ tournament|tournament_field:"teams_limit"|safe }}
+                    {{ tournament|tournament_field:"fee"|safe }}
+                    {{ tournament|tournament_field:"notes"|safe }}
+                    {{ tournament|tournament_field:"total_number_of_teams"|safe }}
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

@@ -23,10 +23,27 @@ class Team(models.Model):
             capitan = self.get_capitan()
             if capitan:
                 name = capitan.get_name()
+            elif self.players.all()[0]:
+                name = self.players.all()[0].get_name()
 
         return "%s (%s)" % (
             name,
             ", ".join(player.get_name() for player in self.players.all()),
+        )
+
+    def get_short_name(self):
+        name = self.name
+        if not name:
+            name = self.default_name
+
+            capitan = self.get_capitan()
+            if capitan:
+                name = capitan.get_name()
+            elif self.players.all()[0]:
+                name = self.players.all()[0].get_name()
+
+        return "%s" % (
+            name
         )
 
     def get_capitan(self):

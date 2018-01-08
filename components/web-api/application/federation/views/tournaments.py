@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from federation.models.tournament import Tournament
+from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
+from django.shortcuts import get_object_or_404
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -10,7 +11,13 @@ def tournaments(request, date_filter=None, type_filter=None):
 
 
 def tournament(request, id):
-    return render(request, 'tournaments/tournaments.html', {
-        'tournaments': Tournament.get_list(),
-        'page_title': "Турніри",
+    tournament = get_object_or_404(Tournament, pk=id)
+    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
+    teams = TeamTournamentMembership.objects.filter(tournament=tournament)
+
+    return render(request, 'tournaments/tournament.html', {
+        'tournament': tournament,
+        'arbiters': arbiters,
+        'teams': teams,
+        'page_title': "Турнір",
     })

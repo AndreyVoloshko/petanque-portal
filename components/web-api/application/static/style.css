@@ -234,3 +234,7 @@ form .row {
     margin-top: 5px;
 }
 
+dl.tournament_summary {
+    margin: 0px 20px;
+}
+

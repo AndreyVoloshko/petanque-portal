@@ -50,6 +50,8 @@ class Tournament(models.Model):
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
+    total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
+
     is_processed_by_system = models.BooleanField(_('Оправцьовано системою (рейтингові бали нараховано)'), default=False)
 
     def __str__(self):
@@ -65,7 +67,7 @@ class Tournament(models.Model):
         tournaments = self.objects.all()
 
         if date_filter == 'past':
-            tournaments = tournaments.filter(start_date__year=now.year)
+            #tournaments = tournaments.filter(start_date__year=now.year)
             tournaments = tournaments.filter(start_date__lte=now)
         elif date_filter == 'future':
             tournaments = tournaments.filter(start_date__gte=now)
@@ -96,7 +98,7 @@ class Tournament(models.Model):
         tournaments = tournaments.filter(teamtournamentmembership__team__in=user_teams)
 
         if date_filter == 'past':
-            tournaments = tournaments.filter(start_date__year=now.year)
+            #tournaments = tournaments.filter(start_date__year=now.year)
             tournaments = tournaments.filter(start_date__lte=now)
         elif date_filter == 'future':
             tournaments = tournaments.filter(start_date__gte=now)

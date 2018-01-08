@@ -1,0 +1,43 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        {% include "tournaments/tournament_summary.html" with tournament=tournament %}
+        {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+
+            <div class="panel panel-primary">
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tournament_teams" aria-controls="tournament_teams" role="tab" data-toggle="tab">
+                            <span class="glyphicon glyphicon-star"></span>&nbsp;Команди
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tournament_comments" aria-controls="tournament_comments" role="tab" data-toggle="tab">
+                            <span class="glyphicon glyphicon-align-left"></span>&nbsp;Коментарі <span class="badge badge-primary"><span class="fb-comments-count" data-href="http://{{ request.get_host }}{% url 'tournament' id=tournament.pk %}"></span></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="tournament_teams">
+                    {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams table_id="tournament_teams_table" %}
+                </div>
+                <div role="tabpanel" class="tab-pane" id="tournament_comments">
+                    <div class="panel-body">
+                        <div class="fb-comments" data-href="http://{{ request.get_host }}{% url 'tournament' id=tournament.pk %}" data-numposts="7" data-width="100%" data-order-by="reverse_time"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

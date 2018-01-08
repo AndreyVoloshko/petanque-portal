@@ -18,8 +18,8 @@
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
                         </td>
-                        <td align="left">Команда</td>
-						<td align="left">Місце</td>
+                        <td align="left">{{ item|team_short_name_in_tournament:player|safe }}</td>
+						<td align="left">{{ item|team_place_in_tournament:player|safe }}</td>
 						<td align="left">0</td>
 					</tr>
 

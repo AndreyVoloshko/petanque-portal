@@ -1,0 +1,50 @@
+{% load app_filters %}
+
+<div class="col-sm-5">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Делегати та арбітри
+        </div>
+        <div class="panel-body">
+
+            <div class="row">
+                {% for arbiter in arbiters %}
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div align="center">
+                                {{ arbiter.arbiter|user_avatar:"big"|safe }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div align="center" class="sentence-line-break">
+                                <b>
+                                    {% if arbiter.is_main_arbiter %}
+                                        Головний арбітр:
+                                    {% else %}
+                                        Арбітр:
+                                    {% endif %}
+                                </b>
+                                {{ arbiter.arbiter|user_profile_link|safe }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if tournament.federation_delegat %}
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div align="center">
+                                {{ tournament.federation_delegat|user_avatar:"big"|safe }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div align="center" class="sentence-line-break">
+                                <b>Делегат ФПУ:</b>
+                                {{ tournament.federation_delegat|user_profile_link|safe }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

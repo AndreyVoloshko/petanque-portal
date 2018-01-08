@@ -1,10 +1,13 @@
 from django import template
 from django.conf import settings
 import os.path
+from federation.models.team import Team
 from federation.models.player import Player
 from federation.models.record import Record
+from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from datetime import date
+from django.utils import formats
 
 register = template.Library()
 
@@ -35,6 +38,12 @@ def get_year(value):
 def country_icon(country):
     return '''
         ''' + str(country.name) + '''&nbsp;<i class="icon-flag icon-flag-'''+country.code+'''"></i>
+    '''
+
+@register.filter(name='country_flag')
+def country_flag(country):
+    return '''
+        &nbsp;<i data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + str(country.name) + '''" class="icon-flag icon-flag-'''+country.code+'''"></i>
     '''
 
 
@@ -87,7 +96,7 @@ def get_number_of_players (club):
 
 @register.filter(name="social_field")
 def social_field (item, field):
-    value = getattr(item,field)
+    value = getattr(item, field)
 
     if not value :
         return ''
@@ -202,3 +211,67 @@ def player_records(player):
 
     return html
 
+@register.filter(name="tournament_field")
+def tournament_field (item, field):
+    value = getattr(item, field)
+    value_type = Tournament._meta.get_field(field).get_internal_type()
+
+    if value_type == 'DateTimeField':
+        value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
+
+    elif value_type == "DateField":
+        value = formats.date_format(value, "SHORT_DATE_FORMAT")
+
+    elif field == "place":
+        value = str(value) + '''<a target="_blank" href="https://maps.google.com?q=''' + str(value) + '''">
+                                    <span class="glyphicon glyphicon glyphicon-globe"></span>
+                                </a>'''
+
+    elif field == "category":
+        value = item.get_category_display()
+
+    elif field == "format":
+        value = item.get_format_display()
+
+
+    if not value:
+        return ''
+
+    return '''
+        <dt title="''' + str(Tournament._meta.get_field(field).verbose_name) + '''">''' + str(Tournament._meta.get_field(field).verbose_name) + '''</dt>
+        <dd>''' + str(value) + '''</dd>
+    '''
+
+@register.filter(name="team_short_name")
+def team_short_name(team):
+    return team.get_short_name()
+
+@register.filter(name="team_short_name_in_tournament")
+def team_short_name_in_tournament(tournament, player):
+    all_player_teams = Team.objects.filter(players=player)
+    team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+
+    return team.team.get_short_name()
+
+@register.filter(name="team_place_in_tournament")
+def team_place_in_tournament(tournament, player=False):
+
+    if player:
+        all_player_teams = Team.objects.filter(players=player)
+        team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+    else:
+        team = tournament
+
+    message = '''
+        <span class="label label-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
+    '''
+
+    place = str(team.place_min)
+    if team.place_max > 0:
+        place = str(team.place_min)+"-"+str(team.place_max)
+
+    message += place + '''
+        </span>
+    '''
+
+    return message
