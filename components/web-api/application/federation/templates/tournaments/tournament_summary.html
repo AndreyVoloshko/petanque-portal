@@ -11,7 +11,7 @@
                 <dl class="dl-horizontal tournament_summary">
                     {{ tournament|tournament_field:"category"|safe }}
                     {{ tournament|tournament_field:"place"|safe }}
-                    {% tournament.organizer_club %}
+                    {% if tournament.organizer_club %}
                     <dt>
                         Клуб-організатор
                     </dt>
