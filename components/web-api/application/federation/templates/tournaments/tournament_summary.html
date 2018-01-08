@@ -11,12 +11,14 @@
                 <dl class="dl-horizontal tournament_summary">
                     {{ tournament|tournament_field:"category"|safe }}
                     {{ tournament|tournament_field:"place"|safe }}
+                    {% tournament.organizer_club %}
                     <dt>
                         Клуб-організатор
                     </dt>
                     <dd>
                         <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
                     </dd>
+                    {% endif %}
                     <dt>
                         Тип
                     </dt>
