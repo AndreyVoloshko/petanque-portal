@@ -21,3 +21,7 @@ def tournament(request, id):
         'teams': teams,
         'page_title': "Турнір",
     })
+
+def tournaments_calendar (request):
+
+    return render(request, 'tournaments/calendar.html')

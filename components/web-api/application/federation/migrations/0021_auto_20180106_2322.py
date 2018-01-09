@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('federation', '020_tournament_total_number_of_teams'),
+        ('federation', '0020_tournament_total_number_of_teams'),
     ]
 
     operations = [

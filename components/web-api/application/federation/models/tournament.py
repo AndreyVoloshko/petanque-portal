@@ -36,8 +36,11 @@ class Tournament(models.Model):
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
     place = models.CharField(_('Місце проведення'), max_length=500)
+
     start_date = models.DateField(_('Дата початку'), default=timezone.now)
     start_time = models.TimeField(_('Час початку'), default=timezone.now)
+    end_date = models.DateField(_('Дата закінчення'), blank=True, null=True)
+
     date_registration_stop = models.DateTimeField(_('Дата закінчення реєстрації'), default=timezone.now)
     number_of_players_in_team_min = models.IntegerField(_('Мінімальна кількість гравців в команді'), default=1)
     number_of_players_in_team_max = models.IntegerField(_('Кількість гравців в команді (з запасними)'), default=1)
@@ -84,6 +87,18 @@ class Tournament(models.Model):
             tournaments = tournaments.filter(is_b_tournament=False)
         elif type_filter == 'except_b':
             tournaments = tournaments.filter(is_b_tournament=False)
+
+        return tournaments.order_by('-start_date')
+
+    @classmethod
+    def get_list_by_dates_range(self, start_date=None, end_date=None):
+        tournaments = self.objects.all()
+
+        if start_date:
+            tournaments = tournaments.filter(start_date__gte=start_date)
+
+        if end_date:
+            tournaments = tournaments.filter(start_date__lte=end_date)
 
         return tournaments.order_by('-start_date')
 

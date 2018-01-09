@@ -16,6 +16,8 @@
                     <a href="{% url 'clubs' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="glyphicon glyphicon-home"></i> Федерація <span class="caret"></span></a>
                     <ul class="dropdown-menu">
+                        <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
+                        <li role="separator" class="divider"></li>
                         <li><a href="{% url 'clubs' %}"><i class="glyphicon glyphicon-star-empty"></i> Клуби</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-education"></i> Арбітри</a></li>
@@ -32,6 +34,8 @@
                         <li><a href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
                         <li><a href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
                         <li><a href="{% url 'tournaments' date_filter='future' type_filter='non' %}"><i class="glyphicon glyphicon-cd"></i> Нерейтингові турніри ФПУ</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -43,6 +47,8 @@
                         <li><a href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
                         <li><a href="{% url 'tournaments' date_filter='past' type_filter='non' %}"><i class="glyphicon glyphicon-cd"></i> Попередні нерейтингові турніри ФПУ</a></li>
                         <li><a href="{% url 'tournaments' date_filter='past' type_filter='b' %}"><i class="glyphicon glyphicon-record"></i> Турніри "Б"</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">

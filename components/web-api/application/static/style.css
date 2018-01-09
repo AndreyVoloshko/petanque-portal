@@ -238,3 +238,14 @@ dl.tournament_summary {
     margin: 0px 20px;
 }
 
+
+/*
+Calendar
+*/
+#calendar {
+    max-width: 1000px;
+    margin: auto;
+}
+.fc-content {
+    padding: 3px;
+}
