@@ -282,14 +282,14 @@ def tournaments_css_classes(tournament):
     classes = ""
 
     if tournament.is_goes_to_rating:
-        classes += "tournament_goes_to_rating"
+        classes += "tournament_goes_to_rating "
 
     if tournament.is_ukrainian_league:
-        classes += "tournament_ukrainian_league"
+        classes += "tournament_ukrainian_league "
 
     if tournament.is_b_tournament:
-        classes += "tournament_b"
+        classes += "tournament_b "
 
-    classes += "tournament_" + str(tournament.category)
+    classes += " tournament_" + str(tournament.category)
 
     return classes
