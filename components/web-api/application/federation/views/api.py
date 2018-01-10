@@ -11,12 +11,26 @@ def tournaments_list(request):
     data = []
 
     for tournament in tournaments:
+        classes = ""
+
+        if tournament.is_goes_to_rating:
+            classes += "tournament_goes_to_rating "
+
+        if tournament.is_ukrainian_league:
+            classes += "tournament_ukrainian_league "
+
+        if tournament.is_b_tournament:
+            classes += "tournament_b "
+
+        classes += " tournament_" + str(tournament.category)
+
         item = {
             'id': tournament.pk,
             'url': reverse('tournament', kwargs={'id':tournament.pk}),
             'title': tournament.name,
             'start': tournament.start_date,
             'end': tournament.start_date,
+            'className': classes,
             'allDay': True,
         }
 
