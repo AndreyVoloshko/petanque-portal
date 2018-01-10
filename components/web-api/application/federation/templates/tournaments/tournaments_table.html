@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             {% for item in items %}
-					<tr class="{% item|tournaments_css_classes %}">
+					<tr class="{{ item|tournaments_css_classes }}">
                         <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
