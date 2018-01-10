@@ -1,7 +1,7 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="tournaments">
+    <table class="table table-hover table-condensed" id="tournaments">
         <thead>
             <tr>
                 <th align="left">Дата</th>
@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             {% for item in items %}
-					<tr>
+					<tr class="{% item|tournaments_css_classes %}">
                         <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>

@@ -238,6 +238,24 @@ dl.tournament_summary {
     margin: 0px 20px;
 }
 
+/*
+Tournaments classes
+*/
+.tournament_goes_to_rating {
+    background: #daebcc;
+}
+
+.tournament_ukrainian_league {
+    background: #ebcccc;
+}
+
+.tournament_away {
+    background: #d9edf7;
+}
+
+.tournament_b {
+    background: #eeeeee;
+}
 
 /*
 Calendar
