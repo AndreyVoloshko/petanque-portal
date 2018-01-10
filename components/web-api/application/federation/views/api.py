@@ -11,7 +11,7 @@ def tournaments_list(request):
     data = []
 
     for tournament in tournaments:
-        classes = ""
+        classes = "tournament "
 
         if tournament.is_goes_to_rating:
             classes += "tournament_goes_to_rating "

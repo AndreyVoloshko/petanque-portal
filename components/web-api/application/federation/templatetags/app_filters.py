@@ -279,7 +279,7 @@ def team_place_in_tournament(tournament, player=False):
 
 @register.filter(name="tournaments_css_classes")
 def tournaments_css_classes(tournament):
-    classes = ""
+    classes = "tournament "
 
     if tournament.is_goes_to_rating:
         classes += "tournament_goes_to_rating "
