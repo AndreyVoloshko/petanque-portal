@@ -172,7 +172,8 @@ MAX_UPLOAD_SIZE = "2621440"
 
 DBBACKUP_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 DBBACKUP_STORAGE_OPTIONS = {
-    'access_key': '{{ application_s3_key }}',
-    'secret_key': '{{ application_s3_secret }}',
-    'bucket_name': '{{ application_s3_bucket }}'
+    'AWS_ACCESS_KEY_ID': '{{ application_s3_key }}',
+    'AWS_SECRET_ACCESS_KEY': '{{ application_s3_secret }}',
+    'AWS_STORAGE_BUCKET_NAME': '{{ application_s3_bucket }}',
+    'AWS_S3_REGION_NAME': '{{ application_s3_region }}'
 }
