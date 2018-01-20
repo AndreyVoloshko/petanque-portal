@@ -23,7 +23,7 @@ services:
      - {{ web_api_container_name }}
 
   {{ db_container_name }}:
-    image: postgres
+    image: postgres:{{ db_container_engine_version }}
     volumes:
      - {{ db_container_data_volume_name }}:/var/lib/postgresql/data
 
