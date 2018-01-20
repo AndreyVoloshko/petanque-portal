@@ -45,6 +45,8 @@ class Player(models.Model):
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
 
+    current_rating = models.IntegerField(_('Поточні рейтингові пункти'), default=0)
+
     def __str__(self):
         return self.get_name()
 

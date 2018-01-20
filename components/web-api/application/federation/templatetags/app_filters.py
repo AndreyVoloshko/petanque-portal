@@ -253,6 +253,21 @@ def team_short_name_in_tournament(tournament, player):
 
     return team.team.get_short_name()
 
+@register.filter(name="team_rating_points_in_tournament")
+def team_rating_points_in_tournament(tournament, player):
+    all_player_teams = Team.objects.filter(players=player)
+    team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+
+    return team.rating_points
+
+@register.filter(name="team_power_in_tournament")
+def team_power_in_tournament(tournament, player):
+    all_player_teams = Team.objects.filter(players=player)
+    team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+
+    return team.power
+
+
 @register.filter(name="team_place_in_tournament")
 def team_place_in_tournament(tournament, player=False):
 

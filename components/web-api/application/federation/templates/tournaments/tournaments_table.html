@@ -8,6 +8,7 @@
                 <th align="left">Назва</th>
                 <th align="left">Місце</th>
                 <th align="left">Тип</th>
+                <th align="left">Сила</th>
                 <th align="left">Організатор</th>
                 <th>&nbsp;</th>
             </tr>
@@ -38,6 +39,11 @@
                                 {{ item.number_of_players_in_team_min }}-{{ item.number_of_players_in_team_max }} <i class="glyphicon glyphicon-user"></i>
                             {% endif %}
                         </td>
+                        <td align="left">
+                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила турніру">
+                               <span class="glyphicon glyphicon-sort"></span> {{ item.power }}
+                            </button>
+                        </td>
 						<td align="left">
                             {% if item.organizer_club %}
                                 <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
@@ -61,7 +67,8 @@ $(document).ready(function() {
 		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //orginizer
+		            { sWidth: "5%", bSearchable: true, bSortable: true }, //power
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //orginizer
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
 		       ],
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],

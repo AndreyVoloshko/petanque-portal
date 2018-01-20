@@ -7,7 +7,7 @@
                 <th width="10%" align="left">Дата</th>
                 <th width="50%" align="left">Назва</th>
                 <th width="25%" align="left">Команда</th>
-                <th width="15%" align="left">Сила команди</th>
+                <th width="15%" align="left">Сила</th>
             </tr>
         </thead>
         <tbody>
@@ -18,7 +18,11 @@
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
                         </td>
                         <td align="left">Команда</td>
-						<td align="left">0</td>
+						<td align="left">
+                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
+                               <span class="glyphicon glyphicon-sort"></span> {{ item|team_power_in_tournament:player|safe }}
+                            </button>
+                        </td>
 					</tr>
 
             {% endfor %}

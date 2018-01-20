@@ -8,6 +8,7 @@
                 <th width="45%" align="left">Назва</th>
                 <th width="20%" align="left">Команда</th>
                 <th width="10%" align="left">Місце</th>
+                <th width="15%" align="left">Сила</th>
                 <th width="15%" align="left">Бали</th>
             </tr>
         </thead>
@@ -20,7 +21,16 @@
                         </td>
                         <td align="left">{{ item|team_short_name_in_tournament:player|safe }}</td>
 						<td align="left">{{ item|team_place_in_tournament:player|safe }}</td>
-						<td align="left">0</td>
+						<td align="left">
+                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
+                               <span class="glyphicon glyphicon-sort"></span> {{ item|team_power_in_tournament:player|safe }}
+                            </button>
+                        </td>
+						<td align="left">
+                            <span class="label label-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за турнір">
+                                {{ item|team_rating_points_in_tournament:player|safe }}
+                            </span>
+                        </td>
 					</tr>
 
             {% endfor %}
@@ -33,10 +43,11 @@ $(document).ready(function() {
         $('#{{ table_id }}').dataTable({
                'aoColumns': [
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
-		            { sWidth: "45%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "20%", bSearchable: true, bSortable: true }, // team
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //place
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //points
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //power
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //points
 		       ],
 		       "autoWidth": false,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],

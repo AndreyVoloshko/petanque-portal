@@ -35,6 +35,8 @@ class Tournament(models.Model):
     total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
+    power = models.FloatField(_('Сила турніру'), default=1)
+
     place = models.CharField(_('Місце проведення'), max_length=500)
 
     start_date = models.DateField(_('Дата початку'), default=timezone.now)
@@ -145,6 +147,7 @@ class TeamTournamentMembership(models.Model):
     place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
     date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
     rating_points = models.IntegerField(_('Рейтингові пункти за турнір'), default=0)
+    power = models.IntegerField(_('Сила команди'), default=0)
 
     class Meta:
         verbose_name = 'Команди турніру'
