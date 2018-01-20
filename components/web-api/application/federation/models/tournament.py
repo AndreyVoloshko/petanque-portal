@@ -184,6 +184,8 @@ class TeamsTournamentMembershipInline(admin.TabularInline):
 
 class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
     inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)
+    search_fields = ('name', 'category', 'organizer_club__name', 'number_of_players_in_team_min', )
+    list_per_page = 25
     list_display = [
         'id',
         'name',
