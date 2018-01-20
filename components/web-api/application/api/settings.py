@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'floppyforms',
     'federation',
-    'poll'
+    'poll',
+    'dbbackup'
 ]
 
 STATICFILES_FINDERS = [
@@ -168,3 +169,10 @@ CONTENT_TYPES = ['image']
 # 250MB - 214958080
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "2621440"
+
+DBBACKUP_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'access_key': 'AKIAIKTRF34VLXK4LA7Q',
+    'secret_key': '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',
+    'bucket_name': 'petanque_portal'
+}

@@ -6,11 +6,12 @@ from federation.storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
+from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing
 
 # Tournaments
 class Tournament(models.Model):
     TYPE_CHOICES = (
-        ('open', 'Вiдктитий'),
+        ('open', 'Вiдкритий'),
         ('fpu', 'ФПУ'),
         ('away', 'Закордонний'),
         ('other', 'Інше'),
@@ -183,3 +184,17 @@ class TeamsTournamentMembershipInline(admin.TabularInline):
 
 class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
     inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)
+    list_display = [
+        'id',
+        'name',
+        'start_date',
+        'category',
+        'power',
+        'rating_coefficient',
+        'is_goes_to_rating',
+        'is_ukrainian_league',
+        'is_b_tournament',
+        'is_processing_finished',
+    ]
+
+    actions = [recalculate_power, recalculate_ratings, finish_processing]

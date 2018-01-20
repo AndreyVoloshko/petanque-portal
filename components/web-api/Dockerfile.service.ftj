@@ -2,7 +2,7 @@ FROM python:3
 ENV PYTHONUNBUFFERED 1
 
 # Install software
-RUN apt-get update -y && apt-get install -y supervisor
+RUN apt-get update -y && apt-get install -y supervisor postgresql-client
 
 # Install gunicorn
 RUN pip install gunicorn
