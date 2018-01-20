@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
   apt-key add -
-RUN apt-get update -y && apt-get install -y supervisor postgresql-client
+RUN apt-get update -y && apt-get install -y supervisor postgresql-client-{{ db_container_engine_version }}
 
 # Install gunicorn
 RUN pip install gunicorn
