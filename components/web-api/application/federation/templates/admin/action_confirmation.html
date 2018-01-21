@@ -2,18 +2,22 @@
 {% load i18n l10n %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-    <p>{{ message|safe }}</p>
+<div class="delete-confirmation">
+    <form action="" method="post">{% csrf_token %}
+        <p>{{ message|safe }}</p>
 
-    <ul>{{ queryset|unordered_list }}</ul>
+        <ul>{{ queryset|unordered_list }}</ul>
 
-    <div>
-    {% for obj in queryset %}
-    <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
-    {% endfor %}
-    <input type="hidden" name="action" value="{{ action }}" />
-    <input type="hidden" name="post" value="yes" />
-    <input type="submit" value="Підтверджую" />
-    </div>
-</form>
+        <div>
+        {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
+        {% endfor %}
+        <input type="hidden" name="action" value="{{ action }}" />
+        <input type="hidden" name="post" value="yes" />
+
+        <input type="submit" value="Так, підтверджую" />
+        <a href="javascript:history.back();" class="button cancel-link">Ні, повернутись назад</a>
+        </div>
+    </form>
+</div>
 {% endblock %}
