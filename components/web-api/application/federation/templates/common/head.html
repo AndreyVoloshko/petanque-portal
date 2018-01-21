@@ -44,6 +44,21 @@
         <link rel="stylesheet" href="{% static 'calendar_full_calendar.min.css' %}" />
         <link rel="stylesheet" media="print" href="{% static 'calendar_full_calendar_print.min.css' %}" />
 
+        <!-- DataTable data fixes -->
+        <script>
+            $(document).ready(function () {
+                var fuzzyNum = function(x) {
+                    return x.replace(/[^\d\.\-]/g,"");
+                };
 
+                jQuery.fn.dataTableExt.oSort['numbercase-asc'] = function(x, y){
+                    return fuzzyNum(x)- fuzzyNum(y);
+                };
+
+                jQuery.fn.dataTableExt.oSort['numbercase-desc'] = function(x, y){
+                    return fuzzyNum(y)- fuzzyNum(x);
+                };
+            });
+        </script>
     </head>
     <body>

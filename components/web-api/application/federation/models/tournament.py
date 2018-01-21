@@ -1,12 +1,15 @@
 from django.db import models
 from django.utils import timezone
 import datetime
+from datetime import date
+import federation.config.rating as rating_config
 from django.contrib import admin
 from federation.storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing
+
 
 # Tournaments
 class Tournament(models.Model):
@@ -64,6 +67,41 @@ class Tournament(models.Model):
 
     def get_name(self):
         return self.name
+
+    def recalculate_power(self):
+        if self.is_processing_finished:
+            raise Exception("Турнір вже закритий для опрацювання!")
+
+        if self.end_date:
+            if self.end_date > date.today():
+                raise Exception("Турнір ще не закінчився!")
+
+        if self.start_date > date.today():
+            raise Exception("Турнір ще не розпочався!")
+
+        # recalculate all teams power
+        teams = self.get_teams()
+        for team in teams:
+            team.recalculate_power()
+
+        # get top teams
+        teams = self.get_teams()
+        top_teams_needed = rating_config.RATING_TOURNAMENT_POWER_TEAMS_COUNT
+        teams = teams[:top_teams_needed]
+
+        # calculate new tournament power
+        power = 0
+        for team in teams:
+            power += team.power
+
+        power = power / teams.count()
+
+        # save new power
+        self.power = power
+        self.save()
+
+    def get_teams(self):
+        return TeamTournamentMembership.objects.filter(tournament=self).order_by('-power')
 
     @classmethod
     def get_list(self, date_filter=None, type_filter=None):
@@ -140,6 +178,7 @@ class Tournament(models.Model):
         verbose_name = 'Турнір'
         verbose_name_plural = 'Турніри'
 
+
 # Teams to Tournaments relation
 class TeamTournamentMembership(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір")
@@ -150,9 +189,23 @@ class TeamTournamentMembership(models.Model):
     rating_points = models.IntegerField(_('Рейтингові пункти за турнір'), default=0)
     power = models.IntegerField(_('Сила команди'), default=0)
 
+    def recalculate_power(self):
+        print("Calculating power for "+str(self.pk)+" team")
+        power = 0
+        for player in self.team.players.all():
+            print("Player " + str(player.pk) + " power=" + str(player.current_rating))
+            power += player.current_rating
+
+        print("Team " + str(self.pk) + " power=" + str(power))
+        power = power / self.team.players.count()
+        print("Team " + str(self.pk) + " new power=" + str(power))
+        self.power = power
+        self.save()
+
     class Meta:
         verbose_name = 'Команди турніру'
         verbose_name_plural = 'Команди турніру'
+
 
 # Arbiters to Tournaments relation
 class ArbiterTournamentMembership(models.Model):
@@ -164,6 +217,7 @@ class ArbiterTournamentMembership(models.Model):
         verbose_name = 'Арбітри турніру'
         verbose_name_plural = 'Арбітри турніру'
 
+
 # Classes for admin
 class ArbiterTournamentMembershipInline(admin.TabularInline):
     model = ArbiterTournamentMembership
@@ -173,6 +227,7 @@ class ArbiterTournamentMembershipInline(admin.TabularInline):
         verbose_name = 'Арбітри турніру'
         verbose_name_plural = 'Арбітри турніру'
 
+
 # Classes for admin
 class TeamsTournamentMembershipInline(admin.TabularInline):
     model = TeamTournamentMembership
@@ -181,6 +236,7 @@ class TeamsTournamentMembershipInline(admin.TabularInline):
     class Meta:
         verbose_name = 'Команди турніру'
         verbose_name_plural = 'Команди турніру'
+
 
 class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
     inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)

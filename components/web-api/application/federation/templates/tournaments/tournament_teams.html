@@ -39,7 +39,7 @@
                                 <span class="glyphicon glyphicon-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
                             </button>
                         </td>
-						<td data-order="{{ team.place_min }}" align="left">
+						<td data-order="{{ team.power }}" align="left">
                             <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
                                 <span class="glyphicon glyphicon-sort"></span> {{ team.power }}
                             </button>
@@ -53,18 +53,6 @@
 
 <script>
 $(document).ready(function() {
-
-         var fuzzyNum = function(x) {
-           return x.replace(/[^\d\.\-]/g,"");
-         };
-
-         jQuery.fn.dataTableExt.oSort['numbercase-asc'] = function(x, y){
-            return fuzzyNum(x)- fuzzyNum(y);
-         };
-
-         jQuery.fn.dataTableExt.oSort['numbercase-desc'] = function(x, y){
-            return fuzzyNum(y)- fuzzyNum(x);
-         };
 
         $('#{{ table_id }}').dataTable({
                'aoColumns': [

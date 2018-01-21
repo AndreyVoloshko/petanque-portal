@@ -267,6 +267,16 @@ def team_power_in_tournament(tournament, player):
 
     return team.power
 
+@register.filter(name="team_min_place_in_tournament")
+def team_min_place_in_tournament(tournament, player=False):
+
+    if player:
+        all_player_teams = Team.objects.filter(players=player)
+        team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+    else:
+        team = tournament
+
+    return str(team.place_min)
 
 @register.filter(name="team_place_in_tournament")
 def team_place_in_tournament(tournament, player=False):

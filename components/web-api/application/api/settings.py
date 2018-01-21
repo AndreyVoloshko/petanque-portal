@@ -174,5 +174,8 @@ DBBACKUP_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'access_key': 'AKIAIKTRF34VLXK4LA7Q',
     'secret_key': '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',
-    'bucket_name': 'petanque_portal'
+    'bucket_name': 'petanque-portal',
+    'host': 's3.eu-central-1.amazonaws.com',
+    'AWS_S3_REGION_NAME': 'eu-central-1',
+    'AWS_LOCATION': 'db_backups/'
 }

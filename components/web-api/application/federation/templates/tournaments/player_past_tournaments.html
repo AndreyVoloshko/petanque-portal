@@ -20,13 +20,15 @@
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
                         </td>
                         <td align="left">{{ item|team_short_name_in_tournament:player|safe }}</td>
-						<td align="left">{{ item|team_place_in_tournament:player|safe }}</td>
-						<td align="left">
+						<td data-order="{{ item|team_min_place_in_tournament:player|safe }}" align="left">
+                            {{ item|team_place_in_tournament:player|safe }}
+                        </td>
+						<td data-order="{{ item|team_power_in_tournament:player|safe }}" align="left">
                             <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
                                <span class="glyphicon glyphicon-sort"></span> {{ item|team_power_in_tournament:player|safe }}
                             </button>
                         </td>
-						<td align="left">
+						<td data-order="{{ item|team_rating_points_in_tournament:player|safe }}" align="left">
                             <span class="label label-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за турнір">
                                 {{ item|team_rating_points_in_tournament:player|safe }}
                             </span>
@@ -45,9 +47,9 @@ $(document).ready(function() {
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
 		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "20%", bSearchable: true, bSortable: true }, // team
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //place
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //power
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //points
+		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //place
+		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
+		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //points
 		       ],
 		       "autoWidth": false,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
