@@ -3,3 +3,4 @@ ftj.yml
 docker-compose.yml
 .cache
 petanque-portal/
+*.pyc
