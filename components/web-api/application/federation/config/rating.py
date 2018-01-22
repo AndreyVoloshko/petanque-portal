@@ -1,24 +1,24 @@
 # Rating Settings
 RATING_TOURNAMENT_POINTS_TABLE = [{
-  'max_teams':8,
+  'max_teams': 8,
   'points': 3,
 },{
-  'max_teams':16,
+  'max_teams': 16,
   'points': 4,
 },{
-  'max_teams':32,
+  'max_teams': 32,
   'points': 5,
 },{
-  'max_teams':64,
+  'max_teams': 64,
   'points': 6,
 },{
-  'max_teams':128,
+  'max_teams': 128,
   'points': 7,
 },{
-  'max_teams':256,
+  'max_teams': 256,
   'points': 8,
 },{
-  'max_teams':99999999,
+  'max_teams': 99999999,
   'points': 9,
 }]
 

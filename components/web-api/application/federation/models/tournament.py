@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 import datetime
+import math
+
 from datetime import date
 import federation.config.rating as rating_config
 from django.contrib import admin
@@ -34,12 +36,12 @@ class Tournament(models.Model):
     is_goes_to_rating = models.BooleanField(_('Рейтинговий'), default=False)
     is_ukrainian_league = models.BooleanField(_('Турнір Української Ліги Петанку'), default=False)
     is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
-    is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
+    is_ready_for_processing = models.BooleanField(_('Турнір готовий до опрацювання'), default=False)
 
     total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
-    power = models.FloatField(_('Сила турніру'), default=1)
+    power = models.FloatField(_('Сила турніру'), default=0)
 
     place = models.CharField(_('Місце проведення'), max_length=500)
 
@@ -62,22 +64,21 @@ class Tournament(models.Model):
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
+    is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
+
     def __str__(self):
         return self.get_name()
 
     def get_name(self):
         return self.name
 
+    # recalculate teams power
     def recalculate_power(self):
-        if self.is_processing_finished:
+        if not self.is_ready_for_processing:
+            raise Exception("Турнір не помічено як готовий до оправцювання")
+
+        if self.is_processing_closed():
             raise Exception("Турнір вже закритий для опрацювання!")
-
-        if self.end_date:
-            if self.end_date > date.today():
-                raise Exception("Турнір ще не закінчився!")
-
-        if self.start_date > date.today():
-            raise Exception("Турнір ще не розпочався!")
 
         # recalculate all teams power
         teams = self.get_teams()
@@ -99,6 +100,102 @@ class Tournament(models.Model):
         # save new power
         self.power = power
         self.save()
+
+    '''
+        recalculate teams rating points according to places
+    '''
+    def recalculate_ratings(self):
+        if not self.is_ready_for_processing:
+            raise Exception("Турнір не помічено як готовий до оправцювання")
+
+        if self.is_processing_closed():
+            raise Exception("Турнір вже закритий для опрацювання!")
+
+        if not self.is_finished():
+            raise Exception("Турнір ще не закінчився!")
+
+        teams = self.get_teams()
+        teams_count = teams.count()
+
+        if teams_count <= 0:
+            raise Exception("У турнірі повинна бути хоча б одна команда")
+
+        if self.power <= 0:
+            raise Exception("Сила турніру менша або дорівнює нулю. Перерахуйте її")
+
+        basic_points = self.calculate_basic_points(teams_count)
+
+        for team in teams:
+            team_points = self.calculate_raw_team_rating_points(basic_points, team.place_min)
+
+            team_points = team_points * self.rating_coefficient * self.power
+
+            team.rating_points = team_points
+            team.save()
+
+    '''
+        calculate basic points first team gets for this tournament
+    '''
+    def calculate_basic_points(self, teams_count):
+        basic_points = math.ceil(math.log(teams_count, 2))
+        return basic_points
+
+    '''
+        calculate rating points based on basic number and team's place
+    '''
+    def calculate_raw_team_rating_points(self, basic_points, team_place):
+
+        # 1st place gets basic points everytime
+        if team_place == 1:
+            return basic_points
+
+        # get place related to points should be calculated
+        # 2 is related to 1
+        # 3,4 are related to 2
+        # 5-8 are related to 4 ... all of them are powers of 2
+        closest_power_of_two = int(math.log(team_place, 2))
+
+        # the place related to which current team will get points
+        related_teams_place = int(math.pow(2, closest_power_of_two))
+
+        if related_teams_place == team_place:
+            closest_power_of_two -= 1
+            related_teams_place = int(math.pow(2, closest_power_of_two))
+
+        # team basic points = points of related team's place - 1
+        team_basic_points = self.calculate_raw_team_rating_points(basic_points, related_teams_place)
+
+        # now get the place team got related to related_place
+        # examples:
+        # 3 is number 1 related to 2nd
+        # 4 is number 2 related to 2nd
+        # 7 is number 3 related to 4th ...
+        part_form_the_points = int(team_place % related_teams_place)
+        if part_form_the_points == 0:
+            part_form_the_points = related_teams_place
+
+        # calculate team points
+        team_points = team_basic_points - part_form_the_points / related_teams_place
+
+        return team_points
+
+    # is tournament closed for processing
+    def is_processing_closed(self):
+        return self.is_processing_finished
+
+    # is tournament already began
+    def is_began(self):
+        return self.start_date < date.today()
+
+    # is tournament already finished
+    def is_finished(self):
+        if not self.is_began():
+            return False
+
+        if self.end_date:
+            return self.end_date < date.today()
+
+        return True
 
     def get_teams(self):
         return TeamTournamentMembership.objects.filter(tournament=self).order_by('-power')
@@ -186,19 +283,15 @@ class TeamTournamentMembership(models.Model):
     place_min = models.IntegerField(_('Місце'), default=0)
     place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
     date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
-    rating_points = models.IntegerField(_('Рейтингові пункти за турнір'), default=0)
+    rating_points = models.FloatField(_('Рейтингові пункти за турнір'), default=0)
     power = models.IntegerField(_('Сила команди'), default=0)
 
     def recalculate_power(self):
-        print("Calculating power for "+str(self.pk)+" team")
         power = 0
         for player in self.team.players.all():
-            print("Player " + str(player.pk) + " power=" + str(player.current_rating))
             power += player.current_rating
 
-        print("Team " + str(self.pk) + " power=" + str(power))
         power = power / self.team.players.count()
-        print("Team " + str(self.pk) + " new power=" + str(power))
         self.power = power
         self.save()
 
@@ -261,6 +354,7 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
         'is_goes_to_rating',
         'is_ukrainian_league',
         'is_b_tournament',
+        'is_ready_for_processing',
         'is_processing_finished',
     ]
 
