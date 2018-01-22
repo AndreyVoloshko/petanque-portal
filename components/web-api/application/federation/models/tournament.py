@@ -145,7 +145,7 @@ class Tournament(models.Model):
     '''
     def calculate_raw_team_rating_points(self, basic_points, team_place):
 
-        # 1st place gets basic points everytime
+        # 1st place gets basic points every time
         if team_place == 1:
             return basic_points
 
