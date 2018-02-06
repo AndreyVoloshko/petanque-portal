@@ -50,9 +50,8 @@ def country_flag(country):
 @register.filter(name='club_logo')
 def club_logo(club, additional_class=''):
     url = settings.MEDIA_ROOT + str(club.logo)
-    file_path = settings.MEDIA_FILES_PATH + str(club.logo)
 
-    if not os.path.isfile(file_path):
+    if not club.logo:
         url = settings.STATIC_URL + 'default.png'
 
     return '''
@@ -67,9 +66,8 @@ def club_logo(club, additional_class=''):
 @register.filter(name='user_avatar')
 def user_avatar(user, additional_class=''):
     url = settings.MEDIA_ROOT + str(user.avatar)
-    file_path = settings.MEDIA_FILES_PATH + str(user.avatar)
 
-    if not os.path.isfile(file_path):
+    if not user.avatar:
         url = settings.STATIC_URL + 'default.png'
 
     return '''
