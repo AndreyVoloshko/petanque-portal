@@ -134,22 +134,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-
-MEDIA_RELATIVE_ROOT = 'images/'
-MEDIA_BASE = os.path.join(BASE_DIR, 'media/')
-
-MEDIA_FILES_PATH = os.path.join(BASE_DIR, 'media/images/')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static/"),
-    MEDIA_BASE,
-    MEDIA_ROOT,
-]
-
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
@@ -202,3 +186,12 @@ STATIC_ROOT = STATIC_URL
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'federation.storage.MediaStorage'
 MEDIA_ROOT = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+MEDIAFILES_LOCATION+'/'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
+MEDIA_RELATIVE_ROOT = 'images/'
+MEDIA_BASE = os.path.join(BASE_DIR, 'media/')
+
+STATICFILES_DIRS = [
+    MEDIA_ROOT,
+]
