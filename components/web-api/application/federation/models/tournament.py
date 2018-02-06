@@ -6,7 +6,7 @@ import math
 from datetime import date
 import federation.config.rating as rating_config
 from django.contrib import admin
-from federation.storage import AvatarsStorage
+from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
@@ -54,7 +54,7 @@ class Tournament(models.Model):
     number_of_players_in_team_max = models.IntegerField(_('Кількість гравців в команді (з запасними)'), default=1)
     format = models.CharField(_('Формат'), max_length=5, choices=FORMAT_CHOICES)
     organizer_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб організатор")
-    terms = models.FileField(_('Регламент'), blank=True, null=True, storage=AvatarsStorage())
+    terms = models.FileField(_('Регламент'), blank=True, null=True, storage=MediaStorage())
     teams_limit = models.IntegerField(_('Ліміт команд'), default=100)
     fee = models.TextField(_('Внески'), blank=True, null=True)
     federation_delegat = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Делегат федерації",

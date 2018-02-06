@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib import admin
 from django.utils import timezone
-from federation.storage import AvatarsStorage
+from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 
 
 # Clubs
 class Club (models.Model):
     name = models.CharField(_('Повна назва'), max_length=150)
-    logo  = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
+    logo  = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
     short_name = models.CharField(_('Коротка назва'), max_length=50)
     date_registered = models.DateTimeField(_('Дата реєстрації'), default=timezone.now)
     date_created = models.DateTimeField(_('Дата створення'), default=timezone.now)

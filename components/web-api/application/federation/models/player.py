@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
-from federation.storage import AvatarsStorage
+from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
@@ -31,7 +31,7 @@ class Player(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=AvatarsStorage())
+    avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Прізвищє'), max_length=100)
     birth_date = models.DateField(_('Дата народження'))
