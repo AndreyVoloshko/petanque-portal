@@ -41,7 +41,7 @@ class Tournament(models.Model):
     total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
 
     rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
-    power = models.FloatField(_('Сила турніру'), default=0)
+    power = models.DecimalField(_('Сила турніру'), default=0, max_digits=19, decimal_places=4)
 
     place = models.CharField(_('Місце проведення'), max_length=500)
 
@@ -72,13 +72,20 @@ class Tournament(models.Model):
     def get_name(self):
         return self.name
 
-    # recalculate teams power
+    '''
+        recalculate teams power
+    '''
     def recalculate_power(self):
         if not self.is_ready_for_processing:
             raise Exception("Турнір не помічено як готовий до оправцювання")
 
         if self.is_processing_closed():
             raise Exception("Турнір вже закритий для опрацювання!")
+
+        teams_count = self.get_teams_count()
+
+        if teams_count <= 0:
+            raise Exception("У турнірі не зареєстровано жожної команди!")
 
         # recalculate all teams power
         teams = self.get_teams()
@@ -95,11 +102,39 @@ class Tournament(models.Model):
         for team in teams:
             power += team.power
 
-        power = power / teams.count()
+        power = power / teams_count
 
         # save new power
         self.power = power
         self.save()
+
+    '''
+        Close tournament for processing and trigger player's rating recalculation
+    '''
+    def close_for_processing(self):
+        if not self.is_ready_for_processing:
+            raise Exception("Турнір не помічено як готовий до оправцювання")
+
+        if self.is_processing_closed():
+            raise Exception("Турнір вже закритий для опрацювання!")
+
+        if not self.is_finished():
+            raise Exception("Турнір ще не закінчився!")
+
+        teams = self.get_teams()
+        teams_count = self.get_teams_count()
+
+        if teams_count <= 0:
+            raise Exception("У турнірі повинна бути хоча б одна команда")
+
+        if self.power <= 0:
+            raise Exception("Сила турніру менша або дорівнює нулю. Перерахуйте її")
+
+        self.is_processing_finished = True
+        self.save()
+
+        for team in teams:
+            team.recalculate_ratings_for_players()
 
     '''
         recalculate teams rating points according to places
@@ -115,7 +150,7 @@ class Tournament(models.Model):
             raise Exception("Турнір ще не закінчився!")
 
         teams = self.get_teams()
-        teams_count = teams.count()
+        teams_count = self.get_teams_count()
 
         if teams_count <= 0:
             raise Exception("У турнірі повинна бути хоча б одна команда")
@@ -128,10 +163,22 @@ class Tournament(models.Model):
         for team in teams:
             team_points = self.calculate_raw_team_rating_points(basic_points, team.place_min)
 
-            team_points = team_points * self.rating_coefficient * self.power
+            team_points = float(team_points) * self.rating_coefficient * float(self.power)
 
             team.rating_points = team_points
             team.save()
+
+    '''
+    Return teams count
+    '''
+    def get_teams_count(self):
+        if self.total_number_of_teams and self.total_number_of_teams > 0:
+            return self.total_number_of_teams
+
+        teams = self.get_teams()
+        return teams.count()
+
+
 
     '''
         calculate basic points first team gets for this tournament
@@ -271,6 +318,10 @@ class Tournament(models.Model):
 
         return tournaments.order_by('-start_date')
 
+    def get_team_which_contains_player(self, player):
+        user_teams = Team.get_list_by_player(player=player)
+        return TeamTournamentMembership.objects.get(tournament=self, team__in=user_teams)
+
     class Meta:
         verbose_name = 'Турнір'
         verbose_name_plural = 'Турніри'
@@ -283,17 +334,24 @@ class TeamTournamentMembership(models.Model):
     place_min = models.IntegerField(_('Місце'), default=0)
     place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
     date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
-    rating_points = models.FloatField(_('Рейтингові пункти за турнір'), default=0)
-    power = models.IntegerField(_('Сила команди'), default=0)
+    rating_points = models.DecimalField(_('Рейтингові пункти за турнір'), default=0, max_digits=19, decimal_places=4)
+    power = models.DecimalField(_('Сила команди'), default=0, max_digits=19, decimal_places=4)
 
     def recalculate_power(self):
         power = 0
         for player in self.team.players.all():
-            power += player.current_rating
+            if self.tournament.is_b_tournament:
+                power += player.current_rating_b
+            else:
+                power += player.current_rating
 
         power = power / self.team.players.count()
         self.power = power
         self.save()
+
+    def recalculate_ratings_for_players(self):
+        for player in self.team.players.all():
+            player.recalculate_ratings()
 
     class Meta:
         verbose_name = 'Команди турніру'

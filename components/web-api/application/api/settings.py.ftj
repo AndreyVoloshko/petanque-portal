@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_countries',
     'django_bootstrap_carousel',
+    'silk',
     'crispy_forms',
     'floppyforms',
     'federation',
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'

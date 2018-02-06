@@ -3,17 +3,28 @@ from django.utils import timezone
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
+from federation.admin_actions.player import recalculate_ratings
 
 # Teams
 class Team(models.Model):
     default_name = "-"
 
-    name            = models.CharField(_('name'), max_length=150, blank=True, null=True)
+    name            = models.CharField(_('name'), max_length=1000, blank=True, null=True)
+    admin_name      = models.CharField("Назва в адмiн панелi", max_length=1000, blank=True, null=True)
     players         = models.ManyToManyField(Player, through='PlayerTeamMembership', verbose_name="Гравці")
     date_created    = models.DateTimeField(_('Дата створення'), default=timezone.now)
 
     def __str__(self):
-        return self.get_full_name()
+        return self.get_default_name_for_admin()
+
+    def get_default_name_for_admin(self):
+        name = self.admin_name
+        if not name:
+            name = self.get_full_name()
+            self.admin_name = name
+            self.save()
+
+        return name
 
     def get_full_name(self):
         name = self.name
@@ -26,7 +37,8 @@ class Team(models.Model):
             elif self.players.all()[0]:
                 name = self.players.all()[0].get_name()
 
-        return "%s (%s)" % (
+        return "%s: %s (%s)" % (
+            self.pk,
             name,
             ", ".join(player.get_name() for player in self.players.all()),
         )
@@ -79,10 +91,11 @@ class MembershipInline(admin.TabularInline):
         verbose_name_plural = 'Належнiсть до команд'
 
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'surname', 'licence_number', 'gender', 'arbiter_level', 'current_club', 'birth_date', 'prefred_position', )
+    list_display = ('id', 'name', 'surname', 'licence_number', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_liga',)
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     inlines = (MembershipInline,)
+    actions = [recalculate_ratings,]
 
 class TeamAdmin(admin.ModelAdmin):
     def team_get_full_name(self, obj):

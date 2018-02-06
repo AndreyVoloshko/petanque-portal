@@ -9,6 +9,7 @@ django_bootstrap_carousel
 django-crispy-forms
 django-floppyforms
 django-simple-poll
+django-silk
 
 django-dbbackup
 django-storages

@@ -46,6 +46,21 @@ recalculate_ratings.short_description = "Перерахувати рейтинг
 
 
 def finish_processing(modeladmin, request, queryset):
-    print("close")
+    if request.POST.get('post'):
+        for tournament in queryset:
+            try:
+                tournament.close_for_processing()
+                messages.success(request, "Турнір '" + str(tournament.name) + "' зараховано і зактито")
+            except Exception as e:
+                messages.error(request, "Помилка під чат зактиття турніру '" + str(tournament.name) + "': " + str(e))
+    else:
+        context = {
+            'title': "Підтвердіть зарахування і закриття турніру",
+            'message': "Натупні <b>турніри буде закрито</b>:",
+            'queryset': queryset,
+            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            'action': 'finish_processing'
+        }
+        return TemplateResponse(request, 'admin/action_confirmation.html', context)
 
 finish_processing.short_description = "Зарахувати бали та закрити турнір"

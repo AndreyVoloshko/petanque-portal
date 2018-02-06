@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
 from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
 from federation.storage import AvatarsStorage
 from django.utils.translation import ugettext_lazy as _
+import federation.config.rating as rating_config
+from federation.helpers.general import get_model
 
 
 # Players
@@ -45,7 +48,47 @@ class Player(models.Model):
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
 
-    current_rating = models.IntegerField(_('Поточні рейтингові пункти'), default=0)
+    current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
+    current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
+    current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
+
+    def recalculate_ratings(self):
+        # recalculate tournaments
+        tournaments_model = get_model('Tournament')
+        all_past_tournaments = tournaments_model.get_list_by_player(player=self, date_filter='past')
+
+        # filter last tournaments
+        last_period_days = 30 * rating_config.RATING_PLAYER_POWER_PAST_MONTHES
+        last_period = datetime.today() - timedelta(days=last_period_days)
+
+        all_past_tournaments = all_past_tournaments.filter(start_date__gte=last_period, is_processing_finished=True)
+
+        new_points_for_rating = []
+        new_points_for_rating_b = []
+        new_points_for_rating_liga = []
+
+        for tournament in all_past_tournaments:
+            player_team = tournament.get_team_which_contains_player(self)
+
+            if tournament.is_goes_to_rating:
+                new_points_for_rating.append(player_team.rating_points)
+
+            if tournament.is_b_tournament:
+                new_points_for_rating_b.append(player_team.rating_points)
+
+        top_tournaments_number = rating_config.RATING_PLAYER_POWER_TOURNAMENTS_COUNT
+
+        rating_points = sum(
+            sorted(new_points_for_rating, reverse=True)[:top_tournaments_number]
+        )
+        b_rating_points = sum(
+            sorted(new_points_for_rating_b, reverse=True)[:top_tournaments_number]
+        )
+
+        self.current_rating = rating_points
+        self.current_rating_b = b_rating_points
+        self.save()
+
 
     def __str__(self):
         return self.get_name()

@@ -27,6 +27,7 @@ exec gunicorn ${DJANGO_WSGI_MODULE}:application \
   --name $NAME \
   --bind "{{ application_host }}:{{ application_port }}" \
   --workers $NUM_WORKERS \
+  --timeout 300000 \
   --user=$USER --group=$GROUP \
   --bind=unix:$SOCKFILE \
   --log-level={{ application_loggs_level }} \
