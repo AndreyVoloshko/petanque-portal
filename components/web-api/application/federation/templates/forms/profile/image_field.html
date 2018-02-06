@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% if value.url %}
+{% if value %}
     <img class="img-thumbnail avatar" src="{{ value.url }}" />
     {% if not required %}
         <div class="form-group">
