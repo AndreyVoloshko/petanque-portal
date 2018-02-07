@@ -54,6 +54,22 @@ class Player(models.Model):
     current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
 
     '''
+    Erase all rating points for player
+    '''
+    def erase_ratings(self):
+        self.current_rating = 0
+        self.current_rating_b = 0
+        self.current_rating_liga = 0
+        self.save()
+
+    '''
+    Erase licence number
+    '''
+    def erase_licence_number(self):
+        self.licence_number = None
+        self.save()
+
+    '''
     Ranking among licensed players
     '''
     def get_ranking(self, ranking='current_rating', players_objects=None):

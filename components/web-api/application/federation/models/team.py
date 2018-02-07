@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
-from federation.admin_actions.player import recalculate_ratings
+from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number
 
 # Teams
 class Team(models.Model):
@@ -95,7 +95,7 @@ class PlayerAdmin(admin.ModelAdmin):
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     inlines = (MembershipInline,)
-    actions = [recalculate_ratings,]
+    actions = [recalculate_ratings,erase_ratings,erase_licence_number,]
 
 class TeamAdmin(admin.ModelAdmin):
     def team_get_full_name(self, obj):
