@@ -34,13 +34,13 @@ def main_page(request):
     top_players_veteran = players_objects.filter(birth_date__lte=min_age).order_by('-current_rating')[:items_limit]
 
     # tournament lists
-    future_tournaments_rating = tournaments_model.get_list(date_filter='future', type_filter='rating')
-    future_tournaments_away = tournaments_model.get_list(date_filter='future', type_filter='away')
-    future_tournaments_liga = tournaments_model.get_list(date_filter='future', type_filter='liga')
+    future_tournaments_rating = tournaments_model.get_list(date_filter='future', type_filter='rating')[:items_limit]
+    future_tournaments_away = tournaments_model.get_list(date_filter='future', type_filter='away')[:items_limit]
+    future_tournaments_liga = tournaments_model.get_list(date_filter='future', type_filter='liga')[:items_limit]
 
-    past_tournaments_rating = tournaments_model.get_list(date_filter='past', type_filter='rating')
-    past_tournaments_away = tournaments_model.get_list(date_filter='past', type_filter='away')
-    past_tournaments_liga = tournaments_model.get_list(date_filter='past', type_filter='liga')
+    past_tournaments_rating = tournaments_model.get_list(date_filter='past', type_filter='rating')[:items_limit]
+    past_tournaments_away = tournaments_model.get_list(date_filter='past', type_filter='away')[:items_limit]
+    past_tournaments_liga = tournaments_model.get_list(date_filter='past', type_filter='liga')[:items_limit]
 
     return render(request, 'main_page.html', {
         'carousel': carousel,
