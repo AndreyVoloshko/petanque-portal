@@ -6,6 +6,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
+from django.conf import settings
 
 
 # Players
@@ -51,6 +52,25 @@ class Player(models.Model):
     current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
     current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
+
+    '''
+    Ranking among licensed players
+    '''
+    def get_ranking(self, ranking='current_rating', players_objects=None):
+        if players_objects is None:
+            players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)\
+                .exclude(licence_number="")\
+                .exclude(licence_number__isnull=True)
+
+        return players_objects.filter(**{
+            ranking + "__gt" : getattr(self, ranking)
+        }).count() + 1
+
+    '''
+    Ranking among all players including non-licensed
+    '''
+    def get_ranking_among_all(self, ranking='current_rating'):
+        return self.get_ranking(ranking, Player.objects.filter(country=settings.CURRENT_COUNTRY))
 
     def recalculate_ratings(self):
         # recalculate tournaments

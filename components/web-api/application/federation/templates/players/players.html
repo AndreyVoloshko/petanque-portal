@@ -4,6 +4,6 @@
 
 {% block content %}
 
-    {% include "common/table_page.html" with page_title=page_title table_template="players/players_table.html" items=players %}
+    {% include "common/table_page.html" with page_title=page_title table_template="players/players_table.html" items=players rating_filters=rating_filters rating_field=rating_field %}
 
 {% endblock %}

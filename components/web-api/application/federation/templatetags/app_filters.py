@@ -316,3 +316,29 @@ def tournaments_css_classes(tournament):
     classes += " tournament_" + str(tournament.category)
 
     return classes
+
+
+@register.filter(name="rating_points")
+def rating_points(player, field_to_display):
+    value = getattr(player, field_to_display)
+    return str(value)
+
+
+'''
+Args[0] - rating firld to display: current rating, b, liga etc.
+Args[1] - "license" means that only licensed players participate in ranking. Other values look among all players
+'''
+@register.filter(name="rating_position")
+def rating_position(player, args):
+    args = [arg.strip() for arg in args.split(',')]
+
+    field_to_display = args[0]
+
+    if args[1] == 'licence':
+        value = player.get_ranking(field_to_display)
+    else:
+        value = player.get_ranking_among_all(field_to_display)
+
+    return "<b>" + str(value) + "</b>"
+
+

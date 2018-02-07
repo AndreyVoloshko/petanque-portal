@@ -29,6 +29,9 @@ urlpatterns = [
     url(r'^club/(?P<id>[0-9]+)$', club,            name='club'),
 
     url(r'^players/$',  players,                   name='players'),
+    url(r'^players/(?P<licence_filter>\w+)/?$', players, name='players'),
+    url(r'^players/(?P<licence_filter>\w+)/(?P<rating_filter>\w+)/?$', players, name='players'),
+
     url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
 
     url(r'^tournament/(?P<id>[0-9]+)$', tournament,        name='tournament'),

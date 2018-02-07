@@ -2,12 +2,28 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from federation.models.player import Player
 from federation.models.tournament import Tournament
+from django.conf import settings
 
-def players(request):
+
+def players(request, licence_filter=None, rating_filter=None):
+
+    players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)
+    if licence_filter == 'licence':
+        players_objects = players_objects.exclude(licence_number="").exclude(licence_number__isnull=True)
+
+    rating_field='current_rating'
+    if rating_filter == 'b':
+        rating_field = 'current_rating_b'
+    elif rating_filter == 'liga':
+        rating_field = 'current_rating_liga'
+
     return render(request, 'players/players.html', {
-        'players': Player.objects.all(),
+        'players': players_objects,
+        'rating_filters': rating_field+","+str(licence_filter),
+        'rating_field': rating_field,
         'page_title': "Гравці",
     })
+
 
 def player(request, id):
     player = get_object_or_404(Player, pk=id)

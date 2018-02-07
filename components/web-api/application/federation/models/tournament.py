@@ -267,9 +267,8 @@ class Tournament(models.Model):
             tournaments = tournaments.filter(category='away')
         elif type_filter == 'b':
             tournaments = tournaments.filter(is_b_tournament=True)
-        elif type_filter == 'non':
-            tournaments = tournaments.filter(is_goes_to_rating=False)
-            tournaments = tournaments.filter(is_b_tournament=False)
+        elif type_filter == 'liga':
+            tournaments = tournaments.filter(is_ukrainian_league=True)
         elif type_filter == 'except_b':
             tournaments = tournaments.filter(is_b_tournament=False)
 
