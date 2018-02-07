@@ -7,10 +7,10 @@
         {% render_carousel carousel %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Гравці</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Гравці</h2>
         {% include "main_page/players_list.html" with items=top_players %}
         <hr />
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Дорослі</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Дорослі</h2>
         {% include "main_page/players_list.html" with items=top_players_senior %}
     </div>
 </div>
@@ -19,29 +19,29 @@
 {% block content %}
 <div class="row">
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Чоловіки</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Чоловіки</h2>
         {% include "main_page/players_list.html" with items=top_players_men %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Жінки</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Жінки</h2>
         {% include "main_page/players_list.html" with items=top_players_women %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Ветерани</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Ветерани</h2>
         {% include "main_page/players_list.html" with items=top_players_veteran %}
     </div>
 </div>
 <div class="row">
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Espoir</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Espoir</h2>
         {% include "main_page/players_list.html" with items=top_players_espoir %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Юніори</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Юніори</h2>
         {% include "main_page/players_list.html" with items=top_players_junior %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> TOP Гравці "B"</h2>
+        <h2><i class="glyphicon glyphicon-stats"></i> TOP Гравці "B"</h2>
         {% include "main_page/players_list.html" with items=top_players_b %}
     </div>
 </div>
