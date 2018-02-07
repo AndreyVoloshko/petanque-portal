@@ -45,44 +45,35 @@
         {% include "main_page/players_list.html" with items=top_players_b %}
     </div>
 </div>
+
+<hr />
+
 <div class="row">
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> Найближчі українські турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        <h2><i class="glyphicon glyphicon-calendar"></i> Найближчі рейтингові турніри</h2>
+        {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
     </div>
     <div class="col-md-4">
         <h2><i class="glyphicon glyphicon-calendar"></i> Найближчі закордонні турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        {% include "main_page/tournaments_list.html" with items=future_tournaments_away %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> Найближчі важливі турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        <h2><i class="glyphicon glyphicon-calendar"></i> Найближчі турніри Ліги</h2>
+        {% include "main_page/tournaments_list.html" with items=future_tournaments_liga %}
     </div>
 </div>
 <div class="row">
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> Попередні українські турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        <h2><i class="glyphicon glyphicon-calendar"></i> Попередні рейтингові турніри</h2>
+        {% include "main_page/tournaments_list.html" with items=past_tournaments_rating %}
     </div>
     <div class="col-md-4">
         <h2><i class="glyphicon glyphicon-calendar"></i> Попередні закордонні турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        {% include "main_page/tournaments_list.html" with items=past_tournaments_away %}
     </div>
     <div class="col-md-4">
-        <h2><i class="glyphicon glyphicon-calendar"></i> Попередні важливі турніри</h2>
-        <ul>
-            <li>Турнір 1</li>
-        </ul>
+        <h2><i class="glyphicon glyphicon-calendar"></i> Попередні турніри Ліги</h2>
+        {% include "main_page/tournaments_list.html" with items=past_tournaments_liga %}
     </div>
 </div>
 {% endblock content %}

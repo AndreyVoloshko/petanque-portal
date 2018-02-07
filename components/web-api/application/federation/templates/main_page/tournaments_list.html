@@ -1,0 +1,12 @@
+{% load app_filters %}
+<div class="row">
+    <div class="col-md-12">
+        <ol>
+        {% for item in items %}
+            <li>
+                <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+</div>
