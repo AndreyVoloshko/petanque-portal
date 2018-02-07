@@ -332,13 +332,19 @@ Args[1] - "license" means that only licensed players participate in ranking. Oth
 def rating_position(player, args):
     args = [arg.strip() for arg in args.split(',')]
 
-    field_to_display = args[0]
+    field_to_display = 'current_rating'
+    if len(args) >= 1 and args[0] != '':
+        field_to_display = args[0]
 
-    if args[1] == 'licence':
+    if len(args) >= 2 and args[1] == 'licence':
         value = player.get_ranking(field_to_display)
     else:
         value = player.get_ranking_among_all(field_to_display)
 
     return "<b>" + str(value) + "</b>"
 
+
+@register.filter(name="teams_count")
+def teams_count(tournament):
+    return tournament.get_teams_count()
 

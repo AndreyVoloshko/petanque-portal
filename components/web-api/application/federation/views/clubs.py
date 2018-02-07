@@ -14,7 +14,12 @@ def club(request, id):
     club = get_object_or_404(Club, pk=id)
     players = Player.objects.filter(current_club=club)
 
+    rating_field = 'current_rating'
+    licence_filter = 'license'
+
     return render(request, 'clubs/club.html', {
         'club': club,
+        'rating_field': rating_field,
+        'rating_filters': rating_field + "," + str(licence_filter),
         'players': players
     })

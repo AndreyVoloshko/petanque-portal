@@ -51,7 +51,11 @@
                                 -
                             {% endif %}
                         </td>
-                        <td>Actions</td>
+                        <td align="right">
+                            <button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість команд">
+                               <span class="glyphicon glyphicon-user"></span> {{ item|teams_count }}
+                            </button>
+                        </td>
 					</tr>
 
             {% endfor %}
