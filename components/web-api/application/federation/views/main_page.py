@@ -7,11 +7,12 @@ def main_page(request):
     carousel = Carousel.objects.get(pk=1)
 
     players_limit = 5
+    main_players_limit = 10
 
     players_model = get_model('Player')
     players_objects = players_model.get_actual_players_list()
 
-    top_players = players_objects.order_by('-current_rating')[:players_limit]
+    top_players = players_objects.order_by('-current_rating')[:main_players_limit]
     top_players_b = players_objects.order_by('-current_rating_b')[:players_limit]
 
     top_players_women = players_objects.filter(gender="F").order_by('-current_rating')[:players_limit]
