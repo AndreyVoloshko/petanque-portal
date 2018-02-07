@@ -191,9 +191,6 @@ class Tournament(models.Model):
     Reopen tournament and erase all powers and rating points
     '''
     def erase_rating_points_and_powers(self):
-        if not self.is_processing_closed():
-            raise Exception("Турнір ще не закритий для опрацювання!")
-
         if not self.is_finished():
             raise Exception("Турнір ще не закінчився!")
 
