@@ -9,6 +9,9 @@
     <div class="col-md-4">
         <h2><i class="glyphicon glyphicon-calendar"></i> TOP гравці</h2>
         {% include "main_page/players_list.html" with items=top_players %}
+        <hr />
+        <h2><i class="glyphicon glyphicon-calendar"></i> TOP дорослі</h2>
+        {% include "main_page/players_list.html" with items=top_players_senior %}
     </div>
 </div>
 {% endblock header %}
