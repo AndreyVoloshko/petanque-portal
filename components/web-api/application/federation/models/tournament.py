@@ -308,7 +308,11 @@ class Tournament(models.Model):
         elif type_filter == 'except_b':
             tournaments = tournaments.filter(is_b_tournament=False)
 
-        return tournaments.order_by('-start_date')
+        order = '-start_date'
+        if date_filter == 'future':
+            order = 'start_date'
+
+        return tournaments.order_by(order)
 
     @classmethod
     def get_list_by_dates_range(self, start_date=None, end_date=None):
