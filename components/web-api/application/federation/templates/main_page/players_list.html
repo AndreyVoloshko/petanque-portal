@@ -1,0 +1,15 @@
+{% load app_filters %}
+<div class="row">
+    <div class="col-md-6">
+        <ol>
+        {% for item in items %}
+            <li>{{ item|user_profile_link|safe }}</li>
+        {% endfor %}
+        </ol>
+    </div>
+    <div class="col-md-6">
+        {% with items|first as first_player %}
+            {{ first_player|user_avatar:"big"|safe }}
+        {% endwith %}
+    </div>
+</div>

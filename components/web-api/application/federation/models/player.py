@@ -74,13 +74,21 @@ class Player(models.Model):
     '''
     def get_ranking(self, ranking='current_rating', players_objects=None):
         if players_objects is None:
-            players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)\
-                .exclude(licence_number="")\
-                .exclude(licence_number__isnull=True)
+            players_objects = self.get_actual_players_list()
 
         return players_objects.filter(**{
             ranking + "__gt" : getattr(self, ranking)
         }).count() + 1
+
+    '''
+    Actual licensed players list
+    '''
+    @classmethod
+    def get_actual_players_list(self):
+        return Player.objects.filter(country=settings.CURRENT_COUNTRY)\
+                .exclude(licence_number="")\
+                .exclude(licence_number__isnull=True)
+
 
     '''
     Ranking among all players including non-licensed
