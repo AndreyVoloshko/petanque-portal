@@ -10,7 +10,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
-from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing
+from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing
 
 
 # Tournaments
@@ -76,6 +76,9 @@ class Tournament(models.Model):
         recalculate teams power
     '''
     def recalculate_power(self):
+        if self.category == 'away':
+            raise Exception("Закордонні турніри не беруть участі у рейтингу")
+
         if not self.is_ready_for_processing:
             raise Exception("Турнір не помічено як готовий до оправцювання")
 
@@ -112,6 +115,9 @@ class Tournament(models.Model):
         Close tournament for processing and trigger player's rating recalculation
     '''
     def close_for_processing(self):
+        if self.category == 'away':
+            raise Exception("Закордонні турніри не беруть участі у рейтингу")
+
         if not self.is_ready_for_processing:
             raise Exception("Турнір не помічено як готовий до оправцювання")
 
@@ -140,6 +146,9 @@ class Tournament(models.Model):
         recalculate teams rating points according to places
     '''
     def recalculate_ratings(self):
+        if self.category == 'away':
+            raise Exception("Закордонні турніри не беруть участі у рейтингу")
+
         if not self.is_ready_for_processing:
             raise Exception("Турнір не помічено як готовий до оправцювання")
 
@@ -178,7 +187,37 @@ class Tournament(models.Model):
         teams = self.get_teams()
         return teams.count()
 
+    '''
+    Reopen tournament and erase all powers and rating points
+    '''
+    def erase_rating_points_and_powers(self):
+        if not self.is_processing_closed():
+            raise Exception("Турнір ще не закритий для опрацювання!")
 
+        if not self.is_finished():
+            raise Exception("Турнір ще не закінчився!")
+
+        teams = self.get_teams()
+        teams_count = self.get_teams_count()
+
+        if teams_count <= 0:
+            raise Exception("У турнірі повинна бути хоча б одна команда")
+
+        self.is_processing_finished = True
+        self.is_ready_for_processing = False
+        self.power = 0
+        self.save()
+
+        for team in teams:
+            team.erase_rating_points_and_powers()
+
+    '''
+    Mark tournament as ready for processing
+    '''
+    def mark_as_ready_for_processing(self):
+        self.is_processing_finished = False
+        self.is_ready_for_processing = True
+        self.save()
 
     '''
         calculate basic points first team gets for this tournament
@@ -352,6 +391,11 @@ class TeamTournamentMembership(models.Model):
         for player in self.team.players.all():
             player.recalculate_ratings()
 
+    def erase_rating_points_and_powers(self):
+        self.rating_points = 0
+        self.power = 0
+        self.save()
+
     class Meta:
         verbose_name = 'Команди турніру'
         verbose_name_plural = 'Команди турніру'
@@ -415,4 +459,9 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
         'is_processing_finished',
     ]
 
-    actions = [recalculate_power, recalculate_ratings, finish_processing]
+    actions = [recalculate_power,
+               recalculate_ratings,
+               finish_processing,
+               erase_rating_points_and_powers,
+               mark_as_ready_for_processing,
+               full_power_and_rating_processing]
