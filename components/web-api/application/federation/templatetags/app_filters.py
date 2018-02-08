@@ -370,7 +370,7 @@ def tournament_status(tournament):
     if message != "":
         return '''
             <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
-               <span class="''' + icon_class + '''"></span>
+               <span class="''' + icon_class + '''"></span> i
             </div>
         '''
     else:
