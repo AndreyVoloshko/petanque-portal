@@ -1,10 +1,10 @@
 import datetime
 from django.shortcuts import render
-from django_bootstrap_carousel.models import Carousel
+#from django_bootstrap_carousel.models import Carousel
 from federation.helpers.general import get_model
 
 def main_page(request):
-    carousel = Carousel.objects.get(pk=1)
+    #carousel = Carousel.objects.get(pk=1)
 
     items_limit = 5
 
@@ -43,7 +43,7 @@ def main_page(request):
     past_tournaments = tournaments_model.get_list(date_filter='past', type_filter='non_rating')[:items_limit]
 
     return render(request, 'main_page.html', {
-        'carousel': carousel,
+        #'carousel': carousel,
         'top_players': top_players,
         'top_players_b': top_players_b,
         'top_players_women': top_players_women,
