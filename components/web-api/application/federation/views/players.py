@@ -36,7 +36,6 @@ def player(request, id):
 
     today = datetime.datetime.now()
     current_year = today.year
-    current_year = '2017'
 
     this_year_tournaments_count = past_tournaments.filter(start_date__year=current_year).count()
     this_year_b_tournaments_count = past_b_tournaments.filter(start_date__year=current_year).count()
