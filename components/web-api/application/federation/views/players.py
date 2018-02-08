@@ -29,10 +29,10 @@ def players(request, licence_filter=None, rating_filter=None):
 def player(request, id):
     player = get_object_or_404(Player, pk=id)
 
-    past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='except_b')
-    past_b_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='b')
+    past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='except_b', custom_order='-start_date')
+    past_b_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='b', custom_order='-start_date')
     future_tournaments = Tournament.get_list_by_player(player=player, date_filter='future')
-    past_away_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='away')
+    past_away_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='away', custom_order='-start_date')
 
     today = datetime.datetime.now()
     current_year = today.year

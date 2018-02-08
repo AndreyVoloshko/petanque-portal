@@ -70,16 +70,16 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="player_past_tournaments">
-                                    {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" %}
+                                    {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="player_b_tournaments">
-                                    {% include "tournaments/player_past_tournaments.html" with items=past_b_tournaments player=player table_id="player_b_tournaments_table" %}
+                                    {% include "tournaments/player_past_tournaments.html" with items=past_b_tournaments player=player table_id="player_b_tournaments_table" initial_order="desc" %}
                                 </div>
                                <div role="tabpanel" class="tab-pane" id="player_away_tournaments">
-                                    {% include "tournaments/player_past_away_tournaments.html" with items=past_away_tournaments player=player table_id="player_away_tournaments_table" %}
+                                    {% include "tournaments/player_past_away_tournaments.html" with items=past_away_tournaments player=player table_id="player_away_tournaments_table" initial_order="desc" %}
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="player_future_tournaments">
-                                    {% include "tournaments/player_future_tournaments.html" with items=future_tournaments player=player table_id="player_future_tournaments_table" %}
+                                    {% include "tournaments/player_future_tournaments.html" with items=future_tournaments player=player table_id="player_future_tournaments_table" initial_order="asc" %}
                                 </div>
                             </div>
 
