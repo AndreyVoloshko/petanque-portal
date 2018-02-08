@@ -363,7 +363,7 @@ def tournament_status(tournament):
         icon_class = "glyphicon glyphicon glyphicon-time"
         message = "Турнір завершено, але ще не опрацьовано"
     elif tournament.is_began():
-        button_class = "label label-info"
+        button_class = "label label-danger"
         icon_class = "glyphicon glyphicon glyphicon-flash"
         message = "Турнір проходить зараз"
 
