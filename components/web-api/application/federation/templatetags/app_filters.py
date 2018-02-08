@@ -286,7 +286,7 @@ def team_place_in_tournament(tournament, player=False):
         team = tournament
 
     message = '''
-        <span class="label label-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
+        <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
     '''
 
     place = str(team.place_min)
@@ -355,15 +355,15 @@ def tournament_status(tournament):
     icon_class=""
 
     if tournament.is_processing_closed():
-        button_class = "label label-success"
+        button_class = "btn btn-success btn-xs"
         icon_class = "glyphicon glyphicon glyphicon-check"
         message = "Турнір опрацьовано"
     elif tournament.is_finished():
-        button_class = "label label-default"
+        button_class = "btn btn-default btn-xs"
         icon_class = "glyphicon glyphicon glyphicon-time"
         message = "Турнір завершено, але ще не опрацьовано"
     elif tournament.is_began():
-        button_class = "label label-danger"
+        button_class = "btn btn-danger btn-xs"
         icon_class = "glyphicon glyphicon glyphicon-flash"
         message = "Турнір проходить зараз"
 
