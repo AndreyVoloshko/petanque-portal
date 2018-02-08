@@ -6,6 +6,7 @@ from .models.team import Team, TeamAdmin, PlayerAdmin
 from .models.tournament import Tournament, ArbiterTeamTournamentAdminInline
 from .models.national_teams import National_team, National_teamAdmin
 from .models.record import Record
+from .models.document import Document
 
 # Register your models here.
 admin.site.register(City)
@@ -15,3 +16,4 @@ admin.site.register(Team, TeamAdmin)
 admin.site.register(Tournament, ArbiterTeamTournamentAdminInline)
 admin.site.register(National_team, National_teamAdmin)
 admin.site.register(Record)
+admin.site.register(Document)

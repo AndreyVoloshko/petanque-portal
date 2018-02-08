@@ -15,6 +15,7 @@ from .views.records import records
 from .views.tournaments import tournaments, tournament, tournaments_calendar
 from .views.api import tournaments_list
 from .views.polls import poll, vote, result
+from .views.documents import documents
 
 
 urlpatterns = [
@@ -49,6 +50,8 @@ urlpatterns = [
     url(r'^polls/vote/(?P<poll_pk>\d+)/$', vote, name='poll_ajax_vote'),
     url(r'^polls/poll/(?P<poll_pk>\d+)/$', poll, name='poll'),
     url(r'^polls/result/(?P<poll_pk>\d+)/$', result, name='poll_result'),
+
+    url(r'^documents/$',     documents,                name='documents'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

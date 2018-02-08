@@ -1,0 +1,62 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">{{ page_title }}</div>
+    <div class="panel-body">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            {% for document in documents %}
+            <li role="presentation" class="{% if forloop.first %}active{% endif %}">
+                <a href="#tab_{{ document.category_id }}" aria-controls="tab_{{ document.category_id }}" role="tab" data-toggle="tab">
+                    {{ document.category_name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+
+            {% for document in documents %}
+            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ document.category_id }}">
+                <table class="table table-hover table-condensed" id="table_{{ document.category_id }}">
+                    <thead>
+                        <tr>
+                            <th width="25%" align="left">Назва</th>
+                            <th width="60%" align="left">Нотатки</th>
+                            <th width="15%" align="left">Скачати</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document_file in document.documents %}
+                        <tr>
+                            <td align="left">
+                                <a target="_blank" href="{{ document_file.file.url }}">
+                                    {{ document_file.name }}
+                                </a>
+                            </td>
+                            <td align="left">{{ document_file.notes }}</td>
+                            <td align="left">
+                                <a target="_blank" href="{{ document_file.file.url }}">
+                                    <div class="btn btn-warning btn-xs">
+                                        <span class="glyphicon glyphicon-file"></span> Скачати
+                                    </div>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
