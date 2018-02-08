@@ -10,6 +10,7 @@ class Document (models.Model):
         ('regulations', 'Регламентні документи'),
         ('tournament_regulations', 'Регламенти турнірів'),
         ('for_print', 'Документи до друку'),
+        ('oficial', 'Свідоцтва та офіційні документи'),
         ('other', 'Інше'),
     )
 
