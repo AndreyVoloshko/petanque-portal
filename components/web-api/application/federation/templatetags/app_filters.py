@@ -348,3 +348,30 @@ def rating_position(player, args):
 def teams_count(tournament):
     return tournament.get_teams_count()
 
+@register.filter(name="tournament_status")
+def tournament_status(tournament):
+    button_class=""
+    message=""
+    icon_class=""
+
+    if tournament.is_processing_closed():
+        button_class = "label label-success"
+        icon_class = "glyphicon glyphicon glyphicon-check"
+        message = "Турнір опрацьовано"
+    elif tournament.is_finished():
+        button_class = "label label-default"
+        icon_class = "glyphicon glyphicon glyphicon-time"
+        message = "Турнір завершено, але ще не опрацьовано"
+    elif tournament.is_began():
+        button_class = "label label-info"
+        icon_class = "glyphicon glyphicon glyphicon-flash"
+        message = "Турнір проходить зараз"
+
+    if message != "":
+        return '''
+            <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
+               <span class="''' + icon_class + '''"></span>
+            </div>
+        '''
+    else:
+        return ''

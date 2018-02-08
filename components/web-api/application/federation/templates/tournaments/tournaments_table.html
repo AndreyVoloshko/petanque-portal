@@ -9,7 +9,7 @@
                 <th align="left">Місце</th>
                 <th align="left">Тип</th>
                 <th align="left">Сила</th>
-                <th align="left">Організатор</th>
+                <th align="left">Орг.</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -18,7 +18,7 @@
 					<tr class="{{ item|tournaments_css_classes }}">
                         <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
                         <td align="left">
-                            <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
+                            <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
                         </td>
                         <td align="left">
                             <a target="_blank" href="https://maps.google.com?q={{ item.place }}"><span class="glyphicon glyphicon glyphicon-globe"></span></a>
@@ -52,9 +52,20 @@
                             {% endif %}
                         </td>
                         <td align="right">
-                            <button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість команд">
-                               <span class="glyphicon glyphicon-user"></span> {{ item|teams_count }}
-                            </button>
+                            {{ item|tournament_status|safe }}
+
+                            <a href="{% url 'tournament' id=item.pk %}#tournament_comments">
+                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Коментарі">
+                                    <span class="glyphicon glyphicon-comment"></span>
+                                    <span class="fb-comments-count" data-href="http://{{ request.get_host }}{% url 'tournament' id=item.pk %}"></span>
+                                </button>
+                            </a>
+
+                            <a href="{% url 'tournament' id=item.pk %}">
+                                <button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість команд">
+                                   <span class="glyphicon glyphicon-user"></span> {{ item|teams_count }}
+                                </button>
+                            </a>
                         </td>
 					</tr>
 
@@ -72,9 +83,10 @@ $(document).ready(function() {
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //orginizer
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
+		            { sWidth: "5%", bSearchable: true, bSortable: true }, //orginizer
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //action
 		       ],
+		       "order": [[ 0, '{{ initial_order }}' ]],
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
                 "oLanguage": {
                         "sLengthMenu":   "Показати _MENU_ турнірів на сторінку",

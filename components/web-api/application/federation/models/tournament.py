@@ -284,7 +284,7 @@ class Tournament(models.Model):
         return TeamTournamentMembership.objects.filter(tournament=self).order_by('-power')
 
     @classmethod
-    def get_list(self, date_filter=None, type_filter=None):
+    def get_list(self, date_filter=None, type_filter=None, custom_order=None):
         now = datetime.datetime.now()
 
         tournaments = self.objects.all()
@@ -311,7 +311,10 @@ class Tournament(models.Model):
             tournaments = tournaments.filter(is_b_tournament=False)
 
         order = '-start_date'
-        if date_filter == 'future':
+        if custom_order is not None:
+            order = custom_order
+
+        elif date_filter == 'future':
             order = 'start_date'
 
         return tournaments.order_by(order)

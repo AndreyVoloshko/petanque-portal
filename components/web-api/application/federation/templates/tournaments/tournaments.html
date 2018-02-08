@@ -4,6 +4,6 @@
 
 {% block content %}
 
-    {% include "common/table_page.html" with page_title=page_title table_template="tournaments/tournaments_table.html" items=tournaments %}
+    {% include "common/table_page.html" with page_title=page_title table_template="tournaments/tournaments_table.html" initial_order=initial_order items=tournaments %}
 
 {% endblock %}

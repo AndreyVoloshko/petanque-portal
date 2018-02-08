@@ -4,8 +4,15 @@ from django.shortcuts import get_object_or_404
 
 
 def tournaments(request, date_filter=None, type_filter=None):
+    order=None
+    frontend_order="asc"
+    if date_filter == 'past':
+        order = '-start_date'
+        frontend_order = "desc"
+
     return render(request, 'tournaments/tournaments.html', {
-        'tournaments': Tournament.get_list(date_filter=date_filter, type_filter=type_filter),
+        'tournaments': Tournament.get_list(date_filter=date_filter, type_filter=type_filter, custom_order=order),
+        'initial_order': frontend_order,
         'page_title': "Турніри",
     })
 
