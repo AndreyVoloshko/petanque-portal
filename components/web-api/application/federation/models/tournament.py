@@ -299,6 +299,8 @@ class Tournament(models.Model):
 
         if type_filter == 'rating':
             tournaments = tournaments.filter(is_goes_to_rating=True)
+        if type_filter == 'non_rating':
+            tournaments = tournaments.exclude(category='away').filter(is_goes_to_rating=False)
         elif type_filter == 'away':
             tournaments = tournaments.filter(category='away')
         elif type_filter == 'b':

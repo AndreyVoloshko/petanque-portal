@@ -36,11 +36,11 @@ def main_page(request):
     # tournament lists
     future_tournaments_rating = tournaments_model.get_list(date_filter='future', type_filter='rating')[:items_limit]
     future_tournaments_away = tournaments_model.get_list(date_filter='future', type_filter='away')[:items_limit]
-    future_tournaments_liga = tournaments_model.get_list(date_filter='future', type_filter='liga')[:items_limit]
+    future_tournaments = tournaments_model.get_list(date_filter='future', type_filter='non_rating')[:items_limit]
 
     past_tournaments_rating = tournaments_model.get_list(date_filter='past', type_filter='rating')[:items_limit]
     past_tournaments_away = tournaments_model.get_list(date_filter='past', type_filter='away')[:items_limit]
-    past_tournaments_liga = tournaments_model.get_list(date_filter='past', type_filter='liga')[:items_limit]
+    past_tournaments = tournaments_model.get_list(date_filter='past', type_filter='non_rating')[:items_limit]
 
     return render(request, 'main_page.html', {
         'carousel': carousel,
@@ -55,9 +55,9 @@ def main_page(request):
 
         'future_tournaments_rating': future_tournaments_rating,
         'future_tournaments_away': future_tournaments_away,
-        'future_tournaments_liga': future_tournaments_liga,
+        'future_tournaments': future_tournaments,
         'past_tournaments_rating': past_tournaments_rating,
         'past_tournaments_away': past_tournaments_away,
-        'past_tournaments_liga': past_tournaments_liga
+        'past_tournaments': past_tournaments
 
     })
