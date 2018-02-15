@@ -27,7 +27,6 @@ class Season (models.Model):
 
         today = datetime.datetime.now()
         current_year = today.year
-        current_year = 2017
 
         players = player_model.get_actual_players_list()
 
