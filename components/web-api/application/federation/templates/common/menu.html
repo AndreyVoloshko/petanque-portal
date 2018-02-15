@@ -83,12 +83,41 @@
                     </ul>
                 </li>
             </ul>
-            <!-- <form class="navbar-form navbar-right">
+            <form class="navbar-form navbar-right">
                 <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Пошук">
+                    <div class="input-group">
+                        <input type="text" id="search" class="form-control" placeholder="Знайти гравця або клуб">
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-success">Знайти</button>
-            </form> -->
+            </form>
         </div>
     </div>
 </nav>
+
+<script>
+$( function() {
+  $('#search').autocomplete( {
+    source: function( request, response ) {
+      $.ajax( {
+        url: '{% url 'api_players_and_clubs_list' %}',
+        data: { typedText: request.term },
+        success: function( data ) {
+          response( $.map( data, function( item ) {
+            return { label: item.value, value: item.value, href: item.href }
+          }));
+        }
+      });
+
+    },
+    minLength: 3,
+    focus: function(event, ui) {
+      $(this).val(ui.item.value);
+    },
+    select: function(event, ui) {
+      window.location.href = ui.item.href;
+      return false;
+    },
+  });
+});
+</script>

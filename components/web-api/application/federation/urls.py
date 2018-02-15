@@ -13,7 +13,7 @@ from .views.players import players, player
 from .views.arbiters import arbiters
 from .views.records import records
 from .views.tournaments import tournaments, tournament, tournaments_calendar
-from .views.api import tournaments_list
+from .views.api import tournaments_list, players_and_clubs_list
 from .views.polls import poll, vote, result
 from .views.documents import documents
 from .views.national_teams import national_teams
@@ -43,6 +43,7 @@ urlpatterns = [
 
     url(r'^calendar/$', tournaments_calendar, name='tournaments_calendar'),
     url(r'^api/tournaments/list/$', tournaments_list, name='api_tournaments_list'),
+    url(r'^api/players_and_clubs/list/$', players_and_clubs_list, name='api_players_and_clubs_list'),
 
     url(r'^national_teams/$', national_teams, name='national_teams'),
     url(r'^national_teams/(?P<team_id>\w+)/?$', national_teams, name='national_teams'),

@@ -1,7 +1,10 @@
 from django.http import JsonResponse
 from django.urls import reverse
+from django.db.models import Q
 from django.utils.dateparse import parse_datetime
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
+from federation.models.player import Player
+from federation.models.club import Club
 
 def tournaments_list(request):
     start_date = parse_datetime(request.GET.get('start'))
@@ -38,5 +41,34 @@ def tournaments_list(request):
             item['end'] = tournament.end_date
 
         data.append(item)
+
+    return JsonResponse(data, safe=False)
+
+
+def players_and_clubs_list(request):
+    template = request.GET.get('typedText')
+
+    players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
+    clubs = Club.objects.filter(name__icontains=template)
+    data = []
+
+    for player in players:
+        item = {
+            'href': reverse('player', kwargs={'id':player.pk}),
+            'value': player.get_name(),
+            'disabled': 0,
+        }
+
+        data.append(item)
+
+    for club in clubs:
+        item = {
+            'href': reverse('club', kwargs={'id':club.pk}),
+            'value': club.name,
+            'disabled': 0,
+        }
+
+        data.append(item)
+
 
     return JsonResponse(data, safe=False)
