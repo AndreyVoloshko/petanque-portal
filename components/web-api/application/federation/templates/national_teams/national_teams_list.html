@@ -1,0 +1,11 @@
+{% load app_filters %}
+
+<nav class="nav-sidebar">
+    <ul class="nav tabs">
+    {% for item in items %}
+        <li class="{% if item.pk == active_item.pk %}active{% endif %}">
+            <a href="{% url 'national_teams' team_id=item.pk %}">{{ item.name }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+</nav>

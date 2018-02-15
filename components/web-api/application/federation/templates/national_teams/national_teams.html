@@ -1,0 +1,16 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-3">
+            {% include "national_teams/national_teams_list.html" with items=teams active_item=current_team %}
+        </div>
+        <div class="col-sm-9">
+            {% include "national_teams/current_team.html" with item=current_team item_players=current_team_players %}
+        </div>
+    </div>
+
+{% endblock %}

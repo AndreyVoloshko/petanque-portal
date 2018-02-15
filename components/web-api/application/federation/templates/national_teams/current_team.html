@@ -1,0 +1,62 @@
+{% load app_filters %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        {{ item.name }}
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-condensed table-striped" id="current_team">
+                <thead>
+                    <tr>
+                        <th align="center">&nbsp;</th>
+                        <th align="left">Гравець</th>
+                        <th align="left">Роль</th>
+                        <th align="left">Полиція</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in item_players %}
+                        <tr>
+                            <td align="center">
+                                {{ player.player|user_avatar:"small"|safe }}
+                            </td>
+                            <td align="left">{{ player.player|user_profile_link|safe }}</td>
+                            <td align="left">{{ player.get_position_display }}</td>
+                            <td align="left">{{ player.player.get_prefred_position_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#current_team').dataTable({
+               'aoColumns': [
+		            { sWidth: "10%", bSearchable: false, bSortable: true }, //avatar
+					{ sWidth:  "40%", bSearchable: false, bSortable: true }, // name
+		            { sWidth: "25%", bSearchable: true,  bSortable: true }, //role
+		            { sWidth: "25%", bSearchable: true, bSortable: true }, // position
+		       ],
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
+                        "sZeroRecords":  "Гравців не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ гравців",
+                        "sInfoEmpty":    "Показано 0 з 0 гравців",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ гравців)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перша",
+                            "last":       "Остання",
+                            "next":       "Наступна",
+                            "previous":   "Попередня"
+                        },
+                },
+        });
+});
+</script>
