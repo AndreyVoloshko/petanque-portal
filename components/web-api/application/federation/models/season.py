@@ -20,6 +20,15 @@ class Season (models.Model):
     rating_liga = models.DecimalField(_('Рейтингові пункти у турнірах "Ліги"'), default=0,
                                               max_digits=19, decimal_places=4)
 
+    def get_ranking(self, year, rating_field):
+        season_model = get_model('Season')
+        objects = season_model.objects.filter(year=year)
+
+        return objects.filter(**{
+            rating_field + "__gt" : getattr(self, rating_field)
+        }).count() + 1
+
+
     def save_current_ratings(self):
 
         player_model = get_model('Player')

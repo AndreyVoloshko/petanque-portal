@@ -1,0 +1,16 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-1">
+            {% include "seasons/seasons_list.html" with items=years active_item=year %}
+        </div>
+        <div class="col-sm-11">
+            {% include "seasons/players_list.html" with items=players year=year rating_filters=rating_filters rating_field=rating_field %}
+        </div>
+    </div>
+
+{% endblock %}

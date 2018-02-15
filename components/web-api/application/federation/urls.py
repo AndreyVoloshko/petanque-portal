@@ -17,6 +17,7 @@ from .views.api import tournaments_list, players_and_clubs_list
 from .views.polls import poll, vote, result
 from .views.documents import documents
 from .views.national_teams import national_teams
+from .views.seasons import seasons
 
 
 urlpatterns = [
@@ -56,6 +57,9 @@ urlpatterns = [
     url(r'^polls/result/(?P<poll_pk>\d+)/$', result, name='poll_result'),
 
     url(r'^documents/$',     documents,                name='documents'),
+
+    url(r'^season/?$', seasons, name='season'),
+    url(r'^season/(?P<year>\w+)/?$', seasons, name='season'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -129,6 +129,26 @@ def player_age_category (player):
     return ''
 
 
+@register.filter(name="season_player_age_category")
+def season_player_age_category (player, year):
+    categories = {
+        'JUN': [0,18],
+        'ESP': [19,23],
+        'SEN': [24,55],
+        'VET': [56, 1000]
+    }
+
+    today = date(int(year), 12, 31)
+    born = player.birth_date
+    age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+    for category, ages in categories.items():
+        if ages[0] <= age <= ages[1]:
+            return '<span class="label label-warning">' + category + '</span>'
+
+    return ''
+
+
 @register.filter(name="gender")
 def gender (item):
     gender = item.gender
@@ -324,8 +344,14 @@ def rating_points(player, field_to_display):
     return str(value)
 
 
+@register.filter(name="season_rating_points")
+def season_rating_points(season_item, field_to_display):
+    value = getattr(season_item, field_to_display)
+    return str(value)
+
+
 '''
-Args[0] - rating firld to display: current rating, b, liga etc.
+Args[0] - rating field to display: current rating, b, liga etc.
 Args[1] - "license" means that only licensed players participate in ranking. Other values look among all players
 '''
 @register.filter(name="rating_position")
@@ -340,6 +366,26 @@ def rating_position(player, args):
         value = player.get_ranking(field_to_display)
     else:
         value = player.get_ranking_among_all(field_to_display)
+
+    return "<b>" + str(value) + "</b>"
+
+
+'''
+Args[0] - rating field to display: current rating, b, liga etc.
+Args[1] - year which should be used
+'''
+@register.filter(name="season_rating_position")
+def season_rating_position(season_item, args):
+    args = [arg.strip() for arg in args.split(',')]
+
+    if len(args) <= 2 and args[1] == '':
+        return 'error'
+
+    field_to_display = 'rating'
+    if len(args) >= 1 and args[0] != '':
+        field_to_display = args[0]
+
+    value = season_item.get_ranking(args[1], field_to_display)
 
     return "<b>" + str(value) + "</b>"
 

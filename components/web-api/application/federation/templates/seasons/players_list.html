@@ -1,0 +1,74 @@
+{% load app_filters %}
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed table-striped" id="players">
+        <thead>
+            <tr>
+                <th align="left">Рейтинг</th>
+                <th align="left">Бали</th>
+                <th align="left">Ім'я</th>
+                <th align="left">Вікова категорія</th>
+                <th align="left">Клуб</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+					<tr class="">
+						<td align="left">
+                            {{ item|season_rating_position:rating_filters|safe }}
+                        </td>
+                        <td align="left">
+                            <span class="label label-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
+                                {{ item|season_rating_points:rating_field|safe }}
+                            </span>
+                        </td>
+						<td align="left">{{ item.player|user_profile_link|safe }}</td>
+                        <td align="left">{{ item.player|season_player_age_category:year|safe }}</td>
+                        <td align="left">
+                            {% if item.club %}
+                                <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                            {% else %}
+                                <span class="label label-danger">Без клубу</span>
+                            {%endif%}
+                        </td>
+						<td align="right">
+							<a href="{% url 'player' id=item.player.pk %}"><button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Показати гравця"><span class="glyphicon glyphicon glyphicon-user"> </span></button></a>
+						</td>
+					</tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function() {
+        $('#players').dataTable({
+               'aoColumns': [
+		            { sWidth: "10%", bSearchable: false, bSortable: true }, //rating
+					{ sWidth: "10%", bSearchable: false, bSortable: true }, // points
+		            { sWidth: "35%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "20%", bSearchable: true, bSortable: true }, //age
+		            { sWidth: "20%", bSearchable: true, bSortable: true }, //club
+					{ sWidth:  "5%", bSearchable: false, bSortable: false }, // actions
+		       ],
+		       "order": [[ 0, 'asc' ]],
+                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                "oLanguage": {
+                        "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
+                        "sZeroRecords":  "Гравців не знайдено",
+                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ гравців",
+                        "sInfoEmpty":    "Показано 0 з 0 гравців",
+                        "sInfoFiltered": "(відфільтровано з _MAX_ гравців)",
+                        "search":        "Пошук",
+                        "paginate": {
+                            "first":      "Перша",
+                            "last":       "Остання",
+                            "next":       "Наступна",
+                            "previous":   "Попередня"
+                        },
+                },
+        });
+});
+</script>
