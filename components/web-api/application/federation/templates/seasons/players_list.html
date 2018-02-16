@@ -16,7 +16,9 @@
             {% for item in items %}
 					<tr class="">
 						<td align="left">
-                            {{ item|season_rating_position:rating_filters|safe }}
+                            <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у рейтингу">
+                                {{ item|season_rating_position:rating_filters|safe }}
+                            </span>
                         </td>
                         <td align="left">
                             <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
