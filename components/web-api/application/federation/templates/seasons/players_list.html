@@ -19,7 +19,7 @@
                             {{ item|season_rating_position:rating_filters|safe }}
                         </td>
                         <td align="left">
-                            <span class="label label-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
+                            <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
                                 {{ item|season_rating_points:rating_field|safe }}
                             </span>
                         </td>
@@ -29,7 +29,7 @@
                             {% if item.club %}
                                 <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
                             {% else %}
-                                <span class="label label-danger">Без клубу</span>
+                                <span class="btn btn-xs btn-danger">Без клубу</span>
                             {%endif%}
                         </td>
 						<td align="right">

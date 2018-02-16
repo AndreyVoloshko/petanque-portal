@@ -1,0 +1,58 @@
+{% load app_filters %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        {{ page_title }}
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-condensed table-striped" id="players">
+                <thead>
+                    <tr>
+                        <th width="15%" align="left">Рік</th>
+                        <th width="15%" align="left">Позиція</th>
+                        <th width="20%" align="left">Бали</th>
+                        <th width="20%" align="left">Вікова категорія</th>
+                        <th width="30%" align="left">Клуб</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in player_seasons %}
+                            <tr class="">
+                                <td align="left">
+                                    {{ item.year|safe }}
+                                </td>
+                                <td align="left">
+                                    {% with rating_field|comma_concat:item.year as rating_filters %}
+                                        <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у рейтингу">
+                                            {{ item|season_rating_position:rating_filters|safe }}
+                                        </span>
+                                        /
+                                        <span class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Усього гравців">
+                                            {{ item|players_in_seasons:item.year|safe }}
+                                        </span>
+                                        <a href="{% url 'season' year=item.year %}">
+                                            <i class="glyphicon glyphicon-link"></i>
+                                        </a>
+                                    {% endwith %}
+                                </td>
+                                <td align="left">
+                                    <span class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
+                                        {{ item|season_rating_points:rating_field|safe }}
+                                    </span>
+                                </td>
+                                <td align="left">{{ item.player|season_player_age_category:item.year|safe }}</td>
+                                <td align="left">
+                                    {% if item.club %}
+                                        <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                                    {% else %}
+                                        <span class="btn btn-xs btn-danger">Без клубу</span>
+                                    {%endif%}
+                                </td>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

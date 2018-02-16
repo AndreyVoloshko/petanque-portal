@@ -8,8 +8,14 @@ from federation.models.tournament import Tournament, ArbiterTournamentMembership
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from datetime import date
 from django.utils import formats
+from federation.helpers.general import get_model
 
 register = template.Library()
+
+
+@register.filter(name='comma_concat')
+def comma_concat(str1, str2):
+    return str(str1)+","+str(str2)
 
 
 @register.filter(name='user_avatar')
@@ -124,7 +130,7 @@ def player_age_category (player):
 
     for category, ages in categories.items():
         if ages[0] <= age <= ages[1]:
-            return '<span class="label label-warning">' + category + '</span>'
+            return '<span class="btn btn-warning btn-xs">' + category + '</span>'
 
     return ''
 
@@ -144,7 +150,7 @@ def season_player_age_category (player, year):
 
     for category, ages in categories.items():
         if ages[0] <= age <= ages[1]:
-            return '<span class="label label-warning">' + category + '</span>'
+            return '<span class="btn btn-warning btn-xs">' + category + '</span>'
 
     return ''
 
@@ -156,14 +162,14 @@ def gender (item):
     gender_class = 'primary'
     if gender == 'M':
         gender_class = 'success'
-    return '<span class="label label-' + gender_class + '">' + gender + '</span>'
+    return '<span class="btn btn-' + gender_class + ' btn-xs">' + gender + '</span>'
 
 
 @register.filter(name="licence_number")
 def licence_number(item):
     if not item.licence_number:
-        return '<span class="label label-danger">Без ліцензії</span>'
-    return '<span class="label label-info">' + item.licence_number + '</span>'
+        return '<span class="btn btn-danger btn-xs">Без ліцензії</span>'
+    return '<span class="btn btn-xs btn-info">' + item.licence_number + '</span>'
 
 
 @register.filter(name="is_active_player_class")
@@ -181,8 +187,8 @@ def arbiter_label (player):
     return '''
         <div class="row social-field">
             <div class="col-sm-12">
-                Арбітр рівня <a target="_blank" href="/arbiters/"><i class="glyphicon glyphicon-link"></i></a>:<br />
-                <div class="label label-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
+                Арбітр рівня <a target="_blank" href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                <div class="btn btn-xs btn-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
             </div>
         </div>    
     '''
@@ -201,7 +207,7 @@ def player_national_teams(player):
             Збірні команди України <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
 
     for membership in memberships:
-        html += '''<div class="label label-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
+        html += '''<div class="btn btn-xs btn-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
 
         html += '''</div><br />'''
 
@@ -223,7 +229,7 @@ def player_records(player):
             Рекорди України <a target="_blank" href="/records/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
 
     for record in records:
-        html += '''<div class="label label-warning label-list-record">''' + record.name + ''': ''' + record.description + '''</div><br />'''
+        html += '''<div class="btn btn-xs btn-warning label-list-record">''' + record.name + ''': ''' + record.description + '''</div><br />'''
 
     html += '</div></div>'
 
@@ -387,7 +393,14 @@ def season_rating_position(season_item, args):
 
     value = season_item.get_ranking(args[1], field_to_display)
 
-    return "<b>" + str(value) + "</b>"
+    return str(value)
+
+
+@register.filter(name="players_in_seasons")
+def players_in_seasons(season, year):
+    seasons_model = get_model('Season')
+    players_count = seasons_model.objects.filter(year=year).count()
+    return players_count
 
 
 @register.filter(name="teams_count")

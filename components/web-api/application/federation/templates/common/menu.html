@@ -72,15 +72,15 @@
                        aria-expanded="false"><i class="glyphicon glyphicon-off"></i></a>
                     <ul class="dropdown-menu">
                         {% if user.is_authenticated %}
-                            <li><a href="/profile/"><i class="glyphicon glyphicon-user"></i> Профіль</a></li>
-                            <li><a href="/logout/"><i class="glyphicon glyphicon-log-out"></i> Вийти</a></li>
+                            <li><a href="{% url 'profile' %}"><i class="glyphicon glyphicon-user"></i> Профіль</a></li>
+                            <li><a href="{% url 'logout' %}"><i class="glyphicon glyphicon-log-out"></i> Вийти</a></li>
                             {% if user.is_superuser %}
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">Додаткові можливості</li>
-                            <li><a href="/admin/"><i class="glyphicon glyphicon-globe"></i> Адмін панель</a></li>
+                            <li><a href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-globe"></i> Адмін панель</a></li>
                             {% endif %}
                         {% else %}
-                            <li><a href="/login"><i class="glyphicon glyphicon-log-in"></i> Увійти</a></li>
+                            <li><a href="{% url 'login' %}"><i class="glyphicon glyphicon-log-in"></i> Увійти</a></li>
                         {% endif %}
                     </ul>
                 </li>

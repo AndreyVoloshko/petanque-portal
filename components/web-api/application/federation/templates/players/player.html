@@ -88,7 +88,7 @@
 
                 </div>
                 <div role="tabpanel" class="tab-pane" id="player_seasons">
-                    Сезони
+                    {% include "players/player_seasons.html" with player_seasons=player_seasons rating_field=season_rating_field page_title="Рейтинг за минулі сезони" %}
                 </div>
             </div>
 

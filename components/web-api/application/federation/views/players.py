@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from federation.models.player import Player
 from federation.models.tournament import Tournament
 from django.conf import settings
+from federation.helpers.general import get_model
 
 
 def players(request, licence_filter=None, rating_filter=None):
@@ -51,11 +52,17 @@ def player(request, id):
         'this_year_away_tournaments_count': this_year_away_tournaments_count
     }
 
+    season_rating_field = "rating"
+    seasons_model = get_model('Season')
+    player_seasons = seasons_model.objects.filter(player=player).order_by('-year')
+
     return render(request, 'players/player.html', {
         'player': player,
         'player_summary_info': player_summary_info,
         'past_tournaments': past_tournaments,
         'future_tournaments': future_tournaments,
         'past_b_tournaments': past_b_tournaments,
-        'past_away_tournaments': past_away_tournaments
+        'past_away_tournaments': past_away_tournaments,
+        'season_rating_field': season_rating_field,
+        'player_seasons': player_seasons
     })
