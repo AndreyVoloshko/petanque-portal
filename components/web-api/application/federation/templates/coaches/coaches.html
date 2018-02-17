@@ -9,10 +9,10 @@
         <nav class="nav-sidebar">
             <ul class="nav tabs">
                 <li class="dropdown-header sidebar-chooser-header">Категорія</li>
-            {% for arbiter in arbiters %}
+            {% for coach in coaches %}
                 <li role="presentation" class="{% if forloop.first %}active{% endif %}">
-                    <a href="#tab_{{ arbiter.category_id }}" aria-controls="tab_{{ arbiter.category_id }}" role="tab" data-toggle="tab">
-                        {{ arbiter.category_name }}
+                    <a href="#tab_{{ coach.category_id }}" aria-controls="tab_{{ coach.category_id }}" role="tab" data-toggle="tab">
+                        {{ coach.category_name }}
                     </a>
                 </li>
             {% endfor %}
@@ -23,9 +23,9 @@
         <!-- Tab panes -->
         <div class="tab-content">
 
-            {% for arbiter in arbiters %}
-            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ arbiter.category_id }}">
-                <table class="table table-hover table-condensed" id="table_{{ arbiter.category_id }}">
+            {% for coach in coaches %}
+            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ coach.category_id }}">
+                <table class="table table-hover table-condensed" id="table_{{ coach.category_id }}">
                     <thead>
                         <tr>
                             <th width="10%" align="left">&nbsp;</th>
@@ -37,16 +37,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for arbiter_player in arbiter.players %}
+                        {% for coach_player in coach.players %}
                         <tr>
-                            <td align="center">{{ arbiter_player|user_avatar:"small"|safe }}</td>
-                            <td align="left">{{ arbiter_player|user_profile_link|safe }}</td>
-    						<td align="left">{{ arbiter_player|licence_number|safe }}</td>
-                            <td align="left">{{ arbiter_player|gender|safe }}</td>
-                            <td align="left">{{ arbiter_player|player_age_category|safe }}</td>
+                            <td align="center">{{ coach_player|user_avatar:"small"|safe }}</td>
+                            <td align="left">{{ coach_player|user_profile_link|safe }}</td>
+    						<td align="left">{{ coach_player|licence_number|safe }}</td>
+                            <td align="left">{{ coach_player|gender|safe }}</td>
+                            <td align="left">{{ coach_player|player_age_category|safe }}</td>
                             <td align="left">
-                            {% if arbiter_player.current_club %}
-                                <a href="{% url 'club' id=arbiter_player.current_club.pk %}">{{ arbiter_player.current_club.short_name }}</a>
+                            {% if coach_player.current_club %}
+                                <a href="{% url 'club' id=coach_player.current_club.pk %}">{{ coach_player.current_club.short_name }}</a>
                             {% else %}
                                 <span class="btn btn-xs btn-danger">Без клубу</span>
                             {%endif%}

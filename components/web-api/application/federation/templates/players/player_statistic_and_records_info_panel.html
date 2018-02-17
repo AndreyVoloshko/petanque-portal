@@ -71,9 +71,10 @@
                 </div>
             </div> -->
 
-            <div class="col-sm-6">
-                {{ item|arbiter_label|safe }}
+            <div class="col-sm-12">
                 {{ item|player_national_teams|safe }}
+                {{ item|coach_label|safe }}
+                {{ item|arbiter_label|safe }}
                 {{ item|player_records|safe }}
             </div>
 

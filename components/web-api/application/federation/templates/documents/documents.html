@@ -4,12 +4,11 @@
 
 {% block content %}
 
-<div class="panel panel-primary">
-    <div class="panel-heading">{{ page_title }}</div>
-    <div class="panel-body">
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
+<div class="row">
+    <div class="col-sm-3">
+        <nav class="nav-sidebar">
+            <ul class="nav tabs">
+                <li class="dropdown-header sidebar-chooser-header">Категорія</li>
             {% for document in documents %}
             <li role="presentation" class="{% if forloop.first %}active{% endif %}">
                 <a href="#tab_{{ document.category_id }}" aria-controls="tab_{{ document.category_id }}" role="tab" data-toggle="tab">
@@ -17,8 +16,10 @@
                 </a>
             </li>
             {% endfor %}
-        </ul>
-
+            </ul>
+        </nav>
+    </div>
+    <div class="col-sm-9">
         <!-- Tab panes -->
         <div class="tab-content">
 

@@ -185,12 +185,30 @@ def arbiter_label (player):
         return ''
 
     return '''
+    <div class="col-sm-2">
         <div class="row social-field">
             <div class="col-sm-12">
-                Арбітр рівня <a target="_blank" href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                Арбітр <a target="_blank" href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
                 <div class="btn btn-xs btn-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
             </div>
         </div>    
+    </div>
+    '''
+
+@register.filter(name="coach_label")
+def coach_label (player):
+    if not player.coach_level :
+        return ''
+
+    return '''
+    <div class="col-sm-2">
+        <div class="row social-field">
+            <div class="col-sm-12">
+                Тренер <a target="_blank" href="{% url 'coaches' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                <div class="btn btn-xs btn-info label-list-record">''' + player.get_coach_level_display() + '''</div>
+            </div>
+        </div>  
+    </div>  
     '''
 
 
@@ -202,16 +220,17 @@ def player_national_teams(player):
         return ''
 
     html = '''
+    <div class="col-sm-4">
         <div class="row social-field">
             <div class="col-sm-12">
-            Збірні команди України <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+            Національні збірні <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
 
     for membership in memberships:
         html += '''<div class="btn btn-xs btn-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
 
         html += '''</div><br />'''
 
-    html += '</div></div>'
+    html += '</div></div></div>'
 
     return html
 
@@ -224,6 +243,7 @@ def player_records(player):
         return ''
 
     html = '''
+    <div class="col-sm-4">
         <div class="row social-field">
             <div class="col-sm-12">
             Рекорди України <a target="_blank" href="/records/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
@@ -231,7 +251,7 @@ def player_records(player):
     for record in records:
         html += '''<div class="btn btn-xs btn-warning label-list-record">''' + record.name + ''': ''' + record.description + '''</div><br />'''
 
-    html += '</div></div>'
+    html += '</div></div></div>'
 
     return html
 

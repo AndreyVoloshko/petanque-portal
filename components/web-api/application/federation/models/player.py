@@ -24,6 +24,12 @@ class Player(models.Model):
         ('fipjp', 'Міжнародний'),
     )
 
+    COACH_CATEGORY = (
+        ('second', 'Друга категорія'),
+        ('first', 'Перша категорія'),
+        ('highest', 'Вища категорія'),
+    )
+
     POSITIONS = (
         ('point', 'Поінтер'),
         ('middle', 'Мідл'),
@@ -48,6 +54,7 @@ class Player(models.Model):
     website  = models.CharField(_('website'), max_length=500, blank=True, null=True)
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
+    coach_level = models.CharField(_('Тренерська категорія'), max_length=20, choices=COACH_CATEGORY, blank=True, null=True)
 
     current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)

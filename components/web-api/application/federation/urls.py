@@ -11,6 +11,7 @@ from .views.profile import profile
 from .views.clubs import clubs, club
 from .views.players import players, player
 from .views.arbiters import arbiters
+from .views.coaches import coaches
 from .views.records import records
 from .views.tournaments import tournaments, tournament, tournaments_calendar
 from .views.api import tournaments_list, players_and_clubs_list
@@ -50,6 +51,7 @@ urlpatterns = [
     url(r'^national_teams/(?P<team_id>\w+)/?$', national_teams, name='national_teams'),
 
     url(r'^arbiters/$',     arbiters,              name='arbiters'),
+    url(r'^coaches/$',      coaches,               name='coaches'),
     url(r'^records/$',     records,                name='records'),
 
     url(r'^polls/vote/(?P<poll_pk>\d+)/$', vote, name='poll_ajax_vote'),
