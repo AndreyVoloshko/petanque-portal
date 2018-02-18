@@ -78,8 +78,12 @@ def user_avatar(user, additional_class=''):
     else:
         url = settings.MEDIA_ROOT + str(user.avatar)
 
+    user_id = ''
+    if hasattr(user, 'id'):
+        user_id = user.id
+
     return '''
-        <a href="/player/''' + str(user.id) + '''">
+        <a href="/player/''' + str(user_id) + '''">
             <div class="logo-container user ''' + additional_class + '''">
                 <img src=''' + url + ''' class="img-rounded" />
             </div>
