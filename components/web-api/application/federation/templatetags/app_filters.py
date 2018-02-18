@@ -71,10 +71,10 @@ def club_logo(club, additional_class=''):
 
 @register.filter(name='user_avatar')
 def user_avatar(user, additional_class=''):
-    url = settings.MEDIA_ROOT + str(user.avatar)
-
     if not user.avatar:
         url = settings.STATIC_URL + 'default.png'
+    else:
+        url = settings.MEDIA_ROOT + str(user.avatar)
 
     return '''
         <a href="/player/''' + str(user.id) + '''">
