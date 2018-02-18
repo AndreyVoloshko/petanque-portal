@@ -73,7 +73,7 @@ def club_logo(club, additional_class=''):
 def user_avatar(user, additional_class=''):
     if not hasattr(user, 'avatar'):
         url = settings.STATIC_URL + 'default.png'
-    elif not user.avarat:
+    elif not user.avatar:
         url = settings.STATIC_URL + 'default.png'
     else:
         url = settings.MEDIA_ROOT + str(user.avatar)
