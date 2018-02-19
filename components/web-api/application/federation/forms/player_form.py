@@ -122,7 +122,7 @@ class PlayerForm(forms.ModelForm):
             ),
             HTML('<hr />'),
             Div(
-                Submit('submit', 'Зберігти', css_class='btn btn-success'),
+                Submit('submit', 'Зберегти', css_class='btn btn-success'),
                 css_class="col-md-12 text-center form-group"
             )
         )
