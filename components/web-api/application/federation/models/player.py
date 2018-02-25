@@ -17,11 +17,11 @@ class Player(models.Model):
     )
 
     ARBITER_CATEGORY = (
-        ('club', 'Клубний'),
-        ('regional', 'Регіональний'),
+        ('club', 'Друга категорія'),
+        ('regional', 'Перша категорія'),
         ('national', 'Національний'),
-        ('euro', 'Європейський'),
-        ('fipjp', 'Міжнародний'),
+        ('euro', 'Арбітр CEP (Європейський)'),
+        ('fipjp', 'Арбітр FIPJP (Міжнародний)'),
     )
 
     COACH_CATEGORY = (
