@@ -27,6 +27,12 @@ services:
     volumes:
      - {{ db_container_data_volume_name }}:/var/lib/postgresql/data
 
+  {{ adminer_container_name }}:
+    image: adminer
+    restart: always
+    ports:
+      - {{ adminer_container_external_port }}:{{ adminer_container_internal_port }}
+
 volumes:
   {{ db_container_data_volume_name }}:
   {{ uploaded_files_volume_name }}:
