@@ -1,0 +1,33 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Реєстрація команди</div>
+                <div class="panel-body" style="min-height: auto;">
+                    <div class="text-center">
+                        <b>Турнір</b>: <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
+                    </div>
+
+                    {% if is_registration_opened %}
+                        {% crispy team_registration_form %}
+                    {% else %}
+                        <div class="text-center">
+                            <hr />
+                            <p>Реєстрацію на турнір закрито.</p>
+                            <hr />
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
+        </div>
+    </div>
+{% endblock %}

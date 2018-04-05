@@ -1,6 +1,6 @@
 {% load app_filters %}
 
-<div class="col-sm-7">
+<div class="{% if full_width == "true" %}col-sm-12{% else %}col-sm-7{% endif %}">
     <div class="panel panel-primary">
         <div class="panel-heading">
             Турнір: {{ tournament.name }}

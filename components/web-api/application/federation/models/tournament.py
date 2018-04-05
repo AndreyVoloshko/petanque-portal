@@ -49,7 +49,7 @@ class Tournament(models.Model):
     start_time = models.TimeField(_('Час початку'), default=timezone.now)
     end_date = models.DateField(_('Дата закінчення'), blank=True, null=True)
 
-    date_registration_stop = models.DateTimeField(_('Дата закінчення реєстрації'), default=timezone.now)
+    date_registration_stop = models.DateTimeField(_('Дата закінчення реєстрації'), blank=True, null=True)
     number_of_players_in_team_min = models.IntegerField(_('Мінімальна кількість гравців в команді'), default=1)
     number_of_players_in_team_max = models.IntegerField(_('Кількість гравців в команді (з запасними)'), default=1)
     format = models.CharField(_('Формат'), max_length=5, choices=FORMAT_CHOICES)
@@ -71,6 +71,12 @@ class Tournament(models.Model):
 
     def get_name(self):
         return self.name
+
+    def get_max_players_per_team (self):
+        if self.number_of_players_in_team_max:
+            return self.number_of_players_in_team_max
+        else:
+            return self.number_of_players_in_team_min
 
     '''
         recalculate teams power
@@ -265,6 +271,13 @@ class Tournament(models.Model):
     # is tournament closed for processing
     def is_processing_closed(self):
         return self.is_processing_finished
+
+    # is tournament closed for processing
+    def is_registration_opened(self):
+        if self.date_registration_stop:
+            return self.date_registration_stop >= timezone.now()
+        else:
+            return False
 
     # is tournament already began
     def is_began(self):

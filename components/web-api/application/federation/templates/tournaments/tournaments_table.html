@@ -52,6 +52,7 @@
                             {% endif %}
                         </td>
                         <td align="right">
+                            {{ item|tournament_registration|safe }}
                             {{ item|tournament_status|safe }}
 
                             <a href="{% url 'tournament' id=item.pk %}#tournament_comments">

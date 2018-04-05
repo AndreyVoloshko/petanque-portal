@@ -18,6 +18,7 @@
                             <span class="glyphicon glyphicon-star"></span>&nbsp;Команди
                         </a>
                     </li>
+                    {{ tournament|tournament_registration_tab|safe }}
                     <li role="presentation">
                         <a href="#tournament_comments" aria-controls="tournament_comments" role="tab" data-toggle="tab">
                             <span class="glyphicon glyphicon-align-left"></span>&nbsp;Коментарі <span class="badge badge-primary"><span class="fb-comments-count" data-href="http://{{ request.get_host }}{% url 'tournament' id=tournament.pk %}"></span></span>

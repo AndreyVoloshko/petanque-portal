@@ -8,6 +8,7 @@ from federation.models.tournament import Tournament, ArbiterTournamentMembership
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from datetime import date
 from django.utils import formats
+from django.urls import reverse
 from federation.helpers.general import get_model
 
 register = template.Library()
@@ -33,6 +34,11 @@ def user_field(value):
 @register.filter(name='format_date')
 def format_date(value):
     return value.strftime('%d.%m.%Y')
+
+
+@register.filter(name='format_datetime')
+def format_datetime(value):
+    return value.strftime('%d.%m.%Y %H:%M')
 
 
 @register.filter(name='get_year')
@@ -194,7 +200,7 @@ def arbiter_label (player):
     <div class="col-sm-2">
         <div class="row social-field">
             <div class="col-sm-12">
-                Арбітр <a target="_blank" href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                Арбітр <a target="_blank" href="''' + reverse('arbiters') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />
                 <div class="btn btn-xs btn-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
             </div>
         </div>    
@@ -210,7 +216,7 @@ def coach_label (player):
     <div class="col-sm-2">
         <div class="row social-field">
             <div class="col-sm-12">
-                Тренер <a target="_blank" href="{% url 'coaches' %}"><i class="glyphicon glyphicon-link"></i></a>:<br />
+                Тренер <a target="_blank" href="''' + reverse('coaches') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />
                 <div class="btn btn-xs btn-info label-list-record">''' + player.get_coach_level_display() + '''</div>
             </div>
         </div>  
@@ -229,7 +235,7 @@ def player_national_teams(player):
     <div class="col-sm-4">
         <div class="row social-field">
             <div class="col-sm-12">
-            Національні збірні <a target="_blank" href="/national_teams/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+            Національні збірні <a target="_blank" href="''' + reverse('national_teams') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
 
     for membership in memberships:
         html += '''<div class="btn btn-xs btn-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
@@ -265,6 +271,9 @@ def player_records(player):
 def tournament_field (item, field):
     value = getattr(item, field)
     value_type = Tournament._meta.get_field(field).get_internal_type()
+
+    if not value:
+        return ''
 
     if value_type == 'DateTimeField':
         value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
@@ -441,15 +450,15 @@ def tournament_status(tournament):
 
     if tournament.is_processing_closed():
         button_class = "btn btn-success btn-xs"
-        icon_class = "glyphicon glyphicon glyphicon-check"
+        icon_class = "glyphicon glyphicon-check"
         message = "Турнір опрацьовано"
     elif tournament.is_finished():
         button_class = "btn btn-default btn-xs"
-        icon_class = "glyphicon glyphicon glyphicon-time"
+        icon_class = "glyphicon glyphicon-time"
         message = "Турнір завершено, але ще не опрацьовано"
     elif tournament.is_began():
         button_class = "btn btn-danger btn-xs"
-        icon_class = "glyphicon glyphicon glyphicon-flash"
+        icon_class = "glyphicon glyphicon-flash"
         message = "Турнір проходить зараз"
 
     if message != "":
@@ -457,6 +466,42 @@ def tournament_status(tournament):
             <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
                <span class="''' + icon_class + '''"></span> i
             </div>
+        '''
+    else:
+        return ''
+
+
+@register.filter(name="tournament_registration")
+def tournament_registration(tournament):
+    button_class=""
+    message=""
+    icon_class=""
+
+    if tournament.is_registration_opened():
+        button_class = "btn btn-success btn-xs"
+        icon_class = "glyphicon glyphicon-plus"
+        message = "Зареєструватись на турнір можна до " + str(format_datetime(tournament.date_registration_stop))
+
+    if message != "":
+        return '''
+            <a href="''' + reverse('register_team', args=[tournament.pk]) + '''">
+                <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
+                   <span class="''' + icon_class + '''"></span>&zwnj;
+                </div>
+            </a>
+        '''
+    else:
+        return ''
+
+
+@register.filter(name="tournament_registration_tab")
+def tournament_registration_tab(tournament):
+    if tournament.is_registration_opened():
+        return '''<li role="presentation">
+                        <a class="force-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Зареєструвати команду
+                        </a>
+                    </li>
         '''
     else:
         return ''
