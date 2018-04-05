@@ -30,4 +30,37 @@
             {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
         </div>
     </div>
+
+    <script>
+    $( function() {
+      $('.player-autocomplete').autocomplete( {
+        source: function( request, response ) {
+          $.ajax( {
+            url: '{% url 'api_players_list' %}',
+            data: { typedText: request.term },
+            success: function( data ) {
+              response( $.map( data, function( item ) {
+                return { label: item.label, value: item.value }
+              }));
+            }
+          });
+
+        },
+        minLength: 3,
+        focus: function(event, ui) {
+          $(event.target).val(ui.item.label);
+          return false;
+        },
+        select: function(event, ui) {
+           var el = $(event.target);
+           var player_index = el.data('player_index');
+
+           $('input[name="player_ids['+player_index+']"]').val(ui.item.value);
+           el.val(ui.item.label);
+
+           return false;
+        },
+      });
+    });
+    </script>
 {% endblock %}

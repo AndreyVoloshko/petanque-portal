@@ -45,11 +45,12 @@ def tournaments_list(request):
     return JsonResponse(data, safe=False)
 
 
-def players_and_clubs_list(request):
+def players_clubs_and_tournaments_list(request):
     template = request.GET.get('typedText')
 
     players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
     clubs = Club.objects.filter(name__icontains=template)
+    tournaments = Tournament.objects.filter(name__icontains=template)
     data = []
 
     for player in players:
@@ -70,5 +71,31 @@ def players_and_clubs_list(request):
 
         data.append(item)
 
+    for tournament in tournaments:
+        item = {
+            'href': reverse('tournament', kwargs={'id':tournament.pk}),
+            'value': tournament.name,
+            'disabled': 0,
+        }
+
+        data.append(item)
+
+    return JsonResponse(data, safe=False)
+
+
+def players_list(request):
+    template = request.GET.get('typedText')
+
+    players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
+    data = []
+
+    for player in players:
+        item = {
+            'value': player.pk,
+            'label': player.get_name(),
+            'disabled': 0,
+        }
+
+        data.append(item)
 
     return JsonResponse(data, safe=False)

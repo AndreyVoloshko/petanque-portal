@@ -89,7 +89,7 @@
             <form class="navbar-form navbar-right">
                 <div class="form-group">
                     <div class="input-group">
-                        <input type="text" id="search" class="form-control" placeholder="Знайти гравця або клуб">
+                        <input type="text" id="search" class="form-control" title="Знайти гравця, клуб або турнір" placeholder="Знайти гравця, клуб або турнір">
                         <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@ $( function() {
   $('#search').autocomplete( {
     source: function( request, response ) {
       $.ajax( {
-        url: '{% url 'api_players_and_clubs_list' %}',
+        url: '{% url 'api_players_clubs_and_tournaments_list' %}',
         data: { typedText: request.term },
         success: function( data ) {
           response( $.map( data, function( item ) {

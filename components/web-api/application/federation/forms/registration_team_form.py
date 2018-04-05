@@ -19,9 +19,14 @@ class RegistrationTeamForm(forms.Form):
             elif i > self.tournament.number_of_players_in_team_min:
                 extra_label = " (Резерв)"
 
-            self.fields['player[%d]' % i] = forms.CharField(
-                widget=forms.TextInput(attrs={'class': 'player-autocomplete'}),
+            self.fields['players[%d]' % i] = forms.CharField(
+                widget=forms.TextInput(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
                 label="Гравець " + str(i) + extra_label,
+                required=(i <= self.tournament.number_of_players_in_team_min),
+            )
+
+            self.fields['player_ids[%d]' % i] = forms.CharField(
+                widget=forms.HiddenInput(),
                 required=(i <= self.tournament.number_of_players_in_team_min)
             )
 
@@ -41,6 +46,8 @@ class RegistrationTeamForm(forms.Form):
 
         for i in range(self.tournament.get_max_players_per_team(), 0, -1):
             self.helper.layout.insert(1, Div(
-                'player[%d]' % i,
+                'players[%d]' % i,
                 css_class="col-md-12"
             ))
+
+            self.helper.layout.insert(1, 'player_ids[%d]' % i)
