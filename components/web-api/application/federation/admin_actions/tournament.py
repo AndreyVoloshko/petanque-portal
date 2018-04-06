@@ -134,3 +134,24 @@ def full_power_and_rating_processing(modeladmin, request, queryset):
         return TemplateResponse(request, 'admin/action_confirmation.html', context)
 
 full_power_and_rating_processing.short_description = "Зробити повний цикл перерахування сил та балів"
+
+
+def erase_registration_dates(modeladmin, request, queryset):
+    if request.POST.get('post'):
+        for tournament in queryset:
+            try:
+                tournament.erase_registration_date()
+                messages.success(request, "Дату реєстрації для Турніру '" + str(tournament.name) + "' обнулено")
+            except Exception as e:
+                messages.error(request, "Помилка під час обнулення дати реєстрації турніру '" + str(tournament.name) + "': " + str(e))
+    else:
+        context = {
+            'title': "Підтвердіть обнулення дати реєстрації",
+            'message': "Для наступних <b>турнірів дату реєстрації буде обнулено</b>:",
+            'queryset': queryset,
+            'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            'action': 'erase_registration_dates'
+        }
+        return TemplateResponse(request, 'admin/action_confirmation.html', context)
+
+erase_registration_dates.short_description = "Обнулити дату реєстрації"

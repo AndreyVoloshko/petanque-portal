@@ -10,7 +10,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
-from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing
+from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
 
 
 # Tournaments
@@ -213,6 +213,11 @@ class Tournament(models.Model):
 
         for team in teams:
             team.erase_rating_points_and_powers()
+
+    def erase_registration_date(self):
+        self.date_registration_stop = None
+        self.save()
+
 
     '''
     Mark tournament as ready for processing
@@ -483,4 +488,5 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
                finish_processing,
                erase_rating_points_and_powers,
                mark_as_ready_for_processing,
-               full_power_and_rating_processing]
+               full_power_and_rating_processing,
+               erase_registration_dates]

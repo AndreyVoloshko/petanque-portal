@@ -9,93 +9,101 @@ from federation.models.club import Club
 def tournaments_list(request):
     start_date = parse_datetime(request.GET.get('start'))
     end_date = parse_datetime(request.GET.get('end'))
-
-    tournaments = Tournament.get_list_by_dates_range(start_date, end_date)
     data = []
 
-    for tournament in tournaments:
-        classes = "tournament "
+    if start_date and end_date:
 
-        if tournament.is_goes_to_rating:
-            classes += "tournament_goes_to_rating "
+        tournaments = Tournament.get_list_by_dates_range(start_date, end_date)
 
-        if tournament.is_ukrainian_league:
-            classes += "tournament_ukrainian_league "
+        for tournament in tournaments:
+            classes = "tournament "
 
-        if tournament.is_b_tournament:
-            classes += "tournament_b "
+            if tournament.is_goes_to_rating:
+                classes += "tournament_goes_to_rating "
 
-        classes += " tournament_" + str(tournament.category)
+            if tournament.is_ukrainian_league:
+                classes += "tournament_ukrainian_league "
 
-        item = {
-            'id': tournament.pk,
-            'url': reverse('tournament', kwargs={'id':tournament.pk}),
-            'title': tournament.name,
-            'start': tournament.start_date,
-            'end': tournament.start_date,
-            'className': classes,
-            'allDay': True,
-        }
+            if tournament.is_b_tournament:
+                classes += "tournament_b "
 
-        if tournament.end_date:
-            item['end'] = tournament.end_date
+            classes += " tournament_" + str(tournament.category)
 
-        data.append(item)
+            item = {
+                'id': tournament.pk,
+                'url': reverse('tournament', kwargs={'id':tournament.pk}),
+                'title': tournament.name,
+                'start': tournament.start_date,
+                'end': tournament.start_date,
+                'className': classes,
+                'allDay': True,
+            }
+
+            if tournament.end_date:
+                item['end'] = tournament.end_date
+
+            data.append(item)
 
     return JsonResponse(data, safe=False)
 
 
 def players_clubs_and_tournaments_list(request):
     template = request.GET.get('typedText')
-
-    players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
-    clubs = Club.objects.filter(name__icontains=template)
-    tournaments = Tournament.objects.filter(name__icontains=template)
     data = []
 
-    for player in players:
-        item = {
-            'href': reverse('player', kwargs={'id':player.pk}),
-            'value': player.get_name(),
-            'disabled': 0,
-        }
+    if template:
+        players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
+        clubs = Club.objects.filter(name__icontains=template)
+        tournaments = Tournament.objects.filter(name__icontains=template)
 
-        data.append(item)
+        for player in players:
+            item = {
+                'href': reverse('player', kwargs={'id':player.pk}),
+                'value': player.get_name(),
+                'disabled': 0,
+            }
 
-    for club in clubs:
-        item = {
-            'href': reverse('club', kwargs={'id':club.pk}),
-            'value': club.name,
-            'disabled': 0,
-        }
+            data.append(item)
 
-        data.append(item)
+        for club in clubs:
+            item = {
+                'href': reverse('club', kwargs={'id':club.pk}),
+                'value': club.name,
+                'disabled': 0,
+            }
 
-    for tournament in tournaments:
-        item = {
-            'href': reverse('tournament', kwargs={'id':tournament.pk}),
-            'value': tournament.name,
-            'disabled': 0,
-        }
+            data.append(item)
 
-        data.append(item)
+        for tournament in tournaments:
+            item = {
+                'href': reverse('tournament', kwargs={'id':tournament.pk}),
+                'value': tournament.name,
+                'disabled': 0,
+            }
+
+            data.append(item)
 
     return JsonResponse(data, safe=False)
 
 
 def players_list(request):
-    template = request.GET.get('typedText')
+    template = request.GET.get('q')
 
-    players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
-    data = []
-
-    for player in players:
-        item = {
-            'value': player.pk,
-            'label': player.get_name(),
-            'disabled': 0,
+    data = {
+        "results": [],
+        "pagination": {
+            "more": False
         }
+    }
 
-        data.append(item)
+    if template:
+        players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
+        for player in players:
+            item = {
+                'id': player.pk,
+                'text': player.get_name(),
+            }
+
+            data['results'].append(item)
 
     return JsonResponse(data, safe=False)

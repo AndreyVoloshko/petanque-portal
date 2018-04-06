@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'silk',
     'crispy_forms',
     'floppyforms',
+    'captcha',
     'federation',
     'poll',
     'dbbackup',
@@ -202,3 +203,7 @@ STATICFILES_DIRS = [
 ]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 # 50Mb
+
+RECAPTCHA_PUBLIC_KEY = '{{ application_recaptcha_public_key }}'
+RECAPTCHA_PRIVATE_KEY = '{{ application_recaptcha_private_key }}'
+NOCAPTCHA = True

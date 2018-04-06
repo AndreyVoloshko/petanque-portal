@@ -3,6 +3,7 @@ from django.urls import reverse
 from federation.models.tournament import Tournament
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Field
+from captcha.fields import ReCaptchaField
 
 
 class RegistrationTeamForm(forms.Form):
@@ -20,23 +21,26 @@ class RegistrationTeamForm(forms.Form):
                 extra_label = " (Резерв)"
 
             self.fields['players[%d]' % i] = forms.CharField(
-                widget=forms.TextInput(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
+                widget=forms.Select(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
                 label="Гравець " + str(i) + extra_label,
                 required=(i <= self.tournament.number_of_players_in_team_min),
-            )
-
-            self.fields['player_ids[%d]' % i] = forms.CharField(
-                widget=forms.HiddenInput(),
-                required=(i <= self.tournament.number_of_players_in_team_min)
             )
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_team', args=[self.tournament.pk])
 
+        self.fields['captcha'] = ReCaptchaField(
+            label="Додаткова перевірка"
+        )
+
         self.helper.layout = Layout(
             HTML('<hr class="clear" />'),
             HTML('<hr class="clear" />'),
+            Div(
+                'captcha',
+                css_class="col-md-12"
+            ),
             Div(
                 Submit('submit', 'Зареєструвати команду', css_class='btn btn-success'),
                 css_class="col-md-12 text-center form-group"
@@ -49,5 +53,3 @@ class RegistrationTeamForm(forms.Form):
                 'players[%d]' % i,
                 css_class="col-md-12"
             ))
-
-            self.helper.layout.insert(1, 'player_ids[%d]' % i)
