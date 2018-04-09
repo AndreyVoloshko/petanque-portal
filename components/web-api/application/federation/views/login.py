@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import *
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 def application_login(request):
     if request.user.is_authenticated():
@@ -11,6 +12,13 @@ def application_login(request):
         password = request.POST.get('password', '')
 
         user = authenticate(request, username=username, password=password)
+        if user is None:
+            #
+            # try to login using email
+            #
+            user_object = User.objects.get(email__iexact=username)
+            user = authenticate(request, username=user_object.username, password=password)
+
         if user is not None:
             if user.is_active:
                 login(request, user)
