@@ -6,6 +6,7 @@ from floppyforms import ClearableFileInput
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class ImageThumbnailFileInput(ClearableFileInput):
@@ -13,9 +14,16 @@ class ImageThumbnailFileInput(ClearableFileInput):
 
 
 class PlayerForm(forms.ModelForm):
+    email = forms.EmailField(label="Email адреса", required=True)
 
     def __init__(self, *args, **kwargs):
         super(PlayerForm, self).__init__(*args, **kwargs)
+
+        try:
+            self.fields['email'].initial = self.instance.user.email
+        except User.DoesNotExist:
+            pass
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = '/profile/#profile'
@@ -55,6 +63,13 @@ class PlayerForm(forms.ModelForm):
                         ),
                         css_class="row"
                     ),
+                    Div(
+                        Div(
+                            HTML("&nbsp;"),
+                            css_class="col-md-12 form-group"
+                        ),
+                        css_class="row"
+                    ),
                     HTML('<hr />'),
                     Div(
                         Div(
@@ -73,6 +88,13 @@ class PlayerForm(forms.ModelForm):
                     css_class="col-md-5"
                 ),
                 Div (
+                    Div(
+                        Div(
+                            'email',
+                            css_class="col-md-12 form-group"
+                        ),
+                        css_class="row"
+                    ),
                     Div(
                         Div(
                             'gender',
@@ -138,6 +160,18 @@ class PlayerForm(forms.ModelForm):
             raise forms.ValidationError(_('File type is not supported'))
         return content
 
+
+    def save(self, *args, **kwargs):
+      """
+      Update the primary email address on the related User object as well.
+      """
+      u = self.instance.user
+      u.email = self.cleaned_data['email']
+      u.save()
+      profile = super(PlayerForm, self).save(*args,**kwargs)
+      return profile
+
+
     class Meta:
         model = Player
         fields = ('avatar',
@@ -154,6 +188,7 @@ class PlayerForm(forms.ModelForm):
                   'website',
                   'prefred_position')
         labels = {
+            "email": "Email адреса",
             "avatar": "Аватар",
             "name": "Iм'я",
             "surname": "Прiзвище",
