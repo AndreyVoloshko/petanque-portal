@@ -79,6 +79,13 @@ class Tournament(models.Model):
             return self.number_of_players_in_team_min
 
     '''
+        add team to current tournament
+    '''
+    def add_team(self, team):
+        new_team = TeamTournamentMembership(tournament=self, team=team)
+        new_team.save()
+
+    '''
         recalculate teams power
     '''
     def recalculate_power(self):
@@ -95,6 +102,42 @@ class Tournament(models.Model):
 
         if teams_count <= 0:
             raise Exception("У турнірі не зареєстровано жожної команди!")
+
+        # recalculate all teams power
+        teams = self.get_teams()
+        for team in teams:
+            team.recalculate_power()
+
+        # get top teams
+        teams = self.get_teams()
+        top_teams_needed = rating_config.RATING_TOURNAMENT_POWER_TEAMS_COUNT
+        teams = teams[:top_teams_needed]
+
+        # calculate new tournament power
+        power = 0
+        for team in teams:
+            power += team.power
+
+        power = power / teams_count
+
+        # save new power
+        self.power = power
+        self.save()
+
+    '''
+        recalculate teams power on registration
+    '''
+    def recalculate_power_on_registration(self):
+        if self.category == 'away':
+            return False
+
+        if self.is_processing_closed():
+            return False
+
+        teams_count = self.get_teams_count()
+
+        if teams_count <= 0:
+            return False
 
         # recalculate all teams power
         teams = self.get_teams()
@@ -382,7 +425,13 @@ class Tournament(models.Model):
 
     def get_team_which_contains_player(self, player):
         user_teams = Team.get_list_by_player(player=player)
-        return TeamTournamentMembership.objects.get(tournament=self, team__in=user_teams)
+        try:
+            user_tournament_team = TeamTournamentMembership.objects.get(tournament=self, team__in=user_teams)
+        except TeamTournamentMembership.DoesNotExist:
+            user_tournament_team = None
+
+        return user_tournament_team
+
 
     class Meta:
         verbose_name = 'Турнір'

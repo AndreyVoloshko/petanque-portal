@@ -92,16 +92,19 @@ class Player(models.Model):
     '''
     @classmethod
     def get_actual_players_list(self):
+        '''
         return Player.objects.filter(country=settings.CURRENT_COUNTRY)\
                 .exclude(licence_number="")\
                 .exclude(licence_number__isnull=True)
-
+        '''
+        return Player.objects.all().exclude(licence_number="").exclude(licence_number__isnull=True)
 
     '''
     Ranking among all players including non-licensed
     '''
     def get_ranking_among_all(self, ranking='current_rating'):
-        return self.get_ranking(ranking, Player.objects.filter(country=settings.CURRENT_COUNTRY))
+        #return self.get_ranking(ranking, Player.objects.filter(country=settings.CURRENT_COUNTRY))
+        return self.get_ranking(ranking, Player.objects.all())
 
     def recalculate_ratings(self):
         # recalculate tournaments

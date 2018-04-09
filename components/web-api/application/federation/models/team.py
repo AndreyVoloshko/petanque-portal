@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -65,6 +66,28 @@ class Team(models.Model):
     @classmethod
     def get_list_by_player(self, player):
         return self.objects.filter(playerteammembership__player=player)
+
+    @classmethod
+    def get_or_create_for_players(self, player_ids):
+        team = self.objects.annotate(players_count=Count('players')).filter(players_count=len(player_ids))
+
+        for player_id in player_ids:
+            team = team.filter(players__pk=player_id)
+
+        if team:
+            return team[0]
+        else:
+            #
+            # create new team
+            #
+            new_team = Team()
+            new_team.save()
+
+            for player_id in player_ids:
+                team_member = PlayerTeamMembership(team=new_team, player=Player.objects.get(pk=player_id))
+                team_member.save()
+                
+            return new_team
 
     class Meta:
         verbose_name = 'Команда'

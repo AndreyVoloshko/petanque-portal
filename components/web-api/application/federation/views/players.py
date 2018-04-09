@@ -9,7 +9,8 @@ from federation.helpers.general import get_model
 
 def players(request, licence_filter=None, rating_filter=None):
 
-    players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)
+    #players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)
+    players_objects = Player.objects.all()
     if licence_filter == 'licence':
         players_objects = players_objects.exclude(licence_number="").exclude(licence_number__isnull=True)
 

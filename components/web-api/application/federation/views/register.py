@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.forms.registration_team_form import RegistrationTeamForm
+from federation.models.team import Team
 from django.contrib import messages
 
 
@@ -14,7 +15,14 @@ def register_team(request, tournament_id):
     if request.method == "POST":
         team_registration_form = RegistrationTeamForm(request.POST, tournament=tournament)
         if team_registration_form.is_valid():
-            messages.success(request, 'Команду зареєстровано.')
+            team = Team.get_or_create_for_players(player_ids=team_registration_form.verified_player_ids)
+            tournament.add_team(team)
+            tournament.recalculate_power_on_registration()
+            messages.success(request, 'Команду зареєстровано.', extra_tags='success')
+            return redirect('tournament', id=tournament.pk)
+        else:
+            for error_message in team_registration_form.errors:
+                messages.error(request, team_registration_form.errors[error_message], extra_tags='danger')
 
     return render(request, 'register/team.html', {
         'tournament': tournament,
