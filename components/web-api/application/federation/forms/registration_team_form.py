@@ -32,9 +32,9 @@ class RegistrationTeamForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_team', args=[self.tournament.pk])
 
-        #self.fields['captcha'] = ReCaptchaField(
-        #    label="Додаткова перевірка"
-        #)
+        self.fields['captcha'] = ReCaptchaField(
+            label="Додаткова перевірка"
+        )
 
         self.helper.layout = Layout(
             HTML('<hr class="clear" />'),
