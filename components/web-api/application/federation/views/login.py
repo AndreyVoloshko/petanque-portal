@@ -17,7 +17,8 @@ def application_login(request):
             # try to login using email
             #
             user_object = User.objects.get(email__iexact=username)
-            user = authenticate(request, username=user_object.username, password=password)
+            if user_object is not None:
+                user = authenticate(request, username=user_object.username, password=password)
 
         if user is not None:
             if user.is_active:
