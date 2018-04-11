@@ -16,7 +16,11 @@ def application_login(request):
             #
             # try to login using email
             #
-            user_object = User.objects.get(email__iexact=username)
+            try:
+                user_object = User.objects.get(email__iexact=username)
+            except User.DoesNotExist:
+                user_object = None
+                
             if user_object is not None:
                 user = authenticate(request, username=user_object.username, password=password)
 
