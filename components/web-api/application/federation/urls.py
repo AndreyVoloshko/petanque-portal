@@ -13,7 +13,7 @@ from .views.players import players, player
 from .views.arbiters import arbiters
 from .views.coaches import coaches
 from .views.records import records
-from .views.tournaments import tournaments, tournament, tournaments_calendar
+from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export
 from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list
 from .views.polls import poll, vote, result
 from .views.documents import documents
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^player/(?P<id>[0-9]+)$', player,        name='player'),
 
     url(r'^tournament/(?P<id>[0-9]+)$', tournament,        name='tournament'),
+    url(r'^tournament/team_export/(?P<id>[0-9]+)$', tournament_teams_export,        name='tournament_teams_export'),
     url(r'^tournaments/$',                            tournaments, name='tournaments'),
     url(r'^tournaments/(?P<date_filter>\w+)/?$',               tournaments, name='tournaments'),
     url(r'^tournaments/(?P<date_filter>\w+)/(?P<type_filter>\w+)/?$', tournaments, name='tournaments'),
