@@ -46,9 +46,9 @@ class RegistrationPlayerForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_player')
 
-        self.fields['captcha'] = ReCaptchaField(
-            label="Додаткова перевірка"
-        )
+        #self.fields['captcha'] = ReCaptchaField(
+        #    label="Додаткова перевірка"
+        #)
 
         self.helper.layout = Layout(
             Div(
@@ -72,10 +72,10 @@ class RegistrationPlayerForm(forms.Form):
                 css_class="col-md-12 form-group"
             ),
             HTML('<hr class="clear" />'),
-            Div(
-                'captcha',
-                css_class="col-md-12"
-            ),
+            #Div(
+            #    'captcha',
+            #    css_class="col-md-12"
+            #),
             Div(
                 Submit('submit', 'Зареєструвати гравця', css_class='btn btn-success'),
                 css_class="col-md-12 text-center form-group"
