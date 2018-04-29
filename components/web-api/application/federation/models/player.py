@@ -156,6 +156,19 @@ class Player(models.Model):
     def get_name(self):
         return self.surname.upper() + " " +self.name
 
+    @classmethod
+    def get_by_name_and_surname(self, name, surname):
+        try:
+            player = Player.objects.get(name__iexact=name, surname__iexact=surname)
+            if player:
+                return player
+
+            player = Player.objects.get(name__iexact=surname, surname__iexact=name)
+
+        except Exception:
+            player = None
+
+        return player
 
     class Meta:
         verbose_name = 'Гравець'

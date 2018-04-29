@@ -31,6 +31,27 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Не можете знайти гравця? / Aren't you able to find your player?</div>
+                <div class="panel-body">
+                    <h4>Зареєструвати гравця</h4>
+                    <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, <a target="_blank" href="{% url 'register_player' %}"><button class="btn btn-xs btn-success">додайте його на портал</button></a>.</p>
+                    <p class="text-danger">
+                        Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
+                    </p>
+                    <hr />
+                    <h4>Register new player</h4>
+                    <p>Not all players are there in our database. If you can't find a player, please, <a target="_blank" href="{% url 'register_player' %}"><button class="btn btn-xs btn-success">add him to our portal</button></a>.</p>
+                    <p class="text-danger">
+                        Please, do not add duplicated or non-existent players.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 

@@ -1,0 +1,40 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Реєстрація гравця</div>
+                <div class="panel-body">
+                    {% crispy player_registration_form %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Не можете знайти гравця? / Aren't you able to find your player?</div>
+                <div class="panel-body">
+                    <h4>Зареєструвати гравця</h4>
+                    <p class="text-danger">
+                        Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
+                    </p>
+                    <hr />
+                    <h4>Register new player</h4>
+                    <p class="text-danger">
+                        Please, do not add duplicated or non-existent players.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <script>
+      $( function() {
+        $( ".dateinput" ).datepicker();
+        $( ".dateinput" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+      });
+  </script>
+{% endblock %}

@@ -19,7 +19,7 @@ from .views.polls import poll, vote, result
 from .views.documents import documents
 from .views.national_teams import national_teams
 from .views.seasons import seasons
-from .views.register import register_team
+from .views.register import register_team, register_player
 
 
 urlpatterns = [
@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^tournaments/(?P<date_filter>\w+)/(?P<type_filter>\w+)/?$', tournaments, name='tournaments'),
 
     url(r'^register/team/(?P<tournament_id>\w+)/?$', register_team, name='register_team'),
+    url(r'^register/player/?$', register_player, name='register_player'),
 
     url(r'^calendar/$', tournaments_calendar, name='tournaments_calendar'),
     url(r'^api/tournaments/list/$', tournaments_list, name='api_tournaments_list'),
