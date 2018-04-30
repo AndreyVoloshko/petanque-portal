@@ -119,7 +119,7 @@ class Tournament(models.Model):
         for team in teams:
             power += team.power
 
-        power = power / teams_count
+        power = power / top_teams_needed
 
         # save new power
         self.power = power
@@ -155,7 +155,7 @@ class Tournament(models.Model):
         for team in teams:
             power += team.power
 
-        power = power / teams_count
+        power = power / top_teams_needed
 
         # save new power
         self.power = power
