@@ -145,6 +145,10 @@ class Player(models.Model):
             sorted(new_points_for_rating_b, reverse=True)[:top_tournaments_number]
         )
 
+        if self.licence_number == "" or not self.licence_number:
+            rating_points = 0
+            b_rating_points = 0
+
         self.current_rating = rating_points
         self.current_rating_b = b_rating_points
         self.save()
