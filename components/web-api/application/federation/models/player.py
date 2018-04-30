@@ -113,6 +113,10 @@ class Player(models.Model):
         return self.get_ranking(ranking, Player.objects.all())
 
     def recalculate_ratings(self):
+        if not self.licence_number:
+            self.erase_ratings()
+            return
+
         # recalculate tournaments
         tournaments_model = get_model('Tournament')
         all_past_tournaments = tournaments_model.get_list_by_player(player=self, date_filter='past')
@@ -145,7 +149,7 @@ class Player(models.Model):
             sorted(new_points_for_rating_b, reverse=True)[:top_tournaments_number]
         )
 
-        if self.licence_number == "" or not self.licence_number:
+        if not self.licence_number:
             rating_points = 0
             b_rating_points = 0
 
