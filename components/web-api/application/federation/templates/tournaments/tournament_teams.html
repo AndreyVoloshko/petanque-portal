@@ -4,21 +4,17 @@
     <table class="table table-hover table-condensed table-striped" id="{{ table_id }}">
         <thead>
             <tr>
-                <th width="5%" align="left">#</th>
                 <th width="5%" align="left">Місце</th>
                 <th width="15%" align="left">Назва</th>
                 <th width="5%" align="left">Пункти</th>
                 <th width="50%" align="left">Гравці</th>
-                <th width="10%" align="left">Дата</th>
+                <th width="15%" align="left">Дата</th>
                 <th width="10%" align="left">Сила</th>
             </tr>
         </thead>
         <tbody>
             {% for team in teams %}
 					<tr>
-                        <td data-order="{{ forloop.counter }}" align="left">
-                            {{ forloop.counter }}
-                        </td>
                         <td data-order="{{ team.place_min }}" align="left">
                             {{ team|team_place_in_tournament|safe }}
                         </td>
@@ -60,12 +56,11 @@ $(document).ready(function() {
 
         $('#{{ table_id }}').dataTable({
                'aoColumns': [
-		            { sWidth: "5%", bSearchable: false, bSortable: true, sType: "numbercase" }, //number
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //place
 		            { sWidth: "15%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, // points
 		            { sWidth: "50%", bSearchable: true, bSortable: false }, //players
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //date
 		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
 		       ],
 		       "autoWidth": false,
