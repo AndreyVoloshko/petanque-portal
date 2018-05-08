@@ -169,8 +169,9 @@ class Player(models.Model):
             rating_power = 0
             b_rating_power = 0
 
-        self.current_power = rating_points
+        self.current_power = rating_power
         self.current_power_b = b_rating_power
+
         self.current_rating = rating_points
         self.current_rating_b = b_rating_points
         self.save()
