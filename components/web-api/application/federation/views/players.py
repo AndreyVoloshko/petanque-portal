@@ -15,8 +15,10 @@ def players(request, licence_filter=None, rating_filter=None):
         players_objects = players_objects.exclude(licence_number="").exclude(licence_number__isnull=True)
 
     rating_field='current_rating'
+    rating_power_field = 'current_power'
     if rating_filter == 'b':
         rating_field = 'current_rating_b'
+        rating_power_field = 'current_power_b'
     elif rating_filter == 'liga':
         rating_field = 'current_rating_liga'
 
@@ -24,6 +26,7 @@ def players(request, licence_filter=None, rating_filter=None):
         'players': players_objects,
         'rating_filters': rating_field+","+str(licence_filter),
         'rating_field': rating_field,
+        'rating_power_field': rating_power_field,
         'page_title': "Гравці",
     })
 

@@ -6,6 +6,7 @@
             <tr>
                 <th align="left">Рейтинг</th>
                 <th align="left">Бали</th>
+                <th align="left">Сила</th>
                 <th align="left">Ім'я</th>
                 <th align="center">Стать</th>
                 <th align="center">Вік</th>
@@ -23,6 +24,11 @@
                         <td align="left">
                             <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
                                 {{ item|rating_points:rating_field|safe }}
+                            </span>
+                        </td>
+                        <td align="left">
+                            <span class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингова сила">
+                                {{ item|rating_power:rating_power_field|safe }}
                             </span>
                         </td>
 						<td align="left">{{ item|user_profile_link|safe }}</td>
@@ -50,13 +56,14 @@
 $(document).ready(function() {
         $('#players').dataTable({
                'aoColumns': [
-		            { sWidth: "10%", bSearchable: false, bSortable: true }, //rating
-					{ sWidth:  "10%", bSearchable: false, bSortable: true }, // points
+		            { sWidth: "5%", bSearchable: false, bSortable: true }, //rating
+					{ sWidth:  "8%", bSearchable: false, bSortable: true }, // points
+					{ sWidth:  "8%", bSearchable: false, bSortable: true }, // power
 		            { sWidth: "30%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, // gender
 		            { sWidth: "5%", bSearchable: true, bSortable: true }, //age
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, // license
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //club
+		            { sWidth: "14%", bSearchable: true, bSortable: true }, //club
 					{ sWidth:  "5%", bSearchable: false, bSortable: false }, // actions
 		       ],
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],

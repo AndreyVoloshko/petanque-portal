@@ -384,6 +384,11 @@ def rating_points(player, field_to_display):
     value = getattr(player, field_to_display)
     return str(value)
 
+@register.filter(name="rating_power")
+def rating_power(player, field_to_display):
+    value = getattr(player, field_to_display)
+    return str(value)
+
 
 @register.filter(name="season_rating_points")
 def season_rating_points(season_item, field_to_display):
