@@ -21,6 +21,10 @@
                     <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> {{ item.current_rating }}</div>
                 </div>
                 <div class="row">
+                    <div class="col-sm-6">Рейтингова сила:</div>
+                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> {{ item.current_power }}</div>
+                </div>
+                <div class="row">
                     <div class="col-sm-6">Рейтингових турнірів цього року:</div>
                     <div class="col-sm-6"><i class="glyphicon glyphicon-home"></i> {{ player_summary_info.this_year_rating_tournaments_count|add:"0" }}</div>
                 </div>
@@ -42,6 +46,10 @@
                 <div class="row">
                     <div class="col-sm-4">Рейтингові бали:</div>
                     <div class="col-sm-8"><i class="glyphicon glyphicon-record"></i> {{ item.current_rating_b }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">Рейтингова сила:</div>
+                    <div class="col-sm-8"><i class="glyphicon glyphicon-record"></i> {{ item.current_power_b }}</div>
                 </div>
                 <div class="row">
                     <div class="col-sm-4">Турнірів цього року:</div>

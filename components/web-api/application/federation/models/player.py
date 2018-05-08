@@ -66,6 +66,9 @@ class Player(models.Model):
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
     current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
 
+    current_power = models.DecimalField(_('Поточна сила'), default=0, max_digits=19, decimal_places=4)
+    current_power_b = models.DecimalField(_('Поточна сила у турнірах "B'), default=0, max_digits=19,
+                                           decimal_places=4)
     '''
     Erase all rating points for player
     '''
@@ -131,14 +134,19 @@ class Player(models.Model):
         new_points_for_rating_b = []
         new_points_for_rating_liga = []
 
+        new_power_for_rating = []
+        new_power_for_rating_b = []
+
         for tournament in all_past_tournaments:
             player_team = tournament.get_team_which_contains_player(self)
 
             if tournament.is_goes_to_rating:
                 new_points_for_rating.append(player_team.rating_points)
+                new_power_for_rating.append(player_team.rating_power)
 
             if tournament.is_b_tournament:
                 new_points_for_rating_b.append(player_team.rating_points)
+                new_power_for_rating_b.append(player_team.rating_power)
 
         top_tournaments_number = rating_config.RATING_PLAYER_POWER_TOURNAMENTS_COUNT
 
@@ -148,11 +156,21 @@ class Player(models.Model):
         b_rating_points = sum(
             sorted(new_points_for_rating_b, reverse=True)[:top_tournaments_number]
         )
+        rating_power = sum(
+            sorted(new_power_for_rating, reverse=True)[:top_tournaments_number]
+        )
+        b_rating_power = sum(
+            sorted(new_power_for_rating_b, reverse=True)[:top_tournaments_number]
+        )
 
         if not self.licence_number:
             rating_points = 0
             b_rating_points = 0
+            rating_power = 0
+            b_rating_power = 0
 
+        self.current_power = rating_points
+        self.current_power_b = b_rating_power
         self.current_rating = rating_points
         self.current_rating_b = b_rating_points
         self.save()

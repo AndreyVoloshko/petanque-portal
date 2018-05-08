@@ -222,9 +222,10 @@ class Tournament(models.Model):
         for team in teams:
             team_points = self.calculate_raw_team_rating_points(basic_points, team.place_min)
 
-            team_points = float(team_points) * self.rating_coefficient * float(self.power)
+            team_rating_points = float(team_points) * self.rating_coefficient * float(self.power)
 
-            team.rating_points = team_points
+            team.rating_power = team_points
+            team.rating_points = team_rating_points
             team.save()
 
     '''
@@ -446,16 +447,19 @@ class TeamTournamentMembership(models.Model):
     place_min = models.IntegerField(_('Місце'), default=0)
     place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
     date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
+
     rating_points = models.DecimalField(_('Рейтингові пункти за турнір'), default=0, max_digits=19, decimal_places=4)
+    rating_power = models.DecimalField(_('Рейтингова сила за турнір'), default=0, max_digits=19, decimal_places=4)
+
     power = models.DecimalField(_('Сила команди'), default=0, max_digits=19, decimal_places=4)
 
     def recalculate_power(self):
         power = 0
         for player in self.team.players.all():
             if self.tournament.is_b_tournament:
-                power += player.current_rating_b
+                power += player.current_power_b
             else:
-                power += player.current_rating
+                power += player.current_power
 
         power = power / self.team.players.count()
         self.power = power
@@ -467,6 +471,7 @@ class TeamTournamentMembership(models.Model):
 
     def erase_rating_points_and_powers(self):
         self.rating_points = 0
+        self.rating_power = 0
         self.power = 0
         self.save()
 

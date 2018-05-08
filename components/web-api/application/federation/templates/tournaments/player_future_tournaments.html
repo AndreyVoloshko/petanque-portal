@@ -17,7 +17,7 @@
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
                         </td>
-                        <td align="left">Команда</td>
+                        <td align="left">{{ item|team_short_name_in_tournament:player|safe }}</td>
 						<td data-order="{{ item|team_power_in_tournament:player|safe }}" align="left">
                             <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
                                <span class="glyphicon glyphicon-sort"></span> {{ item|team_power_in_tournament:player|safe }}
