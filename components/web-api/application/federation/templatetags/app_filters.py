@@ -110,6 +110,34 @@ def get_number_of_players (club):
     return number_of_players
 
 
+@register.filter(name="get_club_rating_points")
+def get_club_rating_points (club):
+    players = Player.objects.filter(current_club=club)
+    points = 0
+
+    for player in players:
+        points += player.current_rating
+
+    return round(points, 2)
+
+
+@register.filter(name="get_club_avg_rating_points")
+def get_club_avg_rating_points (club):
+    players = Player.objects.filter(current_club=club)
+
+    players_count = players.count()
+
+    if players_count <= 0:
+        return 0
+
+    points = 0
+
+    for player in players:
+        points += player.current_rating
+
+    return round(points / players_count, 2)
+
+
 @register.filter(name="social_field")
 def social_field (item, field):
     value = getattr(item, field)

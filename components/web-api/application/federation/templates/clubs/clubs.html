@@ -3,5 +3,5 @@
 {% load i18n %}
 
 {% block content %}
-    {% include "common/grid_page.html" with page_title=page_title items_per_row=clubs_per_row item_template="clubs/grid_item_club.html" items=clubs %}
+    {% include "common/table_page.html" with page_title=page_title table_template="clubs/clubs_table.html" items=clubs %}
 {% endblock %}
