@@ -106,13 +106,13 @@ def user_profile_link(user, is_link=True):
 
 @register.filter(name="get_number_of_players")
 def get_number_of_players (club):
-    number_of_players = Player.objects.filter(current_club=club).exclude(licence_number="").count()
+    number_of_players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True).count()
     return number_of_players
 
 
 @register.filter(name="get_club_rating_points")
 def get_club_rating_points (club):
-    players = Player.objects.filter(current_club=club).exclude(licence_number="")
+    players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True)
     points = 0
 
     for player in players:
@@ -123,7 +123,7 @@ def get_club_rating_points (club):
 
 @register.filter(name="get_club_avg_rating_points")
 def get_club_avg_rating_points (club):
-    players = Player.objects.filter(current_club=club).exclude(licence_number="")
+    players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True)
 
     players_count = players.count()
 
