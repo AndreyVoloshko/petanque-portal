@@ -130,5 +130,5 @@ def _encode_row(values):
         for k, v in replace_mapping:
             item = item.replace(k, v)
 
-        tmp.append(translit(item, 'ru', reversed=True))
+        tmp.append(translit(item, 'ru', reversed=True).encode("utf-8"))
     return tmp
