@@ -46,7 +46,7 @@ def tournament_teams_export(request, id):
     if output_format == 'csv':
 
         # Create the HttpResponse object with the appropriate CSV header.
-        response = HttpResponse(content_type='text/csv;charset=windows-1251')
+        response = HttpResponse(content_type='text/csv;charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename="'+str(tournament.pk)+'-teams.csv"'
         writer = csv.writer(response,
                             delimiter=';',
