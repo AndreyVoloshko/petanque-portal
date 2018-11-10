@@ -49,6 +49,19 @@
 
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <th align="left">Рейтинг</th>
+                <th align="left">Бали</th>
+                <th align="left">Сила</th>
+                <th align="left">Ім'я</th>
+                <th class="filterable" align="center">Стать</th>
+                <th class="filterable" align="center">Вік</th>
+                <th align="center">Ліцензія</th>
+                <th class="filterable" align="left">Клуб</th>
+                <th>&nbsp;</th>
+            </tr>
+        </tfoot>
     </table>
 </div>
 
@@ -60,7 +73,7 @@ $(document).ready(function() {
                 this.api().columns('.filterable').every( function () {
                     var column = this;
                     var select = $('<select><option value=""></option></select>')
-                        .appendTo( $(column.header()).empty() )
+                        .appendTo( $(column.footer()).empty() )
                         .on( 'change', function () {
                             var val = $.fn.dataTable.util.escapeRegex(
                                 $(this).val()
