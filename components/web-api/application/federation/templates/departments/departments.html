@@ -44,7 +44,6 @@
                                     <td align="center">{{ member|user_avatar:"small"|safe }}</td>
                                     <td align="left">{{ member|user_profile_link|safe }}</td>
                                     <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
-                                </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -76,7 +75,6 @@
                                     <td align="center">{{ member|user_avatar:"small"|safe }}</td>
                                     <td align="left">{{ member|user_profile_link|safe }}</td>
                                     <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
-                                </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
