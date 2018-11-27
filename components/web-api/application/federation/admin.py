@@ -8,6 +8,7 @@ from .models.national_teams import National_team, National_teamAdmin
 from .models.record import Record
 from .models.document import Document
 from .models.season import Season, SeasonAdmin
+from .models.department import Department, DepartmentAdmin
 
 # Register your models here.
 admin.site.register(City)
@@ -19,3 +20,4 @@ admin.site.register(National_team, National_teamAdmin)
 admin.site.register(Record)
 admin.site.register(Document)
 admin.site.register(Season, SeasonAdmin)
+admin.site.register(Department, DepartmentAdmin)

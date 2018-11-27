@@ -20,6 +20,7 @@ from .views.documents import documents
 from .views.national_teams import national_teams
 from .views.seasons import seasons
 from .views.register import register_team, register_player
+from .views.departments import departments
 
 
 urlpatterns = [
@@ -65,6 +66,8 @@ urlpatterns = [
     url(r'^polls/result/(?P<poll_pk>\d+)/$', result, name='poll_result'),
 
     url(r'^documents/$',     documents,                name='documents'),
+
+    url(r'^departments/$', departments, name='departments'),
 
     url(r'^season/?$', seasons, name='season'),
     url(r'^season/(?P<year>\w+)/?$', seasons, name='season'),

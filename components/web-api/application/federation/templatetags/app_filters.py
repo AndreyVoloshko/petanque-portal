@@ -6,6 +6,7 @@ from federation.models.player import Player
 from federation.models.record import Record
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
+from federation.models.department import PlayerDepartmentMembership
 from datetime import date
 from django.utils import formats
 from django.urls import reverse
@@ -538,3 +539,12 @@ def tournament_registration_tab(tournament):
         '''
     else:
         return ''
+
+
+@register.filter(name="get_role_in_department")
+def get_role_in_department (player, department):
+    department_role = PlayerDepartmentMembership.objects.filter(team=department, player=player)
+    if not department_role[0]:
+        return ''
+    else:
+        return department_role[0].role
