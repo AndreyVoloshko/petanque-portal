@@ -30,7 +30,7 @@
                     {% if department.notes|length > 0 %}
 
                     <div class="col-md-6">
-                        <table class="table table-hover table-condensed" id="table_{{ arbiter.category_id }}">
+                        <table class="table table-hover table-condensed" id="table_{{ department.pk }}">
                             <thead>
                                 <tr>
                                     <th width="10%" align="left">&nbsp;</th>
@@ -43,7 +43,7 @@
                                 <tr>
                                     <td align="center">{{ member|user_avatar:"small"|safe }}</td>
                                     <td align="left">{{ member|user_profile_link|safe }}</td>
-                                    <td align="left">{{ member|get_role_in_department:department|safe }}</td>
+                                    <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
                                 </td>
                                 </tr>
                                 {% endfor %}
@@ -62,7 +62,7 @@
                     {% else %}
 
                     <div class="col-md-12">
-                        <table class="table table-hover table-condensed" id="table_{{ arbiter.category_id }}">
+                        <table class="table table-hover table-condensed" id="table_{{ department.pk }}">
                             <thead>
                                 <tr>
                                     <th width="10%" align="left">&nbsp;</th>
@@ -75,7 +75,7 @@
                                 <tr>
                                     <td align="center">{{ member|user_avatar:"small"|safe }}</td>
                                     <td align="left">{{ member|user_profile_link|safe }}</td>
-                                    <td align="left">{{ member|get_role_in_department:department|safe }}</td>
+                                    <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
                                 </td>
                                 </tr>
                                 {% endfor %}
@@ -86,6 +86,35 @@
                     {% endif %}
                 </div>
             </div>
+
+            <script>
+            $(document).ready(function() {
+                    $('#table_{{ department.pk }}').dataTable({
+                           'aoColumns': [
+                                { sWidth: "20%", bSearchable: false, bSortable: false }, //avatar
+                                { sWidth:  "40%", bSearchable: true, bSortable: true }, // name
+                                { sWidth: "40%", bSearchable: true,  bSortable: true }, //role
+                           ],
+                           "order": [[ 3, "desc" ]],
+                            "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+                            "oLanguage": {
+                                    "sLengthMenu":   "Показати _MENU_ членів на сторінку",
+                                    "sZeroRecords":  "Членів не знайдено",
+                                    "sInfo":         "Показано _START_ - _END_ з _TOTAL_ членів",
+                                    "sInfoEmpty":    "Показано 0 з 0 членів",
+                                    "sInfoFiltered": "(відфільтровано з _MAX_ членів)",
+                                    "search":        "Пошук",
+                                    "paginate": {
+                                        "first":      "Перша",
+                                        "last":       "Остання",
+                                        "next":       "Наступна",
+                                        "previous":   "Попередня"
+                                    },
+                            },
+                    });
+            });
+            </script>
+
             {% endfor %}
 
         </div>
