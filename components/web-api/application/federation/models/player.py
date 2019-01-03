@@ -50,7 +50,10 @@ class Player(models.Model):
     birth_date = models.DateField(_('Дата народження'))
     current_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб")
     country = CountryField(blank_label=_('(select country)'), verbose_name="Країна")
+
     licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
+    is_licence_active = models.BooleanField(_('Ліцензія активна'), default=False)
+
     gender = models.CharField(_('Стать'), max_length=1, choices=GENDER_CHOICES)
     prefred_position = models.CharField(_('Позиція'), max_length=10, choices=POSITIONS, blank=True, null=True)
 
@@ -83,6 +86,7 @@ class Player(models.Model):
     '''
     def erase_licence_number(self):
         self.licence_number = None
+        self.is_licence_active = False
         self.save()
 
     '''
@@ -101,22 +105,19 @@ class Player(models.Model):
     '''
     @classmethod
     def get_actual_players_list(self):
-        '''
-        return Player.objects.filter(country=settings.CURRENT_COUNTRY)\
-                .exclude(licence_number="")\
-                .exclude(licence_number__isnull=True)
-        '''
-        return Player.objects.all().exclude(licence_number="").exclude(licence_number__isnull=True)
+        """
+        return Player.objects.all().exclude(is_licence_active=False)
+        """
+        return Player.objects.all().exclude(is_licence_active=False)
 
     '''
     Ranking among all players including non-licensed
     '''
     def get_ranking_among_all(self, ranking='current_rating'):
-        #return self.get_ranking(ranking, Player.objects.filter(country=settings.CURRENT_COUNTRY))
         return self.get_ranking(ranking, Player.objects.all())
 
     def recalculate_ratings(self):
-        if not self.licence_number:
+        if not self.is_licence_active:
             self.erase_ratings()
             return
 
@@ -163,7 +164,7 @@ class Player(models.Model):
             sorted(new_power_for_rating_b, reverse=True)[:top_tournaments_number]
         )
 
-        if not self.licence_number:
+        if not self.is_licence_active:
             rating_points = 0
             b_rating_points = 0
             rating_power = 0

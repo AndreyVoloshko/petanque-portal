@@ -107,13 +107,13 @@ def user_profile_link(user, is_link=True):
 
 @register.filter(name="get_number_of_players")
 def get_number_of_players (club):
-    number_of_players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True).count()
+    number_of_players = Player.objects.filter(current_club=club).exclude(is_licence_active=False).count()
     return number_of_players
 
 
 @register.filter(name="get_club_rating_points")
 def get_club_rating_points (club):
-    players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True)
+    players = Player.objects.filter(current_club=club).exclude(is_licence_active=False)
     points = 0
 
     for player in players:
@@ -124,7 +124,7 @@ def get_club_rating_points (club):
 
 @register.filter(name="get_club_avg_rating_points")
 def get_club_avg_rating_points (club):
-    players = Player.objects.filter(current_club=club).exclude(licence_number="").exclude(licence_number__isnull=True)
+    players = Player.objects.filter(current_club=club).exclude(is_licence_active=False)
 
     players_count = players.count()
 
@@ -208,14 +208,14 @@ def gender (item):
 
 @register.filter(name="licence_number")
 def licence_number(item):
-    if not item.licence_number:
+    if not item.is_licence_active:
         return '<span class="btn btn-danger btn-xs">Без ліцензії</span>'
     return '<span class="btn btn-xs btn-info">' + item.licence_number + '</span>'
 
 
 @register.filter(name="is_active_player_class")
 def is_active_player_class(item):
-    if not item.licence_number:
+    if not item.is_licence_active:
         return 'inactive'
     return ''
 
