@@ -10,6 +10,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import ugettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
+from django_countries.fields import CountryField
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
 
 
@@ -45,6 +46,7 @@ class Tournament(models.Model):
     power = models.DecimalField(_('Сила турніру'), default=0, max_digits=19, decimal_places=4)
 
     place = models.CharField(_('Місце проведення'), max_length=500)
+    country = CountryField(blank_label=_('(select country)'), verbose_name="Країна", blank=True, null=True)
 
     start_date = models.DateField(_('Дата початку'), default=timezone.now)
     start_time = models.TimeField(_('Час початку'), default=timezone.now)
