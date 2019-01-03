@@ -90,6 +90,20 @@ class Player(models.Model):
         self.save()
 
     '''
+    Activate licence
+    '''
+    def activate_licence(self):
+        self.is_licence_active = True
+        self.save()
+
+    '''
+    Deactivate licence
+    '''
+    def deactivate_licence(self):
+        self.is_licence_active = False
+        self.save()
+
+    '''
     Ranking among licensed players
     '''
     def get_ranking(self, ranking='current_rating', players_objects=None):
