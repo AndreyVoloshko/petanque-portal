@@ -47,6 +47,8 @@
 						<td align="left">
                             {% if item.organizer_club %}
                                 <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
+                            {% elif item.country %}
+                                {{ item.country|country_icon|safe }}
                             {% else %}
                                 -
                             {% endif %}
