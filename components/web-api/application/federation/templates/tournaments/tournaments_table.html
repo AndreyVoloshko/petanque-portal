@@ -57,12 +57,12 @@
                             {{ item|tournament_registration|safe }}
                             {{ item|tournament_status|safe }}
 
-                            <a href="{% url 'tournament' id=item.pk %}#tournament_comments">
+                            <!-- <a href="{% url 'tournament' id=item.pk %}#tournament_comments">
                                 <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Коментарі">
                                     <span class="glyphicon glyphicon-comment"></span>
                                     <span class="fb-comments-count" data-href="http://{{ request.get_host }}{% url 'tournament' id=item.pk %}"></span>
                                 </button>
-                            </a>
+                            </a> -->
 
                             <a href="{% url 'tournament' id=item.pk %}">
                                 <button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість команд">
@@ -86,8 +86,8 @@ $(document).ready(function() {
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
-		            { sWidth: "5%", bSearchable: true, bSortable: true }, //orginizer
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //action
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //orginizer
+		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
 		       ],
 		       "order": [[ 0, '{{ initial_order }}' ]],
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
