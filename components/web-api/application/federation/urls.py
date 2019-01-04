@@ -21,6 +21,7 @@ from .views.national_teams import national_teams
 from .views.seasons import seasons
 from .views.register import register_team, register_player
 from .views.departments import departments
+from .views.statistics import statistics
 
 
 urlpatterns = [
@@ -72,7 +73,11 @@ urlpatterns = [
     url(r'^season/?$', seasons, name='season'),
     url(r'^season/(?P<year>\w+)/?$', seasons, name='season'),
 
+    url(r'^statistics/$', statistics, name='statistics'),
+    url(r'^statistics/(?P<year>\w+)/?$', statistics, name='statistics'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 def handler404(request):
     response = render_to_response('404.html', {},
