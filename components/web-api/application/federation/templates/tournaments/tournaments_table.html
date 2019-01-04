@@ -16,7 +16,11 @@
         <tbody>
             {% for item in items %}
 					<tr class="{{ item|tournaments_css_classes }}">
-                        <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
+                        <td align="left">
+                            <button class="btn btn-default btn-xs">
+                                <span class="glyphicon glyphicon-calendar"></span> {{ item.start_date|date:"Y-m-d" }}
+                            </button>
+                        </td>
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
                         </td>
@@ -81,12 +85,12 @@
 $(document).ready(function() {
         $('#tournaments').dataTable({
                'aoColumns': [
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
+		            { sWidth: "5%", bSearchable: true, bSortable: true }, //date
 		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //orginizer
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //orginizer
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
 		       ],
 		       "order": [[ 0, '{{ initial_order }}' ]],
