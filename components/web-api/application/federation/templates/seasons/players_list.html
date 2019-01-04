@@ -7,8 +7,8 @@
                 <th align="left">Рейтинг</th>
                 <th align="left">Бали</th>
                 <th align="left">Ім'я</th>
-                <th align="left">Вікова категорія</th>
-                <th align="left">Клуб</th>
+                <th align="left" class="filterable">Вікова категорія</th>
+                <th align="left" class="filterable">Клуб</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -47,6 +47,33 @@
 <script>
 $(document).ready(function() {
         $('#players').dataTable({
+                initComplete: function () {
+                    this.api().columns('.filterable').every( function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo( $(column.footer()).empty() )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+
+                        column.data().unique().sort().each( function ( d, j ) {
+
+                            // strip html tags
+                            var tmp = document.createElement("DIV");
+                            tmp.innerHTML = d;
+                            var value = tmp.textContent || tmp.innerText || "";
+
+                            select.append( '<option value="'+value+'">'+value+'</option>' );
+                        } );
+                    } );
+                },
+
                'aoColumns': [
 		            { sWidth: "10%", bSearchable: false, bSortable: true }, //rating
 					{ sWidth: "10%", bSearchable: false, bSortable: true }, // points
