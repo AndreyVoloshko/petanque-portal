@@ -1,0 +1,216 @@
+{% include "common/head.html" %}
+
+{% load app_filters %}
+{% load staticfiles %}
+
+<style>
+    body {
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+    }
+    .row {
+        margin-bottom: 15px;
+    }
+    .container {
+        max-width: 900px !important;
+    }
+    .table {
+        margin-bottom: 0px !important;
+    }
+    .center {
+        text-align: center;
+    }
+    .bordered {
+        border: 0px solid #f5f5f5;
+    }
+    .grey_bg {
+        background: #f5f5f5;
+    }
+    .with_padding {
+        padding: 15px;
+    }
+    .table_head {
+        width: 20%;
+    }
+    .logo {
+        float: left;
+        width: 35px;
+    }
+    .sign_placeholder {
+        height: 100px;
+    }
+</style>
+
+<div class="container">
+    <div style="margin-bottom: 0px;" class="row bordered center">
+        <img src="{% static 'fpu-logo-small.png' %}" class="logo" />
+        <h4>Федерація петанку України</h4>
+    </div>
+    <div style="margin-bottom: 0px;" class="row bordered center">
+        <h3>Підсумковий протокол турніру</h3>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <td class="table_head active">Назва турніру</td>
+                <td><b>{{ tournament.name }}</b></td>
+            </tr>
+            <tr>
+                <td class="active">Тип змагань</td>
+                <td>
+                    Гравців у команді:
+                    <b>{% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
+                        {{ tournament.number_of_players_in_team_min }}
+                    {% else %}
+                        від {{ tournament.number_of_players_in_team_min }} до {{ tournament.number_of_players_in_team_max }}
+                    {% endif %}</b>
+                </td>
+            </tr>
+            <tr>
+                <td class="active">Дата початку</td>
+                <td>
+                    {{ tournament.start_date }} {{ tournament.start_time }}
+                </td>
+            </tr>
+            <tr>
+                <td class="active">Дата закінчення</td>
+                <td>
+                    {% if tournament.end_date %}
+                        {{ tournament.end_date }}
+                    {% else %}
+                        {{ tournament.start_date }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="active">Організатор</td>
+                <td>
+                    {% if tournament.organizer_club %}
+                        <b>{{ tournament.organizer_club.name }}</b>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="active">Місце проведення</td>
+                <td><b>{{ tournament.place }}</b></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <th style="width:33%;" class="active">Функція</th>
+                <th class="active">Ім'я</th>
+                <th class="active">Підпис</th>
+            </tr>
+            {% if tournament.main_organizer %}
+            <tr>
+                <td>Головний організатор</td>
+                <td>{{ tournament.main_organizer|user_profile_link:False|safe }}</td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% for arbiter in arbiters %}
+            <tr>
+                <td>
+                    {% if arbiter.is_main_arbiter %}
+                        Головний арбітр
+                    {% else %}
+                        Арбітр
+                    {% endif %}
+                </td>
+                <td>{{ arbiter.arbiter|user_profile_link:False|safe }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            {% if tournament.federation_delegat %}
+            <tr>
+                <td>Делегат ФПУ</td>
+                <td>{{ tournament.federation_delegat|user_profile_link:False|safe }}</td>
+                <td></td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <td style="width:33%" class="active">Загальна кількість команд</td>
+                <td><b>{{ teams_count }}</b></td>
+            </tr>
+            <tr>
+                <td class="active">Загальна кількість гравців</td>
+                <td><b>{{ players_count }}</b></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <th colspan="2" class="active center">Результати турніру</th>
+            </tr>
+            <tr>
+                <th class="active">Місце</th>
+                <th class="active">Команда (гравці)</th>
+            </tr>
+            {% for team in teams %}
+            <tr>
+                <td>
+                    {{ team.place_min }}
+                    {% if team.place_max %}
+                        - {{ team.place_max }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for player in team.team.players.all %}
+                        {{ player|user_profile_link:False|safe }},
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th colspan="2" class="active center">
+                    <b>Увага! Повний список результатів повинен бути доданий до протоколу!</b> Список знаходиться за посиланням:<br /> <a target="_blank" href="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html">{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html</a>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <th class="active center">Нотатки та зауваження</th>
+            </tr>
+            <tr>
+                <td><i>Нотатки щодо: дисциплінарних та ігрових зауважень, дискваліфікацій, травм та інших випадків.</i></td>
+            </tr>
+            <tr>
+                <td style="height: 500px;"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="row bordered">
+        <table class="table">
+            <tr>
+                <th colspan="4" class="active center">Підписи</th>
+            </tr>
+            <tr>
+                <th style="width:25%" class="active center">Особа, що опрацювала протокол</th>
+                <th style="width:25%" class="active center">Головний організатор</th>
+                <th style="width:25%" class="active center">Головний арбітр</th>
+                <th style="width:25%" class="active center">Делегат ФПУ</th>
+            </tr>
+            <tr>
+                <td class="sign_placeholder"></td>
+                <td class="sign_placeholder"></td>
+                <td class="sign_placeholder"></td>
+                <td class="sign_placeholder"></td>
+            </tr>
+            <tr>
+                <td class="center">дата, підпис</td>
+                <td class="center">дата, підпис</td>
+                <td class="center">дата, підпис</td>
+                <td class="center">дата, підпис</td>
+            </tr>
+        </table>
+    </div>
+</div>

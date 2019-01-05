@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
 import csv
 from transliterate import translit
 from django.http import HttpResponse
+from django.conf import settings
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -41,7 +42,7 @@ def tournament_teams_export(request, id):
         output_format = 'html'
 
     tournament = get_object_or_404(Tournament, pk=id)
-    teams = TeamTournamentMembership.objects.filter(tournament=tournament)
+    teams = TeamTournamentMembership.objects.filter(tournament=tournament).order_by('place_min')
 
     if output_format == 'csv':
 
@@ -116,6 +117,31 @@ def tournament_teams_export(request, id):
 
 def tournaments_calendar (request):
     return render(request, 'tournaments/calendar.html')
+
+
+def tournament_protocol(request, id):
+    tournament = get_object_or_404(Tournament, pk=id)
+
+    if not tournament.is_processing_closed():
+        return redirect('tournament', id=tournament.pk)
+
+    if tournament.country != settings.CURRENT_COUNTRY:
+        return redirect('tournament', id=tournament.pk)
+
+    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
+    teams = TeamTournamentMembership.objects.filter(tournament=tournament).order_by('place_min')
+
+    players_count = 0
+    for team in teams:
+        players_count += team.team.players.count()
+
+    return render(request, 'tournaments/tournament_protocol.html', {
+        'tournament': tournament,
+        'arbiters': arbiters,
+        'teams_count': len(teams),
+        'teams': teams[:4],
+        'players_count': players_count
+    })
 
 
 def _encode_row(values):

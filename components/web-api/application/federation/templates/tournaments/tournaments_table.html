@@ -60,6 +60,7 @@
                         <td align="right">
                             {{ item|tournament_registration|safe }}
                             {{ item|tournament_status|safe }}
+                            {{ item|tournament_protocol|safe }}
 
                             <!-- <a href="{% url 'tournament' id=item.pk %}#tournament_comments">
                                 <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Коментарі">
@@ -86,12 +87,12 @@ $(document).ready(function() {
         $('#tournaments').dataTable({
                'aoColumns': [
 		            { sWidth: "5%", bSearchable: true, bSortable: true }, //date
-		            { sWidth: "40%", bSearchable: true,  bSortable: true }, //name
+		            { sWidth: "35%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
 		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
 		            { sWidth: "15%", bSearchable: true, bSortable: true }, //orginizer
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //action
+		            { sWidth: "15%", bSearchable: true, bSortable: true }, //action
 		       ],
 		       "order": [[ 0, '{{ initial_order }}' ]],
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],

@@ -505,6 +505,23 @@ def tournament_status(tournament):
         return ''
 
 
+@register.filter(name="tournament_protocol")
+def tournament_protocol(tournament):
+    if not tournament.is_processing_closed():
+        return ''
+
+    if tournament.country != settings.CURRENT_COUNTRY:
+        return ''
+
+    return '''
+        <a target="_blank" href="''' + reverse('tournament_protocol', args=[tournament.pk]) + '''">
+            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Протокол турніру">
+               <span class="glyphicon glyphicon-download-alt"></span>.
+            </button>
+        </a>
+        '''
+
+
 @register.filter(name="tournament_registration")
 def tournament_registration(tournament):
     button_class=""

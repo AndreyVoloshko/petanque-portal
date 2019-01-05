@@ -60,8 +60,12 @@ class Tournament(models.Model):
     terms = models.FileField(_('Регламент'), blank=True, null=True, storage=MediaStorage())
     teams_limit = models.IntegerField(_('Ліміт команд'), default=100)
     fee = models.TextField(_('Внески'), blank=True, null=True)
+
     federation_delegat = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Делегат федерації",
                                            related_name='tournament_federation_delegat')
+
+    main_organizer = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Головний організатор",
+                                           related_name='tournament_main_organizer')
 
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
