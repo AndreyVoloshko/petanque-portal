@@ -184,7 +184,13 @@
                 <td><i>Нотатки щодо: дисциплінарних та ігрових зауважень, дискваліфікацій, травм та інших випадків.</i></td>
             </tr>
             <tr>
-                <td style="height: 500px;"></td>
+                <td style="padding-bottom: 300px;">
+                    {% if tournament.final_notes %}
+                        {{ tournament.final_notes|safe }}
+                    {% else %}
+                        Відсутні.
+                    {% endif %}
+                </td>
             </tr>
         </table>
     </div>

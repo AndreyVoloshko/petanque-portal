@@ -71,6 +71,8 @@ class Tournament(models.Model):
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
 
+    final_notes = models.TextField(_('Нотатки для підсумкового протоколу'), blank=True, null=True)
+
     is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
 
     def __str__(self):
