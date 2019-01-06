@@ -168,9 +168,9 @@
             </tr>
             {% endfor %}
             <tr>
-                <th colspan="2" class="active center">
-                    <b>Увага! Повний список результатів повинен бути доданий до протоколу!</b> Список знаходиться за посиланням:<br /> {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html
-                </th>
+                <td colspan="2" class="active center">
+                    <b>Увага! Повний список результатів повинен бути доданий до протоколу! Список знаходиться за посиланням:</b><br /> {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html
+                </td>
             </tr>
         </table>
     </div>
