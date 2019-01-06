@@ -101,13 +101,17 @@
             <tr>
                 <th style="width:33%;" class="active">Функція</th>
                 <th class="active">Ім'я</th>
-                <th class="active">Підпис</th>
             </tr>
             {% if tournament.main_organizer %}
             <tr>
                 <td>Головний організатор</td>
                 <td>{{ tournament.main_organizer|user_profile_link:False|safe }}</td>
-                <td></td>
+            </tr>
+            {% endif %}
+            {% if tournament.federation_delegat %}
+            <tr>
+                <td>Делегат ФПУ</td>
+                <td>{{ tournament.federation_delegat|user_profile_link:False|safe }}</td>
             </tr>
             {% endif %}
             {% for arbiter in arbiters %}
@@ -120,16 +124,8 @@
                     {% endif %}
                 </td>
                 <td>{{ arbiter.arbiter|user_profile_link:False|safe }}</td>
-                <td></td>
             </tr>
             {% endfor %}
-            {% if tournament.federation_delegat %}
-            <tr>
-                <td>Делегат ФПУ</td>
-                <td>{{ tournament.federation_delegat|user_profile_link:False|safe }}</td>
-                <td></td>
-            </tr>
-            {% endif %}
         </table>
     </div>
     <div class="row bordered">
