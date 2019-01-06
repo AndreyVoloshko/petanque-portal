@@ -169,7 +169,7 @@
             {% endfor %}
             <tr>
                 <th colspan="2" class="active center">
-                    <b>Увага! Повний список результатів повинен бути доданий до протоколу!</b> Список знаходиться за посиланням:<br /> <a target="_blank" href="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html">{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html</a>
+                    <b>Увага! Повний список результатів повинен бути доданий до протоколу!</b> Список знаходиться за посиланням:<br /> {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html
                 </th>
             </tr>
         </table>
