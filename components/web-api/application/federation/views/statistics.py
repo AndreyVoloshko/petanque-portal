@@ -29,6 +29,7 @@ def statistics(request, year=None):
     tournaments_data = {
         'countries': {},
         'clubs': {},
+        'organizers': {},
         'ua_places': {},
         'foreign_places': {},
         'ua_disciplines': {},
@@ -96,8 +97,15 @@ def statistics(request, year=None):
                 'count': 0
             }
 
-        if tournament.organizer_club is not None:
-            tournaments_data['clubs'][tournament.organizer_club.pk]['count'] += 1
+        # organizers
+        if tournament.main_organizer is not None and tournament.main_organizer.pk not in tournaments_data['organizers']:
+            tournaments_data['organizers'][tournament.main_organizer.pk] = {
+                'player': tournament.main_organizer,
+                'count': 0
+            }
+
+        if tournament.main_organizer is not None:
+            tournaments_data['organizers'][tournament.main_organizer.pk]['count'] += 1
 
         # places
         attibute = attibute_prefix + 'places'
@@ -121,6 +129,7 @@ def statistics(request, year=None):
     # sort dicts
     tournaments_data['countries'] = sorted(tournaments_data['countries'].values(), key=itemgetter('count'), reverse=True)
     tournaments_data['clubs'] = sorted(tournaments_data['clubs'].values(), key=itemgetter('count'), reverse=True)
+    tournaments_data['organizers'] = sorted(tournaments_data['organizers'].values(), key=itemgetter('count'), reverse=True)
 
     tournaments_data['ua_places'] = {k: v for k, v in
                                           sorted(tournaments_data['ua_places'].items(), key=lambda x: x[1],

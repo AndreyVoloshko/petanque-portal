@@ -77,6 +77,26 @@
                             </table>
                         </div>
                     </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Організатори</div>
+                        <div class="panel-body">
+                            <table class="table table-hover">
+                                <tr>
+                                    <th>Організатор</th>
+                                    <th>Турнірів</th>
+                                </tr>
+                                {% for organizer in tournaments_data.organizers %}
+                                <tr>
+                                    <td>
+                                        {{ organizer.player|user_profile_link|safe }}
+                                    </td>
+                                    <td>{{ organizer.count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-4">
