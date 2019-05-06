@@ -11,6 +11,7 @@ from datetime import date
 from django.utils import formats
 from django.urls import reverse
 from federation.helpers.general import get_model
+import json
 
 register = template.Library()
 
@@ -565,3 +566,13 @@ def get_role_in_department (player, department):
         return ''
     else:
         return department_role[0].role
+
+
+@register.filter(name="is_tournament_in_player_rating")
+def is_tournament_in_player_rating(tournament, player):
+    tournaments = json.loads(player.current_rating_tournaments)
+    for t in tournaments:
+        if t['tournament'] == tournament.pk:
+            return "tournament_goes_to_rating"
+
+    return ""

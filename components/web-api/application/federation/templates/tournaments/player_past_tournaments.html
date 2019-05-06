@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             {% for item in items %}
-					<tr>
+					<tr class="{{ item|is_tournament_in_player_rating:player|safe }}">
                         <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
                         <td align="left">
                             <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>

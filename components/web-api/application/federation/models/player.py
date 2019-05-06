@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
 from django.conf import settings
+import json
 
 
 # Players
@@ -68,6 +69,9 @@ class Player(models.Model):
     current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
     current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
+
+    current_rating_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг'), blank=True, null=True)
+    current_rating_b_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг у турнірах B'), blank=True, null=True)
 
     current_power = models.DecimalField(_('Поточна сила'), default=0, max_digits=19, decimal_places=4)
     current_power_b = models.DecimalField(_('Поточна сила у турнірах "B'), default=0, max_digits=19,
@@ -156,21 +160,27 @@ class Player(models.Model):
             player_team = tournament.get_team_which_contains_player(self)
 
             if tournament.is_goes_to_rating:
-                new_points_for_rating.append(player_team.rating_points)
+                new_points_for_rating.append({
+                    "points": float(player_team.rating_points),
+                    "tournament": tournament.pk
+                })
                 new_power_for_rating.append(player_team.rating_power)
 
             if tournament.is_b_tournament:
-                new_points_for_rating_b.append(player_team.rating_points)
+                new_points_for_rating_b.append({
+                    "points": float(player_team.rating_points),
+                    "tournament": tournament.pk
+                })
                 new_power_for_rating_b.append(player_team.rating_power)
 
         top_tournaments_number = rating_config.RATING_PLAYER_POWER_TOURNAMENTS_COUNT
 
-        rating_points = sum(
-            sorted(new_points_for_rating, reverse=True)[:top_tournaments_number]
-        )
-        b_rating_points = sum(
-            sorted(new_points_for_rating_b, reverse=True)[:top_tournaments_number]
-        )
+        new_points_for_rating = sorted(new_points_for_rating, key=lambda x: x['points'], reverse=True)[:top_tournaments_number]
+        new_points_for_rating_b = sorted(new_points_for_rating_b, key=lambda x: x['points'], reverse=True)[:top_tournaments_number]
+
+        rating_points = sum(x['points'] for x in new_points_for_rating)
+        b_rating_points = sum(x['points'] for x in new_points_for_rating_b)
+
         rating_power = sum(
             sorted(new_power_for_rating, reverse=True)[:top_tournaments_number]
         )
@@ -183,6 +193,9 @@ class Player(models.Model):
             b_rating_points = 0
             rating_power = 0
             b_rating_power = 0
+
+        self.current_rating_tournaments = json.dumps(new_points_for_rating)
+        self.current_rating_b_tournaments = json.dumps(new_points_for_rating_b)
 
         self.current_power = rating_power
         self.current_power_b = b_rating_power
