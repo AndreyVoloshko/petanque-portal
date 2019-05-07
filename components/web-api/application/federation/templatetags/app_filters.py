@@ -570,6 +570,9 @@ def get_role_in_department (player, department):
 
 @register.filter(name="is_tournament_in_player_rating")
 def is_tournament_in_player_rating(tournament, player):
+    if not player.current_rating_tournaments:
+        return ""
+
     tournaments = json.loads(player.current_rating_tournaments)
     for t in tournaments:
         if t['tournament'] == tournament.pk:
