@@ -442,6 +442,16 @@ class Tournament(models.Model):
 
         return user_tournament_team
 
+    def is_user_has_admin_access_to_tournament(self, user):
+        result = False
+
+        if self.main_organizer and user.pk == self.main_organizer.user.pk:
+            result = True
+
+        if user.is_superuser:
+            result = True
+
+        return result
 
     class Meta:
         verbose_name = 'Турнір'

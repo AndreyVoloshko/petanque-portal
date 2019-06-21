@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 import csv
 from transliterate import translit
 from django.http import HttpResponse
 from django.conf import settings
+from django.utils.html import escape
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -22,15 +24,26 @@ def tournaments(request, date_filter=None, type_filter=None):
 
 
 def tournament(request, id):
+    current_user = request.user
+
     tournament = get_object_or_404(Tournament, pk=id)
     arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
     teams = TeamTournamentMembership.objects.filter(tournament=tournament)
+
+    if request.method == "POST":
+        if 'tournament_notes_content' in request.POST and current_user.is_authenticated():
+            if tournament.is_user_has_admin_access_to_tournament(current_user):
+                tournament.final_notes = escape(request.POST['tournament_notes_content'])
+                tournament.save()
+                tournament = get_object_or_404(Tournament, pk=id)
+                messages.success(request, 'Нотатки збережено.')
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
         'arbiters': arbiters,
         'teams': teams,
         'page_title': "Турнір",
+        'current_user': current_user
     })
 
 
