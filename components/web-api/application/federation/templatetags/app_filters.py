@@ -585,3 +585,7 @@ def is_tournament_in_player_rating(tournament, player):
 def is_user_has_admin_access_to_tournament(tournament, current_user):
     return tournament.is_user_has_admin_access_to_tournament(current_user)
 
+
+@register.filter(name="is_user_has_admin_access_to_team")
+def is_user_has_admin_access_to_team(team, current_user):
+    return team.is_user_has_admin_access_to_team(current_user)

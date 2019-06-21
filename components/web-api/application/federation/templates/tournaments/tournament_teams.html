@@ -8,8 +8,9 @@
                 <th width="15%" align="left">Назва</th>
                 <th width="5%" align="left">Пункти</th>
                 <th width="50%" align="left">Гравці</th>
-                <th width="15%" align="left">Дата</th>
+                <th width="12%" align="left">Дата</th>
                 <th width="10%" align="left">Сила</th>
+                <th width="3%" align="left">&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,21 @@
                                 <span class="glyphicon glyphicon-sort"></span> {{ team.power }}
                             </button>
                         </td>
+                        <td>
+                            {% if team|is_user_has_admin_access_to_team:current_user %}
+                            <form class="form-horizontal" method="post" action="" onsubmit="return confirm('Чи ви впевнені, що хочете видалити цю команду з турніру?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <button type="submit" style="display: block;width: 24px;height: 24px;" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Видалити команду">
+                                           <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </td>
 					</tr>
 
             {% endfor %}
@@ -60,8 +76,9 @@ $(document).ready(function() {
 		            { sWidth: "15%", bSearchable: true,  bSortable: true }, //name
 		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, // points
 		            { sWidth: "50%", bSearchable: true, bSortable: false }, //players
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //date
+		            { sWidth: "12%", bSearchable: true, bSortable: true }, //date
 		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
+		            { sWidth: "3%", bSearchable: false, bSortable: false }, //actions
 		       ],
 		       "autoWidth": false,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],

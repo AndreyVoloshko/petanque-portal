@@ -52,7 +52,7 @@
             <!-- Tab panes -->
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="tournament_teams">
-                    {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams table_id="tournament_teams_table" %}
+                    {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
                 </div>
                 <div role="tabpanel" class="tab-pane" id="tournament_comments">
                     <div class="panel-body">

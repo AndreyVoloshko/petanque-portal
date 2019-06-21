@@ -7,6 +7,7 @@ from transliterate import translit
 from django.http import HttpResponse
 from django.conf import settings
 from django.utils.html import escape
+from django.http import HttpResponseRedirect
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -27,16 +28,24 @@ def tournament(request, id):
     current_user = request.user
 
     tournament = get_object_or_404(Tournament, pk=id)
-    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
-    teams = TeamTournamentMembership.objects.filter(tournament=tournament)
 
     if request.method == "POST":
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated():
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
-                tournament = get_object_or_404(Tournament, pk=id)
                 messages.success(request, 'Нотатки збережено.')
+                return HttpResponseRedirect(request.path_info)
+
+        if 'delete_team_id' in request.POST and current_user.is_authenticated():
+            team = TeamTournamentMembership.objects.get(pk=request.POST['delete_team_id'])
+            if team and team.is_user_has_admin_access_to_team(current_user):
+                team.delete()
+                messages.success(request, 'Комаду видалено.')
+                return HttpResponseRedirect(request.path_info)
+
+    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
+    teams = TeamTournamentMembership.objects.filter(tournament=tournament)
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
