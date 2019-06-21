@@ -391,6 +391,29 @@ def team_place_in_tournament(tournament, player=False):
     return message
 
 
+@register.filter(name="team_place_in_tournament_for_admin")
+def team_place_in_tournament_for_admin(tournament, player=False):
+
+    if player:
+        all_player_teams = Team.objects.filter(players=player)
+        team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+    else:
+        team = tournament
+
+    message = '''
+        <span class="btn btn-primary btn-xs tournament-place-field">
+    '''
+
+    place = '''<input data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі" style="width:50px" type="text" class="form-control" name="''' + str(team.pk) + '''-min" value="''' + str(team.place_min) + '''" placeholder="Місце" />'''
+    place += " - " + '''<input data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі (max). Залишити 0, якщо не треба" style="width:50px" type="text" class="form-control" name="''' + str(team.pk) + '''-max" value="''' + str(team.place_max) + '''" placeholder="Місце (max)" />'''
+
+    message += place + '''
+        </span>
+    '''
+
+    return message
+
+
 @register.filter(name="tournaments_css_classes")
 def tournaments_css_classes(tournament):
     classes = "tournament "

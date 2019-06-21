@@ -451,6 +451,9 @@ class Tournament(models.Model):
         if user.is_superuser:
             result = True
 
+        if self.is_processing_closed():
+            result = False
+
         return result
 
     class Meta:

@@ -17,7 +17,11 @@
             {% for team in teams %}
 					<tr>
                         <td data-order="{{ team.place_min }}" align="left">
-                            {{ team|team_place_in_tournament|safe }}
+                            {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
+                                {{ team|team_place_in_tournament_for_admin|safe }}
+                            {% else %}
+                                {{ team|team_place_in_tournament|safe }}
+                            {% endif %}
                         </td>
                         <td align="left">
                             {{ team.team|team_short_name|safe }}
@@ -65,6 +69,10 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
+        <span class="csrf-token">{% csrf_token %}</span>
+        <button type="button" class="btn btn-primary save-places">Зберегти підсумкові місця</button>
+    {% endif %}
 </div>
 
 <script>
@@ -96,6 +104,23 @@ $(document).ready(function() {
                             "previous":   "Попередня"
                         },
                 },
+        });
+
+        $('.save-places').click(function () {
+            if(!confirm("Ви впевнені, що хочете переписати підсумкові місця команд?")) {
+                return;
+            }
+
+            $.ajax({
+              method: "POST",
+              url: "",
+              data: {
+                "teams": JSON.stringify($('.tournament-place-field :input').serializeArray()),
+                "csrfmiddlewaretoken": $('.csrf-token :input').val()
+                }
+            }).done(function( msg ) {
+                location.reload();
+            });
         });
 });
 </script>

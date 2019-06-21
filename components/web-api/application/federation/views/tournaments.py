@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.utils.html import escape
 from django.http import HttpResponseRedirect
+import logging, json
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -42,6 +43,29 @@ def tournament(request, id):
             if team and team.is_user_has_admin_access_to_team(current_user):
                 team.delete()
                 messages.success(request, 'Комаду видалено.')
+                return HttpResponseRedirect(request.path_info)
+
+        if 'teams' in request.POST and current_user.is_authenticated():
+            if tournament.is_user_has_admin_access_to_tournament(current_user):
+
+                teams = json.loads(request.POST['teams'])
+
+                for team in teams:
+                    name_pieces = team['name'].split('-')
+                    db_team = TeamTournamentMembership.objects.get(pk=name_pieces[0])
+
+                    if db_team:
+
+                        if not team['value']:
+                            team['value'] = 0
+
+                        if name_pieces[1] == 'min':
+                            db_team.place_min = team['value']
+                        elif name_pieces[1] == 'max':
+                            db_team.place_max = team['value']
+                        db_team.save()
+
+                messages.success(request, 'Місця команд оновлено.')
                 return HttpResponseRedirect(request.path_info)
 
     arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
