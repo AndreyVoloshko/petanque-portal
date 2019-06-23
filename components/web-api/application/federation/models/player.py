@@ -55,6 +55,8 @@ class Player(models.Model):
     licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
     is_licence_active = models.BooleanField(_('Ліцензія активна'), default=False)
 
+    is_inclusive = models.BooleanField(_('Інклюзивний гравець'), default=False)
+
     gender = models.CharField(_('Стать'), max_length=1, choices=GENDER_CHOICES)
     prefred_position = models.CharField(_('Позиція'), max_length=10, choices=POSITIONS, blank=True, null=True)
 
@@ -68,14 +70,19 @@ class Player(models.Model):
 
     current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
+    current_rating_inclusive = models.DecimalField(_('Поточні рейтингові пункти в інклюзивних турнірах'), default=0, max_digits=19, decimal_places=4)
     current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
 
     current_rating_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг'), blank=True, null=True)
     current_rating_b_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг у турнірах B'), blank=True, null=True)
+    current_rating_inclusive_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг у інклюзивних турнірах'), blank=True, null=True)
 
     current_power = models.DecimalField(_('Поточна сила'), default=0, max_digits=19, decimal_places=4)
     current_power_b = models.DecimalField(_('Поточна сила у турнірах "B'), default=0, max_digits=19,
                                            decimal_places=4)
+    current_power_inclusive = models.DecimalField(_('Поточна сила у інклюзивних турнірах'), default=0, max_digits=19,
+                                           decimal_places=4)
+
     '''
     Erase all rating points for player
     '''
@@ -83,6 +90,7 @@ class Player(models.Model):
         self.current_rating = 0
         self.current_rating_b = 0
         self.current_rating_liga = 0
+        self.current_rating_inclusive = 0
         self.save()
 
     '''
@@ -114,6 +122,9 @@ class Player(models.Model):
         if players_objects is None:
             players_objects = self.get_actual_players_list()
 
+        if ranking == 'current_rating_inclusive':
+            players_objects = Player.objects.filter(is_inclusive=True)
+
         return players_objects.filter(**{
             ranking + "__gt" : getattr(self, ranking)
         }).count() + 1
@@ -135,7 +146,7 @@ class Player(models.Model):
         return self.get_ranking(ranking, Player.objects.all())
 
     def recalculate_ratings(self):
-        if not self.is_licence_active:
+        if not self.is_licence_active and not self.is_inclusive:
             self.erase_ratings()
             return
 
@@ -151,10 +162,11 @@ class Player(models.Model):
 
         new_points_for_rating = []
         new_points_for_rating_b = []
-        new_points_for_rating_liga = []
+        new_points_for_rating_inclusive = []
 
         new_power_for_rating = []
         new_power_for_rating_b = []
+        new_power_for_rating_inclusive = []
 
         for tournament in all_past_tournaments:
             player_team = tournament.get_team_which_contains_player(self)
@@ -173,19 +185,31 @@ class Player(models.Model):
                 })
                 new_power_for_rating_b.append(player_team.rating_power)
 
+            if tournament.is_inclusive:
+                new_points_for_rating_inclusive.append({
+                    "points": float(player_team.rating_points),
+                    "tournament": tournament.pk
+                })
+                new_power_for_rating_inclusive.append(player_team.rating_power)
+
         top_tournaments_number = rating_config.RATING_PLAYER_POWER_TOURNAMENTS_COUNT
 
         new_points_for_rating = sorted(new_points_for_rating, key=lambda x: x['points'], reverse=True)[:top_tournaments_number]
         new_points_for_rating_b = sorted(new_points_for_rating_b, key=lambda x: x['points'], reverse=True)[:top_tournaments_number]
+        new_points_for_rating_inclusive = sorted(new_points_for_rating_inclusive, key=lambda x: x['points'], reverse=True)[:top_tournaments_number]
 
         rating_points = sum(x['points'] for x in new_points_for_rating)
         b_rating_points = sum(x['points'] for x in new_points_for_rating_b)
+        inclusive_rating_points = sum(x['points'] for x in new_points_for_rating_inclusive)
 
         rating_power = sum(
             sorted(new_power_for_rating, reverse=True)[:top_tournaments_number]
         )
         b_rating_power = sum(
             sorted(new_power_for_rating_b, reverse=True)[:top_tournaments_number]
+        )
+        inclusive_rating_power = sum(
+            sorted(new_power_for_rating_inclusive, reverse=True)[:top_tournaments_number]
         )
 
         if not self.is_licence_active:
@@ -196,14 +220,16 @@ class Player(models.Model):
 
         self.current_rating_tournaments = json.dumps(new_points_for_rating)
         self.current_rating_b_tournaments = json.dumps(new_points_for_rating_b)
+        self.current_rating_inclusive_tournaments = json.dumps(new_points_for_rating_inclusive)
 
         self.current_power = rating_power
         self.current_power_b = b_rating_power
+        self.current_power_inclusive = inclusive_rating_power
 
         self.current_rating = rating_points
         self.current_rating_b = b_rating_points
+        self.current_rating_inclusive = inclusive_rating_points
         self.save()
-
 
     def __str__(self):
         return self.get_name()

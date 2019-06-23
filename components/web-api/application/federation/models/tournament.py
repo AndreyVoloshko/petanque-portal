@@ -36,6 +36,7 @@ class Tournament(models.Model):
 
     category = models.CharField(_('Категорія'), max_length=5, choices=TYPE_CHOICES)
     is_goes_to_rating = models.BooleanField(_('Рейтинговий'), default=False)
+    is_inclusive = models.BooleanField(_('Інклюзивний турнір'), default=False)
     is_ukrainian_league = models.BooleanField(_('Турнір Української Ліги Петанку'), default=False)
     is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
     is_ready_for_processing = models.BooleanField(_('Турнір готовий до опрацювання'), default=False)
@@ -479,6 +480,8 @@ class TeamTournamentMembership(models.Model):
         for player in self.team.players.all():
             if self.tournament.is_b_tournament:
                 power += player.current_power_b
+            elif self.tournament.is_inclusive:
+                power += player.current_power_inclusive
             else:
                 power += player.current_power
 
@@ -573,6 +576,7 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
         'rating_coefficient',
         'is_goes_to_rating',
         'is_b_tournament',
+        'is_inclusive',
         'is_ready_for_processing',
         'is_processing_finished',
     ]

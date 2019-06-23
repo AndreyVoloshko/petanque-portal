@@ -9,18 +9,22 @@ from federation.helpers.general import get_model
 
 def players(request, licence_filter=None, rating_filter=None):
 
-    #players_objects = Player.objects.filter(country=settings.CURRENT_COUNTRY)
     players_objects = Player.objects.all()
     if licence_filter == 'licence':
         players_objects = Player.get_actual_players_list()
+    elif licence_filter == 'inclusive':
+        players_objects = Player.objects.filter(is_inclusive=True)
 
-    rating_field='current_rating'
+    rating_field = 'current_rating'
     rating_power_field = 'current_power'
     if rating_filter == 'b':
         rating_field = 'current_rating_b'
         rating_power_field = 'current_power_b'
     elif rating_filter == 'liga':
         rating_field = 'current_rating_liga'
+    elif rating_filter == 'inclusive':
+        rating_field = 'current_rating_inclusive'
+        rating_power_field = 'current_power_inclusive'
 
     return render(request, 'players/players.html', {
         'players': players_objects,

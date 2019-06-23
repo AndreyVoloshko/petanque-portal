@@ -216,6 +216,9 @@ def licence_number(item):
 
 @register.filter(name="is_active_player_class")
 def is_active_player_class(item):
+    if item.is_inclusive:
+        return ''
+
     if not item.is_licence_active:
         return 'inactive'
     return ''
@@ -461,7 +464,7 @@ def rating_position(player, args):
     if len(args) >= 1 and args[0] != '':
         field_to_display = args[0]
 
-    if len(args) >= 2 and args[1] == 'licence':
+    if len(args) >= 2 and (args[1] == 'licence' or args[1] == 'inclusive'):
         value = player.get_ranking(field_to_display)
     else:
         value = player.get_ranking_among_all(field_to_display)
