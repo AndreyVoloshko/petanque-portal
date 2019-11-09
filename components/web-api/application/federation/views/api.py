@@ -5,10 +5,14 @@ from django.utils.dateparse import parse_datetime
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.models.player import Player
 from federation.models.club import Club
+from datetime import date
+
 
 def tournaments_list(request):
-    start_date = parse_datetime(request.GET.get('start'))
-    end_date = parse_datetime(request.GET.get('end'))
+    #start_date = parse_datetime(request.GET.get('start'))
+    #end_date = parse_datetime(request.GET.get('end'))
+    start_date = date(date.today().year, 1, 1)
+    end_date = date(date.today().year + 1, 1, 1)
     data = []
 
     if start_date and end_date:
