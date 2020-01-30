@@ -7,7 +7,7 @@ def documents(request):
     documents_objects = []
 
     for category in Document.CATEGORIES:
-        documents = Document.objects.filter(category=category[0])
+        documents = Document.objects.filter(category=category[0], is_active=True)
 
         if documents:
             documents_objects.append({

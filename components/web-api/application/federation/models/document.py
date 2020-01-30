@@ -18,6 +18,7 @@ class Document (models.Model):
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
     file = models.FileField(_('Файл'), blank=False, null=False, storage=MediaStorage())
     category = models.CharField(_('Категорія'), max_length=100, choices=CATEGORIES)
+    is_active = models.BooleanField(_('Доступний'), default=True)
 
     def __str__(self):
         return self.name
