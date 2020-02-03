@@ -35,7 +35,7 @@ class Season (models.Model):
         season_model = get_model('Season')
 
         today = datetime.datetime.now()
-        current_year = 2019
+        current_year = today.year
 
         players = player_model.get_actual_players_list()
 
