@@ -6,16 +6,16 @@ from django.utils.translation import ugettext_lazy as _
 # Documents
 class Document (models.Model):
     CATEGORIES = (
+        ('fpu', 'Свідоцтва та установчі документи ФПУ'),
+        ('tournaments', 'Положення та правила проведення змагань'),
+        ('international', 'Документи CEP, FIPJP, CMSB'),
+        ('forms', 'Форми документів для організаторів змагань та спортсменів'),
         ('rules', 'Правила'),
         ('regulations', 'Регламентні документи'),
         ('tournament_regulations', 'Регламенти турнірів'),
         ('for_print', 'Документи до друку'),
         ('official', 'Свідоцтва та офіційні документи'),
         ('other', 'Інше'),
-        ('fpu', 'Свідоцтва та установчі документи ФПУ'),
-        ('tournaments', 'Положення та правила проведення змагань'),
-        ('international', 'Документи CEP, FIPJP, CMSB'),
-        ('forms', 'Форми документів для організаторів змагань та спортсменів'),
     )
 
     name = models.CharField(_('Назва'), max_length=150)
