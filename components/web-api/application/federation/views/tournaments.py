@@ -160,7 +160,8 @@ def tournament_teams_export(request, id):
             'tournament': {
                 'id': tournament.pk,
                 'name': tournament.name,
-                'date': tournament.start_date
+                'start_date': tournament.start_date,
+                'start_time': tournament.start_time
             },
             'teams': []
         }
@@ -169,7 +170,7 @@ def tournament_teams_export(request, id):
             current_team = {
                 'id': team.team.pk,
                 'power': team.power,
-                'name': team.team.name,
+                'name': team.team.get_short_name(),
                 'players': []
             }
 
