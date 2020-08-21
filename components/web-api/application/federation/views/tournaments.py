@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
@@ -154,6 +155,8 @@ def tournament_teams_export(request, id):
 
         return response
 
+    elif output_format == 'json':
+        return JsonResponse({'tournament': tournament, 'teams': teams})
     else:
         return render(request, 'tournaments/pure_teams_list.html', {
             'tournament': tournament,
