@@ -36,14 +36,15 @@
                             <span class="glyphicon glyphicon-circle-arrow-down"></span> Експорт <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li class="dropdown-header">До SportSoftware</li>
-                            <li><a class="force-link" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">  <span class="glyphicon glyphicon-floppy-disk"></span> Команди</a></li>
-                            <li role="separator" class="divider"></li>
                             <li class="dropdown-header">До друку</li>
                             <li><a class="force-link" target="_blank" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html"><span class="glyphicon glyphicon-print"></span> Команди</a></li>
                             {% if tournament.is_processing_finished %}
                             <li><a class="force-link" target="_blank" href="{% url 'tournament_protocol' id=tournament.pk %}"><span class="glyphicon glyphicon-floppy-saved"></span> Підсумковий протокол</a></li>
                             {% endif %}
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">До SportSoftware</li>
+                            <li><a class="force-link" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">  <span class="glyphicon glyphicon-floppy-disk"></span> Команди (csv)</a></li>
+                            <li><a class="force-link" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=json">  <span class="glyphicon glyphicon-floppy-disk"></span> Команди (json)</a></li>
                         </ul>
                     </li>
                 </ul>
