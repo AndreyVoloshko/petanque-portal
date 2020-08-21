@@ -173,7 +173,7 @@ def tournament_teams_export(request, id):
                 'players': []
             }
 
-            for player in team.teams.players.all():
+            for player in team.team.players.all():
                 club_name = ""
                 if player.current_club is not None:
                     club_name = player.current_club.name
