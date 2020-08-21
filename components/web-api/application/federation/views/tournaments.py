@@ -156,7 +156,39 @@ def tournament_teams_export(request, id):
         return response
 
     elif output_format == 'json':
-        return JsonResponse({'tournament': tournament, 'teams': teams})
+        result = {
+            'tournament': {
+                'id': tournament.pk,
+                'name': tournament.name,
+                'date': tournament.start_date
+            },
+            'teams': []
+        }
+
+        for team in tournament.teams.all():
+            current_team = {
+                'id': team.team.pk,
+                'power': team.power,
+                'name': team.team.name,
+                'players': []
+            }
+
+            for player in team.players.all():
+                club_name = ""
+                if player.current_club is not None:
+                    club_name = player.current_club.name
+
+                current_team['players'].append({
+                    'id': player.pk,
+                    'name': player.name,
+                    'surname': player.surname,
+                    'club': club_name
+                })
+
+
+            result['teams'].append(current_team)
+
+        return JsonResponse(result)
     else:
         return render(request, 'tournaments/pure_teams_list.html', {
             'tournament': tournament,
