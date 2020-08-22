@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_countries',
     'django_bootstrap_carousel',
-    'silk',
     'crispy_forms',
     'floppyforms',
     'captcha',
@@ -67,8 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'silk.middleware.SilkyMiddleware'
+    'django.middleware.common.CommonMiddleware'
 ]
 
 ROOT_URLCONF = 'api.urls'
