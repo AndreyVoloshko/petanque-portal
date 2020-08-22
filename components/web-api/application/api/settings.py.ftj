@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'poll',
     'dbbackup',
     'storages',
+    'corsheaders'
 ]
 
 STATICFILES_FINDERS = [
@@ -65,7 +66,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'silk.middleware.SilkyMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'silk.middleware.SilkyMiddleware'
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -209,3 +212,9 @@ RECAPTCHA_PRIVATE_KEY = '{{ application_recaptcha_private_key }}'
 NOCAPTCHA = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = [
+    'GET'
+]

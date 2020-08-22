@@ -16,3 +16,4 @@ django-recaptcha
 
 django-dbbackup
 django-storages
+django-cors-headers
