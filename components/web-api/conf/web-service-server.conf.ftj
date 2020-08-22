@@ -14,7 +14,7 @@ server {
     # is the block to use if no blocks match the server_name
     listen      {{ nginx_container_internal_port }} default_server;
 
-    server_name portal.petanque.org.ua;
+    #server_name portal.petanque.org.ua;
 
     # the domain name it will serve for
     # server_name .example.com; # substitute your machine's IP address or FQDN
@@ -51,7 +51,11 @@ server {
 server {
     listen 443 ssl;
 
-    server_name portal.petanque.org.ua;
+    # max upload size
+    client_max_body_size 1024M;   # adjust to taste
+    charset     utf-8;
+
+    #server_name portal.petanque.org.ua;
 
     ssl_certificate /etc/letsencrypt/live/portal.petanque.org.ua/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/portal.petanque.org.ua/privkey.pem;
