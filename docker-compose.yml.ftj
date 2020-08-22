@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile.nginx
     ports:
      - "{{ nginx_container_external_port }}:{{ nginx_container_internal_port }}"
-     - "433:433"
+     - "443:443"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     volumes:
      - {{ uploaded_files_volume_name }}:{{ uploaded_file_volume_mounting_point }}
