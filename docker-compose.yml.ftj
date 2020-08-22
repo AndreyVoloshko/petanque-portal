@@ -17,8 +17,12 @@ services:
       dockerfile: Dockerfile.nginx
     ports:
      - "{{ nginx_container_external_port }}:{{ nginx_container_internal_port }}"
+     - "433:433"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     volumes:
      - {{ uploaded_files_volume_name }}:{{ uploaded_file_volume_mounting_point }}
+     - ./data/certbot/conf:/etc/letsencrypt
+     - ./data/certbot/www:/var/www/certbot
     depends_on:
      - {{ web_api_container_name }}
 
@@ -32,6 +36,12 @@ services:
     restart: always
     ports:
       - {{ adminer_container_external_port }}:{{ adminer_container_internal_port }}
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
 
 volumes:
   {{ db_container_data_volume_name }}:

@@ -7,3 +7,4 @@ ADD ./application/static/ {{ application_home_dir }}static/
 ADD ./conf/web-service-server.conf /etc/nginx/conf.d/
 
 EXPOSE {{ nginx_container_internal_port }}
+EXPOSE 433
