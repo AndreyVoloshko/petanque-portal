@@ -34,7 +34,6 @@
                         <li><a href="{% url 'tournaments' date_filter='future' %}"><i class="glyphicon glyphicon-calendar"></i> Усі майбутні турніри</a></li>
                         <li><a href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
                         <li><a href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
-                        <!-- <li><a href="{% url 'tournaments' date_filter='future' type_filter='liga' %}"><i class="glyphicon glyphicon-cd"></i> Турніри Всеукраїньскої Ліги Петанку</a></li> -->
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
@@ -46,8 +45,6 @@
                         <li><a href="{% url 'tournaments' date_filter='past' %}"><i class="glyphicon glyphicon-check"></i> Усі попередні турніри</a></li>
                         <li><a href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Попередні рейтингові турніри ФПУ</a></li>
                         <li><a href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
-                        <!-- <li><a href="{% url 'tournaments' date_filter='past' type_filter='liga' %}"><i class="glyphicon glyphicon-cd"></i> Попередні турніри Всеукраїньскої Ліги</a></li> -->
-                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='b' %}"><i class="glyphicon glyphicon-record"></i> Турніри "Б"</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
@@ -58,7 +55,6 @@
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">Офіційні рейтинги</li>
                         <li><a href="{% url 'players' licence_filter='licence' %}"><i class="glyphicon glyphicon-home"></i> Рейтинг ФПУ</a></li>
-                        <li><a href="{% url 'players' licence_filter='licence' rating_filter='b' %}"><i class="glyphicon glyphicon-record"></i> Рейтинг турнірів "Б"</a></li>
                         <li><a href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="glyphicon glyphicon-stats"></i> Рейтинг інклюзивних турнірів</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{% url 'season' %}"><i class="glyphicon glyphicon-floppy-disk"></i> Попередні сезони</a></li>
