@@ -142,10 +142,18 @@ def statistics(request, year=None):
 
     # calculate averages
     tournaments_data['ua_avg_teams_count'] = int(sum(tournaments_data['ua_teams_count']) / len(tournaments_data['ua_teams_count']))
-    tournaments_data['foreign_avg_teams_count'] = int(sum(tournaments_data['foreign_teams_count']) / len(tournaments_data['foreign_teams_count']))
+
+    if len(tournaments_data['foreign_teams_count']) > 0:
+        tournaments_data['foreign_avg_teams_count'] = int(sum(tournaments_data['foreign_teams_count']) / len(tournaments_data['foreign_teams_count']))
+    else:
+        tournaments_data['foreign_avg_teams_count'] = 0
 
     tournaments_data['ua_avg_players_count'] = int(sum(tournaments_data['ua_players_count']) / len(tournaments_data['ua_players_count']))
-    tournaments_data['foreign_avg_players_count'] = int(sum(tournaments_data['foreign_players_count']) / len(tournaments_data['foreign_players_count']))
+
+    if len(tournaments_data['foreign_players_count']) > 0:
+        tournaments_data['foreign_avg_players_count'] = int(sum(tournaments_data['foreign_players_count']) / len(tournaments_data['foreign_players_count']))
+    else:
+        tournaments_data['foreign_avg_players_count'] = 0
 
     players_all = player_model.get_actual_players_list()
     if year is not None:
