@@ -169,6 +169,7 @@
                 <div class="col-md-4">
 
                     <ul class="list-group">
+                        {% if tournaments_data.foreign_biggest_tournament_players.pk %}
                         <li class="list-group-item">
                             Найбільший турнір (гравців):<br /> <a href="{% url 'tournament' id=tournaments_data.foreign_biggest_tournament_players.pk %}">{{ tournaments_data.foreign_biggest_tournament_players.name }}</a>
                         </li>
@@ -187,6 +188,7 @@
                         <li class="list-group-item">
                             Середня кількість гравців: <span class="label label-primary">{{ tournaments_data.foreign_avg_players_count }}</span>
                         </li>
+                        {% endif %}
                     </ul>
 
                     <div class="panel panel-default">
