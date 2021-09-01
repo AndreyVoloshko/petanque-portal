@@ -51,13 +51,13 @@ def get_year(value):
 @register.filter(name='country_icon')
 def country_icon(country):
     return '''
-        ''' + str(country.name) + '''&nbsp;<i class="icon-flag icon-flag-'''+country.code+'''"></i>
+        ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country.code+'''"></i>
     '''
 
 @register.filter(name='country_flag')
 def country_flag(country):
     return '''
-        &nbsp;<i data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + str(country.name) + '''" class="icon-flag icon-flag-'''+country.code+'''"></i>
+        &nbsp;<i data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + str(country.name) + '''" class="flag-icon flag-icon-'''+country.code+'''"></i>
     '''
 
 
