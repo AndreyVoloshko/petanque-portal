@@ -34,7 +34,7 @@ def tournament(request, id):
 
     if request.method == "POST":
         if 'meta' in request.POST:
-            tournament.meta = escape(request.POST['meta'])
+            tournament.meta = request.POST['meta']
             tournament.save()
             return JsonResponse({'status': 'ok'}, safe=False)
 
