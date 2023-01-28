@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.http import HttpResponseRedirect
 import logging, json
+from django.views.decorators.csrf import csrf_exempt
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -25,7 +26,7 @@ def tournaments(request, date_filter=None, type_filter=None):
         'page_title': "Турніри",
     })
 
-
+@csrf_exempt
 def tournament(request, id):
     current_user = request.user
 
