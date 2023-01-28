@@ -71,6 +71,7 @@ class Tournament(models.Model):
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Нотатки'), blank=True, null=True)
+    meta = models.TextField(_('Технічна інформація для жеребкуванння'), blank=True, null=True)
 
     final_notes = models.TextField(_('Нотатки для підсумкового протоколу'), blank=True, null=True)
 

@@ -32,6 +32,11 @@ def tournament(request, id):
     tournament = get_object_or_404(Tournament, pk=id)
 
     if request.method == "POST":
+        if 'meta' in request.POST:
+            tournament.meta = escape(request.POST['tournament_notes_content'])
+            tournament.save()
+            return JsonResponse({'status': 'ok'}, safe=False)
+
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated():
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
@@ -160,6 +165,7 @@ def tournament_teams_export(request, id):
             'tournament': {
                 'id': tournament.pk,
                 'name': tournament.name,
+                'meta': tournament.meta,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time
             },
