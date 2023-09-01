@@ -534,6 +534,7 @@ def tournament_status(tournament):
 
 @register.filter(name="tournament_protocol")
 def tournament_protocol(tournament):
+    return ''
     if not tournament.is_processing_closed():
         return ''
 

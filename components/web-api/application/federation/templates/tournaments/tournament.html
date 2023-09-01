@@ -39,7 +39,9 @@
                             <li class="dropdown-header">До друку</li>
                             <li><a class="force-link" target="_blank" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html"><span class="glyphicon glyphicon-print"></span> Команди</a></li>
                             {% if tournament.is_processing_finished %}
-                            <li><a class="force-link" target="_blank" href="{% url 'tournament_protocol' id=tournament.pk %}"><span class="glyphicon glyphicon-floppy-saved"></span> Підсумковий протокол</a></li>
+                            <!-- 
+                                <li><a class="force-link" target="_blank" href="{% url 'tournament_protocol' id=tournament.pk %}"><span class="glyphicon glyphicon-floppy-saved"></span> Підсумковий протокол</a></li>
+                            -->
                             {% endif %}
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">До SportSoftware</li>
