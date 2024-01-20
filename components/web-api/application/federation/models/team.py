@@ -36,7 +36,10 @@ class Team(models.Model):
             if capitan:
                 name = capitan.get_name()
             elif self.players.all()[0]:
-                name = self.players.all()[0].get_name()
+                try:
+                    name = self.players.all()[0].get_name()
+                except:
+                    name = "Помилка, в команді немає гравців"
 
         return "%s: %s (%s)" % (
             self.pk,
