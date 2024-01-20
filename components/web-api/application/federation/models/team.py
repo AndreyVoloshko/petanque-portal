@@ -30,16 +30,16 @@ class Team(models.Model):
     def get_full_name(self):
         name = self.name
         if not name:
-            name = self.default_name
+            try:
+                name = self.default_name
 
-            capitan = self.get_capitan()
-            if capitan:
-                name = capitan.get_name()
-            elif self.players.all()[0]:
-                try:
-                    name = self.players.all()[0].get_name()
-                except:
-                    name = "Помилка, в команді немає гравців"
+                capitan = self.get_capitan()
+                if capitan:
+                    name = capitan.get_name()
+                elif self.players.all()[0]:
+                        name = self.players.all()[0].get_name()
+            except:
+                name = "Помилка, в команді немає гравців"
 
         return "%s: %s (%s)" % (
             self.pk,
@@ -50,16 +50,16 @@ class Team(models.Model):
     def get_short_name(self):
         name = self.name
         if not name:
-            name = self.default_name
+            try:
+                name = self.default_name
 
-            capitan = self.get_capitan()
-            if capitan:
-                name = capitan.get_name()
-            elif self.players.all()[0]:
-                try:
+                capitan = self.get_capitan()
+                if capitan:
+                    name = capitan.get_name()
+                elif self.players.all()[0]:
                     name = self.players.all()[0].get_name()
-                except:
-                    name = "Помилка, в команді немає гравців"
+            except:
+                name = "Помилка, в команді немає гравців"
 
         return "%s" % (
             name
