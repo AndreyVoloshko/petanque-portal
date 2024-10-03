@@ -177,6 +177,12 @@ def tournament_teams_export(request, id):
             current_team = {
                 'id': team.team.pk,
                 'power': team.power,
+                'place': team.place_min,
+                'place_max': team.place_max,
+                'date_registration': team.date_registration,
+                'rating_points': team.rating_points,
+                'rating_power': team.rating_power,
+                'power': team.power,
                 'name': team.team.get_short_name(),
                 'players': []
             }
