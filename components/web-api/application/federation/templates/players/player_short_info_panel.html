@@ -12,40 +12,57 @@
             </div>
         {% endif %}
         <div class="card-body">
-            <div class="row align-items-start">
-                <div class="col-md-4 text-center">
-                    <div class="mb-2">
-                        {{ item|user_avatar:"big"|safe }}
-                    </div>
-                    <div class="sentence-line-break">
-                        {{ item|user_profile_link|safe }}
-                    </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    {{ item|user_avatar:"big"|safe }}
                 </div>
-
-                <div class="col-md-8">
-                    {% if item.licence_number %}
-                    <dl class="row">
-                        <dt class="col-5 fw-bold">Ліцензія</dt>
-                        <dd class="col-7">{{ item|licence_number|safe }}</dd>
-                    </dl>
-                    {% endif %}
-                    <dl class="row">
-                        <dt class="col-5 fw-bold">Стать</dt>
-                        <dd class="col-7">{{ item|gender|safe }}</dd>
-
-                        <dt class="col-5 fw-bold">Вік</dt>
-                        <dd class="col-7">{{ item|player_age_category|safe }}</dd>
-
+                <div>
+                    <h5 class="card-title mb-1">
+                        {{ item|user_profile_link|safe }}
+                    </h5>
+                    <p class="card-text text-muted small mb-1">
+                        <i class="bi bi-people"></i> 
                         {% if item.current_club %}
-                        <dt class="col-5 fw-bold">Клуб</dt>
-                        <dd class="col-7">
                             <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
-                        </dd>
+                        {% else %}
+                            <span class="badge bg-danger">Без клубу</span>
                         {% endif %}
+                    </p>
+                    <p class="card-text text-muted small mb-1">
+                        {{ item.country|country_icon|safe }}
+                    </p>
+                </div>
+            </div>
 
-                        <dt class="col-5 fw-bold">Країна</dt>
-                        <dd class="col-7">{{ item.country|country_icon|safe }}</dd>
-                    </dl>
+            <hr class="my-2" />
+
+            <div class="row">
+                <div class="col-4">
+                    <span class="badge bg-success" data-bs-toggle="tooltip" title="Поточний рейтинг">
+                        <i class="bi bi-trophy"></i> {{ item|rating_position:rating_filters|safe }}
+                    </span>
+                </div>
+                <div class="col-4">
+                    <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                        <i class="bi bi-graph-up"></i> {{ item|rating_points:rating_field|safe }}
+                    </span>
+                </div>
+                <div class="col-4">
+                    <span class="badge bg-info" data-bs-toggle="tooltip" title="Рейтингова сила">
+                        <i class="bi bi-lightning"></i> {{ item|rating_power:rating_power_field|safe }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-4">
+                    {{ item|licence_number|safe }}
+                </div>
+                <div class="col-4">
+                    {{ item|gender|safe }}
+                </div>
+                <div class="col-4">
+                    {{ item|player_age_category|safe }}
                 </div>
             </div>
         </div>

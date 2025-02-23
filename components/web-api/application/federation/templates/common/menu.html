@@ -14,15 +14,15 @@
                     <a href="{% url 'clubs' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><i class="bi bi-house-door"></i> Федерація </a>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> Структура</a></li>
+                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> Документи</a></li>
                         <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-star"></i> Клуби</a></li>
-                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
                         <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> Арбітри</a></li>
+                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
                         <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> Тренери</a></li>
-                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> Структура ФПУ</a></li>
-                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> Документи ФПУ</a></li>
                         <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> Рекорди України</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> Статистика порталу ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> Статистика порталу</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -30,10 +30,10 @@
                        aria-expanded="false"><i class="bi bi-calendar"></i> Майбутні турніри </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-calendar"></i> Усі майбутні турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові турніри ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові турніри</a></li>
                         <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні турніри</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -41,10 +41,10 @@
                        aria-expanded="false"><i class="bi bi-check2-circle"></i> Результати </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> Усі попередні турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Попередні рейтингові турніри ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Попередні рейтингові турніри</a></li>
                         <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> Попередні закордонні турніри</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -52,7 +52,7 @@
                        aria-expanded="false"><i class="bi bi-graph-up"></i> Рейтинги </a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">Офіційні рейтинги</li>
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-house-door"></i> Рейтинг ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-house-door"></i> Рейтинг</a></li>
                         <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> Рейтинг інклюзивних турнірів</a></li>
                         <li role="separator" class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-save"></i> Попередні сезони</a></li>

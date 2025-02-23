@@ -17,5 +17,5 @@ def arbiters(request):
 
     return render(request, 'arbiters/arbiters.html', {
         'arbiters': arbiter_objects,
-        'page_title': "Арбiтри ФПУ"
+        'page_title': "Арбiтри"
     })

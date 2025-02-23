@@ -7,7 +7,7 @@ from federation.models.player import Player
 def clubs(request):
     return render(request, 'clubs/clubs.html', {
         'clubs': Club.objects.all(),
-        'page_title': "Клуби ФПУ"
+        'page_title': "Клуби"
     })
 
 def club(request, id):

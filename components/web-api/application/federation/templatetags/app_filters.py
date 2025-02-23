@@ -217,8 +217,8 @@ def gender (item):
 @register.filter(name="licence_number")
 def licence_number(item):
     if not item.is_licence_active:
-        return '<span class="badge bg-danger">Без ліцензії</span>'
-    return '<span class="badge bg-primary">' + item.licence_number + '</span>'
+        return '<span class="badge bg-danger" data-bs-toggle="tooltip" title="Ліцензія">Без ліцензії</span>'
+    return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="Ліцензія">' + item.licence_number + '</span>'
 
 
 @register.filter(name="is_active_player_class")
@@ -504,7 +504,7 @@ def rating_position(player, args):
     else:
         value = player.get_ranking_among_all(field_to_display)
 
-    return "<b>" + str(value) + "</b>"
+    return str(value)
 
 
 '''

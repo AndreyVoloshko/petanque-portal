@@ -18,5 +18,5 @@ def documents(request):
 
     return render(request, 'documents/documents.html', {
         'documents': documents_objects,
-        'page_title': "Документи ФПУ",
+        'page_title': "Документи",
     })

@@ -17,5 +17,5 @@ def coaches(request):
 
     return render(request, 'coaches/coaches.html', {
         'coaches': coaches_objects,
-        'page_title': "Тренери ФПУ"
+        'page_title': "Тренери"
     })

@@ -8,6 +8,6 @@
         {% include "players/player_short_info_panel.html" with item=club.president page_title="Президент клубу" %}
     </div>
     <div class="clearfix pt-4"></div>
-    {% include "common/table_page.html" with page_title="Гравцi клубу" table_template="players/players_table.html" items=players %}
+    {% include "common/table_page.html" with page_title="Гравцi клубу" table_template="players/players_cards.html" items=players %}
 
 {% endblock %}

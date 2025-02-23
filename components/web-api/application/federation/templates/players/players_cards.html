@@ -1,0 +1,85 @@
+{% load app_filters %}
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="players-container">
+    {% for item in items %}
+        <div class="col player-card" data-rating="{{ item|rating_position:rating_filters|default:9999 }}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            {{ item|user_avatar:"big"|safe }}
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">
+                                {{ item|user_profile_link|safe }}
+                            </h5>
+                            <p class="card-text text-muted small mb-1">
+                                <i class="bi bi-people"></i> 
+                                {% if item.current_club %}
+                                    <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                                {% else %}
+                                    <span class="badge bg-danger">Без клубу</span>
+                                {% endif %}
+                            </p>
+                            <p class="card-text text-muted small mb-1">
+                                {{ item.country|country_icon|safe }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-2" />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <span class="badge bg-success" data-bs-toggle="tooltip" title="Поточний рейтинг">
+                                <i class="bi bi-trophy"></i> {{ item|rating_position:rating_filters|safe }}
+                            </span>
+                        </div>
+                        <div class="col-4">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                                <i class="bi bi-graph-up"></i> {{ item|rating_points:rating_field|safe }}
+                            </span>
+                        </div>
+                        <div class="col-4">
+                            <span class="badge bg-info" data-bs-toggle="tooltip" title="Рейтингова сила">
+                                <i class="bi bi-lightning"></i> {{ item|rating_power:rating_power_field|safe }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-4">
+                            {{ item|licence_number|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ item|gender|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ item|player_age_category|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    $(document).ready(function () {
+        function sortPlayers() {
+            let container = $('#players-container');
+            let players = $('.player-card');
+
+            players.sort(function (a, b) {
+                return parseInt($(a).data('rating')) - parseInt($(b).data('rating'));
+            });
+
+            container.append(players);
+        }
+
+        sortPlayers();
+
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
+

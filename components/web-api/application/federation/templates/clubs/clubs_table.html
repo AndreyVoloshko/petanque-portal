@@ -1,99 +1,97 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="players">
+    <table class="table table-hover table-striped table-sm" id="players">
         <thead>
             <tr>
-                <th align="left"></th>
-                <th align="left">Бали</th>
-                <th align="left">Середній</th>
-                <th align="left">Назва</th>
-                <th align="left">Місто</th>
-                <th align="center">Рік заснування</th>
-                <th align="center"></th>
-                <th align="center">Президент</th>
-                <th align="left">Гравців</th>
+                <th class="text-center"></th>
+                <th class="text-start">Бали</th>
+                <th class="text-start">Середній</th>
+                <th class="text-start">Назва</th>
+                <th class="text-start">Місто</th>
+                <th class="text-start">Рік заснування</th>
+                <th class="text-start">Президент</th>
+                <th class="text-start">Гравців</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
-					<tr>
-                        <td align="center">
-                            {{ item|club_logo:"big"|safe }}
-                        </td>
-                        <td align="center">
-                            <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Загальна кількість рейтингових пунктів у клубі">
-                                {{ item|get_club_rating_points }}
+                <tr>
+                    <td class="text-center">
+                        {{ item|club_logo:""|safe }}
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Загальна кількість рейтингових пунктів у клубі">
+                            <i class="bi bi-trophy"></i> {{ item|get_club_rating_points }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на гравця">
+                            <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
+                        </span>
+                    </td>
+                    <td class="text-start">
+                        <a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a>
+                    </td>
+                    <td class="text-start">
+                        <a target="_blank" href="https://maps.google.com?q={{ item.address }}">
+                            <i class="bi bi-geo-alt"></i>
+                        </a> 
+                        {{ item.city }} {{ item.city.country|country_flag|safe }}
+                    </td>
+                    <td class="text-start">
+                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="Рік заснування">
+                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
+                        </span>
+                    </td>
+                    <td class="text-start">
+                        {{ item.president|user_profile_link|safe }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'club' id=item.pk %}">
+                            <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість гравців">
+                                <i class="bi bi-people"></i> {{ item|get_number_of_players }}
                             </span>
-                        </td>
-                        <td align="center">
-                            <span class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Середня кількість балів на гравця">
-                                {{ item|get_club_avg_rating_points }}
-                            </span>
-                        </td>
-                        <td align="left">
-                            <a href="{% url 'club' id=item.pk %}">
-                                <strong>{{ item.short_name }}</strong>
-                            </a>
-                        </td>
-                        <td align="left">
-                            {{ item.city }} {{ item.city.country|country_flag|safe }}
-                        </td>
-                        <td align="left">
-                            <span class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рік заснування">
-                                {{ item.date_created|get_year }} р.
-                            </span>
-                        </td>
-                        <td align="center">
-                            {{ item.president|user_avatar:"small"|safe }}
-                        </td>
-                        <td align="left">
-                            {{ item.president|user_profile_link|safe }}
-                        </td>
-                        <td align="left">
-                            <a href="{% url 'club' id=item.pk %}">
-                                <span class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість гравців">
-                                    {{ item|get_number_of_players }}
-                                </span>
-                            </a>
-                        </td>
-					</tr>
-
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
 <script>
-$(document).ready(function() {
-        $('#players').dataTable({
-               'aoColumns': [
-		            { sWidth: "10%", bSearchable: false, bSortable: true }, //logo
-					{ sWidth: "8%", bSearchable: true, bSortable: true }, // points
-					{ sWidth: "8%", bSearchable: true, bSortable: true }, // avg points
-		            { sWidth: "23%", bSearchable: true,  bSortable: true }, //name
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, // city
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, // year
-		            { sWidth: "5%", bSearchable: false, bSortable: true }, // president logo
-		            { sWidth: "17%", bSearchable: true, bSortable: true }, //president name
-					{ sWidth:  "5%", bSearchable: true, bSortable: false }, // number of players
-		       ],
-		       "order": [[ 1, "desc" ]],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ клубів на сторінку",
-                        "sZeroRecords":  "Клубів не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ клубів",
-                        "sInfoEmpty":    "Показано 0 з 0 клубів",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ клубів)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Початок",
-                            "last":       "Кінець",
-                            "next":       "Далі",
-                            "previous":   "Назад"
-                        },
-                },
+    $(document).ready(function() {
+        $('#players').DataTable({
+            columns: [
+                { width: "5%", searchable: false, orderable: true }, // logo
+                { width: "10%", searchable: true, orderable: true }, // points
+                { width: "10%", searchable: true, orderable: true }, // avg points
+                { width: "20%", searchable: true, orderable: true }, // name
+                { width: "20%", searchable: true, orderable: true }, // city
+                { width: "10%", searchable: true, orderable: true }, // year
+                { width: "20%", searchable: true, orderable: true }, // president name
+                { width: "5%", searchable: true, orderable: false }  // number of players
+            ],
+            autoWidth: false,
+            order: [[1, "desc"]],
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+            language: {
+                lengthMenu: "Показати _MENU_ клубів на сторінку",
+                zeroRecords: "Клубів не знайдено",
+                info: "Показано _START_ - _END_ з _TOTAL_ клубів",
+                infoEmpty: "Показано 0 з 0 клубів",
+                infoFiltered: "(відфільтровано з _MAX_ клубів)",
+                search: "Пошук",
+                paginate: {
+                    first: "Початок",
+                    last: "Кінець",
+                    next: "Далі",
+                    previous: "Назад"
+                }
+            }
         });
-});
+        
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
 </script>

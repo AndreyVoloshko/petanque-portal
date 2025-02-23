@@ -162,7 +162,7 @@ def statistics(request, year=None):
     return render(request, 'statistics/statistics.html', {
         'periods': periods,
         'active_period': str(year),
-        'page_title': "Статистика порталу ФПУ",
+        'page_title': "Статистика порталу",
         'tournaments_all': tournaments_all,
         'tournaments_data': tournaments_data,
         'players_all': players_all,
