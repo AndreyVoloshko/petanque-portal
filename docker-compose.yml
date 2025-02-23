@@ -33,12 +33,22 @@ services:
       POSTGRES_DB: petanque_portal
     volumes:
      - petanque_db:/var/lib/postgresql/data
+     - ./data/certbot/conf:/etc/letsencrypt
+     - ./data/certbot/www:/var/www/certbot
 
   petanque_portal_adminer:
     image: adminer
     restart: always
     ports:
       - 60103:8080
+
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
 
 volumes:
   petanque_db:
