@@ -1,8 +1,4 @@
-<div class="card mb-3">
-    <div class="card-header fw-bold">
-        {{ page_title }}
-    </div>
-    <div class="card-body">
-        {% include table_template with items=items %}
-    </div>
-</div>
+<section class="p-3 rounded mb-3">
+    <h5 class="pb-2 border-bottom fw-bold">{{ page_title }}</h5>
+    {% include table_template with items=items %}
+</section>

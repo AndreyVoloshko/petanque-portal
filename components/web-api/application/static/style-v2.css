@@ -51,6 +51,12 @@ div.table-responsive > div.dataTables_wrapper > div.row {
 	min-height: 30px;
 }
 
+.btn-xs {
+	padding: 0.25rem 0.5rem; 
+	font-size: 0.75rem;
+	line-height: 1;
+}
+
 .dataTable td, .dataTable th {
 	vertical-align: middle !important;
 }

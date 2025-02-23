@@ -29,6 +29,8 @@ class PlayerDepartmentMembership(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
     team = models.ForeignKey(Department, on_delete=models.CASCADE, verbose_name="Підрозділи ФПУ", null=True)
     role = models.CharField(_('Роль'), max_length=1000, blank=False, null=False)
+    description = models.TextField(_('Опис'), blank=True, null=True)
+    order = models.IntegerField(_('Порядок на сторінці'), default=0)
 
     class Meta:
         verbose_name = 'Належнiсть до підрозділу'

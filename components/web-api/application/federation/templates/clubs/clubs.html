@@ -3,5 +3,33 @@
 {% load i18n %}
 
 {% block content %}
-    {% include "common/table_page.html" with page_title=page_title table_template="clubs/clubs_table.html" items=clubs %}
+<section class="p-3 rounded mb-3">
+    <div class="row">
+        <div class="col-12">
+            <h5 class="pb-2 border-bottom fw-bold">{{ page_title }}</h5>
+
+            <ul class="nav nav-pills mb-3" id="clubsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="table-view-tab" data-bs-toggle="pill" href="#table-view" role="tab" aria-controls="table-view" aria-selected="true">
+                        <i class="bi bi-table"></i>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="cards-view-tab" data-bs-toggle="pill" href="#cards-view" role="tab" aria-controls="cards-view" aria-selected="false">
+                        <i class="bi bi-grid"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-content" id="clubsTabsContent">
+        <div class="tab-pane fade show active" id="table-view" role="tabpanel" aria-labelledby="table-view-tab">
+            {% include "clubs/clubs_table.html" with items=clubs %}
+        </div>
+        <div class="tab-pane fade" id="cards-view" role="tabpanel" aria-labelledby="cards-view-tab">
+            {% include "clubs/clubs_cards.html" with items=clubs %}
+        </div>
+    </div>
+</section>
 {% endblock %}

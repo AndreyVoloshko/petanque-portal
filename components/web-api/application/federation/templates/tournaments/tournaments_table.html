@@ -47,7 +47,7 @@
                     {% endif %}
                 </td>
                 <td data-order="{{ item.power }}">
-                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила турніру">
+                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила змагань">
                         <i class="bi bi-bar-chart"></i> {{ item.power }}
                     </span>
                 </td>
@@ -96,11 +96,11 @@ $(document).ready(function() {
         lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
         order: [[0, '{{ initial_order }}']],
         language: {
-            lengthMenu: "Показати _MENU_ турнірів на сторінку",
-            zeroRecords: "Турнірів не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ турнірів",
-            infoEmpty: "Показано 0 з 0 турнірів",
-            infoFiltered: "(відфільтровано з _MAX_ турнірів)",
+            lengthMenu: "Показати _MENU_ змагань на сторінку",
+            zeroRecords: "Змагань не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ змагань",
+            infoEmpty: "Показано 0 з 0 змагань",
+            infoFiltered: "(відфільтровано з _MAX_ змагань)",
             search: "Пошук:",
             "paginate": {
                 "first":      "Початок",

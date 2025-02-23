@@ -1,62 +1,69 @@
 {% load app_filters %}
 
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        {{ item.name }}
-    </div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-condensed table-striped" id="current_team">
-                <thead>
-                    <tr>
-                        <th align="center">&nbsp;</th>
-                        <th align="left">Гравець</th>
-                        <th align="left">Роль</th>
-                        <th align="left">Позиція</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for player in item_players %}
-                        <tr>
-                            <td align="center">
-                                {{ player.player|user_avatar:"small"|safe }}
-                            </td>
-                            <td align="left">{{ player.player|user_profile_link|safe }}</td>
-                            <td align="left">{{ player.get_position_display }}</td>
-                            <td align="left">{{ player.player.get_prefred_position_display }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for player in item_players %}
+        <div class="col" data-rating="{{ player.get_position_display|default:9999 }}">
+            <div class="card h-100">
+                <div class="card-body h-100 d-flex flex-column">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            {{ player.player|user_avatar:"big"|safe }}
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">
+                                {{ player.player|user_profile_link|safe }}
+                            </h5>
+                            <p class="card-text text-muted mb-1 fw-bold">
+                                <i class="bi bi-person-badge"></i> {{ player.get_position_display }}
+                            </p>
+                            <p class="card-text text-muted small mb-1">
+                                <i class="bi bi-people"></i> 
+                                {% if player.player.current_club %}
+                                    <a href="{% url 'club' id=player.player.current_club.pk %}">{{ player.player.current_club.short_name }}</a>
+                                {% else %}
+                                    <span class="badge bg-danger">Без клубу</span>
+                                {% endif %} {{ player.player.country|country_icon|safe }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-2" />
+        
+                    <div class="row mt-2">
+                        <div class="col-4">
+                            {{ player.player|licence_number|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ player.player|gender|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ player.player|player_age_category|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    {% endfor %}
 </div>
 
 <script>
-$(document).ready(function() {
-        $('#current_team').dataTable({
-               'aoColumns': [
-		            { sWidth: "10%", bSearchable: false, bSortable: true }, //avatar
-					{ sWidth:  "40%", bSearchable: false, bSortable: true }, // name
-		            { sWidth: "25%", bSearchable: true,  bSortable: true }, //role
-		            { sWidth: "25%", bSearchable: true, bSortable: true }, // position
-		       ],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
-                        "sZeroRecords":  "Гравців не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ гравців",
-                        "sInfoEmpty":    "Показано 0 з 0 гравців",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ гравців)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Початок",
-                            "last":       "Кінець",
-                            "next":       "Далі",
-                            "previous":   "Назад"
-                        },
-                },
-        });
-});
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        function sortCardsInTeam() {
+            let $cardsContainer = $('.row.row-cols-1');
+            let $cards = $cardsContainer.children('.col').detach().get();
+
+            $cards.sort(function(a, b) {
+                let ratingA = parseInt($(a).attr('data-rating'), 10) || 9999;
+                let ratingB = parseInt($(b).attr('data-rating'), 10) || 9999;
+                return ratingA - ratingB;
+            });
+
+            $cardsContainer.append($cards);
+        }
+
+        sortCardsInTeam();
+    });
 </script>

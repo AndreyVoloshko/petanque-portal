@@ -1,17 +1,61 @@
 {% load app_filters %}
-<div class="row g-4 align-items-top">
-    <div class="col-lg-8">
-        <ol class="list-group list-group-numbered">
-        {% for item in items %}
-            <li class="list-group-item">{{ item|user_profile_link|safe }}</li>
-        {% endfor %}
-        </ol>
-    </div>
-    <div class="col-lg-4 text-center">
-        {% with items|first as first_player %}
-            <div class="d-flex justify-content-center">
-                {{ first_player|user_avatar:"big"|safe }}
+
+<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-4">
+    {% for item in items %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        {{ item|user_avatar:"big"|safe }}
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">{{ item|user_profile_link|safe }}</h5>
+                        <p class="card-text text-muted small mb-1">
+                            <i class="bi bi-people"></i> 
+                            {% if item.current_club %}
+                                <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                            {% else %}
+                                <span class="badge bg-danger">Без клубу</span>
+                            {% endif %} 
+                            {{ item.country|country_icon|safe }}
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="my-2" />
+
+                <div class="row">
+                    <div class="col-4">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Поточний рейтинг">
+                            <i class="bi bi-trophy"></i> {{ item|rating_position:"current_rating"|safe }}
+                        </span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                            <i class="bi bi-graph-up"></i> {{ item|rating_points:"current_rating"|safe }}
+                        </span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" title="Рейтингова сила">
+                            <i class="bi bi-lightning"></i> {{ item|rating_power:"current_power"|safe }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-4">
+                        {{ item|licence_number|safe }}
+                    </div>
+                    <div class="col-4">
+                        {{ item|gender|safe }}
+                    </div>
+                    <div class="col-4">
+                        {{ item|player_age_category|safe }}
+                    </div>
+                </div>
             </div>
-        {% endwith %}
+        </div>
     </div>
+    {% endfor %}
 </div>

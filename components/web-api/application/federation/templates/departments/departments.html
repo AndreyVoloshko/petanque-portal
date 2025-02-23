@@ -5,120 +5,104 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-sm-3">
-        <nav class="nav-sidebar">
-            <ul class="nav tabs">
-                <li class="dropdown-header sidebar-chooser-header">{{ page_title }}</li>
-            {% for department in departments %}
-                <li role="presentation" class="{% if forloop.first %}active{% endif %}">
-                    <a href="#tab_{{ department.pk }}" aria-controls="tab_{{ department.pk }}" role="tab" data-toggle="tab">
+    <div class="col-md-3">
+        <nav class="nav flex-column p-3 rounded">
+            <h5 class="fw-bold">{{ page_title }}</h5>
+            <div class="nav nav-pills flex-column" id="departmentTabs" role="tablist">
+                {% for department in departments %}
+                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                       id="tab_{{ department.pk }}-tab" 
+                       data-bs-toggle="tab" 
+                       href="#tab_{{ department.pk }}" 
+                       role="tab" 
+                       aria-controls="tab_{{ department.pk }}" 
+                       aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                         {{ department.name }}
                     </a>
-                </li>
-            {% endfor %}
-            </ul>
+                {% endfor %}
+            </div>
         </nav>
     </div>
-    <div class="col-sm-9">
-        <!-- Tab panes -->
-        <div class="tab-content">
 
+    <div class="col-md-9">
+        <div class="tab-content" id="departmentTabsContent">
             {% for department in departments %}
-            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ department.pk }}">
-
-                <div class="row">
-                    {% if department.notes|length > 0 %}
-
-                    <div class="col-lg-6">
-                        <table style="width: 100% !important;" class="table table-hover table-condensed" id="table_{{ department.pk }}">
-                            <thead>
-                                <tr>
-                                    <th width="10%" align="left">&nbsp;</th>
-                                    <th width="30%" align="left">Ім'я</th>
-                                    <th width="15%" align="left">Роль</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for member in department.players.all %}
-                                <tr>
-                                    <td align="center">{{ member|user_avatar:"small"|safe }}</td>
-                                    <td align="left">{{ member|user_profile_link|safe }}</td>
-                                    <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Нотатки</div>
-                            <div class="panel-body">
-                                {{ department.notes }}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab_{{ department.pk }}" role="tabpanel" aria-labelledby="tab_{{ department.pk }}-tab">
+                
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    {% for membership in department.playerdepartmentmembership_set.all %}
+                    {% with membership.player as member %}
+                        <div class="col" data-rating="{{ membership.order|safe }}">
+                            <div class="card h-100">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {{ member|user_avatar:"big"|safe }}
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                {{ member|user_profile_link|safe }}
+                                            </h5>
+                                            <p class="card-text text-muted mb-1 fw-bold">
+                                                <i class="bi bi-person-badge"></i> {{ membership.role|safe }}
+                                            </p>
+                                            <p class="card-text text-muted small mb-1">
+                                                <i class="bi bi-people"></i> 
+                                                {% if member.current_club %}
+                                                    <a href="{% url 'club' id=member.current_club.pk %}">{{ member.current_club.short_name }}</a>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Без клубу</span>
+                                                {% endif %} {{ member.country|country_icon|safe }}
+                                            </p>
+                                            {% if member|get_description_in_department:department %}
+                                            <p class="card-text small text-muted">
+                                                <i class="bi bi-info-circle"></i> {{ membership.description|safe }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    {% else %}
-
-                    <div class="col-lg-12">
-                        <table style="width: 100% !important;" class="table table-hover table-condensed" id="table_{{ department.pk }}">
-                            <thead>
-                                <tr>
-                                    <th width="10%" align="left">&nbsp;</th>
-                                    <th width="30%" align="left">Ім'я</th>
-                                    <th width="15%" align="left">Роль</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for member in department.players.all %}
-                                <tr>
-                                    <td align="center">{{ member|user_avatar:"small"|safe }}</td>
-                                    <td align="left">{{ member|user_profile_link|safe }}</td>
-                                    <td data-order="{{ forloop.counter }}" align="left">{{ member|get_role_in_department:department|safe }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% endif %}
+                    {% endwith %}
+                    {% endfor %}
                 </div>
+
             </div>
-
-            <script>
-            $(document).ready(function() {
-                    $('#table_{{ department.pk }}').dataTable({
-                           'aoColumns': [
-                                { sWidth: "20%", bSearchable: false, bSortable: false }, //avatar
-                                { sWidth:  "40%", bSearchable: true, bSortable: true }, // name
-                                { sWidth: "40%", bSearchable: true,  bSortable: true }, //role
-                           ],
-                           "order": [[ 2, "desc" ]],
-                           "searching": false,
-                           "paging": false,
-                            "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                            "oLanguage": {
-                                    "sLengthMenu":   "Показати _MENU_ членів на сторінку",
-                                    "sZeroRecords":  "Членів не знайдено",
-                                    "sInfo":         "Показано _START_ - _END_ з _TOTAL_ членів",
-                                    "sInfoEmpty":    "Показано 0 з 0 членів",
-                                    "sInfoFiltered": "(відфільтровано з _MAX_ членів)",
-                                    "search":        "Пошук",
-                                    "paginate": {
-                                        "first":      "Початок",
-                                        "last":       "Кінець",
-                                        "next":       "Далі",
-                                        "previous":   "Назад"
-                                    },
-                            },
-                    });
-            });
-            </script>
-
             {% endfor %}
-
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        function sortCardsInTabs() {
+            $('.tab-pane').each(function() {
+                let $tabPane = $(this);
+                let $cardsContainer = $tabPane.find('.row.row-cols-1');
+                
+                let $cards = $cardsContainer.children('.col').detach().get();
+
+                $cards.sort(function(a, b) {
+                    let ratingA = parseInt($(a).attr('data-rating'), 10) || 9999;
+                    let ratingB = parseInt($(b).attr('data-rating'), 10) || 9999;
+                    return ratingA - ratingB;
+                });
+
+                $cardsContainer.append($cards);
+            });
+        }
+
+        sortCardsInTabs();
+
+        $('#departmentTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
+
 
 {% endblock %}

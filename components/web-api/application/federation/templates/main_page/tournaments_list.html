@@ -1,14 +1,58 @@
 {% load app_filters %}
-<div class="row g-3">
-    <div class="col-lg-12">
-        <ol class="list-group">
-        {% for item in items %}
-            <li class="list-group-item">
-                <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">
-                    {{ item.name }}
-                </a>
-            </li>
-        {% endfor %}
-        </ol>
+
+<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-3">
+    
+    {% for item in items %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-2">
+                    <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">{{ item.name }}</a>
+                </h5>
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-calendar-event"></i> {{ item.start_date|date:"d.m.Y" }}
+                        </p>
+                    </div>
+                    <div class="col-8 text-end">
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-people"></i> {% if item.organizer_club %}<a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% endif %}{{ item.country|country_icon|safe }}
+                        </p>
+                    </div>
+                </div>
+                {% if item.place %}
+                <p class="card-text text-muted mb-1">
+                    <i class="bi bi-geo-alt"></i> <a data-bs-toggle="tooltip" title="Місце проведення" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
+                </p>
+                {% endif %}
+
+                <hr class="my-2">
+
+                <div class="row">
+                    <div class="col-3">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Кількість команд">
+                            <i class="bi bi-people"></i> {{ item|teams_count }}
+                        </span>
+                    </div>
+                    <div class="col-5">
+                        {{ item|tournament_registration|safe }}
+                    </div>
+                    <div class="col-4 text-end">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Сила змагань">
+                            <i class="bi bi-star"></i> {{ item.power }}
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
+    {% endfor %}
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>

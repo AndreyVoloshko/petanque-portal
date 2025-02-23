@@ -404,7 +404,7 @@ def team_place_in_tournament(tournament, player=False):
         team = tournament
 
     message = '''
-        <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
+        <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у змаганнях">
     '''
 
     place = str(team.place_min)
@@ -433,14 +433,14 @@ def team_place_in_tournament_for_admin(tournament, player=False):
                 placeholder="Місце" 
                 data-bs-toggle="tooltip" 
                 data-bs-placement="top" 
-                title="Місце у турнірі" />
+                title="Місце у змаганнях" />
             - 
             <input type="text" class="form-control form-control-sm tournament-place-field-max" 
                 name="{team_pk}-max" value="{place_max}" 
                 placeholder="Місце (max)" 
                 data-bs-toggle="tooltip" 
                 data-bs-placement="top" 
-                title="Місце у турнірі (max). Залишити 0, якщо не треба" />
+                title="Місце у змаганнях (max). Залишити 0, якщо не треба" />
         </div>
     '''.format(
         team_pk=team.pk, 
@@ -550,16 +550,16 @@ def tournament_status(tournament):
     if tournament.is_processing_closed():
         # button_class += " bg-success"
         # icon_class = "bi bi-check2-circle"
-        # message = "Турнір опрацьовано"
+        # message = "Змагання опрацьовано"
         pass
     elif tournament.is_finished():
         button_class += " bg-secondary"
         icon_class = "bi bi-clock"
-        message = "Турнір завершено, але ще не опрацьовано"
+        message = "Змагання завершено, але ще не опрацьовано"
     elif tournament.is_began():
         button_class += " bg-danger"
         icon_class = "bi bi-lightning-fill"
-        message = "Турнір проходить зараз"
+        message = "Змагання проходять зараз"
 
     if message:
         return f'''
@@ -578,7 +578,7 @@ def tournament_protocol(tournament):
 
     return f'''
         <a target="_blank" href="{reverse('tournament_protocol', args=[tournament.pk])}">
-            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Протокол турніру">
+            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Протокол змагань">
                <i class="bi bi-download"></i>
             </span>
         </a>
@@ -595,16 +595,14 @@ def tournament_registration(tournament):
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
+        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
 
     if message:
         return format_html(
             '''
-            <a href="{}">
-                <span class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
+                <a href="{}" class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
                    <i class="{}"></i> Зареєструватися
-                </span>
-            </a>
+                </a>
             ''',
             reverse('register_team', args=[tournament.pk]),
             button_class,
@@ -623,7 +621,7 @@ def tournament_registration_badge(tournament):
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
+        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
 
     if message:
         return format_html(
@@ -651,7 +649,7 @@ def tournament_registration_button(tournament):
     if tournament.is_registration_opened():
         button_class = "btn btn-sm btn-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
+        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
 
     if message:
         return format_html(
@@ -689,6 +687,23 @@ def get_role_in_department (player, department):
         return ''
     else:
         return department_role[0].role
+    
+@register.filter(name="get_description_in_department")
+def get_description_in_department (player, department):
+    department_description = PlayerDepartmentMembership.objects.filter(team=department, player=player)
+    if not department_description[0]:
+        return ''
+    else:
+        return department_description[0].description
+
+
+@register.filter(name="get_order_in_department")
+def get_order_in_department (player, department):
+    department = PlayerDepartmentMembership.objects.filter(team=department, player=player)
+    if not department[0]:
+        return ''
+    else:
+        return department[0].order
 
 
 @register.filter(name="is_tournament_in_player_rating")

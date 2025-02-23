@@ -1,7 +1,7 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-striped table-sm" id="{{ table_id }}">
+    <table class="table table-hover table-sm" id="{{ table_id }}">
         <thead>
             <tr>
                 <th style="width: 10%;" class="text-start">Дата</th>
@@ -38,7 +38,7 @@
                         </span>
                     </td>
                     <td data-order="{{ item|team_rating_points_in_tournament:player|safe }}" class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Пункти отримані за турнір">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Пункти отримані за змагання">
                             {{ item|team_rating_points_in_tournament:player|safe }}
                         </span>
                     </td>
@@ -53,9 +53,9 @@ $(document).ready(function() {
     $('#{{ table_id }}').DataTable({
         columns: [
             { width: "10%", searchable: true, orderable: true },  // Дата
-            { width: "40%", searchable: true, orderable: true },  // Назва
+            { width: "35%", searchable: true, orderable: true },  // Назва
             { width: "20%", searchable: true, orderable: true },  // Команда
-            { width: "10%", searchable: true, orderable: true, type: "num" },  // Місце
+            { width: "15%", searchable: true, orderable: true, type: "num" },  // Місце
             { width: "10%", searchable: true, orderable: true, type: "num" },  // Сила
             { width: "10%", searchable: true, orderable: true, type: "num" }   // Бали
         ],
@@ -63,11 +63,11 @@ $(document).ready(function() {
         order: [[0, '{{ initial_order }}']],
         lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
         language: {
-            lengthMenu: "Показати _MENU_ турнірів на сторінку",
-            zeroRecords: "Турнірів не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ турнірів",
-            infoEmpty: "Показано 0 з 0 турнірів",
-            infoFiltered: "(відфільтровано з _MAX_ турнірів)",
+            lengthMenu: "Показати _MENU_ змагань на сторінку",
+            zeroRecords: "Змагань не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ змагань",
+            infoEmpty: "Показано 0 з 0 змагань",
+            infoFiltered: "(відфільтровано з _MAX_ змагань)",
             search: "Пошук",
             paginate: {
                 first: "Початок",

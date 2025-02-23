@@ -7,85 +7,79 @@
         {% include "tournaments/tournament_summary.html" with tournament=tournament %}
         {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
     </div>
+    
     <div class="clearfix pt-4"></div>
+
     <div class="row">
         <div class="col-12">
+            <section class="p-3 rounded">
+                <ul class="nav nav-pills mb-3" id="tournamentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active"
+                           id="tournament-teams-tab"
+                           data-bs-toggle="pill"
+                           href="#tournament_teams"
+                           role="tab"
+                           aria-controls="tournament_teams"
+                           aria-selected="true">
+                            <i class="bi bi-star"></i> Команди
+                        </a>
+                    </li>
 
-            <div class="card">
-                <div class="card-header text-white fw-bold">
-                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" 
-                            id="tournament-teams-tab" 
-                            data-bs-toggle="tab" 
-                            href="#tournament_teams" 
-                            role="tab" 
-                            aria-controls="tournament_teams" 
-                            aria-selected="true">
-                                <i class="bi bi-star"></i> Команди
-                            </a>
-                        </li>
-                
-                        {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
-                        <li class="nav-item">
-                            <a class="nav-link" 
-                            id="tournament-notes-tab" 
-                            data-bs-toggle="tab" 
-                            href="#tournament_notes" 
-                            role="tab" 
-                            aria-controls="tournament_notes" 
-                            aria-selected="false">
-                                <i class="bi bi-pencil"></i> Нотатки
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-                
-                <div class="card-body">
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" 
-                             id="tournament_teams" 
-                             role="tabpanel" 
-                             aria-labelledby="tournament-teams-tab">
-                            {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
-                        </div>
-            
-                        {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
-                        <div class="tab-pane fade" 
-                             id="tournament_notes" 
-                             role="tabpanel" 
-                             aria-labelledby="tournament-notes-tab">
-                            <div class="card-body">
-                                <form method="post" action="">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
-                                        <textarea id="tournament_notes_content" 
-                                                  name="tournament_notes_content" 
-                                                  class="form-control" 
-                                                  rows="10" 
-                                                  placeholder="Нотатки до підсумкового протоколу">{{ tournament.final_notes|trim }}</textarea>
-                                    </div>
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-secondary">Зберегти</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        {% endif %}
+                    {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link"
+                           id="tournament-notes-tab"
+                           data-bs-toggle="pill"
+                           href="#tournament_notes"
+                           role="tab"
+                           aria-controls="tournament_notes"
+                           aria-selected="false">
+                            <i class="bi bi-pencil"></i> Нотатки
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="tab-content p-3 rounded">
+                    <div class="tab-pane fade show active"
+                         id="tournament_teams"
+                         role="tabpanel"
+                         aria-labelledby="tournament-teams-tab">
+                        {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
                     </div>
-                </div>
-            </div>
-            
 
+                    {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
+                    <div class="tab-pane fade"
+                         id="tournament_notes"
+                         role="tabpanel"
+                         aria-labelledby="tournament-notes-tab">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <textarea id="tournament_notes_content"
+                                          name="tournament_notes_content"
+                                          class="form-control"
+                                          rows="10"
+                                          placeholder="Нотатки до підсумкового протоколу">{{ tournament.final_notes|trim }}</textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-secondary">Зберегти</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
         </div>
     </div>
 
 <script>
     $(document).ready(function() {
-        setTimeout(function() {
-            $('.no-tab-link').tab('dispose');
-        }, 300);
+        $('#tournamentTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
     });
 </script>
 {% endblock %}

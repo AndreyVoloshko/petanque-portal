@@ -23,7 +23,7 @@ def tournaments(request, date_filter=None, type_filter=None):
     return render(request, 'tournaments/tournaments.html', {
         'tournaments': Tournament.get_list(date_filter=date_filter, type_filter=type_filter, custom_order=order),
         'initial_order': frontend_order,
-        'page_title': "Турніри",
+        'page_title': "Змагання",
     })
 
 @csrf_exempt
@@ -82,7 +82,7 @@ def tournament(request, id):
         'tournament': tournament,
         'arbiters': arbiters,
         'teams': teams,
-        'page_title': "Турнір",
+        'page_title': "Змагання",
         'current_user': current_user
     })
 

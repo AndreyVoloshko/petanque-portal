@@ -5,61 +5,96 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-sm-3">
-        <nav class="nav-sidebar">
-            <ul class="nav tabs">
-                <li class="dropdown-header sidebar-chooser-header">Категорія</li>
-            {% for arbiter in arbiters %}
-                <li role="presentation" class="{% if forloop.first %}active{% endif %}">
-                    <a href="#tab_{{ arbiter.category_id }}" aria-controls="tab_{{ arbiter.category_id }}" role="tab" data-toggle="tab">
+    <div class="col-md-3">
+        <nav class="nav flex-column p-3 rounded">
+            <h5 class="fw-bold">Арбітри</h5>
+            <div class="nav nav-pills flex-column" id="arbiterTabs" role="tablist">
+                {% for arbiter in arbiters %}
+                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                       id="tab_{{ arbiter.category_id }}-tab" 
+                       data-bs-toggle="tab" 
+                       href="#tab_{{ arbiter.category_id }}" 
+                       role="tab" 
+                       aria-controls="tab_{{ arbiter.category_id }}" 
+                       aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                         {{ arbiter.category_name }}
                     </a>
-                </li>
-            {% endfor %}
-            </ul>
+                {% endfor %}
+            </div>
         </nav>
     </div>
-    <div class="col-sm-9">
-        <!-- Tab panes -->
-        <div class="tab-content">
 
+    <div class="col-md-9">
+        <div class="tab-content" id="arbiterTabsContent">
             {% for arbiter in arbiters %}
-            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ arbiter.category_id }}">
-                <table class="table table-hover table-condensed" id="table_{{ arbiter.category_id }}">
-                    <thead>
-                        <tr>
-                            <th width="10%" align="left">&nbsp;</th>
-                            <th width="30%" align="left">Ім'я</th>
-                            <th width="15%" align="left">Ліцензія</th>
-                            <th width="10%" align="left">Стать</th>
-                            <th width="10%" align="left">Вік</th>
-                            <th width="25%" align="left">Клуб</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for arbiter_player in arbiter.players %}
-                        <tr>
-                            <td align="center">{{ arbiter_player|user_avatar:"small"|safe }}</td>
-                            <td align="left">{{ arbiter_player|user_profile_link|safe }}</td>
-    						<td align="left">{{ arbiter_player|licence_number|safe }}</td>
-                            <td align="left">{{ arbiter_player|gender|safe }}</td>
-                            <td align="left">{{ arbiter_player|player_age_category|safe }}</td>
-                            <td align="left">
-                            {% if arbiter_player.current_club %}
-                                <a href="{% url 'club' id=arbiter_player.current_club.pk %}">{{ arbiter_player.current_club.short_name }}</a>
-                            {% else %}
-                                <span class="btn btn-xs btn-danger">Без клубу</span>
-                            {%endif%}
-                        </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab_{{ arbiter.category_id }}" role="tabpanel" aria-labelledby="tab_{{ arbiter.category_id }}-tab">
+                
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    {% for arbiter_player in arbiter.players %}
+                        <div class="col" data-rating="{{ arbiter_player|rating_position:""|default:9999 }}">
+                            <div class="card h-100">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {{ arbiter_player|user_avatar:"big"|safe }}
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                {{ arbiter_player|user_profile_link|safe }}
+                                            </h5>
+                                            <p class="card-text text-muted mb-1 fw-bold">
+                                                <i class="bi bi-person-badge"></i> {{ arbiter.category_name }}
+                                            </p>
+                                            <p class="card-text text-muted small mb-1">
+                                                <i class="bi bi-people"></i> 
+                                                {% if arbiter_player.current_club %}
+                                                    <a href="{% url 'club' id=arbiter_player.current_club.pk %}">{{ arbiter_player.current_club.short_name }}</a>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Без клубу</span>
+                                                {% endif %} {{ arbiter_player.country|country_icon|safe }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
             </div>
             {% endfor %}
-
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        function sortCardsInTabs() {
+            $('.tab-pane').each(function() {
+                let $tabPane = $(this);
+                let $cardsContainer = $tabPane.find('.row.row-cols-1');
+                
+                let $cards = $cardsContainer.children('.col').detach().get();
+
+                $cards.sort(function(a, b) {
+                    let ratingA = parseInt($(a).attr('data-rating'), 10) || 9999;
+                    let ratingB = parseInt($(b).attr('data-rating'), 10) || 9999;
+                    return ratingA - ratingB;
+                });
+
+                $cardsContainer.append($cards);
+            });
+        }
+
+        sortCardsInTabs();
+
+        $('#arbiterTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
 
 {% endblock %}

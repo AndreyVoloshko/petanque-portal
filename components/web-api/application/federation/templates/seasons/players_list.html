@@ -1,66 +1,64 @@
 {% load app_filters %}
 
-<div class="card mb-3">
-    <div class="card-header fw-bold">
+<section class="p-3 rounded">
+    <h5 class="pb-2 border-bottom">
         Рік: {{ year }}
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped" id="players">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-start">Рейтинг</th>
+                    <th class="text-start">Бали</th>
+                    <th class="text-start">Ім'я</th>
+                    <th class="text-start filterable">Вікова категорія</th>
+                    <th class="text-start filterable">Клуб</th>
+                    <th class="text-end no-sort">Дії</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
+                    <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
+                    <th>&nbsp;</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" title="Місце у рейтингу">
+                                {{ item|season_rating_position:rating_filters|safe }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                                {{ item|season_rating_points:rating_field|safe }}
+                            </span>
+                        </td>
+                        <td>{{ item.player|user_profile_link|safe }}</td>
+                        <td>{{ item.player|season_player_age_category:year|safe }}</td>
+                        <td>
+                            {% if item.club %}
+                                <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                            {% else %}
+                                <span class="badge bg-danger">Без клубу</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати гравця">
+                                <i class="bi bi-person"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped" id="players">
-                <thead class="table-dark">
-                    <tr>
-                        <th class="text-start">Рейтинг</th>
-                        <th class="text-start">Бали</th>
-                        <th class="text-start">Ім'я</th>
-                        <th class="text-start filterable">Вікова категорія</th>
-                        <th class="text-start filterable">Клуб</th>
-                        <th class="text-end no-sort">Дії</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
-                        <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    {% for item in items %}
-                        <tr>
-                            <td>
-                                <span class="badge bg-primary" data-bs-toggle="tooltip" title="Місце у рейтингу">
-                                    {{ item|season_rating_position:rating_filters|safe }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Рейтингові пункти">
-                                    {{ item|season_rating_points:rating_field|safe }}
-                                </span>
-                            </td>
-                            <td>{{ item.player|user_profile_link|safe }}</td>
-                            <td>{{ item.player|season_player_age_category:year|safe }}</td>
-                            <td>
-                                {% if item.club %}
-                                    <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
-                                {% else %}
-                                    <span class="badge bg-danger">Без клубу</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-end">
-                                <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати гравця">
-                                    <i class="bi bi-person"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-</div>
-</div>
+</section>
 
 <script>
     $(document).ready(function() {
@@ -86,28 +84,28 @@
                 { targets: 'no-sort', orderable: false },
             ]
         });
-    
+
         $('#players tfoot select').on('change', function() {
             let columnIndex = $(this).parent().index();
             let value = $(this).val();
             table.column(columnIndex).search(value).draw();
         });
-    
+
         table.columns('.filterable').every(function() {
             let column = this;
             let select = $(column.footer()).find('select');
-    
+
             column.data().unique().sort().each(function(d, j) {
                 let tmp = document.createElement("DIV");
                 tmp.innerHTML = d;
                 let cleanValue = tmp.textContent || tmp.innerText || "";
-    
+
                 if (cleanValue) {
                     select.append(`<option value="${cleanValue}">${cleanValue}</option>`);
                 }
             });
         });
-    
+
         function initTooltips() {
             setTimeout(function () {
                 $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {

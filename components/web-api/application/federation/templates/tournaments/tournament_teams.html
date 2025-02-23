@@ -29,7 +29,7 @@
                             </span>
                         </td>
                         <td data-order="{{ team.rating_points }}" align="left">
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Пункти отримані за турнір">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Пункти отримані за змагання">
                                 {{ team.rating_points }}
                             </span>
                         </td>
@@ -52,15 +52,13 @@
                         </td>
                         <td>
                             {% if team|is_user_has_admin_access_to_team:current_user %}
-                            <form class="form-horizontal" method="post" action="" onsubmit="return confirm('Чи ви впевнені, що хочете видалити цю команду з турніру?');">
+                            <form class="form-horizontal mb-0" method="post" action="" onsubmit="return confirm('Чи ви впевнені, що хочете видалити цю команду зі змагань?');">
                                 {% csrf_token %}
                                 <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
-                                <div class="mb-3">
-                                    <div class="col-sm-12">
-                                        <span type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
-                                           <span class="bi bi-x"></span>
-                                        </span>
-                                    </div>
+                                <div class="col-sm-12">
+                                    <span type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
+                                        <span class="bi bi-x"></span>
+                                    </span>
                                 </div>
                             </form>
                             {% endif %}

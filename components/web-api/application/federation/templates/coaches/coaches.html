@@ -5,61 +5,110 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-sm-3">
-        <nav class="nav-sidebar">
-            <ul class="nav tabs">
-                <li class="dropdown-header sidebar-chooser-header">Категорія</li>
-            {% for coach in coaches %}
-                <li role="presentation" class="{% if forloop.first %}active{% endif %}">
-                    <a href="#tab_{{ coach.category_id }}" aria-controls="tab_{{ coach.category_id }}" role="tab" data-toggle="tab">
+    <div class="col-md-3">
+        <nav class="nav flex-column p-3 rounded">
+            <h5 class="fw-bold">Тренери</h5>
+            <div class="nav nav-pills flex-column" id="coachTabs" role="tablist">
+                {% for coach in coaches %}
+                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                       id="tab_{{ coach.category_id }}-tab" 
+                       data-bs-toggle="tab" 
+                       href="#tab_{{ coach.category_id }}" 
+                       role="tab" 
+                       aria-controls="tab_{{ coach.category_id }}" 
+                       aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
                         {{ coach.category_name }}
                     </a>
-                </li>
-            {% endfor %}
-            </ul>
+                {% endfor %}
+            </div>
         </nav>
     </div>
-    <div class="col-sm-9">
-        <!-- Tab panes -->
-        <div class="tab-content">
 
+    <div class="col-md-9">
+        <div class="tab-content" id="coachTabsContent">
             {% for coach in coaches %}
-            <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="tab_{{ coach.category_id }}">
-                <table class="table table-hover table-condensed" id="table_{{ coach.category_id }}">
-                    <thead>
-                        <tr>
-                            <th width="10%" align="left">&nbsp;</th>
-                            <th width="30%" align="left">Ім'я</th>
-                            <th width="15%" align="left">Ліцензія</th>
-                            <th width="10%" align="left">Стать</th>
-                            <th width="10%" align="left">Вік</th>
-                            <th width="25%" align="left">Клуб</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for coach_player in coach.players %}
-                        <tr>
-                            <td align="center">{{ coach_player|user_avatar:"small"|safe }}</td>
-                            <td align="left">{{ coach_player|user_profile_link|safe }}</td>
-    						<td align="left">{{ coach_player|licence_number|safe }}</td>
-                            <td align="left">{{ coach_player|gender|safe }}</td>
-                            <td align="left">{{ coach_player|player_age_category|safe }}</td>
-                            <td align="left">
-                            {% if coach_player.current_club %}
-                                <a href="{% url 'club' id=coach_player.current_club.pk %}">{{ coach_player.current_club.short_name }}</a>
-                            {% else %}
-                                <span class="btn btn-xs btn-danger">Без клубу</span>
-                            {%endif%}
-                        </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab_{{ coach.category_id }}" role="tabpanel" aria-labelledby="tab_{{ coach.category_id }}-tab">
+                
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    {% for coach_player in coach.players %}
+                        <div class="col" data-rating="{{ coach_player|rating_position:""|default:9999 }}">
+                            <div class="card h-100">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {{ coach_player|user_avatar:"big"|safe }}
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                {{ coach_player|user_profile_link|safe }}
+                                            </h5>
+                                            <p class="card-text text-muted mb-1 fw-bold">
+                                                <i class="bi bi-person-badge"></i> {{ coach.category_name }}
+                                            </p>
+                                            <p class="card-text text-muted small mb-1">
+                                                <i class="bi bi-people"></i> 
+                                                {% if coach_player.current_club %}
+                                                    <a href="{% url 'club' id=coach_player.current_club.pk %}">{{ coach_player.current_club.short_name }}</a>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Без клубу</span>
+                                                {% endif %} {{ coach_player.country|country_icon|safe }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2" />
+        
+                                    <div class="row mt-2">
+                                        <div class="col-4">
+                                            {{ coach_player|licence_number|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ coach_player|gender|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ coach_player|player_age_category|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
             </div>
             {% endfor %}
-
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        function sortCardsInTabs() {
+            $('.tab-pane').each(function() {
+                let $tabPane = $(this);
+                let $cardsContainer = $tabPane.find('.row.row-cols-1');
+                
+                let $cards = $cardsContainer.children('.col').detach().get();
+
+                $cards.sort(function(a, b) {
+                    let ratingA = parseInt($(a).attr('data-rating'), 10) || 9999;
+                    let ratingB = parseInt($(b).attr('data-rating'), 10) || 9999;
+                    return ratingA - ratingB;
+                });
+
+                $cardsContainer.append($cards);
+            });
+        }
+
+        sortCardsInTabs();
+
+        $('#coachTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
 
 {% endblock %}

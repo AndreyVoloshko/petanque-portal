@@ -6,5 +6,5 @@ from federation.models.department import Department
 def departments(request):
     return render(request, 'departments/departments.html', {
         'departments': Department.objects.all().order_by('order'),
-        'page_title': "Структура"
+        'page_title': "Федерація петанку України"
     })

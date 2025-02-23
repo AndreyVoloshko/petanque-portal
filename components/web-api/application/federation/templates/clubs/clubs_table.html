@@ -20,12 +20,12 @@
                     <td class="text-center">
                         {{ item|club_logo:""|safe }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-start">
                         <span class="badge bg-success" data-bs-toggle="tooltip" title="Загальна кількість рейтингових пунктів у клубі">
                             <i class="bi bi-trophy"></i> {{ item|get_club_rating_points }}
                         </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-start">
                         <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на гравця">
                             <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
                         </span>

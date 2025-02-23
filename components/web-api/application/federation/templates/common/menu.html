@@ -16,46 +16,49 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> Структура</a></li>
                         <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> Документи</a></li>
-                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-star"></i> Клуби</a></li>
+                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-people"></i> Клуби</a></li>
                         <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> Арбітри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
                         <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> Тренери</a></li>
+                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
                         <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> Рекорди України</a></li>
                         <li role="separator" class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> Статистика порталу</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a href="{% url 'tournaments' date_filter='future' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-calendar"></i> Майбутні турніри </a>
+                    <a href="{% url 'tournaments' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-trophy"></i> Змагання </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-calendar"></i> Усі майбутні турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні турніри</a></li>
+                
+                        <!-- Майбутні -->
+                        <li><h6 class="dropdown-header">Майбутні</h6></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-hourglass"></i> Усі</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні</a></li>
+                
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a href="{% url 'tournaments' date_filter='past' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-check2-circle"></i> Результати </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> Усі попередні турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Попередні рейтингові турніри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> Попередні закордонні турніри</a></li>
+                
+                        <!-- Результати -->
+                        <li><h6 class="dropdown-header">Результати</h6></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> Усі</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні</a></li>
+                
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів</a></li>
+                
+                        <!-- Календар -->
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar-week"></i> Календар</a></li>
+                
                     </ul>
-                </li>
+                </li>                
                 <li class="nav-item dropdown">
                     <a href="#ratings" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-graph-up"></i> Рейтинги </a>
+                       aria-expanded="false"><i class="bi bi-award"></i> Рейтинги </a>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-header">Офіційні рейтинги</li>
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-house-door"></i> Рейтинг</a></li>
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> Рейтинг інклюзивних турнірів</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart"></i> Загальний</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> Інклюзивний</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-save"></i> Попередні сезони</a></li>
+                        <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-clock-history"></i> Попередні сезони</a></li>
                         <!-- <li role="separator" class="dropdown-divider"></li>
                         <li class="dropdown-header">Неофіційні рейтинги</li>
                         <li><a href="{% url 'players' %}"><i class="bi bi-graph-up"></i> Повний рейтинг порталу</a></li> -->
@@ -68,7 +71,8 @@
                        aria-expanded="false"><i class="bi bi-power"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
+                            {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
+                            <li role="separator" class="dropdown-divider"></li> {% endcomment %}
                             <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> Профіль</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Вийти</a></li>
                             {% if user.is_superuser %}
@@ -77,7 +81,7 @@
                             <li><a class="dropdown-item" class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-globe"></i> Адмін панель</a></li>
                             {% endif %}
                         {% else %}
-                            <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
+                            {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li> {% endcomment %}
                             <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Увійти</a></li>
                         {% endif %}
                     </ul>
@@ -85,7 +89,7 @@
             </ul>
             <form id="search-form" class="d-flex ms-auto">
                 <div class="input-group">
-                    <input type="text" id="search" class="form-control" title="Знайти гравця, клуб або турнір" placeholder="Знайти гравця, клуб або турнір">
+                    <input type="text" id="search" class="form-control" title="Знайти гравця, клуб або змагання" placeholder="Знайти гравця, клуб або змагання">
                     <button class="btn btn-outline-light"><i class="bi bi-search"></i></button>
                 </div>
             </form>

@@ -7,7 +7,7 @@
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Турнір: {{ tournament.name }}
+                    Змагання: {{ tournament.name }}
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
@@ -36,7 +36,7 @@
                                                 {{ team.team|team_short_name|safe }}
                                             </td>
                                             <td data-order="{{ team.rating_points }}" align="left">
-                                                <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за турнір">
+                                                <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за змагання">
                                                     {{ team.rating_points }}
                                                 </span>
                                             </td>

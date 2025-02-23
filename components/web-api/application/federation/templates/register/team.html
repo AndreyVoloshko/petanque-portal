@@ -6,26 +6,27 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-7">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    Реєстрація команди
-                </div>
-                <div class="card-body">
-                    <div class=" mb-3">
-                        <b>Турнір</b>: <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
-                    </div>
-
-                    {% if is_registration_opened %}
-                        {% crispy team_registration_form %}
-                    {% else %}
-                        <div class="text-center">
-                            <p class="text-danger fw-bold">Реєстрацію на турнір закрито.</p>
+            <section class="p-3 rounded">
+                <h5 class="pb-2 border-bottom fw-bold">Реєстрація команди</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <b>Змагання</b>: 
+                            <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
                         </div>
-                    {% endif %}
+
+                        {% if is_registration_opened %}
+                            {% crispy team_registration_form %}
+                        {% else %}
+                            <div class="text-center">
+                                <p class="text-danger fw-bold">Реєстрацію на змагання закрито.</p>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
-        
+
         <div class="col-lg-5">
             {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
         </div>
@@ -33,28 +34,28 @@
 
     <div class="row mt-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    Не можете знайти гравця? / Aren't you able to find your player?
+            <section class="p-3 rounded">
+                <h5 class="pb-2 border-bottom fw-bold">Не можете знайти гравця? / Aren't you able to find your player?</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="fw-bold">Зареєструвати гравця</h4>
+                        <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, 
+                            <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">додайте його на портал</a>.
+                        </p>
+                        <p class="text-danger fw-bold">
+                            Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
+                        </p>
+                        <hr />
+                        <h4 class="fw-bold">Register new player</h4>
+                        <p>Not all players are in our database. If you can't find a player, please, 
+                            <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">add him to our portal</a>.
+                        </p>
+                        <p class="text-danger fw-bold">
+                            Please, do not add duplicated or non-existent players.
+                        </p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h4 class="fw-bold">Зареєструвати гравця</h4>
-                    <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, 
-                        <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">додайте його на портал</a>.
-                    </p>
-                    <p class="text-danger fw-bold">
-                        Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
-                    </p>
-                    <hr />
-                    <h4 class="fw-bold">Register new player</h4>
-                    <p>Not all players are in our database. If you can't find a player, please, 
-                        <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">add him to our portal</a>.
-                    </p>
-                    <p class="text-danger fw-bold">
-                        Please, do not add duplicated or non-existent players.
-                    </p>
-                </div>
-            </div>
+            </section>
         </div>
     </div>
 

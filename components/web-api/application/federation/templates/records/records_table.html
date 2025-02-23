@@ -1,65 +1,82 @@
 {% load app_filters %}
 
-<div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="records">
-        <thead>
-            <tr>
-                <th align="left">Рекорд</th>
-                <th align="left">Значення</th>
-                <th align="left">Гравець</th>
-                <th align="left">Клуб</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-					<tr>
-                        <td align="left">{{ item.name }}</td>
-                        <td align="left">{{ item.description }}</td>
-						<td align="left">
-                            {% if item.player %}
-                                {{ item.player|user_profile_link|safe }}
-                            {% else %}
-                                -
-                            {%endif%}
-                        </td>
-						<td align="left">
-                            {% if item.club %}
-                                <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
-                            {% else %}
-                                -
-                            {%endif%}
-                        </td>
-					</tr>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    {% for item in items %}
+    <div class="col">
+        <div class="card">
+            <div class="card-body d-flex flex-column align-items-start">
+                <div class="row">
+                    <div class="col-lg-9 card-title text-muted fw-bold">
+                        <i class="bi bi-award"></i> {{ item.name }}
+                    </div>
+                    <div class="col-lg-3 card-title text-end fw-bold fs-5">
+                        <i class="bi bi-star"></i> {{ item.description }}
+                    </div>
+                </div>
+                {% if item.date_created %}
+                    <div class="row mt-1">
+                        <p class="col-lg-12 small text-muted">
+                            <i class="bi bi-calendar"></i> {{ item.date_created|date:"d.m.Y" }}
+                        </p>
+                    </div>
+                {% endif %}
+                {% if item.notes %}
+                    <div class="row mt-1">
+                        <p class="col-lg-12 text-muted">
+                            <i class="bi bi-info-circle"></i> {{ item.notes }}
+                        </p>
+                    </div>
+                {% endif %}
 
-            {% endfor %}
-        </tbody>
-    </table>
+                {% if item.player %}
+                    <hr class="my-2" />
+    
+                    <!-- Player -->
+                    <div class="d-flex align-items-center align-items-start">
+                        <div class="me-3">
+                            {{ item.player|user_avatar:"big"|safe }}
+                        </div>
+                        <div>
+                            <h6><i class="bi bi-person-fill"></i> {{ item.player|user_profile_link|safe }}</h6>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-people"></i>
+                                {% if item.player.current_club %}
+                                    <a href="{% url 'club' id=item.player.current_club.pk %}">{{ item.player.current_club.short_name }}</a>
+                                {% else %}
+                                    <span class="badge bg-danger">Без клубу</span>
+                                {% endif %} {{ item.player.country|country_icon|safe }}
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if item.club %}
+                    <hr class="my-2" />
+    
+                    <!-- Club -->
+                    <div class="d-flex align-items-center align-items-start">
+                        <div class="me-3">
+                            {% if item.club|club_logo:"big"|safe %}
+                                {{ item.club|club_logo:"big"|safe }}
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-building fs-2 text-secondary"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h6>
+                                <i class="bi bi-people"></i> Клуб: <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                            </h6>
+                            <p class="card-text text-muted small">
+                                <a href="https://maps.google.com?q={{ item.address }}"><i class="bi bi-geo-alt"></i></a> {{ item.club.city }} {{ item.club.city.country|country_flag|safe }}
+                            </p>
+                        </div>
+                    </div>
+                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-
-<script>
-$(document).ready(function() {
-        $('#records').dataTable({
-               'aoColumns': [
-		            { sWidth: "50%", bSearchable: true, bSortable: true }, //name
-		            { sWidth: "10%", bSearchable: true,  bSortable: true }, //description
-		            { sWidth: "20%", bSearchable: true, bSortable: true }, // player
-		            { sWidth: "20%", bSearchable: true, bSortable: true }, //club
-		       ],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ рекордів на сторінку",
-                        "sZeroRecords":  "Рекордів не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ рекордів",
-                        "sInfoEmpty":    "Показано 0 з 0 рекордів",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ рекордів)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Перший",
-                            "last":       "Останій",
-                            "next":       "Наступий",
-                            "previous":   "Попередій"
-                        },
-                },
-        });
-});
-</script>

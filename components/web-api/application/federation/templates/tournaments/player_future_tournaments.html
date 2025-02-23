@@ -1,7 +1,7 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-striped table-sm" id="{{ table_id }}">
+    <table class="table table-hover table-sm" id="{{ table_id }}">
         <thead>
             <tr>
                 <th style="width: 10%;" class="text-start">Дата</th>
@@ -50,11 +50,11 @@ $(document).ready(function() {
         order: [[0, '{{ initial_order }}']],
         lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
         language: {
-            lengthMenu: "Показати _MENU_ турнірів на сторінку",
-            zeroRecords: "Турнірів не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ турнірів",
-            infoEmpty: "Показано 0 з 0 турнірів",
-            infoFiltered: "(відфільтровано з _MAX_ турнірів)",
+            lengthMenu: "Показати _MENU_ змагань на сторінку",
+            zeroRecords: "Змагань не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ змагань",
+            infoEmpty: "Показано 0 з 0 змагань",
+            infoFiltered: "(відфільтровано з _MAX_ змагань)",
             search: "Пошук",
             paginate: {
                 first: "Початок",

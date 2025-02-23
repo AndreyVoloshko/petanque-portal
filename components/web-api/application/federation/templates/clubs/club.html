@@ -5,9 +5,9 @@
 {% block content %}
     <div class="row">
         {% include "clubs/club_info_panel.html" with item=club %}
-        {% include "players/player_short_info_panel.html" with item=club.president page_title="Президент клубу" %}
+        {% include "players/player_short_info_panel.html" with item=club.president page_title="Президент" %}
     </div>
     <div class="clearfix pt-4"></div>
-    {% include "common/table_page.html" with page_title="Гравцi клубу" table_template="players/players_cards.html" items=players %}
+    {% include "common/table_page.html" with page_title="Гравцi" table_template="players/players_cards.html" items=players %}
 
 {% endblock %}

@@ -19,10 +19,7 @@
                                     <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
                                 {% else %}
                                     <span class="badge bg-danger">Без клубу</span>
-                                {% endif %}
-                            </p>
-                            <p class="card-text text-muted small mb-1">
-                                {{ item.country|country_icon|safe }}
+                                {% endif %} {{ item.country|country_icon|safe }}
                             </p>
                         </div>
                     </div>

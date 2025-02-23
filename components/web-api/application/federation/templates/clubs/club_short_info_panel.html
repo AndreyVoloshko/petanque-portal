@@ -1,48 +1,44 @@
 {% load app_filters %}
 
 <div class="col" data-club="{{ item.pk }}">
-    <div class="card">
-        <div class="card-header fw-bold">
-            Клуб
+    <section class="p-3 rounded">
+        <h5 class="pb-2 border-bottom fw-bold">Клуб</h5>
+        <div class="card">
+            <div class="card-body">
+                {% if item %}
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            {{ item|club_logo:"big"|safe }}
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a>
+                            </h5>
+                            <p class="card-text text-muted small mb-2">
+                                <a target="_blank" href="https://maps.google.com?q={{ item.address }}">
+                                    <i class="bi bi-geo-alt"></i>
+                                </a> {{ item.city }}, {{ item.city.country|country_icon|safe }}
+                            </p>
+                            <div class="row mb-1">
+                                <div class="col-6">
+                                    <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рік заснування">
+                                        <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
+                                    </span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість гравців">
+                                        <i class="bi bi-people"></i> {{ item|get_number_of_players }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <span class="badge bg-danger p-2">Без клубу</span>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-        <div class="card-body">
-            {% if item %}
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        {{ item|club_logo:"big"|safe }}
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-1">
-                            <a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a>
-                        </h5>
-                        <p class="card-text text-muted small mb-1">
-                            <a target="_blank" href="https://maps.google.com?q={{ item.address }}"><i class="bi bi-geo-alt"></i></a> {{ item.city }}
-                        </p>
-                        <p class="card-text text-muted small mb-1">
-                            {{ item.city.country|country_icon|safe }}
-                        </p>
-                    </div>
-                </div>
-
-                <hr class="my-2" />
-
-                <div class="row">
-                    <div class="col-6">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рік заснування">
-                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
-                        </span>
-                    </div>
-                    <div class="col-6">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість гравців">
-                            <i class="bi bi-people"></i> {{ item|get_number_of_players }}
-                        </span>
-                    </div>
-                </div>
-            {% else %}
-                <div class="text-center">
-                    <span class="badge bg-danger p-2">Без клубу</span>
-                </div>
-            {% endif %}
-        </div>
-    </div>
+    </section>
 </div>

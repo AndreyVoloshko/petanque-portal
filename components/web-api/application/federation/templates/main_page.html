@@ -3,7 +3,7 @@
 {% block header %}
 <div class="row g-4">
     <div class="col-lg-12">
-        <div class="p-5 rounded">
+        <div class="p-4 rounded">
             <h2 class="display-4">
                 <a target="_blank" href="http://petanque.org.ua/" class="text-decoration-none">Федерація Петанку України</a> - офіційний портал
             </h2>
@@ -23,60 +23,76 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    <h3 class="text-muted"><a class="small" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-trophy"></i></a> Змагання</h3>
+    
     <div class="row g-4 py-3">
-        <div class="col-lg-6">
-            <h5><i class="bi bi-calendar"></i> Найближчі українські турніри</h5>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments %}
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-star"></i> Рейтингові</h5>
+                {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
+            </section>
         </div>
-        <div class="col-lg-6">
-            <h5><i class="bi bi-calendar"></i> Найближчі рейтингові турніри</h5>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
-        </div>
-    </div>
-
-    <div class="row g-4 py-3 border-bottom">
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Дорослі</h5>
-            {% include "main_page/players_list.html" with items=top_players_senior %}
-        </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Чоловіки</h5>
-            {% include "main_page/players_list.html" with items=top_players_men %}
-        </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Жінки</h5>
-            {% include "main_page/players_list.html" with items=top_players_women %}
+    </div>    
+    
+    <div class="row g-4 py-3">
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-hourglass"></i> Найближчі</h5>
+                {% include "main_page/tournaments_list.html" with items=future_tournaments %}
+            </section>
         </div>
     </div>
 
-    <div class="row g-4 py-3 border-bottom">
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Ветерани</h5>
-            {% include "main_page/players_list.html" with items=top_players_veteran %}
+    <h3 class="text-muted"><a class="small" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-award"></i></a> Найкращі українські гравці</h3>
+
+    <div class="row g-4 py-3">
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-gender-male"></i> Чоловіки</h5>
+                {% include "main_page/players_list.html" with items=top_players_men %}
+            </section>
         </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Espoir</h5>
-            {% include "main_page/players_list.html" with items=top_players_espoir %}
-        </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-bar-chart"></i> TOP Юніори</h5>
-            {% include "main_page/players_list.html" with items=top_players_junior %}
+    </div>
+    <div class="row g-4 py-3">
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-gender-female"></i> Жінки</h5>
+                {% include "main_page/players_list.html" with items=top_players_women %}
+            </section>
         </div>
     </div>
 
-    <div class="row g-4 pt-3">
-        <div class="col-lg-4">
-            <h5><i class="bi bi-calendar"></i> Попередні українські турніри</h5>
-            {% include "main_page/tournaments_list.html" with items=past_tournaments %}
+    <div class="row g-4 py-3">
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-person-lines-fill"></i> Ветерани</h5>
+                {% include "main_page/players_list.html" with items=top_players_veteran %}
+            </section>
         </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-calendar"></i> Попередні рейтингові турніри</h5>
-            {% include "main_page/tournaments_list.html" with items=past_tournaments_rating %}
-        </div>
-        <div class="col-lg-4">
-            <h5><i class="bi bi-calendar"></i> Попередні закордонні турніри</h5>
-            {% include "main_page/tournaments_list.html" with items=past_tournaments_away %}
+    </div>
+
+    <div class="row g-4 py-3">
+        <div class="col-lg-12">
+            <section class="p-3 rounded">
+                <h5 class="pb-2"><i class="bi bi-rocket"></i> Юніори & Молодь</h5>
+                {% include "main_page/players_list.html" with items=top_players_espoir_and_junior %}
+            </section>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        function initTooltips() {
+            setTimeout(function () {
+                $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
+                    bootstrap.Tooltip.getInstance(this).update();
+                });
+            }, 300);
+        }
+    
+        initTooltips();
+    });
+</script>
+
 {% endblock content %}
