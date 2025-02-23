@@ -71,7 +71,6 @@ class RegistrationPlayerForm(forms.Form):
                 'gender',
                 css_class="col-lg-12 mb-3"
             ),
-            HTML('<hr class="clear" />'),
             Div(
                 'captcha',
                 css_class="col-lg-12"

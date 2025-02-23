@@ -51,6 +51,8 @@ def get_year(value):
 
 @register.filter(name='country_icon')
 def country_icon(country):
+    if not country.code:
+        return 'Країна невідома!'
     return '''
         ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country.code+'''"></i>
     '''
@@ -148,17 +150,16 @@ def get_club_avg_rating_points (club):
 def social_field (item, field):
     value = getattr(item, field)
 
-    if not value :
+    if not value:
         return ''
+    
+    icon_class_name = field.title().lower()
+    if icon_class_name == 'website':
+        icon_class_name = 'globe'
+    elif icon_class_name == 'twitter':
+        icon_class_name = 'twitter-x'
 
-    return '''
-        <div class="row social-field">
-            <div class="col-sm-4">''' + field.title() + '''</div>
-            <div class="col-sm-8">
-                <a target="_blank" title="''' + value + '''" href="''' + value + '''">''' + value + '''</a>
-            </div>
-        </div>    
-    '''
+    return '<a target="_blank" href="' + value + '"  data-bs-toggle="tooltip"  data-bs-placement="top" title="' + field.title() + '"><i class="bi bi-'+ icon_class_name +'"></i></a>'
 
 
 @register.filter(name="player_age_category")
@@ -602,6 +603,34 @@ def tournament_registration(tournament):
             <a href="{}">
                 <span class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
                    <i class="{}"></i> Зареєструватися
+                </span>
+            </a>
+            ''',
+            reverse('register_team', args=[tournament.pk]),
+            button_class,
+            message,
+            icon_class
+        )
+    return ""
+
+
+@register.filter(name="tournament_registration_badge")
+def tournament_registration_badge(tournament):
+    button_class = ""
+    message = ""
+    icon_class = ""
+
+    if tournament.is_registration_opened():
+        button_class = "badge bg-success"
+        icon_class = "bi bi-plus"
+        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
+
+    if message:
+        return format_html(
+            '''
+            <a href="{}">
+                <span class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
+                   <i class="{}"></i>
                 </span>
             </a>
             ''',

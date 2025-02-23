@@ -5,11 +5,13 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-sm-7">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Реєстрація команди</div>
-                <div class="panel-body" style="min-height: auto;">
-                    <div class="text-center">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Реєстрація команди
+                </div>
+                <div class="card-body">
+                    <div class=" mb-3">
                         <b>Турнір</b>: <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
                     </div>
 
@@ -17,34 +19,38 @@
                         {% crispy team_registration_form %}
                     {% else %}
                         <div class="text-center">
-                            <hr />
-                            <p>Реєстрацію на турнір закрито.</p>
-                            <hr />
+                            <p class="text-danger fw-bold">Реєстрацію на турнір закрито.</p>
                         </div>
                     {% endif %}
-
                 </div>
             </div>
         </div>
-        <div class="col-sm-5">
+        
+        <div class="col-lg-5">
             {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Не можете знайти гравця? / Aren't you able to find your player?</div>
-                <div class="panel-body">
-                    <h4>Зареєструвати гравця</h4>
-                    <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, <a target="_blank" href="{% url 'register_player' %}"><button class="btn btn-xs btn-success">додайте його на портал</button></a>.</p>
-                    <p class="text-danger">
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Не можете знайти гравця? / Aren't you able to find your player?
+                </div>
+                <div class="card-body">
+                    <h4 class="fw-bold">Зареєструвати гравця</h4>
+                    <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, 
+                        <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">додайте його на портал</a>.
+                    </p>
+                    <p class="text-danger fw-bold">
                         Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
                     </p>
                     <hr />
-                    <h4>Register new player</h4>
-                    <p>Not all players are there in our database. If you can't find a player, please, <a target="_blank" href="{% url 'register_player' %}"><button class="btn btn-xs btn-success">add him to our portal</button></a>.</p>
-                    <p class="text-danger">
+                    <h4 class="fw-bold">Register new player</h4>
+                    <p>Not all players are in our database. If you can't find a player, please, 
+                        <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">add him to our portal</a>.
+                    </p>
+                    <p class="text-danger fw-bold">
                         Please, do not add duplicated or non-existent players.
                     </p>
                 </div>
@@ -52,11 +58,12 @@
         </div>
     </div>
 
+    <!-- Подключение select2 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
     <script>
-    $( function() {
+    $(document).ready(function() {
       $('.player-autocomplete').select2({
         ajax: {
             url: '{% url 'api_players_list' %}',

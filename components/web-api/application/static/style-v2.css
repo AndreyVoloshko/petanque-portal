@@ -59,6 +59,10 @@ div.table-responsive > div.dataTables_wrapper > div.row {
 	max-width: 30px !important;
 }
 
+.errorlist {
+	margin: 0 !important;
+}
+
 /*
 Tournaments classes
 */

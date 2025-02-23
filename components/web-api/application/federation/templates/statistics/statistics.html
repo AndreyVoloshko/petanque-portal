@@ -5,238 +5,187 @@
 {% block content %}
 
 <style>
-.row {
-    display: flex;
-    flex-wrap: wrap;
-}
-.row > [class*='col-'] {
-    display: flex;
-    flex-direction: column;
-}
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .row > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
 </style>
 
 <div class="row">
-    <div class="col-sm-2">
-        <nav class="nav-sidebar">
-            <ul class="nav tabs">
-                <li class="dropdown-header sidebar-chooser-header">{{ page_title }}</li>
-                <li class="{% if 'None' == active_period %}active{% endif %}">
-                    <a href="{% url 'statistics' %}">Загальна</a>
-                </li>
+    <div class="col-lg-2">
+        <nav class="nav nav-pills flex-column bg-light p-2 rounded">
+            <a href="{% url 'statistics' %}" class="force-follow-link nav-link {% if 'None' == active_period %}active{% endif %}">
+                Загальна
+            </a>
             {% for period in periods %}
-                <li class="{% if period.year == active_period %}active{% endif %}">
-                    <a href="{% url 'statistics' year=period.year %}">{{ period.title }}</a>
-                </li>
+                <a href="{% url 'statistics' year=period.year %}" class="force-follow-link nav-link {% if period.year == active_period %}active{% endif %}">
+                    {{ period.title }}
+                </a>
             {% endfor %}
-            </ul>
         </nav>
     </div>
-    <div class="col-sm-10">
 
-        <div id="statistics">
-            <h3>Всього турнірів: <span class="label label-primary">{{ tournaments_all|length }}</span></h3>
-            <hr />
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Країни</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
+    <!-- Основной контент -->
+    <div class="col-lg-10">
+        <h3>Статистика порталу Федерації петанку України</h3>
+        <h5>Загальна кількість турнірів за обраний період: <span class="badge bg-primary">{{ tournaments_all|length }}</span></h5>
+
+        <div class="row">
+            <!-- Статистика по странам -->
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Країни</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
                                     <th>Країна</th>
                                     <th>Турнірів</th>
                                     <th>Команд</th>
                                 </tr>
+                            </thead>
+                            <tbody>
                                 {% for country in tournaments_data.countries %}
-                                <tr>
-                                    <td>{{ country.country|country_icon|safe }}</td>
-                                    <td>{{ country.count }}</td>
-                                    <td>{{ country.teams }}</td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ country.country|country_icon|safe }}</td>
+                                        <td>{{ country.count }}</td>
+                                        <td>{{ country.teams }}</td>
+                                    </tr>
                                 {% endfor %}
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Клуби</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
+                <ul class="list-group mb-3">
+                    <li class="list-group-item">
+                        Найбільший турнір (гравців): <br />
+                        <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players.name }}</a>
+                    </li>
+                    <li class="list-group-item">
+                        Найбільша кількість гравців: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament_players_count }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        Найбільший турнір (команд): <br />
+                        <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament.pk %}">{{ tournaments_data.ua_biggest_tournament.name }}</a>
+                    </li>
+                    <li class="list-group-item">
+                        Найбільша кількість команд: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament|teams_count }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        Середня кількість команд: <span class="badge bg-primary">{{ tournaments_data.ua_avg_teams_count }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        Середня кількість гравців: <span class="badge bg-primary">{{ tournaments_data.ua_avg_players_count }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Крупные турниры -->
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Клуби</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
                                     <th>Клуб</th>
                                     <th>Турнірів</th>
                                 </tr>
+                            </thead>
+                            <tbody>
                                 {% for club in tournaments_data.clubs %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'club' id=club.club.pk %}">{{ club.club.short_name }}</a>
-                                    </td>
-                                    <td>{{ club.count }}</td>
-                                </tr>
+                                    <tr>
+                                        <td><a href="{% url 'club' id=club.club.pk %}">{{ club.club.short_name }}</a></td>
+                                        <td>{{ club.count }}</td>
+                                    </tr>
                                 {% endfor %}
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Організатори</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Організатори</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
                                     <th>Організатор</th>
                                     <th>Турнірів</th>
                                 </tr>
+                            </thead>
+                            <tbody>
                                 {% for organizer in tournaments_data.organizers %}
-                                <tr>
-                                    <td>
-                                        {{ organizer.player|user_profile_link|safe }}
-                                    </td>
-                                    <td>{{ organizer.count }}</td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ organizer.player|user_profile_link|safe }}</td>
+                                        <td>{{ organizer.count }}</td>
+                                    </tr>
                                 {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            Найбільший турнір (гравців):<br /> <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players.name }}</a>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільша кількість гравців: <span class="label label-primary">{{ tournaments_data.ua_biggest_tournament_players_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільщий турнір (команд):<br /> <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament.pk %}">{{ tournaments_data.ua_biggest_tournament.name }}</a>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільша кількість команд: <span class="label label-primary">{{ tournaments_data.ua_biggest_tournament|teams_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Середня кількість команд: <span class="label label-primary">{{ tournaments_data.ua_avg_teams_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Середня кількість гравців: <span class="label label-primary">{{ tournaments_data.ua_avg_players_count }}</span>
-                        </li>
-                    </ul>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Дисципліни (Україна)</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
-                                <tr>
-                                    <th>Дисципліна</th>
-                                    <th>Турнірів</th>
-                                </tr>
-                                {% for players_count, count in tournaments_data.ua_disciplines.items %}
-                                <tr>
-                                    <td>
-                                        {% if players_count <= 3 %}
-                                            {% for i in "x"|rjust:players_count %}
-                                                <i class="bi bi-person"></i>
-                                            {% endfor %}
-                                        {% else %}
-                                            {{ players_count }} <i class="bi bi-person"></i>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Місця проведення (Україна)</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
-                                <tr>
-                                    <th>Місце</th>
-                                    <th>Турнірів</th>
-                                </tr>
-                                {% for place, count in tournaments_data.ua_places.items %}
-                                <tr>
-                                    <td>{{ place }}</td>
-                                    <td>{{ count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-
-                    <ul class="list-group">
-                        {% if tournaments_data.foreign_biggest_tournament_players.pk %}
-                        <li class="list-group-item">
-                            Найбільший турнір (гравців):<br /> <a href="{% url 'tournament' id=tournaments_data.foreign_biggest_tournament_players.pk %}">{{ tournaments_data.foreign_biggest_tournament_players.name }}</a>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільша кількість гравців: <span class="label label-primary">{{ tournaments_data.foreign_biggest_tournament_players_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільший турнір (команд):<br /> <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament.pk %}">{{ tournaments_data.foreign_biggest_tournament.name }}</a>
-                        </li>
-                        <li class="list-group-item">
-                            Найбільша кількість команд: <span class="label label-primary">{{ tournaments_data.foreign_biggest_tournament|teams_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Середня кількість команд: <span class="label label-primary">{{ tournaments_data.foreign_avg_teams_count }}</span>
-                        </li>
-                        <li class="list-group-item">
-                            Середня кількість гравців: <span class="label label-primary">{{ tournaments_data.foreign_avg_players_count }}</span>
-                        </li>
-                        {% endif %}
-                    </ul>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Дисципліни (Закордоном)</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
-                                <tr>
-                                    <th>Дисципліна</th>
-                                    <th>Турнірів</th>
-                                </tr>
-                                {% for players_count, count in tournaments_data.foreign_disciplines.items %}
-                                <tr>
-                                    <td>
-                                        {% if players_count <= 3 %}
-                                            {% for i in "x"|rjust:players_count %}
-                                                <i class="bi bi-person"></i>
-                                            {% endfor %}
-                                        {% else %}
-                                            {{ players_count }} <i class="bi bi-person"></i>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Місця проведення (Закордоном)</div>
-                        <div class="panel-body">
-                            <table class="table table-hover">
-                                <tr>
-                                    <th>Місце</th>
-                                    <th>Турнірів</th>
-                                </tr>
-                                {% for place, count in tournaments_data.foreign_places.items %}
-                                <tr>
-                                    <td>{{ place }}</td>
-                                    <td>{{ count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Дисциплины -->
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Дисципліни (Україна)</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Дисципліна</th>
+                                    <th>Турнірів</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for players_count, count in tournaments_data.ua_disciplines.items %}
+                                    <tr>
+                                        <td>
+                                            {% if players_count <= 3 %}
+                                                {% for i in "x"|rjust:players_count %}
+                                                    <i class="bi bi-person"></i>
+                                                {% endfor %}
+                                            {% else %}
+                                                {{ players_count }} <i class="bi bi-person"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Місця проведення (Україна)</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Місце</th>
+                                    <th>Турнірів</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for place, count in tournaments_data.ua_places.items %}
+                                    <tr>
+                                        <td>{{ place }}</td>
+                                        <td>{{ count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

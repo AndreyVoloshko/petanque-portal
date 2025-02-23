@@ -37,8 +37,7 @@ class RegistrationTeamForm(forms.Form):
         #)
 
         self.helper.layout = Layout(
-            HTML('<hr class="clear" />'),
-            HTML('<hr class="clear" />'),
+            Div(css_class="clear"),
         #    Div(
         #        'captcha',
         #        css_class="col-lg-12"

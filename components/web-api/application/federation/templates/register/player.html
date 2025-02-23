@@ -5,25 +5,30 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-sm-8">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Реєстрація гравця</div>
-                <div class="panel-body">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Реєстрація гравця
+                </div>
+                <div class="card-body">
                     {% crispy player_registration_form %}
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Не можете знайти гравця? / Aren't you able to find your player?</div>
-                <div class="panel-body">
-                    <h4>Зареєструвати гравця</h4>
-                    <p class="text-danger">
-                        Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Не можете знайти гравця? / Aren't you able to find your player?
+                </div>
+                <div class="card-body">
+                    <h4 class="fw-bold">Зареєструвати гравця</h4>
+                    <p class="text-danger fw-bold">
+                        Велике прохання не додавати дублікатів або неіснуючих гравців. 
+                        Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
                     </p>
-                    <hr />
-                    <h4>Register new player</h4>
-                    <p class="text-danger">
+                    <h4 class="fw-bold">Register new player</h4>
+                    <p class="text-danger fw-bold">
                         Please, do not add duplicated or non-existent players.
                     </p>
                 </div>
@@ -31,10 +36,12 @@
         </div>
     </div>
 
-  <script>
-      $( function() {
-        $( ".dateinput" ).datepicker();
-        $( ".dateinput" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
-      });
-  </script>
+    <!-- jQuery UI Datepicker -->
+    <script>
+        $(document).ready(function() {
+            $(".dateinput").datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,9 +1,9 @@
 {% load app_filters %}
 
-<div class="col-sm-4">
-    <div class="panel panel-primary">
+<div class="col-lg-4">
+    <div class="card">
         {% if page_title != 'No title' %}
-            <div class="panel-heading">
+            <div class="card-header fw-bold">
                 {% if page_title %}
                     {{ page_title }}
                 {% else %}
@@ -11,51 +11,42 @@
                 {% endif %}
             </div>
         {% endif %}
-        <div class="panel-body">
-
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="row">
-                        <div align="center">
-                            {{ item|user_avatar:"big"|safe }}
-                        </div>
+        <div class="card-body">
+            <div class="row align-items-start">
+                <div class="col-md-4 text-center">
+                    <div class="mb-2">
+                        {{ item|user_avatar:"big"|safe }}
                     </div>
-                    <div class="row">
-                        <div align="center" class="sentence-line-break">
-                            {{ item|user_profile_link|safe }}
-                        </div>
+                    <div class="sentence-line-break">
+                        {{ item|user_profile_link|safe }}
                     </div>
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-md-8">
                     {% if item.licence_number %}
-                    <div class="row">
-                        <div class="col-sm-4">Лiцензiя</div>
-                        <div class="col-sm-8">{{ item|licence_number|safe }}</div>
-                    </div>
+                    <dl class="row">
+                        <dt class="col-5 fw-bold">Ліцензія</dt>
+                        <dd class="col-7">{{ item|licence_number|safe }}</dd>
+                    </dl>
                     {% endif %}
-                    <div class="row">
-                        <div class="col-sm-4">Стать</div>
-                        <div class="col-sm-8">{{ item|gender|safe }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">Вік</div>
-                        <div class="col-sm-8">{{ item|player_age_category|safe }}</div>
-                    </div>
-                    {% if item.current_club %}
-                    <div class="row">
-                        <div class="col-sm-4">Клуб</div>
-                        <div class="col-sm-8">
-                            <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="row">
-                        <div class="col-sm-4">Країна</div>
-                        <div class="col-sm-8">{{ item.country|country_icon|safe }}</div>
-                    </div>
-                </div>
+                    <dl class="row">
+                        <dt class="col-5 fw-bold">Стать</dt>
+                        <dd class="col-7">{{ item|gender|safe }}</dd>
 
+                        <dt class="col-5 fw-bold">Вік</dt>
+                        <dd class="col-7">{{ item|player_age_category|safe }}</dd>
+
+                        {% if item.current_club %}
+                        <dt class="col-5 fw-bold">Клуб</dt>
+                        <dd class="col-7">
+                            <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                        </dd>
+                        {% endif %}
+
+                        <dt class="col-5 fw-bold">Країна</dt>
+                        <dd class="col-7">{{ item.country|country_icon|safe }}</dd>
+                    </dl>
+                </div>
             </div>
         </div>
     </div>
