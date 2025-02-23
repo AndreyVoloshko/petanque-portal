@@ -3,7 +3,7 @@ from django.urls import reverse
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Field
-from captcha.fields import ReCaptchaField
+from captcha.fields import CaptchaField
 from django_countries.fields import CountryField
 
 
@@ -46,39 +46,39 @@ class RegistrationPlayerForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_player')
 
-        self.fields['captcha'] = ReCaptchaField(
+        self.fields['captcha'] = CaptchaField(
             label="Додаткова перевірка"
         )
 
         self.helper.layout = Layout(
             Div(
                 'name',
-                css_class="col-md-12 form-group"
+                css_class="col-lg-12 mb-3"
             ),
             Div(
                 'surname',
-                css_class="col-md-12 form-group"
+                css_class="col-lg-12 mb-3"
             ),
             Div(
                 'birth_date',
-                css_class="col-md-12 form-group"
+                css_class="col-lg-12 mb-3"
             ),
             Div(
                 'country',
-                css_class="col-md-12 form-group"
+                css_class="col-lg-12 mb-3"
             ),
             Div(
                 'gender',
-                css_class="col-md-12 form-group"
+                css_class="col-lg-12 mb-3"
             ),
             HTML('<hr class="clear" />'),
             Div(
                 'captcha',
-                css_class="col-md-12"
+                css_class="col-lg-12"
             ),
             Div(
                 Submit('submit', 'Зареєструвати гравця', css_class='btn btn-success'),
-                css_class="col-md-12 text-center form-group"
+                css_class="col-lg-12 text-center mb-3"
             ),
             Div(css_class="clear")
         )

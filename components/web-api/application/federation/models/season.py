@@ -3,14 +3,14 @@ from django.db import models
 from django.contrib import admin
 from federation.helpers.general import get_model
 from federation.admin_actions.seasons import save_current_ratings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 # Season
 class Season (models.Model):
 
-    player = models.ForeignKey('Player', verbose_name="Гравець")
-    club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб")
+    player = models.ForeignKey('Player', verbose_name="Гравець", on_delete=models.SET_NULL, null=True)
+    club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
 
     year = models.IntegerField(_('Рік'), default=0)
 

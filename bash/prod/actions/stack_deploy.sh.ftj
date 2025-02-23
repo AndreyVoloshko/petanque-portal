@@ -1,5 +1,0 @@
-#!/bin/bash
-
-set -e
-
-docker stack deploy --compose-file docker-compose.yml --with-registry-auth {{ deployment_stack_name }}

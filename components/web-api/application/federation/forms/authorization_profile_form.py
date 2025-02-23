@@ -16,36 +16,35 @@ class AuthorizationProfileForm(PasswordChangeForm):
                     Div(
                         Div(
                             HTML("""
-                                <label class='control-label'>Ім'я користувача:</label>
+                                <label class='control-label form-label'>Ім'я користувача:</label>
                                 <input class="textinput textInput form-control" type="text" readonly="readonly" value="{{ user.username }}" />
                             """),
-                            css_class="col-md-12 form-group"
+                            css_class="col-lg-12 mb-3"
                         ),
                         Div(
                             Field('old_password'),
-                            css_class="col-md-12 form-group"
+                            css_class="col-lg-12 mb-3"
                         ),
                         Div(
                             Field('new_password1'),
-                            css_class="col-md-12 form-group"
+                            css_class="col-lg-12 mb-3"
                         ),
                         Div(
                             Field('new_password2'),
-                            css_class="col-md-12 form-group"
+                            css_class="col-lg-12 mb-3"
                         ),
                         css_class="row"
                     ),
-                    css_class="col-md-12"
+                    css_class="col-lg-12"
                 ),
                 css_class="row"
             ),
             Div(
                 css_class="clearfix"
             ),
-            HTML('<hr />'),
             Div(
                 Submit('submit', 'Зберегти', css_class='btn btn-success'),
-                css_class="col-md-12 text-center form-group"
+                css_class="col-lg-12 text-center mb-3"
             )
         )
 

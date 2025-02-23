@@ -1,91 +1,20 @@
 {% load app_filters %}
 
 <div class="panel panel-primary">
-    <div class="panel-heading">
-        {% if page_title %}
-            {{ page_title }}
-        {% else %}
-            {{ item|user_profile_link:False|safe }}
-        {% endif %}
-    </div>
     <div class="panel-body">
-
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="row">
-                    <div class="col-sm-6"><b>Поточний рейтинг:</b></div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-stats"></i> {{ item|rating_position:""|safe }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Рейтингові бали:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> {{ item.current_rating }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Рейтингова сила:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> {{ item.current_power }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Рейтингових турнірів цього року:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-home"></i> {{ player_summary_info.this_year_rating_tournaments_count|add:"0" }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Іноземних турнірів цього року:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-plane"></i> {{ player_summary_info.this_year_away_tournaments_count|add:"0" }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Всього турнірів цього року:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-flag"></i> {{ player_summary_info.this_year_tournaments_count|add:"0" }}</div>
-                </div>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="row">
-                    <div class="col-sm-4"><b>Поточний рейтинг "Б":</b></div>
-                    <div class="col-sm-8"><i class="glyphicon glyphicon-stats"></i> {{ item|rating_position:"current_rating_b"|safe }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">Рейтингові бали:</div>
-                    <div class="col-sm-8"><i class="glyphicon glyphicon-record"></i> {{ item.current_rating_b }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">Рейтингова сила:</div>
-                    <div class="col-sm-8"><i class="glyphicon glyphicon-record"></i> {{ item.current_power_b }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">Турнірів цього року:</div>
-                    <div class="col-sm-8"><i class="glyphicon glyphicon-flag"></i> {{ player_summary_info.this_year_b_tournaments_count|add:"0" }}</div>
-                </div>
-            </div>
-
-        </div>
-        <div class="row">
-
-            <hr />
-
-        </div>
-        <div class="row">
-            <!-- <div class="col-sm-6">
-                <div class="row">
-                    <div class="col-sm-6"><b>Рейтинг у Лізі петанку України:</b></div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-stats"></i> {{ item|rating_position:"current_rating_liga"|safe }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Рейтингові бали:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-record"></i> {{ item.current_rating_liga }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">Турнірів цього року:</div>
-                    <div class="col-sm-6"><i class="glyphicon glyphicon-flag"></i> {{ player_summary_info.this_year_liga_tournaments_count|add:"0" }}</div>
-                </div>
-            </div> -->
-
-            <div class="col-sm-12">
+        <div class="row col-sm-12">
+            <div class="col-lg-6">
                 {{ item|player_national_teams|safe }}
+            </div>
+            <div class="col-lg-6">
                 {{ item|coach_label|safe }}
+            </div>
+            <div class="col-lg-6">
                 {{ item|arbiter_label|safe }}
+            </div>
+            <div class="col-lg-6">
                 {{ item|player_records|safe }}
             </div>
-
         </div>
     </div>
 </div>

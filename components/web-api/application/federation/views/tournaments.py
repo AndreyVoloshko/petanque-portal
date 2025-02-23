@@ -38,21 +38,21 @@ def tournament(request, id):
             tournament.save()
             return JsonResponse({'status': 'ok'}, safe=False)
 
-        if 'tournament_notes_content' in request.POST and current_user.is_authenticated():
+        if 'tournament_notes_content' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
                 messages.success(request, 'Нотатки збережено.')
                 return HttpResponseRedirect(request.path_info)
 
-        if 'delete_team_id' in request.POST and current_user.is_authenticated():
+        if 'delete_team_id' in request.POST and current_user.is_authenticated:
             team = TeamTournamentMembership.objects.get(pk=request.POST['delete_team_id'])
             if team and team.is_user_has_admin_access_to_team(current_user):
                 team.delete()
                 messages.success(request, 'Комаду видалено.')
                 return HttpResponseRedirect(request.path_info)
 
-        if 'teams' in request.POST and current_user.is_authenticated():
+        if 'teams' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):
 
                 teams = json.loads(request.POST['teams'])
@@ -223,8 +223,8 @@ def tournament_protocol(request, id):
     if not tournament.is_processing_closed():
         return redirect('tournament', id=tournament.pk)
 
-    if tournament.country != settings.CURRENT_COUNTRY:
-        return redirect('tournament', id=tournament.pk)
+    # if tournament.country != settings.CURRENT_COUNTRY:
+    #     return redirect('tournament', id=tournament.pk)
 
     arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
     teams = TeamTournamentMembership.objects.filter(tournament=tournament).order_by('place_min')

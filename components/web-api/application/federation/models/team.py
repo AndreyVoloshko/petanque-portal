@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Count
 from django.utils import timezone
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence
 
@@ -102,8 +102,8 @@ class Team(models.Model):
 
 # Players to Teams relation
 class PlayerTeamMembership(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команди")
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команди", null=True)
     is_capitan = models.BooleanField(_('Капiтан'), default=False)
 
     class Meta:

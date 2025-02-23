@@ -1,11 +1,10 @@
 {% load app_filters %}
 
-<nav class="nav-sidebar">
-    <ul class="nav tabs">
+<nav class="side-nav nav flex-column nav-pills">
     {% for item in items %}
-        <li class="{% if item == active_item %}active{% endif %}">
-            <a href="{% url 'season' year=item %}">{{ item }}</a>
-        </li>
+        <a href="{% url 'season' year=item %}" 
+           class="force-follow-link nav-link {% if item == active_item %}active{% endif %}">
+            {{ item }}
+        </a>
     {% endfor %}
-    </ul>
 </nav>

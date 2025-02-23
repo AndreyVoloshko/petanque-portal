@@ -4,13 +4,16 @@
 
 {% block content %}
 
+<div class="container-fluid">
     <div class="row">
-        <div class="col-sm-1">
+        <div class="col-md-2 col-lg-2 col-xl-2">
             {% include "seasons/seasons_list.html" with items=years active_item=year %}
         </div>
-        <div class="col-sm-11">
+        
+        <div class="col-md-10 col-lg-10 col-xl-10">
             {% include "seasons/players_list.html" with items=players year=year rating_filters=rating_filters rating_field=rating_field %}
         </div>
     </div>
+</div>
 
 {% endblock %}

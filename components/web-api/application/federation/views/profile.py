@@ -19,9 +19,13 @@ def profile(request):
         if 'name' in request.POST:
             profile_form = PlayerForm(request.POST, request.FILES, instance=player)
             if profile_form.is_valid():
+                if profile_form.cleaned_data.get('avatar') is False:
+                    player.avatar = None
+                else:
+                    player.avatar = profile_form.cleaned_data['avatar']
                 player = profile_form.save(commit=False)
-                player.avatar = profile_form.cleaned_data['avatar']
                 player.save()
+                profile_form = PlayerForm(request.POST, request.FILES, instance=player)
                 messages.success(request, 'Профiль змiнено.')
 
         if 'old_password' in request.POST:

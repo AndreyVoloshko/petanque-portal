@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 
 # Clubs
@@ -37,8 +37,8 @@ class PlayerNational_teamMembership(models.Model):
         ('selection', 'Основний склад'),
     )
 
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi")
-    team = models.ForeignKey(National_team, on_delete=models.CASCADE, verbose_name="Команди")
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
+    team = models.ForeignKey(National_team, on_delete=models.CASCADE, verbose_name="Команди", null=True)
     position = models.CharField(_('Позиція'), max_length=50, choices=POSITIONS)
 
     class Meta:

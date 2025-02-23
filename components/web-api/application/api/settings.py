@@ -10,7 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
+import os, json
+
+def get_credential(name):
+    try:
+        credentials = json.loads(os.environ.get('APP_CREDENTIALS', '{}'))
+    except:
+        credentials = {}
+        
+    return credentials.get(name, None)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,9 +33,9 @@ GEOS_LIBRARY_PATH = '/usr/lib/libgeos_c.so.1'
 SECRET_KEY = 'k1n!-r2wazl!q#2dn3wa9_lm5v2))#n-k8veqn_u@+^0-@4m$w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = {{ application_debug }}
+DEBUG = get_credential('debug')
 
-ALLOWED_HOSTS = ['{{ application_domain }}']
+ALLOWED_HOSTS = get_credential('domains')
 
 
 # Application definition
@@ -41,15 +49,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'django_countries',
-    'django_bootstrap_carousel',
     'crispy_forms',
-    'floppyforms',
+    'crispy_bootstrap5',
     'captcha',
     'federation',
-    'poll',
     'dbbackup',
     'storages',
-    'corsheaders'
+    'corsheaders',
+    'silk',
 ]
 
 STATICFILES_FINDERS = [
@@ -73,7 +80,7 @@ ROOT_URLCONF = 'api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,10 +102,11 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'petanque_portal_db',
-        'PORT': 5432,
+        'NAME': get_credential('db_name'),
+        'USER': get_credential('db_user'),
+        'HOST': get_credential('db_host'),
+        'PASSWORD': get_credential('db_pass'),
+        'PORT': get_credential('db_port'),
     }
 }
 
@@ -125,8 +133,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = '{{ application_language }}'
-CURRENT_COUNTRY = '{{ application_coutnry }}'
+LANGUAGE_CODE = get_credential('language')
+CURRENT_COUNTRY = get_credential('country')
 
 TIME_ZONE = 'UTC'
 
@@ -140,7 +148,9 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 
 CONTENT_TYPES = ['image']
 
@@ -154,24 +164,31 @@ CONTENT_TYPES = ['image']
 # 500MB - 429916160
 MAX_UPLOAD_SIZE = "2621440"
 
-DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DBBACKUP_STORAGE_OPTIONS = {
-    'access_key': '{{ application_s3_key }}',
-    'secret_key': '{{ application_s3_secret }}',
-    'bucket_name': '{{ application_s3_bucket }}',
-    'host': '{{ application_s3_host }}',
-    'AWS_S3_REGION_NAME': '{{ application_s3_region }}',
-    'AWS_LOCATION': '{{ application_s3_backups_folder }}'
-}
-
 # Static files storage in S3
-AWS_STORAGE_BUCKET_NAME = '{{ application_s3_bucket }}'
-AWS_S3_REGION_NAME = '{{ application_s3_region }}'  # e.g. us-east-2
-AWS_ACCESS_KEY_ID = '{{ application_s3_key }}'
-AWS_SECRET_ACCESS_KEY = '{{ application_s3_secret }}'
+AWS_STORAGE_BUCKET_NAME = get_credential('s3_bucket')
+AWS_S3_REGION_NAME = get_credential('s3_region')  # e.g. us-east-2
+AWS_ACCESS_KEY_ID = get_credential('s3_key')
+AWS_SECRET_ACCESS_KEY = get_credential('s3_secret')
 
 # Tell django-storages the domain to use to refer to static files.
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_ENDPOINT_URL = "https://s3.%s.amazonaws.com" % AWS_S3_REGION_NAME
+
+DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'access_key': get_credential('s3_key'),
+    'secret_key': get_credential('s3_secret'),
+    'bucket_name': get_credential('s3_bucket'),
+    'region_name': AWS_S3_REGION_NAME,
+    'location': get_credential('s3_backups_folder'),
+    'endpoint_url': AWS_S3_ENDPOINT_URL,
+}
+
+DBBACKUP_CONNECTOR_MAPPING = {
+    'postgresql': 'dbbackup.db.postgresql.PgDumpConnector',
+    'django.db.backends.postgresql': 'dbbackup.db.postgresql.PgDumpConnector'
+}
+
 
 # Tell the staticfiles app to use S3Boto3 storage when writing the collected static files (when
 # you run `collectstatic`).
@@ -204,8 +221,8 @@ STATICFILES_DIRS = [
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 # 50Mb
 
-RECAPTCHA_PUBLIC_KEY = '{{ application_recaptcha_public_key }}'
-RECAPTCHA_PRIVATE_KEY = '{{ application_recaptcha_private_key }}'
+RECAPTCHA_PUBLIC_KEY = get_credential('recaptcha_public_key')
+RECAPTCHA_PRIVATE_KEY = get_credential('recaptcha_private_key')
 NOCAPTCHA = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240

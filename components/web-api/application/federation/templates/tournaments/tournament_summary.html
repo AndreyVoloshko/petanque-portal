@@ -1,74 +1,83 @@
 {% load app_filters %}
 
-<div class="{% if full_width == "true" %}col-sm-12{% else %}col-sm-7{% endif %}">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
+<div class="{% if full_width == "true" %}col-12{% else %}col-lg-7{% endif %}">
+    <div class="card">
+        <div class="card-header fw-bold">
             Турнір: {{ tournament.name }}
         </div>
-        <div class="panel-body">
+        <div class="card-body">
 
             <div class="row">
-                <div class="col-sm-8">
-                    <dl class="dl-horizontal tournament_summary">
-                        {{ tournament|tournament_field:"category"|safe }}
-                        {{ tournament|tournament_field:"place"|safe }}
-                        {% if tournament.organizer_club %}
-                        <dt>
-                            Клуб-організатор
-                        </dt>
-                        <dd>
-                            <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
-                        </dd>
-                        {% endif %}
-                        <dt>
-                            Тип
-                        </dt>
-                        <dd>
-                            {% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
+                <dl class="row tournament_summary">
+                    {{ tournament|tournament_field:"category"|safe }}
+                    {{ tournament|tournament_field:"place"|safe }}
 
-                                {% if tournament.number_of_players_in_team_min <= 3 %}
-                                    {% for i in "x"|rjust:tournament.number_of_players_in_team_min %}
-                                        <i class="glyphicon glyphicon-user"></i>
-                                    {% endfor %}
-                                {% else %}
-                                    {{ tournament.number_of_players_in_team_min }} <i class="glyphicon glyphicon-user"></i>
-                                {% endif %}
-
-                            {% else %}
-                                {{ tournament.number_of_players_in_team_min }}-{{ tournament.number_of_players_in_team_max }} <i class="glyphicon glyphicon-user"></i>
-                            {% endif %}
-                        </dd>
-                        {{ tournament|tournament_field:"start_date"|safe }}
-                        {{ tournament|tournament_field:"start_time"|safe }}
-                        {{ tournament|tournament_field:"date_registration_stop"|safe }}
-                        {{ tournament|tournament_field:"format"|safe }}
-                        {{ tournament|tournament_field:"terms"|safe }}
-                        {{ tournament|tournament_field:"teams_limit"|safe }}
-                        {{ tournament|tournament_field:"fee"|safe }}
-                        {{ tournament|tournament_field:"notes"|safe }}
-                        {{ tournament|tournament_field:"total_number_of_teams"|safe }}
-                        {{ tournament|tournament_field:"power"|safe }}
-                        {{ tournament|tournament_field:"rating_coefficient"|safe }}
-                    </dl>
-                </div>
-                <div class="col-sm-4">
-                    {% if tournament.main_organizer %}
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <div align="center">
-                                    {{ tournament.main_organizer|user_avatar:"big"|safe }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div align="center" class="sentence-line-break">
-                                    <b>Головний організатор:</b>
-                                    {{ tournament.main_organizer|user_profile_link|safe }}
-                                </div>
-                            </div>
-                        </div>
+                    {% if tournament.organizer_club %}
+                    <dt class="col-sm-5 fw-bold">Клуб-організатор</dt>
+                    <dd class="col-sm-7">
+                        <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
+                    </dd>
                     {% endif %}
-                </div>
+
+                    <dt class="col-sm-5 fw-bold">Тип</dt>
+                    <dd class="col-sm-7">
+                        {% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
+                            {% if tournament.number_of_players_in_team_min <= 3 %}
+                                {% for i in "x"|rjust:tournament.number_of_players_in_team_min %}
+                                    <i class="bi bi-person"></i>
+                                {% endfor %}
+                            {% else %}
+                                {{ tournament.number_of_players_in_team_min }} <i class="bi bi-person"></i>
+                            {% endif %}
+                        {% else %}
+                            {{ tournament.number_of_players_in_team_min }}-{{ tournament.number_of_players_in_team_max }} <i class="bi bi-person"></i>
+                        {% endif %}
+                    </dd>
+
+                    {{ tournament|tournament_field:"start_date"|safe }}
+                    {{ tournament|tournament_field:"start_time"|safe }}
+                    {{ tournament|tournament_field:"date_registration_stop"|safe }}
+                    <dt class="col-sm-5 fw-bold">Додаткові дії</dt>
+                    <dd class="col-sm-7">
+                        <div class="btn-group" role="group">
+                            {{ tournament|tournament_registration_button|safe }}
+                            {% if tournament.is_processing_finished %}
+                                <a class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Підсумковий протокол" href="{% url 'tournament_protocol' id=tournament.pk %}">
+                                    <i class="bi bi-file-earmark-text"></i> Підсумковий протокол
+                                </a>
+                            {% endif %}
+                            <div class="btn-group dropdown" role="group">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="exportMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-download"></i> Експорт
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="exportMenu">
+                                    <p class="dropdown-header">До друку</p>
+                                    <a class="dropdown-item" target="_blank" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html">
+                                        <i class="bi bi-printer"></i> Команди
+                                    </a>
+                                    <p><hr class="dropdown-divider"></p>
+                                    <p class="dropdown-header">API</p>
+                                    <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">
+                                        <i class="bi bi-file-earmark-spreadsheet"></i> Команди (csv)
+                                    </a>
+                                    <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=json">
+                                        <i class="bi bi-file-earmark-code"></i> Команди (json)
+                                    </a>
+                                </div>
+                            </div>    
+                        </div>
+                    </dd>
+                    {{ tournament|tournament_field:"format"|safe }}
+                    {{ tournament|tournament_field:"terms"|safe }}
+                    {{ tournament|tournament_field:"teams_limit"|safe }}
+                    {{ tournament|tournament_field:"fee"|safe }}
+                    {{ tournament|tournament_field:"notes"|safe }}
+                    {{ tournament|tournament_field:"total_number_of_teams"|safe }}
+                    {{ tournament|tournament_field:"power"|safe }}
+                    {{ tournament|tournament_field:"rating_coefficient"|safe }}
+                </dl>
             </div>
+
         </div>
     </div>
 </div>

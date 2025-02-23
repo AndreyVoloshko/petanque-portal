@@ -7,91 +7,130 @@
         {% include "players/player_info_panel.html" with item=player %}
         {% include "clubs/club_short_info_panel.html" with item=player.current_club page_title="Клуб" %}
     </div>
+    <div class="clearfix pt-4"></div>
     <div class="row">
-        <div class="col-sm-12">
-
-            <div class="panel panel-primary">
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#player_ratings" aria-controls="player_ratings" role="tab" data-toggle="tab">
-                            <span class="glyphicon glyphicon-star"></span>&nbsp;Профіль та рейтинги
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#player_tournaments" aria-controls="player_tournaments" role="tab" data-toggle="tab">
-                            <span class="glyphicon glyphicon-list"></span>&nbsp;Турніри
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#player_seasons" aria-controls="player_seasons" role="tab" data-toggle="tab">
-                            <span class="glyphicon glyphicon-align-left"></span>&nbsp;Сезони
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="player_ratings">
-                    {% include "players/player_statistic_and_records_info_panel.html" with item=player player_summary_info=player_summary_info page_title="Профіль та цьогорічні рейтинги" %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="playerTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" 
+                               id="player-tournaments-tab" 
+                               data-bs-toggle="tab" 
+                               href="#player_tournaments" 
+                               role="tab" 
+                               aria-controls="player_tournaments" 
+                               aria-selected="false">
+                                <i class="bi bi-list"></i> Турніри
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                               id="player-ratings-tab" 
+                               data-bs-toggle="tab" 
+                               href="#player_ratings" 
+                               role="tab" 
+                               aria-controls="player_ratings" 
+                               aria-selected="true">
+                                <i class="bi bi-star"></i> Додаткова інформація
+                            </a>
+                        </li>
+                        <!--<li class="nav-item">
+                            <a class="nav-link" 
+                               id="player-seasons-tab" 
+                               data-bs-toggle="tab" 
+                               href="#player_seasons" 
+                               role="tab" 
+                               aria-controls="player_seasons" 
+                               aria-selected="false">
+                                <i class="bi bi-calendar"></i> Сезони
+                            </a>
+                        </li> -->
+                    </ul>
                 </div>
-                <div role="tabpanel" class="tab-pane" id="player_tournaments">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">Турніри</div>
-                        <div class="panel-body">
 
-                            <div class="panel panel-primary">
-                                <!-- Nav tabs -->
-                                <ul class="nav nav-pills nav-justified" role="tablist">
-                                    <li role="presentation" class="active">
-                                        <a href="#player_past_tournaments" aria-controls="player_past_tournaments" role="tab" data-toggle="tab">
-                                            <span class="glyphicon glyphicon-check"></span> Зіграні турніри
-                                        </a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a href="#player_b_tournaments" aria-controls="player_b_tournaments" role="tab" data-toggle="tab">
-                                            <span class="glyphicon glyphicon-record"></span> Зіграні турніри "B"
-                                        </a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a href="#player_away_tournaments" aria-controls="player_away_tournaments" role="tab" data-toggle="tab">
-                                            <span class="glyphicon glyphicon-plane"></span> Зіграні іноземні турніри
-                                        </a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a href="#player_future_tournaments" aria-controls="player_future_tournaments" role="tab" data-toggle="tab">
-                                            <span class="glyphicon glyphicon-calendar"></span> Майбутні турніри
-                                        </a>
-                                    </li>
-                                </ul>
+                <div class="card-body">
+                    <div class="tab-content" id="playerTabsContent">
+                        <div class="tab-pane fade show active" id="player_tournaments" role="tabpanel" aria-labelledby="player-tournaments-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="tournamentTabs" role="tablist">
+                                        <li class="nav-item">
+                                            <button class="nav-link active" 
+                                                    id="player-past-tournaments-tab" 
+                                                    data-bs-toggle="tab" 
+                                                    data-bs-target="#player_past_tournaments" 
+                                                    type="button"
+                                                    role="tab" 
+                                                    aria-controls="player_past_tournaments" 
+                                                    aria-selected="true">
+                                                <i class="bi bi-check2-circle"></i> Зіграні турніри
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" 
+                                                    id="player-away-tournaments-tab" 
+                                                    data-bs-toggle="tab" 
+                                                    data-bs-target="#player_away_tournaments" 
+                                                    type="button"
+                                                    role="tab" 
+                                                    aria-controls="player_away_tournaments" 
+                                                    aria-selected="false">
+                                                <i class="bi bi-airplane"></i> Зіграні іноземні турніри
+                                            </button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" 
+                                                    id="player-future-tournaments-tab" 
+                                                    data-bs-toggle="tab" 
+                                                    data-bs-target="#player_future_tournaments" 
+                                                    type="button"
+                                                    role="tab" 
+                                                    aria-controls="player_future_tournaments" 
+                                                    aria-selected="false">
+                                                <i class="bi bi-calendar"></i> Майбутні турніри
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                        
+                                <div class="card-body">
+                                    <div class="tab-content" id="tournamentTabsContent">
+                                        <div class="tab-pane fade show active" 
+                                             id="player_past_tournaments" 
+                                             role="tabpanel" 
+                                             aria-labelledby="player-past-tournaments-tab">
+                                            {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
+                                        </div>
+                                        <div class="tab-pane fade" 
+                                             id="player_away_tournaments" 
+                                             role="tabpanel" 
+                                             aria-labelledby="player-away-tournaments-tab">
+                                            {% include "tournaments/player_past_away_tournaments.html" with items=past_away_tournaments player=player table_id="player_away_tournaments_table" initial_order="desc" %}
+                                        </div>
+                                        <div class="tab-pane fade" 
+                                             id="player_future_tournaments" 
+                                             role="tabpanel" 
+                                             aria-labelledby="player-future-tournaments-tab">
+                                            {% include "tournaments/player_future_tournaments.html" with items=future_tournaments player=player table_id="player_future_tournaments_table" initial_order="asc" %}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <div role="tabpanel" class="tab-pane active" id="player_past_tournaments">
-                                    {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
-                                </div>
-                                <div role="tabpanel" class="tab-pane" id="player_b_tournaments">
-                                    {% include "tournaments/player_past_tournaments.html" with items=past_b_tournaments player=player table_id="player_b_tournaments_table" initial_order="desc" %}
-                                </div>
-                               <div role="tabpanel" class="tab-pane" id="player_away_tournaments">
-                                    {% include "tournaments/player_past_away_tournaments.html" with items=past_away_tournaments player=player table_id="player_away_tournaments_table" initial_order="desc" %}
-                                </div>
-                                <div role="tabpanel" class="tab-pane" id="player_future_tournaments">
-                                    {% include "tournaments/player_future_tournaments.html" with items=future_tournaments player=player table_id="player_future_tournaments_table" initial_order="asc" %}
-                                </div>
-                            </div>
-
                         </div>
-                    </div>
+                        
 
-                </div>
-                <div role="tabpanel" class="tab-pane" id="player_seasons">
-                    {% include "players/player_seasons.html" with player_seasons=player_seasons rating_field=season_rating_field page_title="Рейтинг за минулі сезони" %}
+                        <div class="tab-pane fade" id="player_ratings" role="tabpanel" aria-labelledby="player-ratings-tab">
+                            {% include "players/player_statistic_and_records_info_panel.html" with item=player player_summary_info=player_summary_info page_title="Профіль та цьогорічні рейтинги" %}
+                        </div>
+
+                        <!-- <div class="tab-pane fade" id="player_seasons" role="tabpanel" aria-labelledby="player-seasons-tab">
+                            {% include "players/player_seasons.html" with player_seasons=player_seasons rating_field=season_rating_field page_title="Рейтинг за минулі сезони" %}
+                        </div> -->
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
+
 {% endblock %}

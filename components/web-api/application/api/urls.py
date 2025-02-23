@@ -13,14 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    #url(r'^silk/', include('silk.urls', namespace='silk')),
-    url(r'^admin/', admin.site.urls),
-    url(r'', include('federation.urls'))
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'', include('federation.urls'))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

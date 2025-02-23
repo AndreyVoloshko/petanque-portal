@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Count
 from django.utils import timezone
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 
 
@@ -26,8 +26,8 @@ class Department(models.Model):
 
 # Players to Teams relation
 class PlayerDepartmentMembership(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi")
-    team = models.ForeignKey(Department, on_delete=models.CASCADE, verbose_name="Підрозділи ФПУ")
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
+    team = models.ForeignKey(Department, on_delete=models.CASCADE, verbose_name="Підрозділи ФПУ", null=True)
     role = models.CharField(_('Роль'), max_length=1000, blank=False, null=False)
 
     class Meta:

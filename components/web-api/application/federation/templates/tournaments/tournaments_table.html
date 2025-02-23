@@ -1,82 +1,77 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-condensed" id="tournaments">
-        <thead>
+    <table class="table table-hover" id="tournaments">
+        <thead class="table-dark">
             <tr>
-                <th align="left">Дата</th>
-                <th align="left">Назва</th>
-                <th align="left">Місце</th>
-                <th align="left">Тип</th>
-                <th align="left">Сила</th>
-                <th align="left">Організатор</th>
-                <th>&nbsp;</th>
+                <th class="text-start">Дата</th>
+                <th class="text-start">Назва</th>
+                <th class="text-start filterable">Місце</th>
+                <th class="text-start filterable">Тип</th>
+                <th class="text-start">Сила</th>
+                <th class="text-start filterable">Організатор</th>
+                <th class="text-end no-sort">Дії</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
-					<tr class="{{ item|tournaments_css_classes }}">
-                        <td align="left">
-                            <button class="btn btn-default btn-xs">
-                                <span class="glyphicon glyphicon-calendar"></span> {{ item.start_date|date:"Y-m-d" }}
-                            </button>
-                        </td>
-                        <td align="left">
-                            <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
-                        </td>
-                        <td align="left">
-                            <a target="_blank" href="https://maps.google.com?q={{ item.place }}"><span class="glyphicon glyphicon glyphicon-globe"></span></a>
-                            {{ item.place }}
-                        </td>
-						<td align="left">
-                            {% if item.number_of_players_in_team_min == item.number_of_players_in_team_max %}
-
-                                {% if item.number_of_players_in_team_min <= 3 %}
-                                    {% for i in "x"|rjust:item.number_of_players_in_team_min %}
-                                        <i class="glyphicon glyphicon-user"></i>
-                                    {% endfor %}
-                                {% else %}
-                                    {{ item.number_of_players_in_team_min }} <i class="glyphicon glyphicon-user"></i>
-                                {% endif %}
-
-                            {% else %}
-                                {{ item.number_of_players_in_team_min }}-{{ item.number_of_players_in_team_max }} <i class="glyphicon glyphicon-user"></i>
-                            {% endif %}
-                        </td>
-                        <td data-order="{{ item.power }}" align="left">
-                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила турніру">
-                               <span class="glyphicon glyphicon-sort"></span> {{ item.power }}
-                            </button>
-                        </td>
-						<td align="left">
-                            {% if item.organizer_club %}
-                                <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
-                            {% elif item.country %}
-                                {{ item.country|country_icon|safe }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td align="right">
-                            {{ item|tournament_registration|safe }}
-                            {{ item|tournament_status|safe }}
-                            {{ item|tournament_protocol|safe }}
-
-                            <!-- <a href="{% url 'tournament' id=item.pk %}#tournament_comments">
-                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Коментарі">
-                                    <span class="glyphicon glyphicon-comment"></span>
-                                    <span class="fb-comments-count" data-href="http://{{ request.get_host }}{% url 'tournament' id=item.pk %}"></span>
-                                </button>
-                            </a> -->
-
-                            <a href="{% url 'tournament' id=item.pk %}">
-                                <button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Кількість команд">
-                                   <span class="glyphicon glyphicon-user"></span> {{ item|teams_count }}
-                                </button>
-                            </a>
-                        </td>
-					</tr>
-
+            <tr class="{{ item|tournaments_css_classes }}">
+                <td>
+                    <div class="d-flex flex-wrap gap-1 justify-content-end">
+                        <span class="badge bg-primary">
+                            <i class="bi bi-calendar"></i> {{ item.start_date|date:"Y-m-d" }}
+                        </span>
+                        {{ item|tournament_registration|safe }}
+                    </div>
+                </td>
+                <td>
+                    <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
+                </td>
+                <td>
+                    <a target="_blank" href="https://maps.google.com?q={{ item.place }}">
+                        <i class="bi bi-globe"></i>
+                    </a>
+                    {{ item.place }}
+                </td>
+                <td>
+                    {% if item.number_of_players_in_team_min == item.number_of_players_in_team_max %}
+                        {% if item.number_of_players_in_team_min <= 3 %}
+                            {% for i in "x"|rjust:item.number_of_players_in_team_min %}
+                                <i class="bi bi-person"></i>
+                            {% endfor %}
+                        {% else %}
+                            {{ item.number_of_players_in_team_min }} <i class="bi bi-person"></i>
+                        {% endif %}
+                    {% else %}
+                        {{ item.number_of_players_in_team_min }}-{{ item.number_of_players_in_team_max }} <i class="bi bi-person"></i>
+                    {% endif %}
+                </td>
+                <td data-order="{{ item.power }}">
+                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила турніру">
+                        <i class="bi bi-bar-chart"></i> {{ item.power }}
+                    </span>
+                </td>
+                <td>
+                    {% if item.organizer_club %}
+                        <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
+                    {% elif item.country %}
+                        {{ item.country|country_icon|safe }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    <div class="d-flex flex-wrap gap-1 justify-content-end">
+                        <a href="{% url 'tournament' id=item.pk %}">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Кількість команд">
+                                <i class="bi bi-people"></i> {{ item|teams_count }}
+                            </span>
+                        </a>
+                        {{ item|tournament_status|safe }}
+                        {{ item|tournament_protocol|safe }}
+                    </div>
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -84,32 +79,56 @@
 
 <script>
 $(document).ready(function() {
-        $('#tournaments').dataTable({
-               'aoColumns': [
-		            { sWidth: "5%", bSearchable: true, bSortable: true }, //date
-		            { sWidth: "35%", bSearchable: true,  bSortable: true }, //name
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, // place
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //type
-		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //orginizer
-		            { sWidth: "15%", bSearchable: true, bSortable: true }, //action
-		       ],
-		       "order": [[ 0, '{{ initial_order }}' ]],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ турнірів на сторінку",
-                        "sZeroRecords":  "Турнірів не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ турнірів",
-                        "sInfoEmpty":    "Показано 0 з 0 турнірів",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ турнірів)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Перший",
-                            "last":       "Останій",
-                            "next":       "Наступий",
-                            "previous":   "Попередій"
-                        },
-                },
-        });
+    var table = $('#tournaments').DataTable({
+        columnDefs: [
+            { targets: 'no-sort', orderable: false },
+            { targets: 0, width: "10%" }, // Дата
+            { targets: 1, width: "35%" }, // Назва
+            { targets: 2, width: "15%" }, // Місце
+            { targets: 3, width: "8%" }, // Тип
+            { targets: 4, width: "10%", type: "num" }, // Сила
+            { targets: 5, width: "13%" }, // Організатор
+            { targets: 6, width: "9%" }, // Дії
+        ],
+        responsive: true,
+        paging: true,
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        order: [[0, '{{ initial_order }}']],
+        language: {
+            lengthMenu: "Показати _MENU_ турнірів на сторінку",
+            zeroRecords: "Турнірів не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ турнірів",
+            infoEmpty: "Показано 0 з 0 турнірів",
+            infoFiltered: "(відфільтровано з _MAX_ турнірів)",
+            search: "Пошук:",
+            "paginate": {
+                "first":      "Початок",
+                "last":       "Кінець",
+                "next":       "Далі",
+                "previous":   "Назад"
+            }
+        }
+    });
+
+    // Фильтрация по select в footer
+    $('#tournaments tfoot select').on('change', function() {
+        let columnIndex = $(this).parent().index();
+        let value = $(this).val();
+        table.column(columnIndex).search(value).draw();
+    });
+
+    function initTooltips() {
+        setTimeout(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
+                bootstrap.Tooltip.getInstance(this).update();
+            });
+        }, 300);
+    }
+
+    initTooltips();
+
+    table.on('draw.dt', function () {
+        initTooltips();
+    });
 });
 </script>

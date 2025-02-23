@@ -10,6 +10,7 @@ from federation.models.department import PlayerDepartmentMembership
 from datetime import date
 from django.utils import formats
 from django.urls import reverse
+from django.utils.html import format_html
 from federation.helpers.general import get_model
 import json
 
@@ -70,8 +71,8 @@ def club_logo(club, additional_class=''):
 
     return '''
         <a href="/club/''' + str(club.id) + '''">
-            <div class="logo-container club ''' + additional_class + '''">
-                <img src=''' + url + ''' class="img-rounded" />
+            <div class="logo-container club overflow-hidden border ''' + additional_class + '''">
+                <img src=''' + url + ''' class="img-fluid" />
             </div>
         </a>
     '''
@@ -79,31 +80,34 @@ def club_logo(club, additional_class=''):
 
 @register.filter(name='user_avatar')
 def user_avatar(user, additional_class=''):
-    if not hasattr(user, 'avatar'):
-        url = settings.STATIC_URL + 'default.png'
-    elif not user.avatar:
-        url = settings.STATIC_URL + 'default.png'
+    # Установка URL-аватара
+    if hasattr(user, 'avatar') and user.avatar:
+        url = f"{settings.MEDIA_URL}{user.avatar}"
     else:
-        url = settings.MEDIA_ROOT + str(user.avatar)
+        url = f"{settings.STATIC_URL}default.png"
 
-    user_id = ''
-    if hasattr(user, 'id'):
-        user_id = user.id
+    user_id = getattr(user, 'id', '')
 
-    return '''
-        <a href="/player/''' + str(user_id) + '''">
-            <div class="logo-container user ''' + additional_class + '''">
-                <img src=''' + url + ''' class="img-rounded" />
+    return format_html(
+        '''
+        <a href="/player/{user_id}" class="d-inline-block">
+            <div class="rounded-circle overflow-hidden border {additional_class} logo-container">
+                <img src="{url}?v={cache_bust}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </a>
-    '''
+        ''',
+        user_id=user_id,
+        additional_class=additional_class,
+        url=url,
+        cache_bust=user.avatar and user.avatar.url or 'nocache'
+    )
 
 
 @register.filter(name='user_profile_link')
 def user_profile_link(user, is_link=True):
     if not is_link:
         return user.get_name()
-    return '<a href="/player/' + str(user.id) + '">' + user.get_name() + '</a>'
+    return '<a class="font-weight-normal" href="/player/' + str(user.id) + '">' + user.get_name() + '</a>'
 
 
 @register.filter(name="get_number_of_players")
@@ -172,7 +176,7 @@ def player_age_category (player):
 
     for category, ages in categories.items():
         if ages[0] <= age <= ages[1]:
-            return '<span class="btn btn-warning btn-xs">' + category + '</span>'
+            return '<span class="badge bg-secondary">' + category + '</span>'
 
     return ''
 
@@ -192,7 +196,7 @@ def season_player_age_category (player, year):
 
     for category, ages in categories.items():
         if ages[0] <= age <= ages[1]:
-            return '<span class="btn btn-warning btn-xs">' + category + '</span>'
+            return '<span class="badge bg-secondary">' + category + '</span>'
 
     return ''
 
@@ -201,17 +205,19 @@ def season_player_age_category (player, year):
 def gender (item):
     gender = item.gender
 
-    gender_class = 'primary'
+    gender_class = 'female'
+    gender_label = 'Жінка'
     if gender == 'M':
-        gender_class = 'success'
-    return '<span class="btn btn-' + gender_class + ' btn-xs">' + gender + '</span>'
+        gender_class = 'male'
+        gender_label = 'Чоловік'
+    return '<span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="'+ gender_label +'"><i class="bi bi-gender-'+ gender_class +'"></i> '+gender+'</span>'
 
 
 @register.filter(name="licence_number")
 def licence_number(item):
     if not item.is_licence_active:
-        return '<span class="btn btn-danger btn-xs">Без ліцензії</span>'
-    return '<span class="btn btn-xs btn-info">' + item.licence_number + '</span>'
+        return '<span class="badge bg-danger">Без ліцензії</span>'
+    return '<span class="badge bg-primary">' + item.licence_number + '</span>'
 
 
 @register.filter(name="is_active_player_class")
@@ -225,80 +231,93 @@ def is_active_player_class(item):
 
 
 @register.filter(name="arbiter_label")
-def arbiter_label (player):
-    if not player.arbiter_level :
+def arbiter_label(player):
+    if not player.arbiter_level:
         return ''
 
-    return '''
-    <div class="col-sm-2">
-        <div class="row social-field">
-            <div class="col-sm-12">
-                Арбітр <a target="_blank" href="''' + reverse('arbiters') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />
-                <div class="btn btn-xs btn-success label-list-record">''' + player.get_arbiter_level_display() + '''</div>
-            </div>
-        </div>    
-    </div>
+    return f'''
+        <dl class="row">
+            <dt class="col-4">
+                <a target="_blank" href="{reverse('arbiters')}">
+                    Категорія арбітра
+                </a>
+            </dt>
+            <dd class="col-8">
+                <span class="badge bg-primary">{player.get_arbiter_level_display()}</span>
+            </dd>
+        </dl>
     '''
 
+
 @register.filter(name="coach_label")
-def coach_label (player):
-    if not player.coach_level :
+def coach_label(player):
+    if not player.coach_level:
         return ''
 
-    return '''
-    <div class="col-sm-2">
-        <div class="row social-field">
-            <div class="col-sm-12">
-                Тренер <a target="_blank" href="''' + reverse('coaches') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />
-                <div class="btn btn-xs btn-info label-list-record">''' + player.get_coach_level_display() + '''</div>
-            </div>
-        </div>  
-    </div>  
+    return f'''
+        <dl class="row">
+            <dt class="col-4">
+                <a target="_blank" href="{reverse('coaches')}">
+                    Тренерська категорія
+                </a>
+            </dt>
+            <dd class="col-8">
+                <span class="badge bg-secondary">{player.get_coach_level_display()}</span>
+            </dd>
+        </dl>
     '''
 
 
 @register.filter(name="player_national_teams")
 def player_national_teams(player):
-    memberships = PlayerNational_teamMembership.objects.filter(player__in=[player])
+    memberships = PlayerNational_teamMembership.objects.filter(player=player)
 
-    if not memberships:
+    if not memberships.exists():
         return ''
 
-    html = '''
-    <div class="col-sm-4">
-        <div class="row social-field">
-            <div class="col-sm-12">
-            Національні збірні <a target="_blank" href="''' + reverse('national_teams') + '''"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+    html = f'''
+        <dl class="row">
+            <dt class="col-4">
+                <a target="_blank" href="{reverse('national_teams')}">
+                    Національні збірні
+                </a>
+            </dt>
+            <dd class="col-8">
+    '''
 
     for membership in memberships:
-        html += '''<div class="btn btn-xs btn-primary label-list-record">''' + membership.team.name + ''': ''' + membership.get_position_display()
+        html += f'''<span class="badge bg-success">{membership.team.name}: {membership.get_position_display()}</span>'''
 
-        html += '''</div><br />'''
-
-    html += '</div></div></div>'
+    html += '</dd></dl>'
 
     return html
+
 
 
 @register.filter(name="player_records")
 def player_records(player):
     records = Record.objects.filter(player=player)
 
-    if not records:
+    if not records.exists():
         return ''
 
-    html = '''
-    <div class="col-sm-4">
-        <div class="row social-field">
-            <div class="col-sm-12">
-            Рекорди України <a target="_blank" href="/records/"><i class="glyphicon glyphicon-link"></i></a>:<br />'''
+    html = f'''
+        <dl class="row">
+            <dt class="col-4">
+                <a target="_blank" href="{reverse('records')}">
+                    Національні рекорди
+                </a>
+            </dt>
+            <dd class="col-8">
+    '''
 
     for record in records:
-        html += '''<div class="btn btn-xs btn-warning label-list-record">''' + record.name + ''': ''' + record.description + '''</div><br />'''
+        html += f'''<span class="badge bg-warning">{record.name}: {record.description}</span>'''
 
-    html += '</div></div></div>'
+    html += '</dd></dl>'
 
     return html
+
 
 @register.filter(name="tournament_field")
 def tournament_field (item, field):
@@ -316,7 +335,7 @@ def tournament_field (item, field):
 
     elif field == "place":
         value = str(value) + '''<a target="_blank" href="https://maps.google.com?q=''' + str(value) + '''">
-                                    <span class="glyphicon glyphicon glyphicon-globe"></span>
+                                    <span class="bi bi-globe"></span>
                                 </a>'''
 
     elif field == "category":
@@ -324,14 +343,18 @@ def tournament_field (item, field):
 
     elif field == "format":
         value = item.get_format_display()
+        
+    elif field == "terms":
+        if value:
+            value = '''<a target="_blank" href="''' + value.url + '''">Переглянути</a>'''
 
 
     if not value:
         return ''
 
     return '''
-        <dt title="''' + str(Tournament._meta.get_field(field).verbose_name) + '''">''' + str(Tournament._meta.get_field(field).verbose_name) + '''</dt>
-        <dd>''' + str(value) + '''</dd>
+        <dt class="col-sm-5 fw-bold" title="''' + str(Tournament._meta.get_field(field).verbose_name) + '''">''' + str(Tournament._meta.get_field(field).verbose_name) + '''</dt>
+        <dd class="col-sm-7">''' + str(value) + '''</dd>
     '''
 
 @register.filter(name="team_short_name")
@@ -380,7 +403,7 @@ def team_place_in_tournament(tournament, player=False):
         team = tournament
 
     message = '''
-        <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
+        <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі">
     '''
 
     place = str(team.place_min)
@@ -396,7 +419,6 @@ def team_place_in_tournament(tournament, player=False):
 
 @register.filter(name="team_place_in_tournament_for_admin")
 def team_place_in_tournament_for_admin(tournament, player=False):
-
     if player:
         all_player_teams = Team.objects.filter(players=player)
         team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
@@ -404,17 +426,29 @@ def team_place_in_tournament_for_admin(tournament, player=False):
         team = tournament
 
     message = '''
-        <span class="btn btn-primary btn-xs tournament-place-field">
-    '''
+        <div class="badge bg-success tournament-place-field">
+            <input type="text" class="form-control form-control-sm tournament-place-field-min" 
+                name="{team_pk}-min" value="{place_min}" 
+                placeholder="Місце" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Місце у турнірі" />
+            - 
+            <input type="text" class="form-control form-control-sm tournament-place-field-max" 
+                name="{team_pk}-max" value="{place_max}" 
+                placeholder="Місце (max)" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top" 
+                title="Місце у турнірі (max). Залишити 0, якщо не треба" />
+        </div>
+    '''.format(
+        team_pk=team.pk, 
+        place_min=team.place_min, 
+        place_max=team.place_max
+    )
 
-    place = '''<input data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі" style="width:50px" type="text" class="form-control" name="''' + str(team.pk) + '''-min" value="''' + str(team.place_min) + '''" placeholder="Місце" />'''
-    place += " - " + '''<input data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у турнірі (max). Залишити 0, якщо не треба" style="width:50px" type="text" class="form-control" name="''' + str(team.pk) + '''-max" value="''' + str(team.place_max) + '''" placeholder="Місце (max)" />'''
+    return format_html(message)
 
-    message += place + '''
-        </span>
-    '''
-
-    return message
 
 
 @register.filter(name="tournaments_css_classes")
@@ -505,31 +539,35 @@ def teams_count(tournament):
 
 @register.filter(name="tournament_status")
 def tournament_status(tournament):
-    button_class=""
-    message=""
-    icon_class=""
+    if tournament.is_processing_closed() and tournament.country == settings.CURRENT_COUNTRY:
+        return ''
+        
+    button_class = "badge"
+    message = ""
+    icon_class = ""
 
     if tournament.is_processing_closed():
-        button_class = "btn btn-success btn-xs"
-        icon_class = "glyphicon glyphicon-check"
-        message = "Турнір опрацьовано"
+        # button_class += " bg-success"
+        # icon_class = "bi bi-check2-circle"
+        # message = "Турнір опрацьовано"
+        pass
     elif tournament.is_finished():
-        button_class = "btn btn-default btn-xs"
-        icon_class = "glyphicon glyphicon-time"
+        button_class += " bg-secondary"
+        icon_class = "bi bi-clock"
         message = "Турнір завершено, але ще не опрацьовано"
     elif tournament.is_began():
-        button_class = "btn btn-danger btn-xs"
-        icon_class = "glyphicon glyphicon-flash"
+        button_class += " bg-danger"
+        icon_class = "bi bi-lightning-fill"
         message = "Турнір проходить зараз"
 
-    if message != "":
-        return '''
-            <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
-               <span class="''' + icon_class + '''"></span> i
-            </div>
+    if message:
+        return f'''
+            <span class="{button_class}" data-bs-toggle="tooltip" data-bs-placement="top" title="{message}">
+               <i class="{icon_class}"></i>
+            </span>
         '''
-    else:
-        return ''
+    return ''
+
 
 
 @register.filter(name="tournament_protocol")
@@ -537,52 +575,82 @@ def tournament_protocol(tournament):
     if not tournament.is_processing_closed():
         return ''
 
-    if tournament.country != settings.CURRENT_COUNTRY:
-        return ''
-
-    return '''
-        <a target="_blank" href="''' + reverse('tournament_protocol', args=[tournament.pk]) + '''">
-            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Протокол турніру">
-               <span class="glyphicon glyphicon-download-alt"></span>.
-            </button>
+    return f'''
+        <a target="_blank" href="{reverse('tournament_protocol', args=[tournament.pk])}">
+            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Протокол турніру">
+               <i class="bi bi-download"></i>
+            </span>
         </a>
-        '''
+    '''
+
 
 
 @register.filter(name="tournament_registration")
 def tournament_registration(tournament):
-    button_class=""
-    message=""
-    icon_class=""
+    button_class = ""
+    message = ""
+    icon_class = ""
 
     if tournament.is_registration_opened():
-        button_class = "btn btn-success btn-xs"
-        icon_class = "glyphicon glyphicon-plus"
-        message = "Зареєструватись на турнір можна до " + str(format_datetime(tournament.date_registration_stop))
+        button_class = "badge bg-success"
+        icon_class = "bi bi-plus"
+        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
 
-    if message != "":
-        return '''
-            <a href="''' + reverse('register_team', args=[tournament.pk]) + '''">
-                <div class="''' + button_class + '''" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + message + '''">
-                   <span class="''' + icon_class + '''"></span>&zwnj;
-                </div>
+    if message:
+        return format_html(
+            '''
+            <a href="{}">
+                <span class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
+                   <i class="{}"></i> Зареєструватися
+                </span>
             </a>
-        '''
-    else:
-        return ''
+            ''',
+            reverse('register_team', args=[tournament.pk]),
+            button_class,
+            message,
+            icon_class
+        )
+    return ""
+
+
+@register.filter(name="tournament_registration_button")
+def tournament_registration_button(tournament):
+    button_class = ""
+    message = ""
+    icon_class = ""
+
+    if tournament.is_registration_opened():
+        button_class = "btn btn-sm btn-success"
+        icon_class = "bi bi-plus"
+        message = f"Зареєструватись на турнір можна до {format_datetime(tournament.date_registration_stop)}"
+
+    if message:
+        return format_html(
+            '''
+            <a class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}" href="{}">
+                <i class="{}"></i> Зареєструватися
+            </a>
+            ''',
+            button_class,
+            message,
+            reverse('register_team', args=[tournament.pk]),
+            icon_class
+        )
+    return ""
 
 
 @register.filter(name="tournament_registration_tab")
 def tournament_registration_tab(tournament):
     if tournament.is_registration_opened():
-        return '''<li role="presentation">
-                        <a class="force-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
-                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Зареєструвати команду
-                        </a>
-                    </li>
+        return '''
+            <li class="nav-item no-tab-link">
+                <a class="nav-link force-follow-link no-tab-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
+                    <i class="bi bi-plus"></i> Зареєструвати команду
+                </a>
+            </li>
         '''
-    else:
-        return ''
+    return ''
+
 
 
 @register.filter(name="get_role_in_department")
@@ -615,3 +683,9 @@ def is_user_has_admin_access_to_tournament(tournament, current_user):
 @register.filter(name="is_user_has_admin_access_to_team")
 def is_user_has_admin_access_to_team(team, current_user):
     return team.is_user_has_admin_access_to_team(current_user)
+
+@register.filter(name="trim")
+def trim(value):
+    if isinstance(value, str):
+        return value.strip()
+    return value

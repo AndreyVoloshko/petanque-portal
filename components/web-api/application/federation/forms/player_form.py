@@ -1,23 +1,26 @@
 from django import forms
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Div, HTML
-from floppyforms import ClearableFileInput
+from crispy_forms.layout import Layout, Submit, Div, HTML, Field
+from django.forms.widgets import ClearableFileInput
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
 
 
 class ImageThumbnailFileInput(ClearableFileInput):
-    template_name = 'forms/profile/image_field.html'
-
+    template = 'forms/profile/image_field.html'
 
 class PlayerForm(forms.ModelForm):
     email = forms.EmailField(label="Email адреса", required=True)
 
     def __init__(self, *args, **kwargs):
         super(PlayerForm, self).__init__(*args, **kwargs)
+        
+        self.fields['avatar'].widget = ImageThumbnailFileInput()
 
         try:
             self.fields['email'].initial = self.instance.user.email
@@ -31,121 +34,49 @@ class PlayerForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    'avatar',
-                    css_class="col-md-2"
+                    Field('avatar', template="forms/profile/image_field.html",
+                          avatar=self.instance.avatar,
+                          attrs={'class': 'form-control', 'avatar': self.instance.avatar},
+                          widget=ImageThumbnailFileInput()
+                    ),
+                    css_class="col-lg-2"
                 ),
                 Div(
                     Div(
-                        Div(
-                            'name',
-                            css_class="col-md-12 form-group"
-                        ),
+                        Div('name', css_class="col-lg-4"),
+                        Div('surname', css_class="col-lg-4"),
+                        Div('gender', css_class="col-lg-4"),
                         css_class="row"
                     ),
                     Div(
-                        Div(
-                            'surname',
-                            css_class="col-md-12 form-group"
-                        ),
+                        Div('country', css_class="col-lg-4"),
+                        Div('birth_date', css_class="col-lg-4"),
+                        Div('email', css_class="col-lg-4"),
                         css_class="row"
                     ),
                     Div(
-                        Div(
-                            'licence_number',
-                            css_class="col-md-12 form-group"
-                        ),
+                        Div('licence_number', css_class="col-lg-4"),
+                        Div('current_club', css_class="col-lg-4"),
+                        Div('prefred_position', css_class="col-lg-4"),
                         css_class="row"
                     ),
                     Div(
-                        Div(
-                            'current_club',
-                            css_class="col-md-12 form-group"
-                        ),
+                        Div('facebook', css_class="col-lg-6"),
+                        Div('instagram', css_class="col-lg-6"),
                         css_class="row"
                     ),
                     Div(
-                        Div(
-                            HTML("&nbsp;"),
-                            css_class="col-md-12 form-group"
-                        ),
+                        Div('twitter', css_class="col-lg-6"),
+                        Div('website', css_class="col-lg-6"),
                         css_class="row"
                     ),
-                    HTML('<hr />'),
-                    Div(
-                        Div(
-                            'instagram',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'website',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    css_class="col-md-5"
-                ),
-                Div (
-                    Div(
-                        Div(
-                            'email',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'gender',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'birth_date',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'country',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'prefred_position',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    HTML('<hr />'),
-                    Div(
-                        Div(
-                            'facebook',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    Div(
-                        Div(
-                            'twitter',
-                            css_class="col-md-12 form-group"
-                        ),
-                        css_class="row"
-                    ),
-                    css_class="col-md-5"
+                    css_class="col-lg-10"
                 ),
                 css_class="row"
             ),
-            HTML('<hr />'),
             Div(
                 Submit('submit', 'Зберегти', css_class='btn btn-success'),
-                css_class="col-md-12 text-center form-group"
+                css_class="col-lg-12 text-center mb-3"
             )
         )
 
@@ -204,5 +135,5 @@ class PlayerForm(forms.ModelForm):
             "prefred_position": "Позиція"
         }
         widgets = {
-            'avatar': ImageThumbnailFileInput
+            'avatar': ImageThumbnailFileInput,
         }

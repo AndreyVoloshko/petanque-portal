@@ -1,5 +1,0 @@
-#!/bin/bash
-
-set -e
-
-eval "$(docker-machine env {{ deployment_node }} --shell=bash)"

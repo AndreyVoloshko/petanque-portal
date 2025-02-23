@@ -1,0 +1,78 @@
+html, body {
+	height: 100%;
+	min-height: 100vh;
+}
+
+body {
+	position: relative;
+}
+
+#search-form {
+		margin: 0px !important;
+}
+
+:root, [data-bs-theme="light"] {
+	--datatable-header-color: #212529;
+}
+
+[data-bs-theme="dark"] {
+	--datatable-header-color: #ffffff;
+}
+
+table.dataTable thead th {
+	background: none !important;
+	color: var(--datatable-header-color) !important;
+  border: none !important;
+}
+
+.logo-container.big {
+	width: 100px;
+	height: 100px;
+}
+
+a {
+	text-decoration: none;
+}
+
+.table > :not(caption) > * > * {
+	padding: 1rem !important;
+}
+
+div.table-responsive > div.dataTables_wrapper > div.row {
+	margin: 0.5rem 0 !important;
+}
+
+[data-bs-toggle="tooltip"] {
+	display: inline-block !important;
+	position: relative !important;
+}
+
+.btn-action-icon {
+	min-height: 30px;
+}
+
+.dataTable td, .dataTable th {
+	vertical-align: middle !important;
+}
+
+.tournament-place-field input[type="text"] {
+	max-width: 30px !important;
+}
+
+/*
+Tournaments classes
+*/
+.tournament_goes_to_rating td {
+	background: rgba(var(--bs-success-rgb), 0.07) !important;
+	border: rgba(var(--bs-success-rgb), 0.07) !important;
+}
+
+.tournament_away td {
+	background: rgba(var(--bs-primary-rgb), 0.07) !important;
+	border: rgba(var(--bs-primary-rgb), 0.07) !important;
+}
+
+.tournament_b td {
+	background: rgba(var(--bs-secondary-rgb), 0.07) !important;
+	border: rgba(var(--bs-secondary-rgb), 0.07) !important;
+}

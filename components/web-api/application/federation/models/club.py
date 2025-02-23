@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.utils import timezone
 from federation.storage import MediaStorage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 # Clubs
@@ -13,8 +13,8 @@ class Club (models.Model):
     date_registered = models.DateTimeField(_('Дата реєстрації'), default=timezone.now)
     date_created = models.DateTimeField(_('Дата створення'), default=timezone.now)
     address = models.CharField(_('Адреса'), max_length=500)
-    city = models.ForeignKey('City', verbose_name="Мiсто")
-    president = models.ForeignKey('Player', verbose_name="Президент")
+    city = models.ForeignKey('City', verbose_name="Мiсто", on_delete=models.SET_NULL, null=True)
+    president = models.ForeignKey('Player', verbose_name="Президент", on_delete=models.SET_NULL, null=True)
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)
     twitter = models.CharField(_('twitter'), max_length=500, blank=True, null=True)
     instagram = models.CharField(_('instagram'), max_length=500, blank=True, null=True)

@@ -7,7 +7,7 @@ from datetime import date
 import federation.config.rating as rating_config
 from django.contrib import admin
 from federation.storage import MediaStorage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 from federation.models.team import Team
 from django_countries.fields import CountryField
@@ -57,16 +57,16 @@ class Tournament(models.Model):
     number_of_players_in_team_min = models.IntegerField(_('Мінімальна кількість гравців в команді'), default=1)
     number_of_players_in_team_max = models.IntegerField(_('Кількість гравців в команді (з запасними)'), default=1)
     format = models.CharField(_('Формат'), max_length=5, choices=FORMAT_CHOICES)
-    organizer_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб організатор")
+    organizer_club = models.ForeignKey('Club', blank=True, verbose_name="Клуб організатор", on_delete=models.SET_NULL, null=True)
     terms = models.FileField(_('Регламент'), blank=True, null=True, storage=MediaStorage())
     teams_limit = models.IntegerField(_('Ліміт команд'), default=100)
     fee = models.TextField(_('Внески'), blank=True, null=True)
 
-    federation_delegat = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Делегат федерації",
-                                           related_name='tournament_federation_delegat')
+    federation_delegat = models.ForeignKey('Player', blank=True, verbose_name="Делегат федерації",
+                                           related_name='tournament_federation_delegat', on_delete=models.SET_NULL, null=True)
 
-    main_organizer = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Головний організатор",
-                                           related_name='tournament_main_organizer')
+    main_organizer = models.ForeignKey('Player', blank=True, verbose_name="Головний організатор",
+                                           related_name='tournament_main_organizer', on_delete=models.SET_NULL, null=True)
 
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
@@ -465,8 +465,8 @@ class Tournament(models.Model):
 
 # Teams to Tournaments relation
 class TeamTournamentMembership(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команда")
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команда", null=True)
     place_min = models.IntegerField(_('Місце'), default=0)
     place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
     date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
@@ -525,8 +525,8 @@ class TeamTournamentMembership(models.Model):
 
 # Arbiters to Tournaments relation
 class ArbiterTournamentMembership(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір")
-    arbiter = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Арбітр")
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
+    arbiter = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Арбітр", null=True)
     is_main_arbiter = models.BooleanField(_('Головний арбітр'), default=False)
 
     class Meta:

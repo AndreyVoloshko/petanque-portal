@@ -1,30 +1,37 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="{{ table_id }}">
+    <table class="table table-hover table-striped table-sm" id="{{ table_id }}">
         <thead>
             <tr>
-                <th width="10%" align="left">Дата</th>
-                <th width="50%" align="left">Назва</th>
-                <th width="25%" align="left">Команда</th>
-                <th width="15%" align="left">Сила</th>
+                <th style="width: 10%;" class="text-start">Дата</th>
+                <th style="width: 50%;" class="text-start">Назва</th>
+                <th style="width: 25%;" class="text-start">Команда</th>
+                <th style="width: 15%;" class="text-start">Сила</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
-					<tr>
-                        <td align="left">{{ item.start_date|date:"Y-m-d" }}</td>
-                        <td align="left">
-                            <a href="{% url 'tournament' id=item.pk %}"><b>{{ item.name }}</b></a>
-                        </td>
-                        <td align="left">{{ item|team_short_name_in_tournament:player|safe }}</td>
-						<td data-order="{{ item|team_power_in_tournament:player|safe }}" align="left">
-                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
-                               <span class="glyphicon glyphicon-sort"></span> {{ item|team_power_in_tournament:player|safe }}
-                            </button>
-                        </td>
-					</tr>
-
+                <tr>
+                    <td class="text-start">
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-calendar"></i> {{ item.start_date|date:"Y-m-d" }}
+                        </span>
+                    </td>
+                    <td class="text-start">
+                        <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
+                    </td>
+                    <td class="text-start">
+                        <span class="btn btn-sm btn-light fw-bold text-truncate d-inline-block">
+                            {{ item|team_short_name_in_tournament:player|safe }}
+                        </span>
+                    </td>
+                    <td data-order="{{ item|team_power_in_tournament:player|safe }}" class="text-start">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила команди">
+                            <i class="bi bi-lightning-charge"></i> {{ item|team_power_in_tournament:player|safe }}
+                        </span>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -32,30 +39,32 @@
 
 <script>
 $(document).ready(function() {
-        $('#{{ table_id }}').dataTable({
-               'aoColumns': [
-		            { sWidth: "10%", bSearchable: true, bSortable: true }, //date
-		            { sWidth: "50%", bSearchable: true,  bSortable: true }, //name
-		            { sWidth: "25%", bSearchable: true, bSortable: true }, // team
-		            { sWidth: "15%", bSearchable: true, bSortable: true, sType: "numbercase" }, //team power
-		       ],
-		       "autoWidth": false,
-		       "order": [[ 0, '{{ initial_order }}' ]],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ турнірів на сторінку",
-                        "sZeroRecords":  "Турнірів не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ турнірів",
-                        "sInfoEmpty":    "Показано 0 з 0 турнірів",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ турнірів)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Перший",
-                            "last":       "Останій",
-                            "next":       "Наступий",
-                            "previous":   "Попередій"
-                        },
-                },
-        });
+    $('#{{ table_id }}').DataTable({
+        columns: [
+            { width: "10%", searchable: true, orderable: true },  // Дата
+            { width: "50%", searchable: true, orderable: true },  // Назва
+            { width: "25%", searchable: true, orderable: true },  // Команда
+            { width: "15%", searchable: true, orderable: true, type: "num" }   // Сила
+        ],
+        autoWidth: false,
+        order: [[0, '{{ initial_order }}']],
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        language: {
+            lengthMenu: "Показати _MENU_ турнірів на сторінку",
+            zeroRecords: "Турнірів не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ турнірів",
+            infoEmpty: "Показано 0 з 0 турнірів",
+            infoFiltered: "(відфільтровано з _MAX_ турнірів)",
+            search: "Пошук",
+            paginate: {
+                first: "Початок",
+                last: "Кінець",
+                next: "Далі",
+                previous: "Назад"
+            }
+        }
+    });
+
+    $('[data-bs-toggle="tooltip"]').tooltip();
 });
 </script>

@@ -1,31 +1,30 @@
 {% load app_filters %}
 
-<div class="col-sm-4">
-    <div class="panel panel-primary">
-        <div class="panel-heading">Клуб</div>
-        <div class="panel-body">
-
-            <div class="row">
+<div class="col-lg-4">
+    <div class="card">
+        <div class="card-header fw-bold">Клуб</div>
+        <div class="card-body">
+            <div class="row align-items-start">
                 {% if item %}
-                    <div class="col-sm-5">{{ item|club_logo:"big"|safe }}</div>
-
-                    <div class="col-sm-7">
-                        <div class="row">
-                            <div class="col-sm-4">Назва</div>
-                            <div class="col-sm-8"><a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">Місто</div>
-                            <div class="col-sm-8">{{ item.city }}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">Країна</div>
-                            <div class="col-sm-8">{{ item.city.country|country_icon|safe }}</div>
-                        </div>
+                    <div class="col-md-4 text-center">
+                        {{ item|club_logo:"big"|safe }}
                     </div>
+
+                    <dl class="row col-md-8">
+                        <dt class="fw-bold col-sm-5">Назва</dt>
+                        <dd class="col-sm-7">
+                            <a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a>
+                        </dd>
+                        <dt class="fw-bold col-sm-5">Місто</dt>
+                        <dd class="col-sm-7">{{ item.city }}</dd>
+                        <dt class="fw-bold col-sm-5">Країна</dt> 
+                        <dd class="col-sm-7">{{ item.city.country|country_icon|safe }}</dd>
+                    </dl>
                 {% else %}
-                    <div class="btn btn-xs btn-danger empty_club_label">Без клубу</div>
-                {% endif%}
+                    <div class="text-center">
+                        <span class="badge bg-danger p-2">Без клубу</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

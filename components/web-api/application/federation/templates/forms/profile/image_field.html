@@ -1,18 +1,13 @@
-{% load i18n %}
-{% load staticfiles %}
+{% load static %}
+<div class="mb-3">
+    <div class="d-flex flex-column align-items-center">
+        {% if field.value %}
+            <img src="{{ field.value.url }}?{{ field.value.instance.updated_at|date:'U' }}" class="img-thumbnail avatar mb-2" style="width: 150px; height: 150px; object-fit: cover;"/>
+        {% else %}
+            <img src="{% static 'default.png' %}" class="img-thumbnail avatar mb-2" style="width: 150px; height: 150px; object-fit: cover;"/>
+        {% endif %}
+    </div>
 
-{% if value %}
-    <img class="img-thumbnail avatar" src="{{ value.url }}" />
-    {% if not required %}
-        <div class="form-group">
-            <input type="checkbox" name="{{ checkbox_name }}" id="{{ checkbox_id }}">
-            <label class="control-label" for="{{ checkbox_id }}">Видалити</label>
-        </div>
-    {% else %}
-        <br/>
-    {% endif %}
-{% else %}
-    <img class="img-thumbnail avatar" src="{% static 'default.png' %}" />
-{% endif %}
-<h6>Обрати нову фотографію</h6>
-<input type="{{ type }}" accept="image/*" name="{{ name }}"{% if required %} required{% endif %} />
+    <label class="form-label mt-2">Обрати нову фотографію</label>
+    <input class="form-control" type="file" name="{{ field.name }}" id="{{ field.id_for_label }}">
+</div>

@@ -4,7 +4,7 @@ from federation.models.tournament import Tournament
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Field
-from captcha.fields import ReCaptchaField
+from captcha.fields import CaptchaField
 
 
 class RegistrationTeamForm(forms.Form):
@@ -32,7 +32,7 @@ class RegistrationTeamForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_team', args=[self.tournament.pk])
 
-        #self.fields['captcha'] = ReCaptchaField(
+        #self.fields['captcha'] = CaptchaField(
         #    label="Додаткова перевірка"
         #)
 
@@ -41,11 +41,11 @@ class RegistrationTeamForm(forms.Form):
             HTML('<hr class="clear" />'),
         #    Div(
         #        'captcha',
-        #        css_class="col-md-12"
+        #        css_class="col-lg-12"
         #    ),
             Div(
                 Submit('submit', 'Зареєструвати команду', css_class='btn btn-success'),
-                css_class="col-md-12 text-center form-group"
+                css_class="col-lg-12 text-center mb-3"
             ),
             Div(css_class="clear")
         )
@@ -53,7 +53,7 @@ class RegistrationTeamForm(forms.Form):
         for i in range(self.tournament.get_max_players_per_team(), 0, -1):
             self.helper.layout.insert(1, Div(
                 'players[%d]' % i,
-                css_class="col-md-12"
+                css_class="col-lg-12"
             ))
 
     def is_valid(self):

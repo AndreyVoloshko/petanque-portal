@@ -1,113 +1,125 @@
 {% load app_filters %}
 
-<div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="players">
-        <thead>
-            <tr>
-                <th align="left">Рейтинг</th>
-                <th align="left">Бали</th>
-                <th align="left">Ім'я</th>
-                <th align="left" class="filterable">Вікова категорія</th>
-                <th align="left" class="filterable">Клуб</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-					<tr class="">
-						<td align="left">
-                            <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у рейтингу">
-                                {{ item|season_rating_position:rating_filters|safe }}
-                            </span>
-                        </td>
-                        <td align="left">
-                            <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
-                                {{ item|season_rating_points:rating_field|safe }}
-                            </span>
-                        </td>
-						<td align="left">{{ item.player|user_profile_link|safe }}</td>
-                        <td align="left">{{ item.player|season_player_age_category:year|safe }}</td>
-                        <td align="left">
-                            {% if item.club %}
-                                <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
-                            {% else %}
-                                <span class="btn btn-xs btn-danger">Без клубу</span>
-                            {%endif%}
-                        </td>
-						<td align="right">
-							<a href="{% url 'player' id=item.player.pk %}"><button class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="Показати гравця"><span class="glyphicon glyphicon glyphicon-user"> </span></button></a>
-						</td>
-					</tr>
-
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th align="left">Рейтинг</th>
-                <th align="left">Бали</th>
-                <th align="left">Ім'я</th>
-                <th align="left" class="filterable">Вікова категорія</th>
-                <th align="left" class="filterable">Клуб</th>
-                <th>&nbsp;</th>
-            </tr>
-        </tfoot>
-    </table>
+<div class="card mb-3">
+    <div class="card-header fw-bold">
+        Рік: {{ year }}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped" id="players">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-start">Рейтинг</th>
+                        <th class="text-start">Бали</th>
+                        <th class="text-start">Ім'я</th>
+                        <th class="text-start filterable">Вікова категорія</th>
+                        <th class="text-start filterable">Клуб</th>
+                        <th class="text-end no-sort">Дії</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
+                        <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-primary" data-bs-toggle="tooltip" title="Місце у рейтингу">
+                                    {{ item|season_rating_position:rating_filters|safe }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                                    {{ item|season_rating_points:rating_field|safe }}
+                                </span>
+                            </td>
+                            <td>{{ item.player|user_profile_link|safe }}</td>
+                            <td>{{ item.player|season_player_age_category:year|safe }}</td>
+                            <td>
+                                {% if item.club %}
+                                    <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
+                                {% else %}
+                                    <span class="badge bg-danger">Без клубу</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати гравця">
+                                    <i class="bi bi-person"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+</div>
 </div>
 
 <script>
-$(document).ready(function() {
-        $('#players').dataTable({
-                initComplete: function () {
-                    this.api().columns('.filterable').every( function () {
-                        var column = this;
-                        var select = $('<select><option value=""></option></select>')
-                            .appendTo( $(column.footer()).empty() )
-                            .on( 'change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
-
-                                column
-                                    .search( val ? '^'+val+'$' : '', true, false )
-                                    .draw();
-                            } );
-
-                        column.data().unique().sort().each( function ( d, j ) {
-
-                            // strip html tags
-                            var tmp = document.createElement("DIV");
-                            tmp.innerHTML = d;
-                            var value = tmp.textContent || tmp.innerText || "";
-
-                            select.append( '<option value="'+value+'">'+value+'</option>' );
-                        } );
-                    } );
-                },
-
-               'aoColumns': [
-		            { sWidth: "10%", bSearchable: false, bSortable: true }, //rating
-					{ sWidth: "10%", bSearchable: false, bSortable: true }, // points
-		            { sWidth: "35%", bSearchable: true,  bSortable: true }, //name
-		            { sWidth: "20%", bSearchable: true, bSortable: true }, //age
-		            { sWidth: "20%", bSearchable: true, bSortable: true }, //club
-					{ sWidth:  "5%", bSearchable: false, bSortable: false }, // actions
-		       ],
-		       "order": [[ 0, 'asc' ]],
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ гравців на сторінку",
-                        "sZeroRecords":  "Гравців не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ гравців",
-                        "sInfoEmpty":    "Показано 0 з 0 гравців",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ гравців)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Перша",
-                            "last":       "Остання",
-                            "next":       "Наступна",
-                            "previous":   "Попередня"
-                        },
-                },
+    $(document).ready(function() {
+        var table = $('#players').DataTable({
+            responsive: true, 
+            paging: true,
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+            language: {
+                lengthMenu: "Показати _MENU_ гравців на сторінку",
+                zeroRecords: "Гравців не знайдено",
+                info: "Показано _START_ - _END_ з _TOTAL_ гравців",
+                infoEmpty: "Показано 0 з 0 гравців",
+                infoFiltered: "(відфільтровано з _MAX_ гравців)",
+                search: "Пошук:",
+                paginate: {
+                    first: "Початок",
+                    last: "Кінець",
+                    next: "Далі",
+                    previous: "Назад"
+                }
+            },
+            columnDefs: [
+                { targets: 'no-sort', orderable: false },
+            ]
         });
-});
+    
+        $('#players tfoot select').on('change', function() {
+            let columnIndex = $(this).parent().index();
+            let value = $(this).val();
+            table.column(columnIndex).search(value).draw();
+        });
+    
+        table.columns('.filterable').every(function() {
+            let column = this;
+            let select = $(column.footer()).find('select');
+    
+            column.data().unique().sort().each(function(d, j) {
+                let tmp = document.createElement("DIV");
+                tmp.innerHTML = d;
+                let cleanValue = tmp.textContent || tmp.innerText || "";
+    
+                if (cleanValue) {
+                    select.append(`<option value="${cleanValue}">${cleanValue}</option>`);
+                }
+            });
+        });
+    
+        function initTooltips() {
+            setTimeout(function () {
+                $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
+                    bootstrap.Tooltip.getInstance(this).update();
+                });
+            }, 300);
+        }
+
+        initTooltips();
+
+        table.on('draw.dt', function () {
+            initTooltips();
+        });        
+    });
 </script>

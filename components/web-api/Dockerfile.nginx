@@ -1,10 +1,9 @@
 FROM nginx
 
 # Copy application files into container
-ADD ./application/static/ {{ application_home_dir }}static/
+ADD ./application/static/ /application/static/
 
 # RUN rm /etc/nginx/conf.d/default.conf
 ADD ./conf/web-service-server.conf /etc/nginx/conf.d/
 
-EXPOSE {{ nginx_container_internal_port }}
-EXPOSE 433
+EXPOSE 8080

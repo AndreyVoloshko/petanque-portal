@@ -1,15 +1,17 @@
 {% load app_filters %}
-<div class="row">
-    <div class="col-md-8">
-        <ol>
+<div class="row g-4 align-items-top">
+    <div class="col-lg-8">
+        <ol class="list-group list-group-numbered">
         {% for item in items %}
-            <li>{{ item|user_profile_link|safe }}</li>
+            <li class="list-group-item">{{ item|user_profile_link|safe }}</li>
         {% endfor %}
         </ol>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-4 text-center">
         {% with items|first as first_player %}
-            {{ first_player|user_avatar:"big"|safe }}
+            <div class="d-flex justify-content-center">
+                {{ first_player|user_avatar:"big"|safe }}
+            </div>
         {% endwith %}
     </div>
 </div>

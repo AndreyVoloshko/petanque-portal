@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 def application_login(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return HttpResponseRedirect('/profile/')
 
     if request.POST:

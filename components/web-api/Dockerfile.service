@@ -1,0 +1,33 @@
+FROM python:3-bookworm
+ENV PYTHONUNBUFFERED 1
+
+# Install software
+RUN apt-get update -y && apt-get install -y supervisor postgresql-client-15
+
+
+# Install gunicorn
+RUN pip install gunicorn
+
+# Copy requirements.txt to application
+ADD ./application/requirements.txt /application/requirements.txt
+
+# Install requirements
+RUN pip install -r /application/requirements.txt
+
+# Copy server configurations
+ADD ./conf/ /conf/
+
+# setup all the configfiles
+RUN ln -s /conf/supervisor-app.conf /etc/supervisor/conf.d/
+
+# Copy application files into container
+ADD ./application /application/
+
+# Make launch script executable
+RUN chmod 777 /application//gunicorn_start
+
+WORKDIR /application/
+
+# Run application
+ENTRYPOINT ["supervisord", "-n"]
+# CMD gunicorn api.wsgi:application --bind "0.0.0.0:8000" --workers 3 --reload --name api

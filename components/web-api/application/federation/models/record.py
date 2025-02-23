@@ -1,12 +1,12 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 # Cities
 class Record (models.Model):
     name = models.CharField(_('name'), max_length=150)
-    player = models.ForeignKey('Player', models.SET_NULL, blank=True, null=True, verbose_name="Гравець")
-    club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб")
+    player = models.ForeignKey('Player', blank=True, verbose_name="Гравець", on_delete=models.SET_NULL, null=True)
+    club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
     description = models.CharField(_('Опис'), max_length=100)
 
     def __str__(self):

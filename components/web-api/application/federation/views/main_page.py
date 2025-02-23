@@ -1,10 +1,8 @@
 import datetime
 from django.shortcuts import render
-#from django_bootstrap_carousel.models import Carousel
 from federation.helpers.general import get_model
 
 def main_page(request):
-    #carousel = Carousel.objects.get(pk=1)
 
     items_limit = 5
 

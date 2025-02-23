@@ -1,7 +1,7 @@
 {% load app_filters %}
 
 <div class="table-responsive">
-    <table class="table table-hover table-condensed table-striped" id="{{ table_id }}">
+    <table class="table table-hover table-striped" id="{{ table_id }}">
         <thead>
             <tr>
                 <th width="5%" align="left">Місце</th>
@@ -24,41 +24,42 @@
                             {% endif %}
                         </td>
                         <td align="left">
-                            {{ team.team|team_short_name|safe }}
+                            <span class="btn btn-sm btn-light fw-bold text-truncate d-inline-block">
+                                {{ team.team|team_short_name|safe }}
+                            </span>
                         </td>
                         <td data-order="{{ team.rating_points }}" align="left">
-                            <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за турнір">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Пункти отримані за турнір">
                                 {{ team.rating_points }}
                             </span>
                         </td>
                         <td align="left">
                             {% for player in team.team.players.all %}
-                                <a href="{% url 'player' id=player.pk %}" class="btn btn-xs btn-info" role="button">
-                                    {{ player|user_profile_link:False|safe }}
+                                <a href="{% url 'player' id=player.pk %}" class="btn btn-sm btn-light">
+                                    {{ player|user_profile_link:False|safe }} {{ player.country|country_flag|safe }}
                                 </a>
-                                <a class="btn btn-xs btn-primary" role="button">{{ player.country|country_flag|safe }}</a>
                             {% endfor %}
                         </td>
                         <td align="left">
-                            <button class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Дата реєстрації">
-                                <span class="glyphicon glyphicon-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
-                            </button>
+                            <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Дата реєстрації">
+                                <span class="bi bi-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
+                            </span>
                         </td>
 						<td data-order="{{ team.power }}" align="left">
-                            <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
-                                <span class="glyphicon glyphicon-sort"></span> {{ team.power }}
-                            </button>
+                            <span class="badge bg-info" data-bs-toggle="tooltip" data-html="true" data-bs-placement="top" data-bs-original-title="Сила команди">
+                                <span class="bi bi-lightning-charge"></span> {{ team.power }}
+                            </span>
                         </td>
                         <td>
                             {% if team|is_user_has_admin_access_to_team:current_user %}
                             <form class="form-horizontal" method="post" action="" onsubmit="return confirm('Чи ви впевнені, що хочете видалити цю команду з турніру?');">
                                 {% csrf_token %}
                                 <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="col-sm-12">
-                                        <button type="submit" style="display: block;width: 24px;height: 24px;" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Видалити команду">
-                                           <span class="glyphicon glyphicon-remove"></span>
-                                        </button>
+                                        <span type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
+                                           <span class="bi bi-x"></span>
+                                        </span>
                                     </div>
                                 </div>
                             </form>
@@ -78,49 +79,63 @@
 <script>
 $(document).ready(function() {
 
-        $('#{{ table_id }}').dataTable({
-               'aoColumns': [
-		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, //place
-		            { sWidth: "15%", bSearchable: true,  bSortable: true }, //name
-		            { sWidth: "5%", bSearchable: true, bSortable: true, sType: "numbercase" }, // points
-		            { sWidth: "50%", bSearchable: true, bSortable: false }, //players
-		            { sWidth: "12%", bSearchable: true, bSortable: true }, //date
-		            { sWidth: "10%", bSearchable: true, bSortable: true, sType: "numbercase" }, //power
-		            { sWidth: "3%", bSearchable: false, bSortable: false }, //actions
-		       ],
-		       "autoWidth": false,
-                "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
-                "oLanguage": {
-                        "sLengthMenu":   "Показати _MENU_ команд на сторінку",
-                        "sZeroRecords":  "Команд не знайдено",
-                        "sInfo":         "Показано _START_ - _END_ з _TOTAL_ команд",
-                        "sInfoEmpty":    "Показано 0 з 0 команд",
-                        "sInfoFiltered": "(відфільтровано з _MAX_ команд)",
-                        "search":        "Пошук",
-                        "paginate": {
-                            "first":      "Перша",
-                            "last":       "Остання",
-                            "next":       "Наступна",
-                            "previous":   "Попередня"
-                        },
-                },
-        });
-
-        $('.save-places').click(function () {
-            if(!confirm("Ви впевнені, що хочете переписати підсумкові місця команд?")) {
-                return;
+    var table = $('#{{ table_id }}').DataTable({
+        columns: [
+            { width: "10%", searchable: true, orderable: true, type: "num" }, // place
+            { width: "20%", searchable: true, orderable: true }, // name
+            { width: "5%", searchable: true, orderable: true }, // points
+            { width: "40%", searchable: true, orderable: false }, // players
+            { width: "12%", searchable: true, orderable: true }, // date
+            { width: "10%", searchable: true, orderable: true }, // power
+            { width: "3%", searchable: false, orderable: false } // actions
+        ],
+        autoWidth: false,
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        language: {
+            lengthMenu: "Показати _MENU_ команд на сторінку",
+            zeroRecords: "Команд не знайдено",
+            info: "Показано _START_ - _END_ з _TOTAL_ команд",
+            infoEmpty: "Показано 0 з 0 команд",
+            infoFiltered: "(відфільтровано з _MAX_ команд)",
+            search: "Пошук",
+            paginate: {
+                first: "Початок",
+                last: "Кінець",
+                next: "Далі",
+                previous: "Назад"
             }
+        }
+    });
 
-            $.ajax({
-              method: "POST",
-              url: "",
-              data: {
-                "teams": JSON.stringify($('.tournament-place-field :input').serializeArray()),
-                "csrfmiddlewaretoken": $('.csrf-token :input').val()
-                }
-            }).done(function( msg ) {
-                location.reload();
+    function initTooltips() {
+        setTimeout(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
+                bootstrap.Tooltip.getInstance(this).update();
             });
+        }, 300);
+    }
+
+    initTooltips();
+
+    table.on('draw.dt', function () {
+        initTooltips();
+    });          
+
+    $('.save-places').click(function () {
+        if(!confirm("Ви впевнені, що хочете переписати підсумкові місця команд?")) {
+            return;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "",
+            data: {
+            "teams": JSON.stringify($('.tournament-place-field :input').serializeArray()),
+            "csrfmiddlewaretoken": $('.csrf-token :input').val()
+            }
+        }).done(function( msg ) {
+            location.reload();
         });
+    });
 });
 </script>

@@ -37,7 +37,7 @@
             <h3>Всього турнірів: <span class="label label-primary">{{ tournaments_all|length }}</span></h3>
             <hr />
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">Країни</div>
                         <div class="panel-body">
@@ -99,7 +99,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <ul class="list-group">
                         <li class="list-group-item">
                             Найбільший турнір (гравців):<br /> <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players.name }}</a>
@@ -134,10 +134,10 @@
                                     <td>
                                         {% if players_count <= 3 %}
                                             {% for i in "x"|rjust:players_count %}
-                                                <i class="glyphicon glyphicon-user"></i>
+                                                <i class="bi bi-person"></i>
                                             {% endfor %}
                                         {% else %}
-                                            {{ players_count }} <i class="glyphicon glyphicon-user"></i>
+                                            {{ players_count }} <i class="bi bi-person"></i>
                                         {% endif %}
                                     </td>
                                     <td>{{ count }}</td>
@@ -166,7 +166,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-lg-4">
 
                     <ul class="list-group">
                         {% if tournaments_data.foreign_biggest_tournament_players.pk %}
@@ -204,10 +204,10 @@
                                     <td>
                                         {% if players_count <= 3 %}
                                             {% for i in "x"|rjust:players_count %}
-                                                <i class="glyphicon glyphicon-user"></i>
+                                                <i class="bi bi-person"></i>
                                             {% endfor %}
                                         {% else %}
-                                            {{ players_count }} <i class="glyphicon glyphicon-user"></i>
+                                            {{ players_count }} <i class="bi bi-person"></i>
                                         {% endif %}
                                     </td>
                                     <td>{{ count }}</td>

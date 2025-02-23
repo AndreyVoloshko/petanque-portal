@@ -1,6 +1,8 @@
-<div class="panel panel-primary">
-    <div class="panel-heading">{{ page_title }}</div>
-    <div class="panel-body">
+<div class="card mb-3">
+    <div class="card-header fw-bold">
+        {{ page_title }}
+    </div>
+    <div class="card-body">
         {% include table_template with items=items %}
     </div>
 </div>

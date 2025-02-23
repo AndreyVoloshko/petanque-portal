@@ -1,6 +1,7 @@
+*.pyc
 .idea/
-ftj.yml
-docker-compose.yml
+.env
 .cache
 petanque-portal/
 *.pyc
+__pycache__

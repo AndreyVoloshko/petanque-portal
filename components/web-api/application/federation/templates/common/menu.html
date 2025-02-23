@@ -1,123 +1,154 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Меню</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
+                <span class="visually-hidden">Меню</span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="/">Федерація Петанку України</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="{% url 'clubs' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="glyphicon glyphicon-home"></i> Федерація <span class="caret"></span></a>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item dropdown">
+                    <a href="{% url 'clubs' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-house-door"></i> Федерація </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'clubs' %}"><i class="glyphicon glyphicon-star-empty"></i> Клуби</a></li>
-                        <li><a href="{% url 'national_teams' %}"><i class="glyphicon glyphicon-thumbs-up"></i> Національні збірні</a></li>
-                        <li><a href="{% url 'arbiters' %}"><i class="glyphicon glyphicon-eye-open"></i> Арбітри</a></li>
-                        <li><a href="{% url 'coaches' %}"><i class="glyphicon glyphicon-education"></i> Тренери</a></li>
-                        <li><a href="{% url 'departments' %}"><i class="glyphicon glyphicon-list-alt"></i> Структура ФПУ</a></li>
-                        <li><a href="{% url 'documents' %}"><i class="glyphicon glyphicon-file"></i> Документи ФПУ</a></li>
-                        <li><a href="{% url 'records' %}"><i class="glyphicon glyphicon-fire"></i> Рекорди України</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'statistics' %}"><i class="glyphicon glyphicon-signal"></i> Статистика порталу ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-star"></i> Клуби</a></li>
+                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
+                        <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> Арбітри</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> Тренери</a></li>
+                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> Структура ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> Документи ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> Рекорди України</a></li>
+                        <li role="separator" class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> Статистика порталу ФПУ</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="{% url 'tournaments' date_filter='future' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="glyphicon glyphicon-calendar"></i> Майбутні турніри <span class="caret"></span></a>
+                <li class="nav-item dropdown">
+                    <a href="{% url 'tournaments' date_filter='future' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-calendar"></i> Майбутні турніри </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'tournaments' date_filter='future' %}"><i class="glyphicon glyphicon-calendar"></i> Усі майбутні турніри</a></li>
-                        <li><a href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Рейтингові турніри ФПУ</a></li>
-                        <li><a href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Закордонні турніри</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-calendar"></i> Усі майбутні турніри</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові турніри ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні турніри</a></li>
+                        <li role="separator" class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="{% url 'tournaments' date_filter='past' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="glyphicon glyphicon-check"></i> Результати <span class="caret"></span></a>
+                <li class="nav-item dropdown">
+                    <a href="{% url 'tournaments' date_filter='past' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-check2-circle"></i> Результати </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'tournaments' date_filter='past' %}"><i class="glyphicon glyphicon-check"></i> Усі попередні турніри</a></li>
-                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="glyphicon glyphicon-star-empty"></i> Попередні рейтингові турніри ФПУ</a></li>
-                        <li><a href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="glyphicon glyphicon-plane"></i> Попередні закордонні турніри</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'tournaments_calendar' %}"><i class="glyphicon glyphicon-calendar"></i> Календар турнірів ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> Усі попередні турніри</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Попередні рейтингові турніри ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> Попередні закордонні турніри</a></li>
+                        <li role="separator" class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar"></i> Календар турнірів ФПУ</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="#ratings" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="glyphicon glyphicon-stats"></i> Рейтинги <span class="caret"></span></a>
+                <li class="nav-item dropdown">
+                    <a href="#ratings" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-graph-up"></i> Рейтинги </a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">Офіційні рейтинги</li>
-                        <li><a href="{% url 'players' licence_filter='licence' %}"><i class="glyphicon glyphicon-home"></i> Рейтинг ФПУ</a></li>
-                        <li><a href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="glyphicon glyphicon-stats"></i> Рейтинг інклюзивних турнірів</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'season' %}"><i class="glyphicon glyphicon-floppy-disk"></i> Попередні сезони</a></li>
-                        <!-- <li role="separator" class="divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-house-door"></i> Рейтинг ФПУ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> Рейтинг інклюзивних турнірів</a></li>
+                        <li role="separator" class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-save"></i> Попередні сезони</a></li>
+                        <!-- <li role="separator" class="dropdown-divider"></li>
                         <li class="dropdown-header">Неофіційні рейтинги</li>
-                        <li><a href="{% url 'players' %}"><i class="glyphicon glyphicon-stats"></i> Повний рейтинг порталу</a></li> -->
+                        <li><a href="{% url 'players' %}"><i class="bi bi-graph-up"></i> Повний рейтинг порталу</a></li> -->
                     </ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="glyphicon glyphicon-off"></i></a>
-                    <ul class="dropdown-menu">
+            <ul class="nav navbar-nav navbar-right me-2">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><i class="bi bi-power"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end">
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'profile' %}"><i class="glyphicon glyphicon-user"></i> Профіль</a></li>
-                            <li><a href="{% url 'logout' %}"><i class="glyphicon glyphicon-log-out"></i> Вийти</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> Профіль</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Вийти</a></li>
                             {% if user.is_superuser %}
-                            <li role="separator" class="divider"></li>
+                            <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Додаткові можливості</li>
-                            <li><a href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-globe"></i> Адмін панель</a></li>
+                            <li><a class="dropdown-item" class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-globe"></i> Адмін панель</a></li>
                             {% endif %}
                         {% else %}
-                            <li><a href="{% url 'login' %}"><i class="glyphicon glyphicon-log-in"></i> Увійти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Увійти</a></li>
                         {% endif %}
                     </ul>
                 </li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <div class="form-group">
-                    <div class="input-group">
-                        <input type="text" id="search" class="form-control" title="Знайти гравця, клуб або турнір" placeholder="Знайти гравця, клуб або турнір">
-                        <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
-                    </div>
+            <form id="search-form" class="d-flex ms-auto">
+                <div class="input-group">
+                    <input type="text" id="search" class="form-control" title="Знайти гравця, клуб або турнір" placeholder="Знайти гравця, клуб або турнір">
+                    <button class="btn btn-outline-light"><i class="bi bi-search"></i></button>
                 </div>
             </form>
         </div>
     </div>
 </nav>
 
-<script>
-$( function() {
-  $('#search').autocomplete( {
-    source: function( request, response ) {
-      $.ajax( {
-        url: '{% url 'api_players_clubs_and_tournaments_list' %}',
-        data: { typedText: request.term },
-        success: function( data ) {
-          response( $.map( data, function( item ) {
-            return { label: item.value, value: item.value, href: item.href }
-          }));
-        }
-      });
 
-    },
-    minLength: 3,
-    focus: function(event, ui) {
-      $(this).val(ui.item.value);
-    },
-    select: function(event, ui) {
-      window.location.href = ui.item.href;
-      return false;
-    },
-  });
-});
+<script>
+$(function () {
+    // Search autocomplete
+    $("#search").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: "{% url 'api_players_clubs_and_tournaments_list' %}",
+                data: { typedText: request.term },
+                success: function (data) {
+                    response(
+                        $.map(data, function (item) {
+                            return {
+                                label: item.value,
+                                value: item.value,
+                                href: item.href
+                            };
+                        })
+                    );
+                }
+            });
+        },
+        minLength: 3,
+        select: function (event, ui) {
+            window.location.href = ui.item.href;
+            return false;
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li>")
+            .append("<div class='p-2'>" + item.label + "</div>")
+            .appendTo(ul);
+    };
+
+    // Theme toggle
+    const themeToggle = $("#theme-toggle");
+    const htmlElement = $("html");
+
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const savedTheme = localStorage.getItem("theme") || systemTheme;
+    
+    setTheme(savedTheme);
+
+    themeToggle.click(function (e) {
+        e.preventDefault();
+        const newTheme = htmlElement.attr("data-bs-theme") === "dark" ? "light" : "dark";
+        setTheme(newTheme);
+    });
+
+    function setTheme(theme) {
+        htmlElement.attr("data-bs-theme", theme);
+        localStorage.setItem("theme", theme);
+        
+        if (theme === "dark") {
+            themeToggle.html('<i class="bi bi-sun-fill"></i> Світла тема');
+        } else {
+            themeToggle.html('<i class="bi bi-moon-fill"></i> Темна тема');
+        }
+    }
+});    
 </script>

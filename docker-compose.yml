@@ -1,0 +1,44 @@
+services:
+  petanque_portal_web_api:
+    build:
+      context: ./components/web-api/
+      dockerfile: Dockerfile.service
+    ports:
+     - "60102:8000"
+    env_file:
+      - .env
+    volumes:
+     - petanque_uploaded_files:/application/media/images/
+    depends_on:
+     - petanque_portal_db
+
+  petanque_portal_nginx:
+    build:
+      context: ./components/web-api/
+      dockerfile: Dockerfile.nginx
+    ports:
+     - "60101:8080"
+    volumes:
+     - petanque_uploaded_files:/application/media/images/
+    depends_on:
+     - petanque_portal_web_api
+
+  petanque_portal_db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: petanque_portal_db_password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: petanque_portal
+    volumes:
+     - petanque_db:/var/lib/postgresql/data
+
+  petanque_portal_adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 60103:8080
+
+volumes:
+  petanque_db:
+  petanque_uploaded_files:

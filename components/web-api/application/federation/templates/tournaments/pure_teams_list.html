@@ -49,13 +49,13 @@
                                                 {% endfor %}
                                             </td>
                                             <td align="left">
-                                                <button class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Дата реєстрації">
-                                                    <span class="glyphicon glyphicon-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
+                                                <button class="btn btn-secondary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Дата реєстрації">
+                                                    <span class="bi bi-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
                                                 </button>
                                             </td>
                                             <td data-order="{{ team.power }}" align="left">
                                                 <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
-                                                    <span class="glyphicon glyphicon-sort"></span> {{ team.power }}
+                                                    <span class="bi glyphicon-sort"></span> {{ team.power }}
                                                 </button>
                                             </td>
                                         </tr>

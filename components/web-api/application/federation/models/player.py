@@ -3,7 +3,7 @@ from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
 from federation.storage import MediaStorage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
 from django.conf import settings
@@ -49,7 +49,7 @@ class Player(models.Model):
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Прізвищє'), max_length=100)
     birth_date = models.DateField(_('Дата народження'))
-    current_club = models.ForeignKey('Club', models.SET_NULL, blank=True, null=True, verbose_name="Клуб")
+    current_club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
     country = CountryField(blank_label=_('(select country)'), verbose_name="Країна")
 
     licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
