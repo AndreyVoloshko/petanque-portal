@@ -2,27 +2,44 @@
 {% include "common/menu.html" %}
 
 {% if not request.COOKIES.gdpr_agree %}
-<div id="gdpr_warning" class="alert alert-warning" role="alert">
-    Цей веб-ресурс може використовувати вашу персональну інформацію та файли cookie для того, щоб фунцкіонувати ефективно. Чи погоджуєтеся ви з цим?
-    <br />
-    This website may use your personal information and cookies to give you best experience. Do you agree?
-    <br />
-    <button id="gdpr-yes" class="btn btn-xs btn-success">Так, згоден / Yes, I agree</button>
-    <button id="gdpr-no" class="btn btn-xs btn-danger">Ні, не згоден. Я хочу покинути цей сайт / No, I don't agree and want to leave.</button>
+<style>
+#gdpr_warning {
+    position: fixed;
+    z-index: 9999999;
+    transform: translate(-50%, 0%);
+    bottom: 0rem;
+    left: 50%;
+}
+</style>
+<div id="gdpr_warning" class="alert alert-warning d-flex flex-column align-items-start" role="alert">
+    <p class="mb-2">
+        Цей веб-ресурс може використовувати вашу персональну інформацію та файли cookie для того, щоб функціонувати ефективно. Чи погоджуєтеся ви з цим?
+    </p>
+    <p class="mb-2">
+        This website may use your personal information and cookies to give you the best experience. Do you agree?
+    </p>
+    <div class="d-flex gap-2">
+        <button id="gdpr-yes" class="btn btn-success btn-sm">
+            <i class="bi bi-check-circle"></i> Так, згоден / Yes, I agree
+        </button>
+        <button id="gdpr-no" class="btn btn-danger btn-sm">
+            <i class="bi bi-x-circle"></i> Ні, не згоден. Я хочу покинути цей сайт / No, I don't agree and want to leave.
+        </button>
+    </div>
 </div>
 
 <script>
-$( function() {
+$(function() {
     $('#gdpr-yes').click(function() {
         var date = new Date();
         date.setFullYear(date.getFullYear() + 10);
-        document.cookie = 'gdpr_agree=1; path=/; expires=' + date.toGMTString();
-        $('#gdpr_warning').hide();
+        document.cookie = 'gdpr_agree=1; path=/; expires=' + date.toUTCString();
+        $('#gdpr_warning').fadeOut().remove();
     });
 
     $('#gdpr-no').click(function() {
-        window.history.back();
+        window.location.href = "https://www.google.com"; // или другая страница выхода
     });
 });
 </script>
-{% endif  %}
+{% endif %}
