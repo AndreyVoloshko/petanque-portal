@@ -137,7 +137,7 @@ $(function () {
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const savedTheme = localStorage.getItem("theme") || systemTheme;
     
-    setTheme(savedTheme);
+    // setTheme(savedTheme);
 
     themeToggle.click(function (e) {
         e.preventDefault();
