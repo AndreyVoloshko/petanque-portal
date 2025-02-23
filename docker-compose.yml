@@ -17,7 +17,8 @@ services:
       context: ./components/web-api/
       dockerfile: Dockerfile.nginx
     ports:
-     - "60101:8080"
+     - "80:8080"
+     - "443:443"
     volumes:
      - petanque_uploaded_files:/application/media/images/
     depends_on:
