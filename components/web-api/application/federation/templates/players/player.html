@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2 border-bottom fw-bold">Інформація про гравця</h5>
                 
                 <ul class="nav nav-pills mb-3" id="playerTabs" role="tablist">
@@ -43,7 +43,7 @@
 
                 <div class="tab-content" id="playerTabsContent">
                     <div class="tab-pane fade show active" id="player_tournaments" role="tabpanel" aria-labelledby="player-tournaments-tab">
-                        <section class="p-3 rounded">
+                        <section class="p-3 rounded shadow">
                             <ul class="nav nav-pills mb-3" id="tournamentTabs" role="tablist">
                                 <li class="nav-item">
                                     <button class="nav-link active"
@@ -107,7 +107,7 @@
                     </div>
 
                     <div class="tab-pane fade" id="player_ratings" role="tabpanel" aria-labelledby="player-ratings-tab">
-                        <section class="p-3 rounded">
+                        <section class="p-3 rounded shadow">
                             {% include "players/player_statistic_and_records_info_panel.html" with item=player player_summary_info=player_summary_info %}
                         </section>
                     </div>

@@ -27,7 +27,7 @@
     
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-star"></i> Рейтингові</h5>
                 {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
             </section>
@@ -36,7 +36,7 @@
     
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-hourglass"></i> Найближчі</h5>
                 {% include "main_page/tournaments_list.html" with items=future_tournaments %}
             </section>
@@ -47,7 +47,7 @@
 
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-gender-male"></i> Чоловіки</h5>
                 {% include "main_page/players_list.html" with items=top_players_men %}
             </section>
@@ -55,7 +55,7 @@
     </div>
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-gender-female"></i> Жінки</h5>
                 {% include "main_page/players_list.html" with items=top_players_women %}
             </section>
@@ -64,7 +64,7 @@
 
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-person-lines-fill"></i> Ветерани</h5>
                 {% include "main_page/players_list.html" with items=top_players_veteran %}
             </section>
@@ -73,7 +73,7 @@
 
     <div class="row g-4 py-3">
         <div class="col-lg-12">
-            <section class="p-3 rounded">
+            <section class="p-3 rounded shadow">
                 <h5 class="pb-2"><i class="bi bi-rocket"></i> Юніори & Молодь</h5>
                 {% include "main_page/players_list.html" with items=top_players_espoir_and_junior %}
             </section>
