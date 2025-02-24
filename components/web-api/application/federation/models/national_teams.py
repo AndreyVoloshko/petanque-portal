@@ -66,4 +66,5 @@ class National_teamAdmin(admin.ModelAdmin):
     search_fields = ('name', 'city__name', )
     list_per_page = 25
     inlines = (MembershipInline,)
+    autocomplete_fields = ['players']
 

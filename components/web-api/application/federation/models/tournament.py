@@ -538,6 +538,7 @@ class ArbiterTournamentMembership(models.Model):
 class ArbiterTournamentMembershipInline(admin.TabularInline):
     model = ArbiterTournamentMembership
     extra = 0
+    autocomplete_fields = ['arbiter']
 
     class Meta:
         verbose_name = 'Арбітри турніру'
@@ -548,6 +549,7 @@ class ArbiterTournamentMembershipInline(admin.TabularInline):
 class TeamsTournamentMembershipInline(admin.TabularInline):
     model = TeamTournamentMembership
     extra = 0
+    autocomplete_fields = ['team']
 
     class Meta:
         verbose_name = 'Команди турніру'
@@ -581,6 +583,7 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
         'is_ready_for_processing',
         'is_processing_finished',
     ]
+    autocomplete_fields = ['organizer_club', 'federation_delegat', 'main_organizer']
 
     actions = [recalculate_power,
                recalculate_ratings,

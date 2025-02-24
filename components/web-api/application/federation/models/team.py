@@ -125,6 +125,7 @@ class PlayerAdmin(admin.ModelAdmin):
     list_per_page = 25
     inlines = (MembershipInline,)
     actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
+    autocomplete_fields = ['current_club']
 
 class TeamAdmin(admin.ModelAdmin):
     def team_get_full_name(self, obj):
