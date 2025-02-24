@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-8 text-end">
                         <p class="card-text text-muted small">
-                            <i class="bi bi-people"></i> {% if item.organizer_club %}<a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% endif %}{{ item.country|country_icon|safe }}
+                            <i class="bi bi-people"></i> {% if item.organizer_club %}<a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% else %} <span class="badge bg-danger">Без клубу</span> {% endif %}{{ item.country|country_icon|safe }}
                         </p>
                     </div>
                 </div>
