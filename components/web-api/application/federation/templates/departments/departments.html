@@ -61,6 +61,20 @@
                                             {% endif %}
                                         </div>
                                     </div>
+
+                                    <hr class="my-2" />
+        
+                                    <div class="row mt-2">
+                                        <div class="col-4">
+                                            {{ member|licence_number|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ member|gender|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ member|player_age_category|safe }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
