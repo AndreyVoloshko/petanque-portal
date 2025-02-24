@@ -18,7 +18,8 @@ services:
       dockerfile: Dockerfile.nginx
     user: "0:0"
     ports:
-     - "60102:8080"
+     - "80:8080"
+     - "443:8443"
     volumes:
      - petanque_uploaded_files:/application/media/images/
      - ./data/certbot/conf:/etc/letsencrypt
