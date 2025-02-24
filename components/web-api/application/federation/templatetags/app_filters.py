@@ -347,7 +347,7 @@ def tournament_field (item, field):
         
     elif field == "terms":
         if value:
-            value = '''<a target="_blank" href="''' + value.url + '''">Переглянути</a>'''
+            value = '''<a class="btn btn-sm btn-secondary" target="_blank" href="''' + value.url + '''"><i class="bi bi-download"></i> Завантажити</a>'''
 
 
     if not value:
