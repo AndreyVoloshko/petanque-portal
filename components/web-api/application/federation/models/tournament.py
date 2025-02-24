@@ -564,9 +564,8 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
         'category',
         'organizer_club__name',
         'number_of_players_in_team_min',
-        'is_goes_to_rating',
-        'is_ukrainian_league',
-        'is_b_tournament'
+        'start_date',
+        'date_registration_stop',
     )
     list_per_page = 25
     list_display = [
