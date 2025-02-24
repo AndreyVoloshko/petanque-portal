@@ -61,7 +61,7 @@
             <tr>
                 <td class="active">Тип змагань</td>
                 <td>
-                    Гравців у команді:
+                    Спортсменів у команді:
                     <b>{% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
                         {{ tournament.number_of_players_in_team_min }}
                     {% else %}
@@ -138,7 +138,7 @@
                 <td><b>{{ teams_count }}</b></td>
             </tr>
             <tr>
-                <td class="active">Загальна кількість гравців</td>
+                <td class="active">Загальна кількість спортсменів</td>
                 <td><b>{{ players_count }}</b></td>
             </tr>
         </table>
@@ -150,7 +150,7 @@
             </tr>
             <tr>
                 <th class="active">Місце</th>
-                <th class="active">Команда (гравці)</th>
+                <th class="active">Команда (спортсмени)</th>
             </tr>
             {% for team in teams %}
             <tr>

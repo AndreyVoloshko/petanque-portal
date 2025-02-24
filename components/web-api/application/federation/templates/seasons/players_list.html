@@ -49,7 +49,7 @@
                             {% endif %}
                         </td>
                         <td class="text-end">
-                            <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати гравця">
+                            <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати спортсмена">
                                 <i class="bi bi-person"></i>
                             </a>
                         </td>
@@ -67,11 +67,11 @@
             paging: true,
             lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
             language: {
-                lengthMenu: "Показати _MENU_ гравців на сторінку",
-                zeroRecords: "Гравців не знайдено",
-                info: "Показано _START_ - _END_ з _TOTAL_ гравців",
-                infoEmpty: "Показано 0 з 0 гравців",
-                infoFiltered: "(відфільтровано з _MAX_ гравців)",
+                lengthMenu: "Показати _MENU_ спортсменів на сторінку",
+                zeroRecords: "Спортсменів не знайдено",
+                info: "Показано _START_ - _END_ з _TOTAL_ спортсменів",
+                infoEmpty: "Показано 0 з 0 спортсменів",
+                infoFiltered: "(відфільтровано з _MAX_ спортсменів)",
                 search: "Пошук:",
                 paginate: {
                     first: "Початок",

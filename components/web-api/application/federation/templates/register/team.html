@@ -35,15 +35,15 @@
     <div class="row mt-4">
         <div class="col-12">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Не можете знайти гравця? / Aren't you able to find your player?</h5>
+                <h5 class="pb-2 border-bottom fw-bold">Не можете знайти спортсмена? / Aren't you able to find your player?</h5>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="fw-bold">Зареєструвати гравця</h4>
-                        <p>Не всі гравці можуть бути присутні у результатах пошуку. Якщо ви не можете знайти гравця, 
+                        <h4 class="fw-bold">Зареєструвати спортсмена</h4>
+                        <p>Не всі спортсмени можуть бути присутні у результатах пошуку. Якщо ви не можете знайти спортсмена, 
                             <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">додайте його на портал</a>.
                         </p>
                         <p class="text-danger fw-bold">
-                            Велике прохання не додавати дублікатів або неіснуючих гравців. Спершу спробуйте знайти гравця, написавши його дані кирилицею та латиницею.
+                            Велике прохання не додавати дублікатів або неіснуючих спортсменів. Спершу спробуйте знайти спортсмена, написавши його дані кирилицею та латиницею.
                         </p>
                         <hr />
                         <h4 class="fw-bold">Register new player</h4>
@@ -81,7 +81,7 @@
             ending(args.maximum, 'літеру', 'літери', 'літер');
           },
           noResults: function () {
-            return "Гравців не знайдено. Введіть ім'я або прізвище.";
+            return "Спортсменів не знайдено. Введіть ім'я або прізвище.";
           },
           searching: function () {
             return 'Пошук…';

@@ -21,7 +21,7 @@
                         <dd class="col-sm-7">
                             <span class="badge bg-secondary"><i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.</span>
                         </dd>
-                        <dd class="col-sm-5 text-muted">Гравців</dd>
+                        <dd class="col-sm-5 text-muted">Спортсменів</dd>
                         <dd class="col-sm-7">
                             <a href="{% url 'club' id=item.pk %}"><i class="bi bi-people"></i> {{ item|get_number_of_players }}</a>
                         </dd>

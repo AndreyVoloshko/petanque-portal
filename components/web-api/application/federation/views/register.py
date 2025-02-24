@@ -60,7 +60,7 @@ def register_player(request):
                 )
                 player.save()
 
-                messages.success(request, 'Гравця зареєстровано.', extra_tags='success')
+                messages.success(request, 'Спортсмена зареєстровано.', extra_tags='success')
                 return redirect('player', id=player.pk)
             except Exception as e:
                 messages.error(request, str(e), extra_tags='danger')
@@ -70,5 +70,5 @@ def register_player(request):
 
     return render(request, 'register/player.html', {
         'player_registration_form': player_registration_form,
-        'page_title': "Реєстрація гравця",
+        'page_title': "Реєстрація спортсмена",
     })

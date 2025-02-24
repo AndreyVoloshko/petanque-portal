@@ -28,7 +28,7 @@
                                             {{ item|season_rating_position:rating_filters|safe }}
                                         </span>
                                         /
-                                        <span class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Усього гравців">
+                                        <span class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Усього спортсменів">
                                             {{ item|players_in_seasons:item.year|safe }}
                                         </span>
                                         <a href="{% url 'season' year=item.year %}">

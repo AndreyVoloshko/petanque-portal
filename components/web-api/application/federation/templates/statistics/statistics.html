@@ -62,11 +62,11 @@
                     <h5 class="pb-2 border-bottom">Найбільші змагання</h5>
                     <ul class="list-group mb-3">
                         <li class="list-group-item">
-                            Найбільші змагання (гравців): <br />
+                            Найбільші змагання (спортсменів): <br />
                             <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players.name }}</a>
                         </li>
                         <li class="list-group-item">
-                            Найбільша кількість гравців: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament_players_count }}</span>
+                            Найбільша кількість спортсменів: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament_players_count }}</span>
                         </li>
                         <li class="list-group-item">
                             Найбільші змагання (команд): <br />
@@ -79,7 +79,7 @@
                             Середня кількість команд: <span class="badge bg-primary">{{ tournaments_data.ua_avg_teams_count }}</span>
                         </li>
                         <li class="list-group-item">
-                            Середня кількість гравців: <span class="badge bg-primary">{{ tournaments_data.ua_avg_players_count }}</span>
+                            Середня кількість спортсменів: <span class="badge bg-primary">{{ tournaments_data.ua_avg_players_count }}</span>
                         </li>
                     </ul>
                 </section>

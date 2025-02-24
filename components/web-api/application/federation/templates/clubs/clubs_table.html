@@ -11,7 +11,7 @@
                 <th class="text-start">Місто</th>
                 <th class="text-start">Рік заснування</th>
                 <th class="text-start">Президент</th>
-                <th class="text-start">Гравців</th>
+                <th class="text-start">Спортсменів</th>
             </tr>
         </thead>
         <tbody>
@@ -26,7 +26,7 @@
                         </span>
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на гравця">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на спортсмена">
                             <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
                         </span>
                     </td>
@@ -49,7 +49,7 @@
                     </td>
                     <td class="text-center">
                         <a href="{% url 'club' id=item.pk %}">
-                            <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість гравців">
+                            <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість спортсменів">
                                 <i class="bi bi-people"></i> {{ item|get_number_of_players }}
                             </span>
                         </a>
