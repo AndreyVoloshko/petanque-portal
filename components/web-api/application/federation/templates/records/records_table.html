@@ -48,6 +48,20 @@
                             </p>
                         </div>
                     </div>
+
+                    <hr class="my-2" />
+        
+                    <div class="row mt-2">
+                        <div class="col-4">
+                            {{ item.player|licence_number|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ item.player|gender|safe }}
+                        </div>
+                        <div class="col-4">
+                            {{ item.player|player_age_category|safe }}
+                        </div>
+                    </div>
                 {% endif %}
 
                 {% if item.club %}
@@ -73,7 +87,23 @@
                             </p>
                         </div>
                     </div>
-                
+
+                    <hr class="my-2" />
+                    
+                    <div class="row">
+                        <div class="row mb-1">
+                            <div class="col-6">
+                                <span class="badge bg-warning" data-bs-toggle="tooltip" title="Рік заснування">
+                                    <i class="bi bi-calendar"></i> {{ item.club.date_created|get_year }} р.
+                                </span>
+                            </div>
+                            <div class="col-6">
+                                <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість спортсменів">
+                                    <i class="bi bi-people"></i> {{ item.club|get_number_of_players }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
         </div>
