@@ -52,7 +52,7 @@ def get_year(value):
 @register.filter(name='country_icon')
 def country_icon(country):
     if not country.code:
-        return 'Країна невідома!'
+        return '<span class="badge bg-danger">Країна не вказана</span>'
     return '''
         ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country.code+'''"></i>
     '''
