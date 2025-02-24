@@ -51,6 +51,7 @@ class PlayerNational_teamMembership(models.Model):
 class MembershipInline(admin.TabularInline):
     model = PlayerNational_teamMembership
     extra = 1
+    autocomplete_fields = ['player']
 
     class Meta:
         verbose_name = 'Належнiсть до команд'
@@ -66,5 +67,4 @@ class National_teamAdmin(admin.ModelAdmin):
     search_fields = ('name', 'city__name', )
     list_per_page = 25
     inlines = (MembershipInline,)
-    autocomplete_fields = ['players__player']
 
