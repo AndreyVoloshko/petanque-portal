@@ -3,12 +3,16 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <h1>Вибачте, сторінку не знайдено.</h1>
-        <h2>{{ exception }}</h2>
-        <img class="icon-404" src="{% static '404.jpg' %}" />
+<div class="container text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">Вибачте, сторінку не знайдено.</h1>
+            <h2 class="mb-4 text-muted">{{ exception }}</h2>
+            <div class="mb-4">
+                <a href="/">Перейти на головну сторінку</a>
+            </div>
+            <img src="{% static '404.jpg' %}" class="img-fluid w-50 mt-4" alt="404 Not Found">
+        </div>
     </div>
 </div>
-
 {% endblock %}
