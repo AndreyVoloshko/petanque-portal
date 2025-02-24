@@ -52,13 +52,7 @@
                     </span>
                 </td>
                 <td>
-                    {% if item.organizer_club %}
-                        <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>
-                    {% elif item.country %}
-                        {{ item.country|country_icon|safe }}
-                    {% else %}
-                        -
-                    {% endif %}
+                    {% if item.organizer_club %}<i class="bi bi-people"></i> <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% else %} <span class="badge bg-danger">Без клубу</span> {% endif %}{{ item.country|country_icon|safe }}
                 </td>
                 <td class="text-end">
                     <div class="d-flex flex-wrap gap-1 justify-content-end">
