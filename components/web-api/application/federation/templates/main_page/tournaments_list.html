@@ -31,7 +31,7 @@
 
                 <div class="row">
                     <div class="col-3">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Кількість команд">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Кількість команд">
                             <i class="bi bi-people"></i> {{ item|teams_count }}
                         </span>
                     </div>
@@ -39,7 +39,7 @@
                         {{ item|tournament_registration|safe }}
                     </div>
                     <div class="col-4 text-end">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Сила змагань">
+                        <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Сила змагань">
                             <i class="bi bi-star"></i> {{ item.power }}
                         </span>
                     </div>
