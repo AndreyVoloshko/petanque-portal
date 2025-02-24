@@ -37,6 +37,8 @@ DEBUG = get_credential('debug')
 
 ALLOWED_HOSTS = get_credential('domains')
 
+CSRF_TRUSTED_ORIGINS = get_credential('domains')
+
 
 # Application definition
 
