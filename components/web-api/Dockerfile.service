@@ -2,6 +2,10 @@ FROM python:3-bookworm
 ENV PYTHONUNBUFFERED 1
 
 # Install software
+RUN apt-get update && apt-get install -y wget gnupg2
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+RUN wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt/trusted.gpg.d/postgresql.asc
+
 RUN apt-get update -y && apt-get install -y supervisor postgresql-client-17
 
 
