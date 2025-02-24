@@ -56,9 +56,9 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
                                 <div class="col-sm-12">
-                                    <span type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
+                                    <button type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
                                         <span class="bi bi-x"></span>
-                                    </span>
+                                    </button>
                                 </div>
                             </form>
                             {% endif %}
