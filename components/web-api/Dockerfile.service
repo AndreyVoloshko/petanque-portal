@@ -23,6 +23,7 @@ ADD ./conf/ /conf/
 
 # setup all the configfiles
 RUN ln -s /conf/supervisor-app.conf /etc/supervisor/conf.d/
+COPY /conf/crontab.txt /etc/cron.d/portal_cron
 
 # Copy application files into container
 ADD ./application /application/
