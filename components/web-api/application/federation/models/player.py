@@ -18,11 +18,13 @@ class Player(models.Model):
     )
 
     ARBITER_CATEGORY = (
-        ('club', 'Друга категорія'),
-        ('regional', 'Перша категорія'),
-        ('national', 'Національний'),
-        ('euro', 'Арбітр CEP (Європейський)'),
-        ('fipjp', 'Арбітр FIPJP (Міжнародний)'),
+        ('junior', 'Юний спортивний арбітр'),
+        ('arbiter', 'Арбітр Федерації петанку України'),
+        ('club', 'Спортивний арбітр II-ої категорії'),
+        ('regional', 'Спортивний арбітр I-ої категорії'),
+        ('national', 'Спортивний арбітр національної категорії'),
+        ('euro', 'Арбітр CEP (Європейська категорія)'),
+        ('fipjp', 'Арбітр FIPJP (Світова категорія)'),
     )
 
     COACH_CATEGORY = (
@@ -36,6 +38,13 @@ class Player(models.Model):
         ('E3', 'E3 (Тренер-інструктор 3-ої категорії)'),
         ('E4', 'E4 (Тренер-інструктор 4-ої категорії)')
     )
+    
+    SPORT_TITLES = (
+        ('candidate', 'Кандидат у майстри спорту України'),
+        ('master', 'Майстер спорту України'),
+        ('master_sport', 'Майстер спорту міжнародного класу'),
+        ('honored_master_sport', 'Заслужений майстер спорту України'),
+    )
 
     POSITIONS = (
         ('point', 'Поінтер'),
@@ -48,9 +57,10 @@ class Player(models.Model):
     avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Прізвищє'), max_length=100)
+    second_name = models.CharField(_('По батькові'), max_length=100, blank=True, null=True)
     birth_date = models.DateField(_('Дата народження'))
     current_club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
-    country = CountryField(blank_label=_('(select country)'), verbose_name="Країна")
+    country = CountryField(blank_label=_('(select country)'), verbose_name="Країна", default=settings.CURRENT_COUNTRY)
 
     licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
     is_licence_active = models.BooleanField(_('Ліцензія активна'), default=False)
@@ -67,6 +77,7 @@ class Player(models.Model):
 
     arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
     coach_level = models.CharField(_('Тренерська категорія'), max_length=20, choices=COACH_CATEGORY, blank=True, null=True)
+    sport_title = models.CharField(_('Спортивне звання'), max_length=100, blank=True, null=True, choices=SPORT_TITLES)
 
     current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
     current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)

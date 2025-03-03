@@ -45,19 +45,18 @@ class PlayerForm(forms.ModelForm):
                     Div(
                         Div('name', css_class="col-lg-4"),
                         Div('surname', css_class="col-lg-4"),
-                        Div('gender', css_class="col-lg-4"),
+                        Div('second_name', css_class="col-lg-4"),
                         css_class="row"
                     ),
                     Div(
-                        Div('country', css_class="col-lg-4"),
-                        Div('birth_date', css_class="col-lg-4"),
                         Div('email', css_class="col-lg-4"),
+                        Div('gender', css_class="col-lg-4"),
+                        Div('birth_date', css_class="col-lg-4"),
                         css_class="row"
                     ),
                     Div(
-                        Div('licence_number', css_class="col-lg-4"),
-                        Div('current_club', css_class="col-lg-4"),
-                        Div('prefred_position', css_class="col-lg-4"),
+                        Div('current_club', css_class="col-lg-6"),
+                        Div('country', css_class="col-lg-6"),
                         css_class="row"
                     ),
                     Div(
@@ -108,6 +107,7 @@ class PlayerForm(forms.ModelForm):
         fields = ('avatar',
                   'name',
                   'surname',
+                  'second_name',
                   'birth_date',
                   'current_club',
                   'country',
@@ -123,6 +123,7 @@ class PlayerForm(forms.ModelForm):
             "avatar": "Аватар",
             "name": "Iм'я",
             "surname": "Прiзвище",
+            "second_name": "По батькові",
             "birth_date": "Дата народження (дд.мм.рррр)",
             "current_club": "Клуб",
             "country": "Країна",

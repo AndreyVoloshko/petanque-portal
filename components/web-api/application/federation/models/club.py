@@ -30,7 +30,10 @@ class Club (models.Model):
 
 class ClubAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'city', 'president', 'logo',)
-    search_fields = ('name', 'city__name', 'president__name', 'president__surname' )
+    search_fields = ['name', 'city__name', 'president__name', 'president__surname', 'city__id', 'president__id', ]
     list_per_page = 25
     autocomplete_fields = ['city', 'president']
+
+class CityAdmin(admin.ModelAdmin):
+    search_fields = ['name']
 

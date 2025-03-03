@@ -123,7 +123,7 @@ class PlayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'surname', 'licence_number', 'is_licence_active', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_inclusive', 'arbiter_level', 'coach_level')
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
-    inlines = (MembershipInline,)
+    # inlines = (MembershipInline,)
     actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
     autocomplete_fields = ['current_club', 'user']
 

@@ -107,9 +107,13 @@ def user_avatar(user, additional_class=''):
 
 @register.filter(name='user_profile_link')
 def user_profile_link(user, is_link=True):
+    sport_title = ""
+    if user.sport_title:
+        sport_title = ' <span class="text-secondary" data-bs-toggle="tooltip" data-bs-original-title="'+  user.get_sport_title_display() +'"><i class="bi bi-award"></i></span>'
+    
     if not is_link:
-        return user.get_name()
-    return '<a class="font-weight-normal" href="/player/' + str(user.id) + '">' + user.get_name() + '</a>'
+        return user.get_name() + sport_title
+    return '<a class="font-weight-normal" href="/player/' + str(user.id) + '">' + user.get_name() + '</a>' + sport_title
 
 
 @register.filter(name="get_number_of_players")
@@ -218,7 +222,7 @@ def gender (item):
 def licence_number(item):
     if not item.is_licence_active:
         return '<span class="badge bg-danger" data-bs-toggle="tooltip" title="Ліцензія">Без ліцензії</span>'
-    return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="Ліцензія">' + item.licence_number + '</span>'
+    return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="Ліцензія">' + str(item.licence_number) + '</span>'
 
 
 @register.filter(name="is_active_player_class")
