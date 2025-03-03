@@ -12,6 +12,17 @@ services:
     depends_on:
      - petanque_portal_db
 
+  petanque_portal_recalculate_ratings:
+    build:
+      context: ./components/web-api/
+      dockerfile: Dockerfile.service
+    container_name: recalculate_ratings
+    env_file:
+      - .env
+    depends_on:
+      - petanque_portal_web_api
+    command: ["/bin/sh", "-c", "echo '0 0 * * 3 python manage.py recalculate_ratings' | crontab - && cron -f"]
+
   petanque_portal_nginx:
     build:
       context: ./components/web-api/
