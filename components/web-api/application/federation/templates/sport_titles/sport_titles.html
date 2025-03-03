@@ -1,0 +1,114 @@
+{% extends "common/page_base.html" %}
+{% load app_filters %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-3">
+        <nav class="nav flex-column p-3 rounded">
+            <h5 class="fw-bold">Арбітри</h5>
+            <div class="nav nav-pills flex-column" id="arbiterTabs" role="tablist">
+                {% for arbiter in arbiters %}
+                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                       id="tab_{{ arbiter.category_id }}-tab" 
+                       data-bs-toggle="tab" 
+                       href="#tab_{{ arbiter.category_id }}" 
+                       role="tab" 
+                       aria-controls="tab_{{ arbiter.category_id }}" 
+                       aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                        {{ arbiter.category_name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </nav>
+    </div>
+
+    <div class="col-md-9">
+        <div class="tab-content" id="arbiterTabsContent">
+            {% for arbiter in arbiters %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab_{{ arbiter.category_id }}" role="tabpanel" aria-labelledby="tab_{{ arbiter.category_id }}-tab">
+                
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    {% for arbiter_player in arbiter.players %}
+                        <div class="col" data-rating="{{ arbiter_player|rating_position:""|default:9999 }}">
+                            <div class="card h-100">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {{ arbiter_player|user_avatar:"big"|safe }}
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                {{ arbiter_player|user_profile_link|safe }}
+                                            </h5>
+                                            <p class="card-text text-muted mb-1 fw-bold">
+                                                <i class="bi bi-person-badge"></i> {{ arbiter.category_name }}
+                                            </p>
+                                            <p class="card-text text-muted small mb-1">
+                                                <i class="bi bi-people"></i> 
+                                                {% if arbiter_player.current_club %}
+                                                    <a href="{% url 'club' id=arbiter_player.current_club.pk %}">{{ arbiter_player.current_club.short_name }}</a>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Без клубу</span>
+                                                {% endif %} {{ arbiter_player.country|country_icon|safe }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2" />
+        
+                                    <div class="row mt-2">
+                                        <div class="col-4">
+                                            {{ arbiter_player|licence_number|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ arbiter_player|gender|safe }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ arbiter_player|player_age_category|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+
+        function sortCardsInTabs() {
+            $('.tab-pane').each(function() {
+                let $tabPane = $(this);
+                let $cardsContainer = $tabPane.find('.row.row-cols-1');
+                
+                let $cards = $cardsContainer.children('.col').detach().get();
+
+                $cards.sort(function(a, b) {
+                    let ratingA = parseInt($(a).attr('data-rating'), 10) || 9999;
+                    let ratingB = parseInt($(b).attr('data-rating'), 10) || 9999;
+                    return ratingA - ratingB;
+                });
+
+                $cardsContainer.append($cards);
+            });
+        }
+
+        sortCardsInTabs();
+
+        $('#arbiterTabs a').click(function(e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
+
+{% endblock %}

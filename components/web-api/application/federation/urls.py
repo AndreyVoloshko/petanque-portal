@@ -13,6 +13,7 @@ from .views.players import players, player
 from .views.arbiters import arbiters
 from .views.coaches import coaches
 from .views.records import records
+from .views.sport_titles import sport_titles
 from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export, tournament_protocol
 from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list
 from .views.documents import documents
@@ -61,6 +62,7 @@ urlpatterns = [
     re_path(r'^arbiters/$',     arbiters,              name='arbiters'),
     re_path(r'^coaches/$',      coaches,               name='coaches'),
     re_path(r'^records/$',     records,                name='records'),
+    re_path(r'^sport_titles/$', sport_titles,          name='sport_titles'),
 
     re_path(r'^documents/$',     documents,                name='documents'),
 

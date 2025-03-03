@@ -252,6 +252,24 @@ def arbiter_label(player):
             </dd>
         </dl>
     '''
+    
+@register.filter(name="player_sport_title_label")
+def player_sport_title_label(player):
+    if not player.sport_title:
+        return ''
+
+    return f'''
+        <dl class="row">
+            <dt class="col-4">
+                <a target="_blank" href="{reverse('sport_titles')}">
+                    Спортивне звання
+                </a>
+            </dt>
+            <dd class="col-8">
+                <span class="badge bg-primary">{player.get_sport_title_display()}</span>
+            </dd>
+        </dl>
+    '''
 
 
 @register.filter(name="coach_label")
