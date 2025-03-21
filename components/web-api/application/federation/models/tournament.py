@@ -503,19 +503,19 @@ class TeamTournamentMembership(models.Model):
 
     def is_user_has_admin_access_to_team(self, user):
         result = False
-
-        if self.tournament.main_organizer and user.pk == self.tournament.main_organizer.user.pk:
-            result = True
-
-        if user.is_superuser:
-            result = True
-
+        
         for player in self.team.players.all():
             if player.user.pk == user.pk:
                 result = True
 
         if self.tournament.is_finished():
             result = False
+
+        if self.tournament.main_organizer and user.pk == self.tournament.main_organizer.user.pk:
+            result = True
+
+        if user.is_superuser:
+            result = True
 
         return result
 
