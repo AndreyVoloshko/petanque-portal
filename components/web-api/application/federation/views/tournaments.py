@@ -198,6 +198,7 @@ def tournament_teams_export(request, id):
                     'id': player.pk,
                     'name': player.name,
                     'surname': player.surname,
+                    'second_name': player.second_name,
                     'club': club_name,
                     'club_id': club_id,
                 })
