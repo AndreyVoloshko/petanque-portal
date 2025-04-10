@@ -20,7 +20,7 @@ def register_team(request, tournament_id):
     if request.method == "POST":
         team_registration_form = RegistrationTeamForm(request.POST, tournament=tournament)
         if team_registration_form.is_valid():
-            player_ids = team_registration_form.verified_player_ids.reverse()
+            player_ids = list(reversed(team_registration_form.verified_player_ids))
             team = Team.get_or_create_for_players(player_ids=player_ids)
             tournament.add_team(team)
             tournament.recalculate_power_on_registration()
