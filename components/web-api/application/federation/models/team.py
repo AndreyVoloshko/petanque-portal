@@ -89,8 +89,10 @@ class Team(models.Model):
             new_team = Team()
             new_team.save()
 
+
             for player_id in player_ids:
                 team_member = PlayerTeamMembership(team=new_team, player=Player.objects.get(pk=player_id))
+                team_member.is_capitan = player_id == player_ids[0] if len(player_ids) > 0 else False
                 team_member.save()
                 
             return new_team
