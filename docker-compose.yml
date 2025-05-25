@@ -25,7 +25,6 @@ services:
      - ./data/certbot/www:/var/www/certbot
     depends_on:
      - petanque_portal_web_api
-     - certbot
 
   petanque_portal_db:
     image: postgres:17
@@ -60,6 +59,8 @@ services:
 
   certbot:
     image: certbot/certbot
+    depends_on:
+      - petanque_portal_nginx
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
