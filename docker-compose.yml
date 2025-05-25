@@ -43,8 +43,25 @@ services:
     ports:
       - 60103:8080
 
+  certbot_init:
+    image: certbot/certbot
+    depends_on:
+      - petanque_portal_nginx
+    entrypoint: |
+      /bin/sh -c "certbot certonly --webroot \
+        --webroot-path=/var/www/certbot \
+        --email andreyvoloshko@gmail.com \
+        --agree-tos \
+        --no-eff-email \
+        -d portal.petanque.org.ua"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
   certbot:
     image: certbot/certbot
+    depends_on:
+      - petanque_portal_nginx
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
