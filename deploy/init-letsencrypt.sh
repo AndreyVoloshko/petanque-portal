@@ -3,7 +3,7 @@ domains=(portal.petanque.org.ua)
 email="andreyvoloshko@gmail.com"
 webroot="/var/www/certbot"
 
-docker compose \
+docker compose -p "petanque-portal" \
     run --rm certbot certonly --webroot \
     --webroot-path=$webroot \
     --email $email \
