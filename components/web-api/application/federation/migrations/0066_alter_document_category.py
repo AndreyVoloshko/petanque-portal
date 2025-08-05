@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='category',
-            field=models.CharField(choices=[('fpu', 'Свідоцтва та установчі документи ФПУ'), ('tournaments', 'Положення та правила проведення змагань'), ('international', 'Документи CEP, FIPJP, CMSB'), ('forms', 'Форми документів для організаторів змагань та спортсменів'), ('rules', 'Правила'), ('regulations', 'Регламентні документи'), ('tournament_regulations', 'Регламенти турнірів'), ('for_print', 'Документи до друку'), ('official', 'Свідоцтва та офіційні документи'), ('umpire_department', 'Свідоцтва та офіційні документи'), ('other', 'Інше')], max_length=100, verbose_name='Категорія'),
+            field=models.CharField(choices=[('fpu', 'Свідоцтва та установчі документи ФПУ'), ('tournaments', 'Положення та правила проведення змагань'), ('international', 'Документи CEP, FIPJP, CMSB'), ('forms', 'Форми документів для організаторів змагань та спортсменів'), ('rules', 'Правила'), ('regulations', 'Регламентні документи'), ('tournament_regulations', 'Регламенти турнірів'), ('for_print', 'Документи до друку'), ('official', 'Свідоцтва та офіційні документи'), ('umpire_department', 'Документи суддівського комітету ФПУ'), ('other', 'Інше')], max_length=100, verbose_name='Категорія'),
         ),
     ]

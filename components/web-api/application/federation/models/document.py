@@ -15,7 +15,7 @@ class Document (models.Model):
         ('tournament_regulations', 'Регламенти турнірів'),
         ('for_print', 'Документи до друку'),
         ('official', 'Свідоцтва та офіційні документи'),
-        ('umpire_department', 'Свідоцтва та офіційні документи'),
+        ('umpire_department', 'Документи суддівського комітету ФПУ'),
         ('other', 'Інше'),
     )
 
