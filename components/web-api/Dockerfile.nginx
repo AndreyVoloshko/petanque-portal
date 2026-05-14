@@ -2,6 +2,16 @@ FROM nginx
 
 USER root
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends cron \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY conf/nginx-daily-reload.cron /etc/cron.d/nginx-daily-reload
+RUN chmod 0644 /etc/cron.d/nginx-daily-reload
+
+COPY conf/nginx-with-cron.sh /nginx-with-cron.sh
+RUN chmod +x /nginx-with-cron.sh
+
 # Copy application files into container
 ADD ./application/static/ /application/static/
 
@@ -9,3 +19,6 @@ ADD ./application/static/ /application/static/
 ADD ./conf/web-service-server.conf /etc/nginx/conf.d/
 
 EXPOSE 8080
+
+ENTRYPOINT ["/nginx-with-cron.sh"]
+CMD ["nginx", "-g", "daemon off;"]
