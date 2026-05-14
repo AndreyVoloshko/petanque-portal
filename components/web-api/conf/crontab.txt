@@ -1,1 +1,5 @@
-0 0 * * 3 cd /app && python manage.py recalculate_ratings >> /var/log/cron.log 2>&1
+# /etc/cron.d/portal_cron — fields: m h dom mon dow user command
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+0 0 * * 3 root cd /application && python manage_cron.py recalculate_ratings >> /var/log/cron.log 2>&1
