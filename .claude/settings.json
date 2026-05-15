@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git status)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(find . *)",
+      "Bash(grep *)",
+      "Bash(ls *)",
+      "Bash(wc *)",
+      "Bash(docker compose -p petanque-portal ps*)",
+      "Bash(docker compose -p petanque-portal logs*)",
+      "Bash(docker compose -p petanque-portal exec petanque_portal_web_api python manage.py check*)",
+      "Bash(docker compose -p petanque-portal exec petanque_portal_web_api python manage.py showmigrations*)",
+      "Bash(docker compose -p petanque-portal exec petanque_portal_web_api python manage.py test*)",
+      "Bash(docker compose -p petanque-portal exec petanque_portal_web_api python manage.py diffsettings*)"
+    ]
+  }
+}
