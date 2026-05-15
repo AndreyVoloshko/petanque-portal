@@ -3,3 +3,4 @@ SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 0 0 * * 3 root cd /application && python manage_cron.py recalculate_ratings >> /var/log/cron.log 2>&1
+0 2 * * 4 root cd /application && python manage_cron.py dbbackup >> /var/log/cron.log 2>&1

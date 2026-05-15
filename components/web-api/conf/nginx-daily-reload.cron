@@ -1,0 +1,6 @@
+# Daily graceful reload (e.g. pick up renewed certs on the shared volume).
+# Schedule uses the container TZ — set TZ on the nginx service in compose if needed.
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+0 0 * * * root /usr/sbin/nginx -s reload >> /var/log/nginx-cron-reload.log 2>&1
