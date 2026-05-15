@@ -15,7 +15,7 @@ from .views.coaches import coaches
 from .views.records import records
 from .views.sport_titles import sport_titles
 from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export, tournament_protocol
-from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list
+from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list, submit_tournament_results
 from .views.documents import documents
 from .views.national_teams import national_teams
 from .views.seasons import seasons
@@ -55,6 +55,7 @@ urlpatterns = [
     re_path(r'^api/tournaments/list/$', tournaments_list, name='api_tournaments_list'),
     re_path(r'^api/players_clubs_and_tournaments/list/$', players_clubs_and_tournaments_list, name='api_players_clubs_and_tournaments_list'),
     re_path(r'^api/players_list/list/$', players_list, name='api_players_list'),
+    re_path(r'^api/tournament/results/$', submit_tournament_results, name='api_submit_tournament_results'),
 
     re_path(r'^national_teams/$', national_teams, name='national_teams'),
     re_path(r'^national_teams/(?P<team_id>\w+)/?$', national_teams, name='national_teams'),

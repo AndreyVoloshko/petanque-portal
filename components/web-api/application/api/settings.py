@@ -228,6 +228,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 # 50Mb
 
 RECAPTCHA_PUBLIC_KEY = get_credential('recaptcha_public_key')
 RECAPTCHA_PRIVATE_KEY = get_credential('recaptcha_private_key')
+
+API_PASSWORD = get_credential('api_password')
 NOCAPTCHA = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
@@ -235,7 +237,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = [
-    'GET'
+    'GET',
+    'POST',
 ]
 
 LOGGING = {
