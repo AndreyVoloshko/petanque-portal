@@ -22,12 +22,14 @@ docker compose -p petanque-portal exec petanque_portal_web_api python manage.py 
 ```
 
 Open:
-- App: http://localhost:60102/
-- Admin: http://localhost:60102/admin/
-- Adminer: http://localhost:60103/
+
+* App: [http://localhost:60102/](http://localhost:60102/)
+* Admin: [http://localhost:60102/admin/](http://localhost:60102/admin/)
+* DB Adminer: [http://localhost:60103/](http://localhost:60103/)
 
 ## Docs
 
-- [Local development](docs/local-development.md)
-- [Project overview](docs/project-overview.md)
-- [Audit](docs/audit/README.md)
+* [Local development](docs/local-development.md)
+* [Project overview](docs/project-overview.md)
+* [Audit](docs/audit/README.md)
+
