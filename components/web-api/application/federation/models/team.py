@@ -68,34 +68,54 @@ class Team(models.Model):
     def get_capitan(self):
         return self.players.filter(playerteammembership__is_capitan=True).first()
 
+    def set_capitan(self, player_id):
+        PlayerTeamMembership.objects.filter(team=self).update(is_capitan=False)
+
+        if player_id:
+            PlayerTeamMembership.objects.filter(team=self, player_id=player_id).update(is_capitan=True)
 
     @classmethod
-    def get_list_by_player(self, player):
-        return self.objects.filter(playerteammembership__player=player)
+    def get_list_by_player(cls, player):
+        return cls.objects.filter(playerteammembership__player=player)
 
     @classmethod
-    def get_or_create_for_players(self, player_ids):
-        team = self.objects.annotate(players_count=Count('players')).filter(players_count=len(player_ids))
+    def get_or_create_for_players(cls, player_ids):
+        capitan_id = player_ids[0] if len(player_ids) > 0 else None
+        team = cls.objects.annotate(players_count=Count('players')).filter(players_count=len(player_ids))
 
         for player_id in player_ids:
             team = team.filter(players__pk=player_id)
 
-        if team:
-            return team[0]
+        if capitan_id:
+            team_with_capitan = team.filter(
+                playerteammembership__player_id=capitan_id,
+                playerteammembership__is_capitan=True,
+            ).first()
+
+            if team_with_capitan:
+                return team_with_capitan
+
+            for existing_team in team:
+                if not existing_team.get_capitan():
+                    existing_team.set_capitan(capitan_id)
+                    return existing_team
         else:
-            #
-            # create new team
-            #
-            new_team = Team()
-            new_team.save()
+            existing_team = team.first()
+            if existing_team:
+                return existing_team
 
+        #
+        # create new team
+        #
+        new_team = cls()
+        new_team.save()
 
-            for player_id in player_ids:
-                team_member = PlayerTeamMembership(team=new_team, player=Player.objects.get(pk=player_id))
-                team_member.is_capitan = player_id == player_ids[0] if len(player_ids) > 0 else False
-                team_member.save()
-                
-            return new_team
+        for player_id in player_ids:
+            team_member = PlayerTeamMembership(team=new_team, player=Player.objects.get(pk=player_id))
+            team_member.is_capitan = player_id == capitan_id if capitan_id else False
+            team_member.save()
+
+        return new_team
 
     class Meta:
         verbose_name = 'Команда'
