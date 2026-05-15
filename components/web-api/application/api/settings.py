@@ -58,8 +58,10 @@ INSTALLED_APPS = [
     'dbbackup',
     'storages',
     'corsheaders',
-    'silk',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['silk']
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -235,3 +237,24 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = [
     'GET'
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}

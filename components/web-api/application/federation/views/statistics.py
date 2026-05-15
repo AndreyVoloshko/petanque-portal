@@ -141,7 +141,7 @@ def statistics(request, year=None):
     tournaments_data['foreign_disciplines'] = {k: v for k, v in sorted(tournaments_data['foreign_disciplines'].items(), key=lambda x: x[1], reverse=True)}
 
     # calculate averages
-    tournaments_data['ua_avg_teams_count'] = int(sum(tournaments_data['ua_teams_count']) / len(tournaments_data['ua_teams_count']))
+    tournaments_data['ua_avg_teams_count'] = int(sum(tournaments_data['ua_teams_count']) / len(tournaments_data['ua_teams_count'])) if tournaments_data['ua_teams_count'] else 0
 
     if len(tournaments_data['foreign_teams_count']) > 0:
         tournaments_data['foreign_avg_teams_count'] = int(sum(tournaments_data['foreign_teams_count']) / len(tournaments_data['foreign_teams_count']))

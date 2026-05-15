@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.utils.http import url_has_allowed_host_and_scheme
 
 def application_login(request):
     if request.user.is_authenticated:
@@ -29,8 +30,9 @@ def application_login(request):
                 login(request, user)
 
                 next_url = '/profile/'
-                if request.POST.get('next', ''):
-                    next_url = request.POST.get('next', '')
+                candidate = request.POST.get('next', '')
+                if candidate and url_has_allowed_host_and_scheme(candidate, allowed_hosts={request.get_host()}):
+                    next_url = candidate
 
                 return HttpResponseRedirect(next_url)
 
