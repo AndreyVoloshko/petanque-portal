@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-md-3">
         <nav class="nav flex-column p-3 rounded">
-            <h5 class="fw-bold">Документи</h5>
+            <h5 class="fw-bold">{% trans "Documents" %}</h5>
             <div class="nav nav-pills flex-column" id="documentTabs" role="tablist">
                 {% for document in documents %}
                     <a class="nav-link {% if forloop.first %}active{% endif %}" 

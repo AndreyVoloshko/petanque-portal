@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.utils.html import escape
 from django.http import HttpResponseRedirect
+from django.utils.translation import gettext_lazy as _
 import logging, json
 from django.views.decorators.csrf import csrf_exempt
 
@@ -23,7 +24,7 @@ def tournaments(request, date_filter=None, type_filter=None):
     return render(request, 'tournaments/tournaments.html', {
         'tournaments': Tournament.get_list(date_filter=date_filter, type_filter=type_filter, custom_order=order),
         'initial_order': frontend_order,
-        'page_title': "Змагання",
+        'page_title': _("Competitions"),
     })
 
 @csrf_exempt
@@ -42,14 +43,14 @@ def tournament(request, id):
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
-                messages.success(request, 'Нотатки збережено.')
+                messages.success(request, _('Notes saved.'))
                 return HttpResponseRedirect(request.path_info)
 
         if 'delete_team_id' in request.POST and current_user.is_authenticated:
             team = TeamTournamentMembership.objects.get(pk=request.POST['delete_team_id'])
             if team and team.is_user_has_admin_access_to_team(current_user):
                 team.delete()
-                messages.success(request, 'Комаду видалено.')
+                messages.success(request, _('Team removed.'))
                 return HttpResponseRedirect(request.path_info)
 
         if 'teams' in request.POST and current_user.is_authenticated:
@@ -72,7 +73,7 @@ def tournament(request, id):
                             db_team.place_max = team['value']
                         db_team.save()
 
-                messages.success(request, 'Місця команд оновлено.')
+                messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 
     arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
@@ -82,7 +83,7 @@ def tournament(request, id):
         'tournament': tournament,
         'arbiters': arbiters,
         'teams': teams,
-        'page_title': "Змагання",
+        'page_title': _("Competitions"),
         'current_user': current_user
     })
 

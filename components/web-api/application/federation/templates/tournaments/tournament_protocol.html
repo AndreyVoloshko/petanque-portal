@@ -2,6 +2,7 @@
 
 {% load app_filters %}
 {% load static %}
+{% load i18n %}
 
 <style>
     body {
@@ -47,36 +48,36 @@
 <div class="container">
     <div style="margin-bottom: 0px;" class="row bordered center">
         <img src="{% static 'fpu-logo-small.png' %}" class="logo" />
-        <h4>Федерація петанку України</h4>
+        <h4>{% trans "Ukrainian Petanque Federation" %}</h4>
     </div>
     <div style="margin-bottom: 0px;" class="row bordered center">
-        <h3>Підсумковий протокол змагань</h3>
+        <h3>{% trans "Final competition protocol" %}</h3>
     </div>
     <div class="row bordered">
         <table class="table">
             <tr>
-                <td class="table_head active">Назва змагань</td>
+                <td class="table_head active">{% trans "Competition name" %}</td>
                 <td><b>{{ tournament.name }}</b></td>
             </tr>
             <tr>
-                <td class="active">Тип змагань</td>
+                <td class="active">{% trans "Competition type" %}</td>
                 <td>
-                    Спортсменів у команді:
+                    {% trans "Athletes per team" %}:
                     <b>{% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
                         {{ tournament.number_of_players_in_team_min }}
                     {% else %}
-                        від {{ tournament.number_of_players_in_team_min }} до {{ tournament.number_of_players_in_team_max }}
+                        {% trans "from" %} {{ tournament.number_of_players_in_team_min }} {% trans "to" %} {{ tournament.number_of_players_in_team_max }}
                     {% endif %}</b>
                 </td>
             </tr>
             <tr>
-                <td class="active">Дата початку</td>
+                <td class="active">{% trans "Start date" %}</td>
                 <td>
                     {{ tournament.start_date }} {{ tournament.start_time }}
                 </td>
             </tr>
             <tr>
-                <td class="active">Дата закінчення</td>
+                <td class="active">{% trans "End date" %}</td>
                 <td>
                     {% if tournament.end_date %}
                         {{ tournament.end_date }}
@@ -86,7 +87,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="active">Організатор</td>
+                <td class="active">{% trans "Organizer" %}</td>
                 <td>
                     {% if tournament.organizer_club %}
                         <b>{{ tournament.organizer_club.name }}</b>
@@ -94,7 +95,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="active">Місце проведення</td>
+                <td class="active">{% trans "Venue" %}</td>
                 <td><b>{{ tournament.place }}</b></td>
             </tr>
         </table>
@@ -102,18 +103,18 @@
     <div class="row bordered">
         <table class="table">
             <tr>
-                <th style="width:33%;" class="active">Функція</th>
-                <th class="active">Ім'я</th>
+                <th style="width:33%;" class="active">{% trans "Role" %}</th>
+                <th class="active">{% trans "Name" %}</th>
             </tr>
             {% if tournament.main_organizer %}
             <tr>
-                <td>Головний організатор</td>
+                <td>{% trans "Head organizer" %}</td>
                 <td>{{ tournament.main_organizer|user_profile_link:False|safe }}</td>
             </tr>
             {% endif %}
             {% if tournament.federation_delegat %}
             <tr>
-                <td>Делегат ФПУ</td>
+                <td>{% trans "UPF delegate" %}</td>
                 <td>{{ tournament.federation_delegat|user_profile_link:False|safe }}</td>
             </tr>
             {% endif %}
@@ -121,9 +122,9 @@
             <tr>
                 <td>
                     {% if arbiter.is_main_arbiter %}
-                        Головний арбітр
+                        {% trans "Head arbiter" %}
                     {% else %}
-                        Арбітр
+                        {% trans "Arbiter" %}
                     {% endif %}
                 </td>
                 <td>{{ arbiter.arbiter|user_profile_link:False|safe }}</td>
@@ -134,11 +135,11 @@
     <div class="row bordered">
         <table class="table">
             <tr>
-                <td style="width:33%" class="active">Загальна кількість команд</td>
+                <td style="width:33%" class="active">{% trans "Total number of teams" %}</td>
                 <td><b>{{ teams_count }}</b></td>
             </tr>
             <tr>
-                <td class="active">Загальна кількість спортсменів</td>
+                <td class="active">{% trans "Total number of athletes" %}</td>
                 <td><b>{{ players_count }}</b></td>
             </tr>
         </table>
@@ -146,11 +147,11 @@
     <div class="row bordered">
         <table class="table">
             <tr>
-                <th colspan="2" class="active center">Результати змагань</th>
+                <th colspan="2" class="active center">{% trans "Competition results" %}</th>
             </tr>
             <tr>
-                <th class="active">Місце</th>
-                <th class="active">Команда (спортсмени)</th>
+                <th class="active">{% trans "Place" %}</th>
+                <th class="active">{% trans "Team (athletes)" %}</th>
             </tr>
             {% for team in teams %}
             <tr>
@@ -169,7 +170,7 @@
             {% endfor %}
             <tr>
                 <td colspan="2" class="active center">
-                    <b>Увага! Повний список результатів повинен бути доданий до протоколу! Список знаходиться за посиланням:</b><br /> {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html
+                    <b>{% trans "Attention! The full results list must be attached to the protocol. The list is available at:" %}</b><br /> {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{% url 'tournament_teams_export' id=tournament.pk %}?format=html
                 </td>
             </tr>
         </table>
@@ -178,17 +179,17 @@
     <div class="row bordered">
         <table class="table">
             <tr>
-                <th class="active center">Нотатки та зауваження</th>
+                <th class="active center">{% trans "Notes and remarks" %}</th>
             </tr>
             <tr>
-                <td><i>Нотатки щодо: дисциплінарних та ігрових зауважень, дискваліфікацій, травм та інших випадків.</i></td>
+                <td><i>{% trans "Notes about disciplinary and game remarks, disqualifications, injuries, and other incidents." %}</i></td>
             </tr>
             <tr>
                 <td style="padding-bottom: 300px;">
                     {% if tournament.final_notes %}
                         {{ tournament.final_notes|safe }}
                     {% else %}
-                        Відсутні.
+                        {% trans "None." %}
                     {% endif %}
                 </td>
             </tr>
@@ -197,13 +198,13 @@
     <div class="row bordered">
         <table class="table">
             <tr>
-                <th colspan="4" class="active center">Підписи</th>
+                <th colspan="4" class="active center">{% trans "Signatures" %}</th>
             </tr>
             <tr>
-                <th style="width:25%" class="active center">Особа, що опрацювала протокол</th>
-                <th style="width:25%" class="active center">Головний організатор</th>
-                <th style="width:25%" class="active center">Головний арбітр</th>
-                <th style="width:25%" class="active center">Делегат ФПУ</th>
+                <th style="width:25%" class="active center">{% trans "Protocol processor" %}</th>
+                <th style="width:25%" class="active center">{% trans "Head organizer" %}</th>
+                <th style="width:25%" class="active center">{% trans "Head arbiter" %}</th>
+                <th style="width:25%" class="active center">{% trans "UPF delegate" %}</th>
             </tr>
             <tr>
                 <td class="sign_placeholder"></td>
@@ -212,10 +213,10 @@
                 <td class="sign_placeholder"></td>
             </tr>
             <tr>
-                <td class="center">дата, підпис</td>
-                <td class="center">дата, підпис</td>
-                <td class="center">дата, підпис</td>
-                <td class="center">дата, підпис</td>
+                <td class="center">{% trans "date, signature" %}</td>
+                <td class="center">{% trans "date, signature" %}</td>
+                <td class="center">{% trans "date, signature" %}</td>
+                <td class="center">{% trans "date, signature" %}</td>
             </tr>
         </table>
     </div>

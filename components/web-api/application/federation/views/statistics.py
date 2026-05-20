@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 from federation.helpers.general import get_model
 
@@ -19,7 +20,7 @@ def statistics(request, year=None):
     for period in periods_all:
         periods.append({
             'year': str(period.year),
-            'title': str(period.year) + ' рік'
+            'title': _('%(year)s') % {'year': period.year}
         })
 
     tournaments_all = tournament_model.objects.all()
@@ -162,7 +163,7 @@ def statistics(request, year=None):
     return render(request, 'statistics/statistics.html', {
         'periods': periods,
         'active_period': str(year),
-        'page_title': "Статистика порталу",
+        'page_title': _("Portal statistics"),
         'tournaments_all': tournaments_all,
         'tournaments_data': tournaments_data,
         'players_all': players_all,

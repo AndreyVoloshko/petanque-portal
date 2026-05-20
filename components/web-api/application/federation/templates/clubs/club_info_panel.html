@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="col-lg-8">
     <section class="p-3 rounded shadow">
@@ -13,30 +14,30 @@
                     </div>
 
                     <dl class="row col-md-5">
-                        <dd class="col-sm-5 text-muted">Назва</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Name" %}</dd>
                         <dd class="col-sm-7"><strong>{{ item.short_name }}</strong></dd>
-                        <dd class="col-sm-5 text-muted">Країна</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Country" %}</dd>
                         <dd class="col-sm-7">{{ item.city.country|country_icon|safe }}</dd>
-                        <dd class="col-sm-5 text-muted">Заснування</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Founded" %}</dd>
                         <dd class="col-sm-7">
-                            <span class="badge bg-secondary"><i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.</span>
+                            <span class="badge bg-secondary"><i class="bi bi-calendar"></i> {{ item.date_created|get_year }} {% trans "yr." %}</span>
                         </dd>
-                        <dd class="col-sm-5 text-muted">Спортсменів</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Athlete count" %}</dd>
                         <dd class="col-sm-7">
                             <a href="{% url 'club' id=item.pk %}"><i class="bi bi-people"></i> {{ item|get_number_of_players }}</a>
                         </dd>
                     </dl>
 
                     <dl class="row col-md-5">
-                        <dd class="col-sm-5 text-muted">Мiсто</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "City" %}</dd>
                         <dd class="col-sm-7"><strong>{{ item.city }}</strong></dd>
-                        <dd class="col-sm-5 text-muted">Адреса</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Address" %}</dd>
                         <dd class="col-sm-7">
                             <a href="https://maps.google.com?q={{ item.address }}">
                                 <i class="bi bi-geo-alt"></i>
                             </a> {{ item.address }}
                         </dd>
-                        <dd class="col-sm-5 text-muted">Соцмережі</dd>
+                        <dd class="col-sm-5 text-muted">{% trans "Social media" %}</dd>
                         <dd class="col-sm-7">
                             {{ item|social_field:"website"|safe }} 
                             {{ item|social_field:"facebook"|safe }} 

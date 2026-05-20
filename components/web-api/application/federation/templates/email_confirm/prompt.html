@@ -1,23 +1,24 @@
 {% extends "common/page_base.html" %}
+{% load i18n %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7 col-md-9">
         <section class="p-4 rounded shadow">
-            <h5 class="pb-2 border-bottom fw-bold">Підтвердження email</h5>
+            <h5 class="pb-2 border-bottom fw-bold">{% trans "Email confirmation" %}</h5>
 
             {% if sent %}
             <div class="alert alert-success">
-                Лист надіслано! Перевірте пошту та перейдіть за посиланням для підтвердження email.
+                {% trans "Email sent. Check your inbox and follow the link to confirm your email." %}
             </div>
             {% elif pending_confirmation and not pending_confirmation.confirmed %}
             <div class="alert alert-info">
-                Підтвердження для {{ pending_confirmation.email }} ще очікується. Ви можете надіслати лист повторно.
+                {% blocktrans with email=pending_confirmation.email %}Confirmation for {{ email }} is still pending. You can send the email again.{% endblocktrans %}
             </div>
             {% endif %}
 
             <p>
-                Для відновлення паролю та отримання сповіщень, будь ласка, вкажіть ваш email.
+                {% trans "Please provide your email for password recovery and notifications." %}
             </p>
 
             <form method="post" novalidate>
@@ -33,8 +34,8 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Надіслати підтвердження</button>
-                    <a class="btn btn-outline-secondary" href="{{ skip_url }}">Пропустити</a>
+                    <button type="submit" class="btn btn-primary">{% trans "Send confirmation" %}</button>
+                    <a class="btn btn-outline-secondary" href="{{ skip_url }}">{% trans "Skip" %}</a>
                 </div>
             </form>
         </section>

@@ -7,6 +7,7 @@ from federation.models.player import Player
 from federation.forms.player_form import PlayerForm
 from federation.forms.authorization_profile_form import AuthorizationProfileForm
 from django.contrib.auth import update_session_auth_hash
+from django.utils.translation import gettext_lazy as _
 
 @login_required(login_url='/login/')
 def profile(request):
@@ -26,14 +27,14 @@ def profile(request):
                 player = profile_form.save(commit=False)
                 player.save()
                 profile_form = PlayerForm(request.POST, request.FILES, instance=player)
-                messages.success(request, 'Профiль змiнено.')
+                messages.success(request, _('Profile updated.'))
 
         if 'old_password' in request.POST:
             authorization_profile_form = AuthorizationProfileForm(request.user, request.POST)
             if authorization_profile_form.is_valid():
                 user = authorization_profile_form.save()
                 update_session_auth_hash(request, user)
-                messages.success(request, 'Пароль змiнено.')
+                messages.success(request, _('Password changed.'))
 
     return render(request, 'profile.html', {
             'player': player,

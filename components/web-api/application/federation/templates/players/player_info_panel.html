@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="col-lg-8">
     <section class="p-3 rounded shadow">
@@ -17,46 +18,46 @@
                     </div>
 
                     <dl class="row col-md-5">
-                        <dd class="col-sm-4 text-muted">Ліцензія</dd>
+                        <dd class="col-sm-4 text-muted">{% trans "License" %}</dd>
                         <dd class="col-sm-8">
                             {{ item|licence_number|safe }}
                         </dd>
-                        <dd class="col-sm-4 text-muted">Стать</dd>
+                        <dd class="col-sm-4 text-muted">{% trans "Gender" %}</dd>
                         <dd class="col-sm-8">
                             {{ item|gender|safe }}
                         </dd>
-                        <dd class="col-sm-4 text-muted">Вік</dd>
+                        <dd class="col-sm-4 text-muted">{% trans "Age" %}</dd>
                         <dd class="col-sm-8">
                             {{ item|player_age_category|safe }}
                         </dd>
-                        <dd class="col-sm-4 text-muted">Країна</dd>
+                        <dd class="col-sm-4 text-muted">{% trans "Country" %}</dd>
                         <dd class="col-sm-8">
                             {{ item.country|country_icon|safe }}
                         </dd>
                     </dl>
 
                     <dl class="row col-md-5">
-                        <dd class="col-sm-9 text-muted">Поточний рейтинг</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "Current ranking" %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-success"><i class="bi bi-graph-up"></i> {{ item|rating_position:""|safe }}</span>
                         </dd>
-                        <dd class="col-sm-9 text-muted">Рейтингові бали</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "Rating points" %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-primary"><i class="bi bi-circle"></i> {{ item.current_rating }}</span>
                         </dd>
-                        <dd class="col-sm-9 text-muted">Рейтингова сила</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "Rating power" %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-primary"><i class="bi bi-lightning"></i> {{ item.current_power }}</span>
                         </dd>
-                        <dd class="col-sm-9 text-muted">Рейтингові змагання {% now 'Y' %}</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "Rating competitions" %} {% now 'Y' %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-secondary"><i class="bi bi-house-door"></i> {{ player_summary_info.this_year_rating_tournaments_count|add:"0" }}</span>
                         </dd>
-                        <dd class="col-sm-9 text-muted">Іноземні змагання {% now 'Y' %}</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "International competitions" %} {% now 'Y' %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-secondary"><i class="bi bi-airplane"></i> {{ player_summary_info.this_year_away_tournaments_count|add:"0" }}</span>
                         </dd>
-                        <dd class="col-sm-9 text-muted">Всього змагань {% now 'Y' %}</dd>
+                        <dd class="col-sm-9 text-muted">{% trans "Total competitions" %} {% now 'Y' %}</dd>
                         <dd class="col-sm-3">
                             <span class="badge bg-secondary"><i class="bi bi-flag"></i> {{ player_summary_info.this_year_tournaments_count|add:"0" }}</span>
                         </dd>

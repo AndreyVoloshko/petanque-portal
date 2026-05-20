@@ -12,12 +12,12 @@ class Season (models.Model):
     player = models.ForeignKey('Player', verbose_name="Гравець", on_delete=models.SET_NULL, null=True)
     club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
 
-    year = models.IntegerField(_('Рік'), default=0)
+    year = models.IntegerField(_('Year'), default=0)
 
-    rating = models.DecimalField(_('Рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
-    rating_b = models.DecimalField(_('Рейтингові пункти у турнірах "B'), default=0, max_digits=19,
+    rating = models.DecimalField(_('Rating points'), default=0, max_digits=19, decimal_places=4)
+    rating_b = models.DecimalField(_('Rating points in B tournaments'), default=0, max_digits=19,
                                            decimal_places=4)
-    rating_liga = models.DecimalField(_('Рейтингові пункти у турнірах "Ліги"'), default=0,
+    rating_liga = models.DecimalField(_('Rating points in League tournaments'), default=0,
                                               max_digits=19, decimal_places=4)
 
     def get_ranking(self, year, rating_field):

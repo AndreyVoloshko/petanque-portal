@@ -10,11 +10,11 @@ from django.utils.translation import gettext_lazy as _
 class EmailConfirmation(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='email_confirmation')
-    email = models.EmailField(_('Email адреса'))
+    email = models.EmailField(_('Email address'))
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(_('Дата створення'), auto_now_add=True)
-    confirmed = models.BooleanField(_('Підтверджено'), default=False)
-    confirmed_at = models.DateTimeField(_('Дата підтвердження'), null=True, blank=True)
+    created_at = models.DateTimeField(_('Creation date'), auto_now_add=True)
+    confirmed = models.BooleanField(_('Confirmed'), default=False)
+    confirmed_at = models.DateTimeField(_('Confirmation date'), null=True, blank=True)
 
     @property
     def is_expired(self):

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 
 
@@ -17,5 +18,5 @@ def coaches(request):
 
     return render(request, 'coaches/coaches.html', {
         'coaches': coaches_objects,
-        'page_title': "Тренери"
+        'page_title': _("Coaches")
     })

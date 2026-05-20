@@ -51,7 +51,7 @@
                                                 {% if member.current_club %}
                                                     <a href="{% url 'club' id=member.current_club.pk %}">{{ member.current_club.short_name }}</a>
                                                 {% else %}
-                                                    <span class="badge bg-danger">Без клубу</span>
+                                                    <span class="badge bg-danger">{% trans "No club" %}</span>
                                                 {% endif %} {{ member.country|country_icon|safe }}
                                             </p>
                                             {% if member|get_description_in_department:department %}

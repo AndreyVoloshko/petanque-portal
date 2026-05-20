@@ -15,8 +15,8 @@
         <input type="hidden" name="action" value="{{ action }}" />
         <input type="hidden" name="post" value="yes" />
 
-        <input type="submit" value="Так, підтверджую" />
-        <a href="javascript:history.back();" class="button cancel-link">Ні, повернутись назад</a>
+        <input type="submit" value="{% trans 'Yes, confirm' %}" />
+        <a href="javascript:history.back();" class="button cancel-link">{% trans "No, go back" %}</a>
         </div>
     </form>
 </div>

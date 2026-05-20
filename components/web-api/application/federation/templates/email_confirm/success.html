@@ -1,12 +1,13 @@
 {% extends "common/page_base.html" %}
+{% load i18n %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7 col-md-9">
         <section class="p-4 rounded shadow text-center">
-            <h5 class="pb-2 border-bottom fw-bold">Email підтверджено!</h5>
-            <p class="mt-3">Адресу {{ confirmation.email }} успішно підтверджено.</p>
-            <a class="btn btn-primary" href="{% url 'profile' %}">Продовжити</a>
+            <h5 class="pb-2 border-bottom fw-bold">{% trans "Email confirmed!" %}</h5>
+            <p class="mt-3">{% blocktrans with email=confirmation.email %}Address {{ email }} has been confirmed successfully.{% endblocktrans %}</p>
+            <a class="btn btn-primary" href="{% url 'profile' %}">{% trans "Continue" %}</a>
         </section>
     </div>
 </div>

@@ -1,12 +1,15 @@
+{% load i18n %}
 <div class="portal-footer mt-auto">
     <div class="container">
-        <footer class="footer px-3 py-1">
-            <div class="portal-footer-inner d-flex justify-content-between">
-                <p class="mb-0">
-                    <a target="_blank" href="http://petanque.org.ua/">Федерація Петанку України</a> &copy; {% now "Y" %}.
+        <footer class="footer px-3 py-3">
+            <div class="portal-footer-inner">
+                <p class="portal-footer-brand mb-0">
+                    <a target="_blank" href="http://petanque.org.ua/">{% trans "Ukrainian Petanque Federation" %}</a>
+                    <span class="portal-footer-muted">&copy;&nbsp;{% now "Y" %}.</span>
                 </p>
-                <p class="mb-0">
-                    Розробка: <a href="http://andrey-voloshko.org.ua/" target="_blank">Андрiй Волошко</a>
+                <p class="portal-footer-credit mb-0">
+                    <span class="portal-footer-muted">{% trans "Development" %}:</span>
+                    <a href="http://andrey-voloshko.org.ua/" target="_blank">Андрiй Волошко</a>
                 </p>
             </div>
         </footer>

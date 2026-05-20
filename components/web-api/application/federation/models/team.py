@@ -13,7 +13,7 @@ class Team(models.Model):
     name            = models.CharField(_('name'), max_length=1000, blank=True, null=True)
     admin_name      = models.CharField("Назва в адмiн панелi", max_length=1000, blank=True, null=True)
     players         = models.ManyToManyField(Player, through='PlayerTeamMembership', verbose_name="Гравці")
-    date_created    = models.DateTimeField(_('Дата створення'), default=timezone.now)
+    date_created    = models.DateTimeField(_('Creation date'), default=timezone.now)
 
     def __str__(self):
         return self.get_default_name_for_admin()
@@ -126,7 +126,7 @@ class Team(models.Model):
 class PlayerTeamMembership(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команди", null=True)
-    is_capitan = models.BooleanField(_('Капiтан'), default=False)
+    is_capitan = models.BooleanField(_('Captain'), default=False)
 
     class Meta:
         verbose_name = 'Належнiсть до команд'

@@ -18,50 +18,50 @@ from federation.admin_actions.tournament import recalculate_power, recalculate_r
 # Tournaments
 class Tournament(models.Model):
     TYPE_CHOICES = (
-        ('open', 'Вiдкритий'),
-        ('fpu', 'ФПУ'),
-        ('away', 'Закордонний'),
-        ('other', 'Інше'),
+        ('open', _('Open')),
+        ('fpu', _('UPF')),
+        ('away', _('International tournament')),
+        ('other', _('Other')),
     )
 
     FORMAT_CHOICES = (
-        ('swiss', 'Швейцарська система'),
-        ('swiko', 'Швейцарська система + На виліт'),
-        ('ko', 'На виліт'),
-        ('each', 'Кожен з кожним'),
-        ('tir', 'Турнір з тиру'),
-        ('mele', 'Супер-меле'),
+        ('swiss', _('Swiss system')),
+        ('swiko', _('Swiss system + Knockout')),
+        ('ko', _('Knockout')),
+        ('each', _('Round robin')),
+        ('tir', _('Shooting tournament')),
+        ('mele', _('Super melee')),
     )
 
     name = models.CharField(_('name'), max_length=150)
 
-    category = models.CharField(_('Категорія'), max_length=5, choices=TYPE_CHOICES)
-    is_goes_to_rating = models.BooleanField(_('Рейтинговий'), default=False)
-    is_inclusive = models.BooleanField(_('Інклюзивний турнір'), default=False)
-    is_ukrainian_league = models.BooleanField(_('Турнір Української Ліги Петанку'), default=False)
-    is_b_tournament = models.BooleanField(_('Турнір "B"'), default=False)
-    is_ready_for_processing = models.BooleanField(_('Турнір готовий до опрацювання'), default=False)
+    category = models.CharField(_('Category'), max_length=5, choices=TYPE_CHOICES)
+    is_goes_to_rating = models.BooleanField(_('Rating tournament'), default=False)
+    is_inclusive = models.BooleanField(_('Inclusive tournament'), default=False)
+    is_ukrainian_league = models.BooleanField(_('Ukrainian Petanque League tournament'), default=False)
+    is_b_tournament = models.BooleanField(_('B tournament'), default=False)
+    is_ready_for_processing = models.BooleanField(_('Tournament is ready for processing'), default=False)
 
-    total_number_of_teams = models.IntegerField(_('Повна кількість команд'), blank=True, null=True)
+    total_number_of_teams = models.IntegerField(_('Total number of teams'), blank=True, null=True)
 
-    rating_coefficient = models.FloatField(_('Рейтинговий коефіцієнт'), default=1)
-    power = models.DecimalField(_('Сила турніру'), default=0, max_digits=19, decimal_places=4)
+    rating_coefficient = models.FloatField(_('Rating coefficient'), default=1)
+    power = models.DecimalField(_('Tournament power'), default=0, max_digits=19, decimal_places=4)
 
-    place = models.CharField(_('Місце проведення'), max_length=500)
+    place = models.CharField(_('Venue'), max_length=500)
     country = CountryField(blank_label=_('(select country)'), verbose_name="Країна", blank=True, null=True, default=settings.CURRENT_COUNTRY)
 
-    start_date = models.DateField(_('Дата початку'), default=timezone.now)
-    start_time = models.TimeField(_('Час початку'), default=timezone.now)
-    end_date = models.DateField(_('Дата закінчення'), blank=True, null=True)
+    start_date = models.DateField(_('Start date'), default=timezone.now)
+    start_time = models.TimeField(_('Start time'), default=timezone.now)
+    end_date = models.DateField(_('End date'), blank=True, null=True)
 
-    date_registration_stop = models.DateTimeField(_('Дата закінчення реєстрації'), blank=True, null=True)
-    number_of_players_in_team_min = models.IntegerField(_('Мінімальна кількість гравців в команді'), default=1)
-    number_of_players_in_team_max = models.IntegerField(_('Кількість гравців в команді (з запасними)'), default=1)
-    format = models.CharField(_('Формат'), max_length=5, choices=FORMAT_CHOICES)
+    date_registration_stop = models.DateTimeField(_('Registration deadline'), blank=True, null=True)
+    number_of_players_in_team_min = models.IntegerField(_('Minimum number of players per team'), default=1)
+    number_of_players_in_team_max = models.IntegerField(_('Number of players per team (including substitutes)'), default=1)
+    format = models.CharField(_('Format'), max_length=5, choices=FORMAT_CHOICES)
     organizer_club = models.ForeignKey('Club', blank=True, verbose_name="Клуб організатор", on_delete=models.SET_NULL, null=True)
-    terms = models.FileField(_('Регламент'), blank=True, null=True, storage=MediaStorage())
-    teams_limit = models.IntegerField(_('Ліміт команд'), default=100)
-    fee = models.TextField(_('Внески'), blank=True, null=True)
+    terms = models.FileField(_('Regulations'), blank=True, null=True, storage=MediaStorage())
+    teams_limit = models.IntegerField(_('Team limit'), default=100)
+    fee = models.TextField(_('Fees'), blank=True, null=True)
 
     federation_delegat = models.ForeignKey('Player', blank=True, verbose_name="Делегат федерації",
                                            related_name='tournament_federation_delegat', on_delete=models.SET_NULL, null=True)
@@ -71,12 +71,12 @@ class Tournament(models.Model):
 
     arbiters = models.ManyToManyField(Player, through='ArbiterTournamentMembership', related_name='tournament_arbiters', blank=True)
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
-    notes = models.TextField(_('Нотатки'), blank=True, null=True)
-    meta = models.TextField(_('Технічна інформація для жеребкуванння'), blank=True, null=True)
+    notes = models.TextField(_('Notes'), blank=True, null=True)
+    meta = models.TextField(_('Technical information for the draw'), blank=True, null=True)
 
-    final_notes = models.TextField(_('Нотатки для підсумкового протоколу'), blank=True, null=True)
+    final_notes = models.TextField(_('Notes for the final protocol'), blank=True, null=True)
 
-    is_processing_finished = models.BooleanField(_('Результати турніру опрацьовано'), default=False)
+    is_processing_finished = models.BooleanField(_('Tournament results processed'), default=False)
 
     def __str__(self):
         return self.get_name()
@@ -468,14 +468,14 @@ class Tournament(models.Model):
 class TeamTournamentMembership(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команда", null=True)
-    place_min = models.IntegerField(_('Місце'), default=0)
-    place_max = models.IntegerField(_('Місце (максимальне)'), default=0)
-    date_registration = models.DateField(_('Дата реєстрації'), default=timezone.now)
+    place_min = models.IntegerField(_('Place'), default=0)
+    place_max = models.IntegerField(_('Place (maximum)'), default=0)
+    date_registration = models.DateField(_('Registration date'), default=timezone.now)
 
-    rating_points = models.DecimalField(_('Рейтингові пункти за турнір'), default=0, max_digits=19, decimal_places=4)
-    rating_power = models.DecimalField(_('Рейтингова сила за турнір'), default=0, max_digits=19, decimal_places=4)
+    rating_points = models.DecimalField(_('Rating points for tournament'), default=0, max_digits=19, decimal_places=4)
+    rating_power = models.DecimalField(_('Rating power for tournament'), default=0, max_digits=19, decimal_places=4)
 
-    power = models.DecimalField(_('Сила команди'), default=0, max_digits=19, decimal_places=4)
+    power = models.DecimalField(_('Team power'), default=0, max_digits=19, decimal_places=4)
 
     def recalculate_power(self):
         power = 0
@@ -528,7 +528,7 @@ class TeamTournamentMembership(models.Model):
 class ArbiterTournamentMembership(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
     arbiter = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Арбітр", null=True)
-    is_main_arbiter = models.BooleanField(_('Головний арбітр'), default=False)
+    is_main_arbiter = models.BooleanField(_('Head arbiter'), default=False)
 
     class Meta:
         verbose_name = 'Арбітри турніру'

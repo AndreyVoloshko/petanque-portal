@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext_lazy as _
 
 from federation.models.email_confirmation import EmailConfirmation
 from federation.utils.email import send_confirmation_email
@@ -23,7 +24,7 @@ def _safe_next_url(request):
 
 class EmailPromptForm(forms.Form):
     email = forms.EmailField(
-        label='Email адреса',
+        label=_('Email address'),
         widget=forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'email'}),
     )
 
@@ -35,7 +36,7 @@ class EmailPromptForm(forms.Form):
         email = self.cleaned_data['email'].strip().lower()
         email_exists = User.objects.filter(email__iexact=email).exclude(pk=self.user.pk).exists()
         if email_exists:
-            raise forms.ValidationError('Цей email вже використовується іншим користувачем.')
+            raise forms.ValidationError(_('This email is already used by another user.'))
         return email
 
 
@@ -64,7 +65,7 @@ def email_prompt(request):
                 email=form.cleaned_data['email'],
             )
             send_confirmation_email(request, request.user, confirmation)
-            messages.success(request, 'Лист надіслано! Перевірте пошту.', extra_tags='success')
+            messages.success(request, _('Email sent. Check your inbox.'), extra_tags='success')
             query = urlencode({'sent': '1', 'next': next_url})
             return HttpResponseRedirect('{}?{}'.format(reverse('email_prompt'), query))
 
@@ -90,7 +91,7 @@ def email_confirm(request, token):
     email_used = User.objects.filter(email__iexact=confirmation.email).exclude(pk=confirmation.user.pk).exists()
     if email_used:
         return render(request, 'email_confirm/invalid.html', {
-            'error_message': 'Цей email вже використовується іншим користувачем.',
+            'error_message': _('This email is already used by another user.'),
         })
 
     user = confirmation.user

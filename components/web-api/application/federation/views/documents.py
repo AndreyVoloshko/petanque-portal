@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from federation.models.document import Document, DocumentCategory
 
 
@@ -20,5 +21,5 @@ def documents(request):
 
     return render(request, 'documents/documents.html', {
         'documents': documents_objects,
-        'page_title': "Документи",
+        'page_title': _("Documents"),
     })

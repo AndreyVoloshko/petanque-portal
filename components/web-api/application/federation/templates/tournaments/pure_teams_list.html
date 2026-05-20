@@ -1,13 +1,14 @@
 {% include "common/head.html" %}
 
 {% load app_filters %}
+{% load i18n %}
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Змагання: {{ tournament.name }}
+                    {% trans "Competition" %}: {{ tournament.name }}
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive">
@@ -15,12 +16,12 @@
                             <thead>
                                 <tr>
                                     <th width="5%" align="left">#</th>
-                                    <th width="5%" align="left">Місце</th>
-                                    <th width="15%" align="left">Назва</th>
-                                    <th width="5%" align="left">Пункти</th>
-                                    <th width="50%" align="left">Спортсмени</th>
-                                    <th width="10%" align="left">Дата</th>
-                                    <th width="10%" align="left">Сила</th>
+                                    <th width="5%" align="left">{% trans "Place" %}</th>
+                                    <th width="15%" align="left">{% trans "Name" %}</th>
+                                    <th width="5%" align="left">{% trans "Score" %}</th>
+                                    <th width="50%" align="left">{% trans "Athletes" %}</th>
+                                    <th width="10%" align="left">{% trans "Date" %}</th>
+                                    <th width="10%" align="left">{% trans "Power" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -36,7 +37,7 @@
                                                 {{ team.team|team_short_name|safe }}
                                             </td>
                                             <td data-order="{{ team.rating_points }}" align="left">
-                                                <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Пункти отримані за змагання">
+                                                <span class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="{% trans "Points earned for the competition" %}">
                                                     {{ team.rating_points }}
                                                 </span>
                                             </td>
@@ -49,12 +50,12 @@
                                                 {% endfor %}
                                             </td>
                                             <td align="left">
-                                                <button class="btn btn-secondary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Дата реєстрації">
+                                                <button class="btn btn-secondary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="{% trans "Registration date" %}">
                                                     <span class="bi bi-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
                                                 </button>
                                             </td>
                                             <td data-order="{{ team.power }}" align="left">
-                                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="Сила команди">
+                                                <button class="btn btn-primary btn-xs" data-toggle="tooltip" data-html="true" data-placement="top" title="" data-original-title="{% trans "Team power" %}">
                                                     <span class="bi glyphicon-sort"></span> {{ team.power }}
                                                 </button>
                                             </td>

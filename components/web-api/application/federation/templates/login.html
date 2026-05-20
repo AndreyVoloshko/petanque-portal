@@ -1,11 +1,12 @@
 {% extends "common/page_base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-sm-10">
             <section class="p-4 rounded">
-                <h5 class="pb-2 border-bottom text-center">Авторизація</h5>
+                <h5 class="pb-2 border-bottom text-center">{% trans "Authorization" %}</h5>
 
                 <div class="tab-content mt-3" id="authTabsContent">
                     <div class="tab-pane fade show active" id="login-form" role="tabpanel" aria-labelledby="login-tab">
@@ -16,22 +17,22 @@
                             {% endif %}
 
                             <div class="mb-3">
-                                <label for="username" class="form-label">Ім'я користувача</label>
+                                <label for="username" class="form-label">{% trans "Username" %}</label>
                                 <input type="text" name="username" id="username" class="form-control"
-                                       placeholder="Введіть ім'я користувача">
+                                       placeholder="{% trans "Enter username" %}">
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label">Пароль</label>
+                                <label for="password" class="form-label">{% trans "Password" %}</label>
                                 <input type="password" name="password" id="password"
-                                       class="form-control" placeholder="Введіть пароль">
+                                       class="form-control" placeholder="{% trans "Enter password" %}">
                             </div>
 
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Увійти</button>
+                                <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
                             </div>
                             <div class="text-center mt-3">
-                                <a href="{% url 'password_reset' %}">Забули пароль?</a>
+                                <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
                             </div>
                         </form>
                     </div>

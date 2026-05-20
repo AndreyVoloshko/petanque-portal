@@ -1,18 +1,18 @@
-{% load static %}
+{% load static i18n %}
 <html data-bs-theme="light">
     <head>
 
-        <title>Портал | Федерація Петанку України</title>
+        <title>{% trans "Portal | Ukrainian Petanque Federation" %}</title>
 
-        <meta property="og:title" content="Портал Федерації петанку України" />
+        <meta property="og:title" content="{% trans "Ukrainian Petanque Federation Portal" %}" />
         <meta property="og:type" content="website" />
-        <meta property="og:description" content="Петанку в Україні. Актуальна інформація щодо результатів замагань, рейтингу спортсменів та структури Федерації петанку України." />
+        <meta property="og:description" content="{% trans "Petanque in Ukraine. Current information on competition results, athlete rankings, and the structure of the Ukrainian Petanque Federation." %}" />
         <meta property="og:image" content="http://petanque.org.ua/wp-content/uploads/2013/10/fpu-logo.png" />
 
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="Портал Федерації Петанку України. Інформація про Федерацію петанку України, клуби, спортсменів та змагання.">
+        <meta name="description" content="{% trans "Ukrainian Petanque Federation portal. Information about the federation, clubs, athletes, and competitions." %}">
 
         <!-- Favicons -->
         <link rel="shortcut icon" href="{% static 'favicon.ico' %}">

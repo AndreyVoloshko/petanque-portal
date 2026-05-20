@@ -7,12 +7,12 @@ from django.utils.translation import gettext_lazy as _
 
 # Clubs
 class Club (models.Model):
-    name = models.CharField(_('Повна назва'), max_length=150)
+    name = models.CharField(_('Full name'), max_length=150)
     logo  = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
-    short_name = models.CharField(_('Коротка назва'), max_length=50)
-    date_registered = models.DateTimeField(_('Дата реєстрації'), default=timezone.now)
-    date_created = models.DateTimeField(_('Дата створення'), default=timezone.now)
-    address = models.CharField(_('Адреса'), max_length=500)
+    short_name = models.CharField(_('Short name'), max_length=50)
+    date_registered = models.DateTimeField(_('Registration date'), default=timezone.now)
+    date_created = models.DateTimeField(_('Creation date'), default=timezone.now)
+    address = models.CharField(_('Address'), max_length=500)
     city = models.ForeignKey('City', verbose_name="Мiсто", on_delete=models.SET_NULL, null=True)
     president = models.ForeignKey('Player', verbose_name="Президент", on_delete=models.SET_NULL, null=True)
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)

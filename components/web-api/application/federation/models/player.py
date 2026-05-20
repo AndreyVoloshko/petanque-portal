@@ -13,85 +13,85 @@ import json
 # Players
 class Player(models.Model):
     GENDER_CHOICES = (
-        ('M', 'Чоловiк'),
-        ('F', 'Жiнка'),
+        ('M', _('Man')),
+        ('F', _('Woman')),
     )
 
     ARBITER_CATEGORY = (
-        ('junior', 'Юний спортивний арбітр'),
-        ('arbiter', 'Арбітр Федерації петанку України'),
-        ('club', 'Спортивний арбітр II-ої категорії'),
-        ('regional', 'Спортивний арбітр I-ої категорії'),
-        ('national', 'Спортивний арбітр національної категорії'),
-        ('euro', 'Арбітр CEP (Європейська категорія)'),
-        ('fipjp', 'Арбітр FIPJP (Світова категорія)'),
+        ('junior', _('Junior sports arbiter')),
+        ('arbiter', _('Ukrainian Petanque Federation arbiter')),
+        ('club', _('Sports arbiter, category II')),
+        ('regional', _('Sports arbiter, category I')),
+        ('national', _('National category sports arbiter')),
+        ('euro', _('CEP arbiter (European category)')),
+        ('fipjp', _('FIPJP arbiter (world category)')),
     )
 
     COACH_CATEGORY = (
-        ('A', 'A (Аніматор)'),
-        ('I1', 'I1 (Інструктор 1-ої категорії)'),
-        ('I2', 'I2 (Інструктор 2-ої категорії)'),
-        ('I3', 'I3 (Інструктор 3-ої категорії)'),
-        ('I4', 'I4 (Інструктор 4-ої категорії)'),
-        ('E1', 'E1 (Тренер-інструктор 1-ої категорії)'),
-        ('E2', 'E2 (Тренер-інструктор 2-ої категорії)'),
-        ('E3', 'E3 (Тренер-інструктор 3-ої категорії)'),
-        ('E4', 'E4 (Тренер-інструктор 4-ої категорії)')
+        ('A', _('A (Animator)')),
+        ('I1', _('I1 (Instructor, category 1)')),
+        ('I2', _('I2 (Instructor, category 2)')),
+        ('I3', _('I3 (Instructor, category 3)')),
+        ('I4', _('I4 (Instructor, category 4)')),
+        ('E1', _('E1 (Coach-instructor, category 1)')),
+        ('E2', _('E2 (Coach-instructor, category 2)')),
+        ('E3', _('E3 (Coach-instructor, category 3)')),
+        ('E4', _('E4 (Coach-instructor, category 4)'))
     )
     
     SPORT_TITLES = (
-        ('candidate', 'Кандидат у майстри спорту України'),
-        ('master', 'Майстер спорту України'),
-        ('master_sport', 'Майстер спорту міжнародного класу'),
-        ('honored_master_sport', 'Заслужений майстер спорту України'),
+        ('candidate', _('Candidate Master of Sports of Ukraine')),
+        ('master', _('Master of Sports of Ukraine')),
+        ('master_sport', _('International Class Master of Sports')),
+        ('honored_master_sport', _('Honored Master of Sports of Ukraine')),
     )
 
     POSITIONS = (
-        ('point', 'Поінтер'),
-        ('middle', 'Мідл'),
-        ('shooter', 'Шутер'),
+        ('point', _('Pointer')),
+        ('middle', _('Middle')),
+        ('shooter', _('Shooter')),
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
     name = models.CharField(_('name'), max_length=100)
-    surname = models.CharField(_('Прізвищє'), max_length=100)
-    second_name = models.CharField(_('По батькові'), max_length=100, blank=True, null=True)
-    birth_date = models.DateField(_('Дата народження'))
+    surname = models.CharField(_('Last name'), max_length=100)
+    second_name = models.CharField(_('Middle name'), max_length=100, blank=True, null=True)
+    birth_date = models.DateField(_('Date of birth'))
     current_club = models.ForeignKey('Club', blank=True, verbose_name="Клуб", on_delete=models.SET_NULL, null=True)
     country = CountryField(blank_label=_('(select country)'), verbose_name="Країна", default=settings.CURRENT_COUNTRY)
 
-    licence_number = models.CharField(_('Номер ліцензії'), max_length=50, blank=True, null=True)
-    is_licence_active = models.BooleanField(_('Ліцензія активна'), default=False)
+    licence_number = models.CharField(_('License number'), max_length=50, blank=True, null=True)
+    is_licence_active = models.BooleanField(_('License active'), default=False)
 
-    is_inclusive = models.BooleanField(_('Інклюзивний гравець'), default=False)
+    is_inclusive = models.BooleanField(_('Inclusive player'), default=False)
 
-    gender = models.CharField(_('Стать'), max_length=1, choices=GENDER_CHOICES)
-    prefred_position = models.CharField(_('Позиція'), max_length=10, choices=POSITIONS, blank=True, null=True)
+    gender = models.CharField(_('Gender'), max_length=1, choices=GENDER_CHOICES)
+    prefred_position = models.CharField(_('Position'), max_length=10, choices=POSITIONS, blank=True, null=True)
 
     facebook = models.CharField(_('facebook'), max_length=500, blank=True, null=True)
     twitter = models.CharField(_('twitter'), max_length=500, blank=True, null=True)
     instagram = models.CharField(_('instagram'), max_length=500, blank=True, null=True)
     website  = models.CharField(_('website'), max_length=500, blank=True, null=True)
 
-    arbiter_level = models.CharField(_('Рівень арбітражу'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
-    coach_level = models.CharField(_('Тренерська категорія'), max_length=20, choices=COACH_CATEGORY, blank=True, null=True)
-    sport_title = models.CharField(_('Спортивне звання'), max_length=100, blank=True, null=True, choices=SPORT_TITLES)
+    arbiter_level = models.CharField(_('Arbitration level'), max_length=10, choices=ARBITER_CATEGORY, blank=True, null=True)
+    coach_level = models.CharField(_('Coach category'), max_length=20, choices=COACH_CATEGORY, blank=True, null=True)
+    sport_title = models.CharField(_('Sports title'), max_length=100, blank=True, null=True, choices=SPORT_TITLES)
 
-    current_rating = models.DecimalField(_('Поточні рейтингові пункти'), default=0, max_digits=19, decimal_places=4)
-    current_rating_b = models.DecimalField(_('Поточні рейтингові пункти у турнірах "B'), default=0, max_digits=19, decimal_places=4)
-    current_rating_inclusive = models.DecimalField(_('Поточні рейтингові пункти в інклюзивних турнірах'), default=0, max_digits=19, decimal_places=4)
-    current_rating_liga = models.DecimalField(_('Поточні рейтингові пункти у турнірах "Ліги"'), default=0, max_digits=19, decimal_places=4)
+    current_rating = models.DecimalField(_('Current rating points'), default=0, max_digits=19, decimal_places=4)
+    current_rating_b = models.DecimalField(_('Current rating points in B tournaments'), default=0, max_digits=19, decimal_places=4)
+    current_rating_inclusive = models.DecimalField(_('Current rating points in inclusive tournaments'), default=0, max_digits=19, decimal_places=4)
+    current_rating_liga = models.DecimalField(_('Current rating points in League tournaments'), default=0, max_digits=19, decimal_places=4)
 
-    current_rating_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг'), blank=True, null=True)
-    current_rating_b_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг у турнірах B'), blank=True, null=True)
-    current_rating_inclusive_tournaments = models.TextField(_('Турніри що впливають на поточний рейтинг у інклюзивних турнірах'), blank=True, null=True)
+    current_rating_tournaments = models.TextField(_('Tournaments affecting current rating'), blank=True, null=True)
+    current_rating_b_tournaments = models.TextField(_('Tournaments affecting current rating in B tournaments'), blank=True, null=True)
+    current_rating_inclusive_tournaments = models.TextField(_('Tournaments affecting current rating in inclusive tournaments'), blank=True, null=True)
 
-    current_power = models.DecimalField(_('Поточна сила'), default=0, max_digits=19, decimal_places=4)
-    current_power_b = models.DecimalField(_('Поточна сила у турнірах "B'), default=0, max_digits=19,
+    current_power = models.DecimalField(_('Current power'), default=0, max_digits=19, decimal_places=4)
+    current_power_b = models.DecimalField(_('Current power in B tournaments'), default=0, max_digits=19,
                                            decimal_places=4)
-    current_power_inclusive = models.DecimalField(_('Поточна сила у інклюзивних турнірах'), default=0, max_digits=19,
+    current_power_inclusive = models.DecimalField(_('Current power in inclusive tournaments'), default=0, max_digits=19,
                                            decimal_places=4)
 
     '''

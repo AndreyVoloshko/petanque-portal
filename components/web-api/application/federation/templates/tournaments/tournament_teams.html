@@ -1,15 +1,16 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="table-responsive">
     <table class="table table-hover table-striped" id="{{ table_id }}">
         <thead>
             <tr>
-                <th width="5%" align="left">Місце</th>
-                <th width="15%" align="left">Назва</th>
-                <th width="5%" align="left">Пункти</th>
-                <th width="50%" align="left">Спортсмени</th>
-                <th width="12%" align="left">Дата</th>
-                <th width="10%" align="left">Сила</th>
+                <th width="5%" align="left">{% trans "Place" %}</th>
+                <th width="15%" align="left">{% trans "Name" %}</th>
+                <th width="5%" align="left">{% trans "Score" %}</th>
+                <th width="50%" align="left">{% trans "Athletes" %}</th>
+                <th width="12%" align="left">{% trans "Date" %}</th>
+                <th width="10%" align="left">{% trans "Power" %}</th>
                 <th width="3%" align="left">&nbsp;</th>
             </tr>
         </thead>
@@ -29,7 +30,7 @@
                             </span>
                         </td>
                         <td data-order="{{ team.rating_points }}" align="left">
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Пункти отримані за змагання">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans "Points earned for the competition" %}">
                                 {{ team.rating_points }}
                             </span>
                         </td>
@@ -41,22 +42,22 @@
                             {% endfor %}
                         </td>
                         <td align="left">
-                            <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Дата реєстрації">
+                            <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans "Registration date" %}">
                                 <span class="bi bi-calendar"></span> {{ team.date_registration|date:"Y-m-d" }}
                             </span>
                         </td>
 						<td data-order="{{ team.power }}" align="left">
-                            <span class="badge bg-info" data-bs-toggle="tooltip" data-html="true" data-bs-placement="top" data-bs-original-title="Сила команди">
+                            <span class="badge bg-info" data-bs-toggle="tooltip" data-html="true" data-bs-placement="top" data-bs-original-title="{% trans "Team power" %}">
                                 <span class="bi bi-lightning-charge"></span> {{ team.power }}
                             </span>
                         </td>
                         <td>
                             {% if team|is_user_has_admin_access_to_team:current_user %}
-                            <form class="form-horizontal mb-0" method="post" action="" onsubmit="return confirm('Чи ви впевнені, що хочете видалити цю команду зі змагань?');">
+                            <form class="form-horizontal mb-0" method="post" action="" onsubmit="return confirm('{% trans "Are you sure you want to remove this team from the competition?" %}');">
                                 {% csrf_token %}
                                 <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
                                 <div class="col-sm-12">
-                                    <button type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Видалити команду">
+                                    <button type="submit" class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{% trans "Remove team" %}">
                                         <span class="bi bi-x"></span>
                                     </button>
                                 </div>
@@ -70,7 +71,7 @@
     </table>
     {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
         <span class="csrf-token">{% csrf_token %}</span>
-        <button type="button" class="btn btn-primary save-places">Зберегти підсумкові місця</button>
+        <button type="button" class="btn btn-primary save-places">{% trans "Save final places" %}</button>
     {% endif %}
 </div>
 
@@ -88,19 +89,19 @@ $(document).ready(function() {
             { width: "3%", searchable: false, orderable: false } // actions
         ],
         autoWidth: false,
-        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
         language: {
-            lengthMenu: "Показати _MENU_ команд на сторінку",
-            zeroRecords: "Команд не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ команд",
-            infoEmpty: "Показано 0 з 0 команд",
-            infoFiltered: "(відфільтровано з _MAX_ команд)",
-            search: "Пошук",
+            lengthMenu: "{% trans "Show _MENU_ teams per page" %}",
+            zeroRecords: "{% trans "No teams found" %}",
+            info: "{% trans "Showing _START_ to _END_ of _TOTAL_ teams" %}",
+            infoEmpty: "{% trans "Showing 0 of 0 teams" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ teams)" %}",
+            search: "{% trans "Search" %}",
             paginate: {
-                first: "Початок",
-                last: "Кінець",
-                next: "Далі",
-                previous: "Назад"
+                first: "{% trans "First" %}",
+                last: "{% trans "Last" %}",
+                next: "{% trans "Next" %}",
+                previous: "{% trans "Previous" %}"
             }
         }
     });
@@ -120,7 +121,7 @@ $(document).ready(function() {
     });          
 
     $('.save-places').click(function () {
-        if(!confirm("Ви впевнені, що хочете переписати підсумкові місця команд?")) {
+        if(!confirm("{% trans "Are you sure you want to overwrite the teams' final places?" %}")) {
             return;
         }
 

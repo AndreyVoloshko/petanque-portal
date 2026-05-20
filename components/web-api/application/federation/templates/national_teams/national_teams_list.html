@@ -1,7 +1,8 @@
 {% load app_filters %}
+{% load i18n %}
 
 <nav class="nav flex-column p-3 rounded">
-    <h5 class="fw-bold">Національні збірні</h5>
+    <h5 class="fw-bold">{% trans "National teams" %}</h5>
     <div class="nav nav-pills flex-column" id="nationalTeamsTabs" role="tablist">
         {% for item in items %}
             <a class="force-follow-link nav-link {% if item.pk == active_item.pk %}active{% endif %}" 

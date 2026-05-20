@@ -1,1 +1,1 @@
-Підтвердження email на сайті Федерації петанку України
+{% load i18n %}{% trans "Email confirmation on the Ukrainian Petanque Federation website" %}

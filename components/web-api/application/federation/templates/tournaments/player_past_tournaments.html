@@ -1,15 +1,16 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="table-responsive">
     <table class="table table-hover table-sm" id="{{ table_id }}">
         <thead>
             <tr>
-                <th style="width: 10%;" class="text-start">Дата</th>
-                <th style="width: 40%;" class="text-start">Назва</th>
-                <th style="width: 20%;" class="text-start">Команда</th>
-                <th style="width: 10%;" class="text-start">Місце</th>
-                <th style="width: 10%;" class="text-start">Сила</th>
-                <th style="width: 10%;" class="text-start">Бали</th>
+                <th style="width: 10%;" class="text-start">{% trans "Date" %}</th>
+                <th style="width: 40%;" class="text-start">{% trans "Name" %}</th>
+                <th style="width: 20%;" class="text-start">{% trans "Team" %}</th>
+                <th style="width: 10%;" class="text-start">{% trans "Place" %}</th>
+                <th style="width: 10%;" class="text-start">{% trans "Power" %}</th>
+                <th style="width: 10%;" class="text-start">{% trans "Points" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -28,17 +29,17 @@
                     </td>
                     <td data-order="{{ item|team_min_place_in_tournament:player|safe }}" class="text-start">
                         {{ item|team_place_in_tournament:player|safe }} /
-                        <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Кількість команд">
+                        <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Number of teams" %}">
                             {{ item|teams_count }}
                         </span>
                     </td>
                     <td data-order="{{ item|team_power_in_tournament:player|safe }}" class="text-start">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила команди">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Team power" %}">
                             <i class="bi bi-lightning-charge"></i> {{ item|team_power_in_tournament:player|safe }}
                         </span>
                     </td>
                     <td data-order="{{ item|team_rating_points_in_tournament:player|safe }}" class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Пункти отримані за змагання">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Points earned for the competition" %}">
                             {{ item|team_rating_points_in_tournament:player|safe }}
                         </span>
                     </td>
@@ -61,19 +62,19 @@ $(document).ready(function() {
         ],
         autoWidth: false,
         order: [[0, '{{ initial_order }}']],
-        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
         language: {
-            lengthMenu: "Показати _MENU_ змагань на сторінку",
-            zeroRecords: "Змагань не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ змагань",
-            infoEmpty: "Показано 0 з 0 змагань",
-            infoFiltered: "(відфільтровано з _MAX_ змагань)",
-            search: "Пошук",
+            lengthMenu: "{% trans "Show _MENU_ competitions per page" %}",
+            zeroRecords: "{% trans "No competitions found" %}",
+            info: "{% trans "Showing _START_ to _END_ of _TOTAL_ competitions" %}",
+            infoEmpty: "{% trans "Showing 0 of 0 competitions" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ competitions)" %}",
+            search: "{% trans "Search" %}",
             paginate: {
-                first: "Початок",
-                last: "Кінець",
-                next: "Далі",
-                previous: "Назад"
+                first: "{% trans "First" %}",
+                last: "{% trans "Last" %}",
+                next: "{% trans "Next" %}",
+                previous: "{% trans "Previous" %}"
             }
         }
     });

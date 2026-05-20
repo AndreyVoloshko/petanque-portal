@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
 
 
@@ -17,5 +18,5 @@ def arbiters(request):
 
     return render(request, 'arbiters/arbiters.html', {
         'arbiters': arbiter_objects,
-        'page_title': "Арбiтри"
+        'page_title': _("Arbiters")
     })

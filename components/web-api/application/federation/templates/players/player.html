@@ -5,14 +5,15 @@
 {% block content %}
     <div class="row">
         {% include "players/player_info_panel.html" with item=player %}
-        {% include "clubs/club_short_info_panel.html" with item=player.current_club page_title="Клуб" %}
+        {% trans "Club" as club_title %}
+        {% include "clubs/club_short_info_panel.html" with item=player.current_club page_title=club_title %}
     </div>
     <div class="clearfix pt-4"></div>
 
     <div class="row">
         <div class="col-12">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Інформація про спортсмена</h5>
+                <h5 class="pb-2 border-bottom fw-bold">{% trans "Athlete information" %}</h5>
                 
                 <ul class="nav nav-pills mb-3" id="playerTabs" role="tablist">
                     <li class="nav-item">
@@ -24,7 +25,7 @@
                                 role="tab"
                                 aria-controls="player_tournaments"
                                 aria-selected="true">
-                            <i class="bi bi-list"></i> Змагання
+                            <i class="bi bi-list"></i> {% trans "Competitions" %}
                         </button>
                     </li>
                     <li class="nav-item">
@@ -36,7 +37,7 @@
                                 role="tab"
                                 aria-controls="player_ratings"
                                 aria-selected="false">
-                            <i class="bi bi-star"></i> Додаткова інформація
+                            <i class="bi bi-star"></i> {% trans "Additional information" %}
                         </button>
                     </li>
                 </ul>
@@ -54,7 +55,7 @@
                                             role="tab"
                                             aria-controls="player_past_tournaments"
                                             aria-selected="true">
-                                        <i class="bi bi-check2-circle"></i> Українські
+                                        <i class="bi bi-check2-circle"></i> {% trans "Ukrainian" %}
                                     </button>
                                 </li>
                                 <li class="nav-item">
@@ -66,7 +67,7 @@
                                             role="tab"
                                             aria-controls="player_away_tournaments"
                                             aria-selected="false">
-                                        <i class="bi bi-airplane"></i> Іноземні
+                                        <i class="bi bi-airplane"></i> {% trans "International" %}
                                     </button>
                                 </li>
                                 <li class="nav-item">
@@ -78,7 +79,7 @@
                                             role="tab"
                                             aria-controls="player_future_tournaments"
                                             aria-selected="false">
-                                        <i class="bi bi-hourglass"></i> Майбутні
+                                        <i class="bi bi-hourglass"></i> {% trans "Upcoming" %}
                                     </button>
                                 </li>
                             </ul>

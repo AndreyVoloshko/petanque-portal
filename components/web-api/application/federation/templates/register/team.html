@@ -7,11 +7,11 @@
     <div class="row">
         <div class="col-lg-7">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Реєстрація команди</h5>
+                <h5 class="pb-2 border-bottom fw-bold">{% trans "Team registration" %}</h5>
                 <div class="card">
                     <div class="card-body">
                         <div class="mb-3">
-                            <b>Змагання</b>: 
+                            <b>{% trans "Competitions" %}</b>:
                             <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
                         </div>
 
@@ -19,7 +19,7 @@
                             {% crispy team_registration_form %}
                         {% else %}
                             <div class="text-center">
-                                <p class="text-danger fw-bold">Реєстрацію на змагання закрито.</p>
+                                <p class="text-danger fw-bold">{% trans "Registration for this competition is closed." %}</p>
                             </div>
                         {% endif %}
                     </div>
@@ -35,23 +35,13 @@
     <div class="row mt-4">
         <div class="col-12">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Не можете знайти спортсмена? / Aren't you able to find your player?</h5>
+                <h5 class="pb-2 border-bottom fw-bold">{% trans "Cannot find a player?" %}</h5>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="fw-bold">Зареєструвати спортсмена</h4>
-                        <p>Не всі спортсмени можуть бути присутні у результатах пошуку. Якщо ви не можете знайти спортсмена, 
-                            <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">додайте його на портал</a>.
-                        </p>
+                        <h4 class="fw-bold">{% trans "Register player" %}</h4>
+                        <p>{% url 'register_player' as register_player_url %}{% blocktrans %}Not all athletes may appear in search results. If you cannot find an athlete, <a target="_blank" href="{{ register_player_url }}" class="btn btn-sm btn-success">add them to the portal</a>.{% endblocktrans %}</p>
                         <p class="text-danger fw-bold">
-                            Велике прохання не додавати дублікатів або неіснуючих спортсменів. Спершу спробуйте знайти спортсмена, написавши його дані кирилицею та латиницею.
-                        </p>
-                        <hr />
-                        <h4 class="fw-bold">Register new player</h4>
-                        <p>Not all players are in our database. If you can't find a player, please, 
-                            <a target="_blank" href="{% url 'register_player' %}" class="btn btn-sm btn-success">add him to our portal</a>.
-                        </p>
-                        <p class="text-danger fw-bold">
-                            Please, do not add duplicated or non-existent players.
+                            {% trans "Please do not add duplicate or non-existent players. First, try searching for the player using both Cyrillic and Latin spelling." %}
                         </p>
                     </div>
                 </div>
@@ -65,6 +55,10 @@
 
     <script>
     $(document).ready(function() {
+      const select2LettersOne = "{% trans "character" %}";
+      const select2LettersFew = "{% trans "characters" %}";
+      const select2LettersMany = "{% trans "characters" %}";
+
       $('.player-autocomplete').select2({
         ajax: {
             url: '{% url 'api_players_list' %}',
@@ -73,18 +67,18 @@
         language: {
           inputTooShort: function (args) {
             var remainingChars = args.minimum - args.input.length;
-            return 'Будь ласка, введіть ' + remainingChars + ' або більше літер';
+            return "{% trans "Please enter" %} " + remainingChars + " {% trans "or more characters" %}";
           },
           inputTooLong: function (args) {
             var overChars = args.input.length - args.maximum;
-            return 'Будь ласка, видаліть ' + overChars + ' ' +
-            ending(args.maximum, 'літеру', 'літери', 'літер');
+            return "{% trans "Please delete" %} " + overChars + ' ' +
+            ending(args.maximum, select2LettersOne, select2LettersFew, select2LettersMany);
           },
           noResults: function () {
-            return "Спортсменів не знайдено. Введіть ім'я або прізвище.";
+            return "{% trans "No athletes found. Enter a first or last name." %}";
           },
           searching: function () {
-            return 'Пошук…';
+            return "{% trans "Searching..." %}";
           }
         }
       });
