@@ -1,14 +1,37 @@
+import re
+
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import login
+from django.db import transaction
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.forms.registration_team_form import RegistrationTeamForm
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.models.team import Team
 from federation.models.player import Player
+from federation.models.email_confirmation import EmailConfirmation
+from federation.utils.email import send_confirmation_email
 from django.contrib.auth.models import User
 from django.contrib import messages
 from transliterate import translit
-import datetime
+
+
+def generate_username(name, surname):
+    raw_username = '{}{}'.format(name, surname).replace(' ', '')
+    try:
+        base_username = translit(raw_username, 'ru', reversed=True)
+    except Exception:
+        base_username = raw_username
+
+    base_username = re.sub(r'[^A-Za-z0-9_@.+-]', '', base_username) or 'player'
+    base_username = base_username[:140]
+    username = base_username
+    counter = 1
+    while User.objects.filter(username=username).exists():
+        suffix = str(counter)
+        username = '{}{}'.format(base_username[:150 - len(suffix)], suffix)
+        counter += 1
+    return username
 
 
 def register_team(request, tournament_id):
@@ -45,24 +68,43 @@ def register_player(request):
         player_registration_form = RegistrationPlayerForm(request.POST)
         if player_registration_form.is_valid():
             try:
-                user_name = player_registration_form.cleaned_data['name']+player_registration_form.cleaned_data['surname']
-                user_name = translit(user_name, 'ru', reversed=True)
-                password = player_registration_form.cleaned_data['surname']+str(datetime.datetime.now())
+                email = player_registration_form.cleaned_data.get('email') or ''
+                with transaction.atomic():
+                    user = User.objects.create_user(
+                        username=generate_username(
+                            player_registration_form.cleaned_data['name'],
+                            player_registration_form.cleaned_data['surname'],
+                        ),
+                        email=email,
+                        password=player_registration_form.cleaned_data['password'],
+                    )
 
-                user = User.objects.create_user(username=user_name, password=password)
+                    player = Player(
+                        user=user,
+                        name=player_registration_form.cleaned_data['name'],
+                        surname=player_registration_form.cleaned_data['surname'],
+                        birth_date=player_registration_form.cleaned_data['birth_date'],
+                        country=player_registration_form.cleaned_data['country'],
+                        gender=player_registration_form.cleaned_data['gender'],
+                    )
+                    player.save()
 
-                player = Player(
-                    user=user,
-                    name=player_registration_form.cleaned_data['name'],
-                    surname=player_registration_form.cleaned_data['surname'],
-                    birth_date=player_registration_form.cleaned_data['birth_date'],
-                    country=player_registration_form.cleaned_data['country'],
-                    gender=player_registration_form.cleaned_data['gender'],
-                )
-                player.save()
+                    confirmation = None
+                    if email:
+                        confirmation = EmailConfirmation.objects.create(user=user, email=email)
 
-                messages.success(request, 'Спортсмена зареєстровано.', extra_tags='success')
-                return redirect('player', id=player.pk)
+                if confirmation:
+                    send_confirmation_email(request, user, confirmation)
+                    messages.success(
+                        request,
+                        'Реєстрація успішна! Перевірте пошту для підтвердження email.',
+                        extra_tags='success',
+                    )
+                else:
+                    messages.success(request, 'Реєстрація успішна!', extra_tags='success')
+
+                login(request, user)
+                return redirect('profile')
             except Exception as e:
                 messages.error(request, str(e), extra_tags='danger')
         else:

@@ -1,10 +1,14 @@
 from django import forms
 from django.urls import reverse
+from django.contrib.auth import password_validation
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Div, HTML, Field
+from crispy_forms.layout import Layout, Submit, Div
 from captcha.fields import CaptchaField
-from django_countries.fields import CountryField
+from federation.utils.countries import get_ordered_country_choices
 
 
 class RegistrationPlayerForm(forms.Form):
@@ -12,6 +16,8 @@ class RegistrationPlayerForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         super(RegistrationPlayerForm, self).__init__(*args, **kwargs)
+        selected_country = self.data.get('country') if self.data else self.initial.get('country')
+        email_style = '' if selected_country == 'UA' else 'display: none;'
 
         self.fields['name'] = forms.CharField(
             widget=forms.TextInput(),
@@ -26,14 +32,34 @@ class RegistrationPlayerForm(forms.Form):
         )
 
         self.fields['birth_date'] = forms.CharField(
-            widget=forms.DateInput(),
+            widget=forms.DateInput(attrs={'class': 'dateinput'}),
             label="Дата народження / Birth date",
             required=True,
         )
 
-        self.fields['country'] = CountryField().formfield(
+        self.fields['country'] = forms.ChoiceField(
+            choices=get_ordered_country_choices(),
             label="Країна / Country",
             required=True
+        )
+
+        self.fields['email'] = forms.EmailField(
+            widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
+            label="Email адреса / Email address",
+            required=False,
+        )
+
+        self.fields['password'] = forms.CharField(
+            widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+            label="Пароль / Password",
+            min_length=8,
+            required=True,
+        )
+
+        self.fields['password_confirm'] = forms.CharField(
+            widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+            label="Підтвердити пароль / Confirm password",
+            required=True,
         )
 
         self.fields['gender'] = forms.CharField(
@@ -47,7 +73,7 @@ class RegistrationPlayerForm(forms.Form):
         self.helper.form_action = reverse('register_player')
 
         self.fields['captcha'] = CaptchaField(
-            label="Додаткова перевірка"
+            label="Додаткова перевірка / Additional verification"
         )
 
         self.helper.layout = Layout(
@@ -68,6 +94,20 @@ class RegistrationPlayerForm(forms.Form):
                 css_class="col-lg-12 mb-3"
             ),
             Div(
+                'email',
+                css_id="email-field-group",
+                css_class="col-lg-12 mb-3",
+                style=email_style
+            ),
+            Div(
+                'password',
+                css_class="col-lg-12 mb-3"
+            ),
+            Div(
+                'password_confirm',
+                css_class="col-lg-12 mb-3"
+            ),
+            Div(
                 'gender',
                 css_class="col-lg-12 mb-3"
             ),
@@ -82,18 +122,44 @@ class RegistrationPlayerForm(forms.Form):
             Div(css_class="clear")
         )
 
-    def is_valid(self):
-        # run the parent validation first
-        valid = super(RegistrationPlayerForm, self).is_valid()
+    def clean(self):
+        cleaned_data = super(RegistrationPlayerForm, self).clean()
 
-        # we're done now if not valid
-        if not valid:
-            return valid
+        name = cleaned_data.get('name')
+        surname = cleaned_data.get('surname')
+        if name and surname:
+            existing_player = Player.get_by_name_and_surname(name, surname)
+            if existing_player:
+                player_url = reverse('player', kwargs={'id': existing_player.pk})
+                self.add_error(None, mark_safe(
+                    'Гравець <a target="_blank" href="{}">{} {}</a> вже зарєстрований'.format(
+                        player_url,
+                        name,
+                        surname,
+                    )
+                ))
 
-        # check if player is already registered by name and surname
-        existing_player = Player.get_by_name_and_surname(self.cleaned_data['name'], self.cleaned_data['surname'])
-        if existing_player:
-            self._errors['no_player'] = 'Гравець <a target="_blank" href="' + reverse('player', kwargs={'id': existing_player.pk}) + '">' + self.cleaned_data['name'] + " " +self.cleaned_data['surname'] + "</a> вже зарєстрований"
-            return False
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            self.add_error('password_confirm', 'Паролі не збігаються')
 
-        return True
+        if password:
+            try:
+                password_validation.validate_password(password)
+            except ValidationError as error:
+                self.add_error('password', error)
+
+        country = cleaned_data.get('country')
+        email = cleaned_data.get('email')
+        if country == 'UA' and not email:
+            self.add_error('email', "Email обов'язковий для гравців з України")
+
+        if country != 'UA':
+            cleaned_data['email'] = ''
+            return cleaned_data
+
+        if email and User.objects.filter(email__iexact=email).exists():
+            self.add_error('email', 'Цей email вже використовується')
+
+        return cleaned_data

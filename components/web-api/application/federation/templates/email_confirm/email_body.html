@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="uk">
+<body>
+    <p>Вітаємо, {{ user.username }}!</p>
+    <p>Для підтвердження email перейдіть за посиланням:</p>
+    <p><a href="{{ confirm_url }}">{{ confirm_url }}</a></p>
+    <p>Посилання дійсне протягом 24 годин.</p>
+</body>
+</html>

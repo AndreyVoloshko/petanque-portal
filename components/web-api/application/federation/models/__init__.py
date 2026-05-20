@@ -1,0 +1,1 @@
+from federation.models.email_confirmation import EmailConfirmation

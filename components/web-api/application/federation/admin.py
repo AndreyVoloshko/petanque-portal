@@ -9,6 +9,7 @@ from .models.record import Record
 from .models.document import Document, DocumentCategory
 from .models.season import Season, SeasonAdmin
 from .models.department import Department, DepartmentAdmin
+from .models.email_confirmation import EmailConfirmation
 
 
 class DocumentCategoryAdmin(admin.ModelAdmin):
@@ -31,3 +32,4 @@ admin.site.register(DocumentCategory, DocumentCategoryAdmin)
 admin.site.register(Document)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Department, DepartmentAdmin)
+admin.site.register(EmailConfirmation)
