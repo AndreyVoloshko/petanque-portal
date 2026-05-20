@@ -24,7 +24,7 @@ from .views.register import register_team, register_player
 from .views.departments import departments
 from .views.statistics import statistics
 from .views.email_confirm import email_prompt, email_confirm
-from .views.password_reset import CustomPasswordResetView
+from .views.password_reset import CustomPasswordResetConfirmView, CustomPasswordResetView
 
 
 urlpatterns = [
@@ -43,7 +43,7 @@ urlpatterns = [
     path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(
         template_name='password_reset/done.html',
     ), name='password_reset_done'),
-    path('password-reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+    path('password-reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(
         template_name='password_reset/confirm.html',
         success_url='/password-reset/complete/',
     ), name='password_reset_confirm'),
