@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="uk">
+<body>
+    <p>Вітаємо, {{ user.username }}!</p>
+    <p>Для відновлення паролю перейдіть за посиланням:</p>
+    <p><a href="{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}</a></p>
+    <p>Посилання дійсне протягом 24 годин.</p>
+</body>
+</html>

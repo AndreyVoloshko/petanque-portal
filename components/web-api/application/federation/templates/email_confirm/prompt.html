@@ -1,0 +1,43 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <section class="p-4 rounded shadow">
+            <h5 class="pb-2 border-bottom fw-bold">Підтвердження email</h5>
+
+            {% if sent %}
+            <div class="alert alert-success">
+                Лист надіслано! Перевірте пошту та перейдіть за посиланням для підтвердження email.
+            </div>
+            {% elif pending_confirmation and not pending_confirmation.confirmed %}
+            <div class="alert alert-info">
+                Підтвердження для {{ pending_confirmation.email }} ще очікується. Ви можете надіслати лист повторно.
+            </div>
+            {% endif %}
+
+            <p>
+                Для відновлення паролю та отримання сповіщень, будь ласка, вкажіть ваш email.
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next_url }}">
+
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Надіслати підтвердження</button>
+                    <a class="btn btn-outline-secondary" href="{{ skip_url }}">Пропустити</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

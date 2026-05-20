@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-lg-8">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Реєстрація спортсмена</h5>
+                <h5 class="pb-2 fw-bold">Реєстрація спортсмена</h5>
                 <div class="card">
                     <div class="card-body">
                         {% crispy player_registration_form %}
@@ -18,7 +18,7 @@
         
         <div class="col-lg-4">
             <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">Не можете знайти спортсмена? / Aren't you able to find your player?</h5>
+                <h5 class="pb-2 fw-bold">Не можете знайти спортсмена? / Aren't you able to find your player?</h5>
                 <div class="card">
                     <div class="card-body">
                         <h4 class="fw-bold">Зареєструвати спортсмена</h4>
@@ -42,6 +42,31 @@
             $(".dateinput").datepicker({
                 dateFormat: "yy-mm-dd"
             });
+
+            function toggleEmailField() {
+                var country = $("#id_country").val();
+                var emailGroup = $("#email-field-group");
+                var emailInput = $("#id_email");
+                var emailLabel = $("label[for='id_email']");
+
+                if (country === "UA") {
+                    emailGroup.show();
+                    emailInput.prop("required", true);
+                    emailLabel.addClass("requiredField");
+                    if (!emailLabel.find(".asteriskField").length) {
+                        emailLabel.append('<span class="asteriskField">*</span>');
+                    }
+                } else {
+                    emailGroup.hide();
+                    emailInput.prop("required", false);
+                    emailInput.val("");
+                    emailLabel.removeClass("requiredField");
+                    emailLabel.find(".asteriskField").remove();
+                }
+            }
+
+            $("#id_country").on("change", toggleEmailField);
+            toggleEmailField();
         });
     </script>
 {% endblock %}

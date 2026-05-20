@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.contrib.auth import views as auth_views
 from django.urls import re_path, include, path
 from .views.login import application_login
 from .views.logout import application_logout
@@ -22,6 +23,8 @@ from .views.seasons import seasons
 from .views.register import register_team, register_player
 from .views.departments import departments
 from .views.statistics import statistics
+from .views.email_confirm import email_prompt, email_confirm
+from .views.password_reset import CustomPasswordResetView
 
 
 urlpatterns = [
@@ -29,6 +32,27 @@ urlpatterns = [
 
     re_path(r'^login/$',    application_login,         name='login'),
     re_path(r'^logout/$',   application_logout,        name='logout'),
+
+    path('password-reset/', CustomPasswordResetView.as_view(
+        template_name='password_reset/request.html',
+        email_template_name='password_reset/email_body.html',
+        html_email_template_name='password_reset/email_body.html',
+        subject_template_name='password_reset/email_subject.txt',
+        success_url='/password-reset/done/',
+    ), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='password_reset/done.html',
+    ), name='password_reset_done'),
+    path('password-reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='password_reset/confirm.html',
+        success_url='/password-reset/complete/',
+    ), name='password_reset_confirm'),
+    path('password-reset/complete/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='password_reset/complete.html',
+    ), name='password_reset_complete'),
+
+    path('email/prompt/', email_prompt, name='email_prompt'),
+    path('email/confirm/<uuid:token>/', email_confirm, name='email_confirm'),
 
     re_path(r'^profile/$',  profile,                   name='profile'),
 

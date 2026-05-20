@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os, json
+from email.utils import formataddr
 
 def get_credential(name):
     try:
@@ -203,14 +204,22 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 STATICFILES_LOCATION = 'static'
-STATICFILES_STORAGE = 'federation.storage.StaticStorage'
-STATIC_URL = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+STATICFILES_LOCATION+'/'
-STATIC_ROOT = STATIC_URL
-
 MEDIAFILES_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'federation.storage.MediaStorage'
-MEDIA_ROOT = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+MEDIAFILES_LOCATION+'/'
-MEDIA_URL = MEDIA_ROOT
+
+if AWS_STORAGE_BUCKET_NAME:
+    STATICFILES_STORAGE = 'federation.storage.StaticStorage'
+    STATIC_URL = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+STATICFILES_LOCATION+'/'
+    STATIC_ROOT = STATIC_URL
+
+    DEFAULT_FILE_STORAGE = 'federation.storage.MediaStorage'
+    MEDIA_ROOT = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+MEDIAFILES_LOCATION+'/'
+    MEDIA_URL = MEDIA_ROOT
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -221,7 +230,6 @@ MEDIA_FILES_PATH = os.path.join(BASE_DIR, 'media/images/')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static/"),
-    MEDIA_ROOT,
 ]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 # 50Mb
@@ -233,6 +241,29 @@ API_PASSWORD = get_credential('api_password')
 NOCAPTCHA = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = get_credential('smtp_host') or 'localhost'
+EMAIL_PORT = int(get_credential('smtp_port') or 587)
+EMAIL_USE_TLS = get_credential('smtp_use_tls')
+if EMAIL_USE_TLS is None:
+    EMAIL_USE_TLS = True
+elif isinstance(EMAIL_USE_TLS, str):
+    EMAIL_USE_TLS = EMAIL_USE_TLS.lower() in ('1', 'true', 'yes', 'on')
+EMAIL_HOST_USER = get_credential('smtp_user') or ''
+EMAIL_HOST_PASSWORD = get_credential('smtp_password') or ''
+smtp_from_email = get_credential('smtp_from_email') or get_credential('smtp_from')
+smtp_from_name = get_credential('smtp_from_name') or ''
+if smtp_from_email and '@' not in smtp_from_email and '@' in smtp_from_name:
+    smtp_from_email, smtp_from_name = smtp_from_name, smtp_from_email
+DEFAULT_FROM_EMAIL = formataddr((smtp_from_name, smtp_from_email)) if smtp_from_email else 'noreply@petanque.org.ua'
+
+PASSWORD_RESET_TIMEOUT = 86400
+
+FEDERATION_TELEGRAM_LINK = get_credential('federation_telegram_link') or 'https://t.me/petanque_ukraine'
+
+if not get_credential('smtp_host'):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 CORS_ORIGIN_ALLOW_ALL = True
