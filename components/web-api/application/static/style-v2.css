@@ -247,7 +247,11 @@ body {
 	outline: 2px solid #777;
 }
 
-#search-form .form-control:focus,
+#search-form .form-control:focus {
+	box-shadow: none;
+	outline: 0;
+}
+
 #search-form .portal-search-button:focus {
 	border-color: var(--bs-border-color);
 	box-shadow: none;
