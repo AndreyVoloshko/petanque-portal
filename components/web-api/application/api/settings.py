@@ -187,14 +187,18 @@ AWS_SECRET_ACCESS_KEY = get_credential('s3_secret')
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_ENDPOINT_URL = "https://s3.%s.amazonaws.com" % AWS_S3_REGION_NAME
 
-DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DBBACKUP_STORAGE_OPTIONS = {
-    'access_key': get_credential('s3_key'),
-    'secret_key': get_credential('s3_secret'),
-    'bucket_name': get_credential('s3_bucket'),
-    'region_name': AWS_S3_REGION_NAME,
-    'location': get_credential('s3_backups_folder'),
-    'endpoint_url': AWS_S3_ENDPOINT_URL,
+STORAGES = {
+    'backup': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        'OPTIONS': {
+            'access_key': get_credential('s3_key'),
+            'secret_key': get_credential('s3_secret'),
+            'bucket_name': get_credential('s3_bucket'),
+            'region_name': AWS_S3_REGION_NAME,
+            'location': get_credential('s3_backups_folder'),
+            'endpoint_url': AWS_S3_ENDPOINT_URL,
+        },
+    },
 }
 
 DBBACKUP_CONNECTOR_MAPPING = {
