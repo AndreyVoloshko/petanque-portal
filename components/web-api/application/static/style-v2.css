@@ -260,6 +260,16 @@ body {
 	box-shadow: none;
 }
 
+.ui-widget.ui-widget-content {
+	border: 1px solid rgba(33, 37, 41, 0.1);
+}
+
+.ui-autocomplete.ui-widget.ui-widget-content {
+	border-radius: 12px;
+	box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+	overflow: hidden;
+}
+
 .language-switcher {
 	align-items: center;
 	display: flex;
