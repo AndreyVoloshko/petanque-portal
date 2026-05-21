@@ -204,7 +204,7 @@ STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'media'
 
 STORAGES = {
-    'backup': {
+    'dbbackup': {
         'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
         'OPTIONS': {
             'access_key': get_credential('s3_key'),
