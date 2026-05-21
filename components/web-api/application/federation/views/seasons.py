@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import datetime
+from django.utils.translation import gettext_lazy as _
 from federation.helpers.general import get_model
 
 
@@ -26,5 +27,5 @@ def seasons(request, year=None):
         'year': str(year),
         'rating_field': rating_field,
         'rating_filters': rating_field+","+str(year),
-        'page_title': "Рейтинг за попередні сезони",
+        'page_title': _("Ranking for previous seasons"),
     })

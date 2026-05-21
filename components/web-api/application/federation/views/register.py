@@ -13,6 +13,7 @@ from federation.models.email_confirmation import EmailConfirmation
 from federation.utils.email import send_confirmation_email
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from transliterate import translit
 
 
@@ -47,7 +48,7 @@ def register_team(request, tournament_id):
             team = Team.get_or_create_for_players(player_ids=player_ids)
             tournament.add_team(team)
             tournament.recalculate_power_on_registration()
-            messages.success(request, 'Команду зареєстровано.', extra_tags='success')
+            messages.success(request, _('Team registered.'), extra_tags='success')
             return redirect('tournament', id=tournament.pk)
         else:
             for error_message in team_registration_form.errors:
@@ -57,7 +58,7 @@ def register_team(request, tournament_id):
         'tournament': tournament,
         'is_registration_opened': is_registration_opened,
         'team_registration_form': team_registration_form,
-        'page_title': "Реєстрація команди",
+        'page_title': _("Team registration"),
     })
 
 
@@ -97,11 +98,11 @@ def register_player(request):
                     send_confirmation_email(request, user, confirmation)
                     messages.success(
                         request,
-                        'Реєстрація успішна! Перевірте пошту для підтвердження email.',
+                        _('Registration successful. Check your inbox to confirm your email.'),
                         extra_tags='success',
                     )
                 else:
-                    messages.success(request, 'Реєстрація успішна!', extra_tags='success')
+                    messages.success(request, _('Registration successful!'), extra_tags='success')
 
                 login(request, user)
                 return redirect('profile')
@@ -113,5 +114,5 @@ def register_player(request):
 
     return render(request, 'register/player.html', {
         'player_registration_form': player_registration_form,
-        'page_title': "Реєстрація спортсмена",
+        'page_title': _("Player registration"),
     })

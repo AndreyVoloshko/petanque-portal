@@ -5,6 +5,7 @@ from federation.models.player import Player
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Field
 from captcha.fields import CaptchaField
+from django.utils.translation import gettext_lazy as _
 
 
 class RegistrationTeamForm(forms.Form):
@@ -16,15 +17,15 @@ class RegistrationTeamForm(forms.Form):
         super(RegistrationTeamForm, self).__init__(*args, **kwargs)
 
         for i in range(self.tournament.get_max_players_per_team(), 0, -1):
-            extra_label = ""
+            label = _("Player %(number)s") % {'number': i}
             if i == 1:
-                extra_label = " (Капітан)"
+                label = _("%(player)s (Captain)") % {'player': label}
             elif i > self.tournament.number_of_players_in_team_min:
-                extra_label = " (Резерв)"
+                label = _("%(player)s (Reserve)") % {'player': label}
 
             self.fields['players[%d]' % i] = forms.CharField(
                 widget=forms.Select(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
-                label="Гравець " + str(i) + extra_label,
+                label=label,
                 required=(i <= self.tournament.number_of_players_in_team_min),
             )
 
@@ -43,7 +44,7 @@ class RegistrationTeamForm(forms.Form):
         #        css_class="col-lg-12"
         #    ),
             Div(
-                Submit('submit', 'Зареєструвати команду', css_class='btn btn-success'),
+                Submit('submit', _("Register team"), css_class='btn btn-success'),
                 css_class="col-lg-12 text-center mb-3"
             ),
             Div(css_class="clear")
@@ -72,14 +73,21 @@ class RegistrationTeamForm(forms.Form):
         # check players
         self.verified_player_ids = []
         for player_id in player_ids:
-            player = Player.objects.get(pk=player_id)
-            if not player:
-                self._errors['no_player'] = 'Гравець з номером '+player_id+' не існує'
+            try:
+                player = Player.objects.get(pk=player_id)
+            except Player.DoesNotExist:
+                self.add_error(None, _('Player with number %(player_id)s does not exist') % {'player_id': player_id})
                 return False
 
             user_team = self.tournament.get_team_which_contains_player(player)
             if user_team:
-                self._errors['player_is_already_registered'] = 'Гравець '+player.get_name()+' вже зареєстрований турнір у команді '+user_team.team.get_short_name()
+                self.add_error(
+                    None,
+                    _('Player %(player)s is already registered for the tournament in team %(team)s') % {
+                        'player': player.get_name(),
+                        'team': user_team.team.get_short_name(),
+                    }
+                )
                 return False
 
             self.verified_player_ids.append(player.pk)

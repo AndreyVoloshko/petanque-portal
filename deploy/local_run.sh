@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+set -a
 . .env
+set +a
 
 export POSTGRES_PASSWORD=$(python3 -c "import json,os; print(json.loads(os.environ['APP_CREDENTIALS'])['db_pass'])")
 export POSTGRES_USER=$(python3 -c "import json,os; print(json.loads(os.environ['APP_CREDENTIALS'])['db_user'])")

@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="panel panel-primary">
     <div class="panel-heading">
@@ -9,11 +10,11 @@
             <table class="table table-hover table-condensed table-striped" id="players">
                 <thead>
                     <tr>
-                        <th width="15%" align="left">Рік</th>
-                        <th width="15%" align="left">Позиція</th>
-                        <th width="20%" align="left">Бали</th>
-                        <th width="20%" align="left">Вікова категорія</th>
-                        <th width="30%" align="left">Клуб</th>
+                        <th width="15%" align="left">{% trans "Year" %}</th>
+                        <th width="15%" align="left">{% trans "Position" %}</th>
+                        <th width="20%" align="left">{% trans "Points" %}</th>
+                        <th width="20%" align="left">{% trans "Age category" %}</th>
+                        <th width="30%" align="left">{% trans "Club" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,11 +25,11 @@
                                 </td>
                                 <td align="left">
                                     {% with rating_field|comma_concat:item.year as rating_filters %}
-                                        <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у рейтингу">
+                                        <span class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="{% trans "Ranking place" %}">
                                             {{ item|season_rating_position:rating_filters|safe }}
                                         </span>
                                         /
-                                        <span class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Усього спортсменів">
+                                        <span class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="{% trans "Total athletes" %}">
                                             {{ item|players_in_seasons:item.year|safe }}
                                         </span>
                                         <a href="{% url 'season' year=item.year %}">
@@ -37,7 +38,7 @@
                                     {% endwith %}
                                 </td>
                                 <td align="left">
-                                    <span class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Рейтингові пункти">
+                                    <span class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="{% trans "Rating points" %}">
                                         {{ item|season_rating_points:rating_field|safe }}
                                     </span>
                                 </td>
@@ -46,7 +47,7 @@
                                     {% if item.club %}
                                         <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
                                     {% else %}
-                                        <span class="btn btn-xs btn-danger">Без клубу</span>
+                                        <span class="btn btn-xs btn-danger">{% trans "No club" %}</span>
                                     {%endif%}
                                 </td>
                             </tr>

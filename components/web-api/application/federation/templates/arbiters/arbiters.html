@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-md-3">
         <nav class="nav flex-column p-3 rounded">
-            <h5 class="fw-bold">Арбітри</h5>
+            <h5 class="fw-bold">{% trans "Arbiters" %}</h5>
             <div class="nav nav-pills flex-column" id="arbiterTabs" role="tablist">
                 {% for arbiter in arbiters %}
                     <a class="nav-link {% if forloop.first %}active{% endif %}" 
@@ -50,7 +50,7 @@
                                                 {% if arbiter_player.current_club %}
                                                     <a href="{% url 'club' id=arbiter_player.current_club.pk %}">{{ arbiter_player.current_club.short_name }}</a>
                                                 {% else %}
-                                                    <span class="badge bg-danger">Без клубу</span>
+                                                    <span class="badge bg-danger">{% trans "No club" %}</span>
                                                 {% endif %} {{ arbiter_player.country|country_icon|safe }}
                                             </p>
                                         </div>

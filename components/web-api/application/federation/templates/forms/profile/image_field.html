@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <div class="mb-3">
     <div class="d-flex flex-column align-items-center">
         {% if field.value %}
@@ -8,6 +8,6 @@
         {% endif %}
     </div>
 
-    <label class="form-label mt-2">Обрати нову фотографію</label>
+    <label class="form-label mt-2">{% trans "Choose a new photo" %}</label>
     <input class="form-control" type="file" name="{{ field.name }}" id="{{ field.id_for_label }}">
 </div>

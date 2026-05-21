@@ -1,19 +1,20 @@
 {% load app_filters %}
+{% load i18n %}
 
 <section class="p-3 rounded shadow">
     <h5 class="pb-2 border-bottom">
-        Рік: {{ year }}
+        {% blocktrans %}Year: {{ year }}{% endblocktrans %}
     </h5>
     <div class="table-responsive">
         <table class="table table-hover table-striped" id="players">
             <thead class="table-dark">
                 <tr>
-                    <th class="text-start">Рейтинг</th>
-                    <th class="text-start">Бали</th>
-                    <th class="text-start">Ім'я</th>
-                    <th class="text-start filterable">Вікова категорія</th>
-                    <th class="text-start filterable">Клуб</th>
-                    <th class="text-end no-sort">Дії</th>
+                    <th class="text-start">{% trans "Ranking" %}</th>
+                    <th class="text-start">{% trans "Points" %}</th>
+                    <th class="text-start">{% trans "First name" %}</th>
+                    <th class="text-start filterable">{% trans "Age category" %}</th>
+                    <th class="text-start filterable">{% trans "Club" %}</th>
+                    <th class="text-end no-sort">{% trans "Actions" %}</th>
                 </tr>
             </thead>
             <tfoot>
@@ -21,8 +22,8 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
-                    <th class="filterable"><select class="form-select form-select-sm"><option value="">Усі</option></select></th>
+                    <th class="filterable"><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th>
+                    <th class="filterable"><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th>
                     <th>&nbsp;</th>
                 </tr>
             </tfoot>
@@ -30,12 +31,12 @@
                 {% for item in items %}
                     <tr>
                         <td>
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" title="Місце у рейтингу">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Ranking place" %}">
                                 {{ item|season_rating_position:rating_filters|safe }}
                             </span>
                         </td>
                         <td>
-                            <span class="badge bg-success" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                            <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Rating points" %}">
                                 {{ item|season_rating_points:rating_field|safe }}
                             </span>
                         </td>
@@ -45,11 +46,11 @@
                             {% if item.club %}
                                 <a href="{% url 'club' id=item.club.pk %}">{{ item.club.short_name }}</a>
                             {% else %}
-                                <span class="badge bg-danger">Без клубу</span>
+                                <span class="badge bg-danger">{% trans "No club" %}</span>
                             {% endif %}
                         </td>
                         <td class="text-end">
-                            <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="Показати спортсмена">
+                            <a href="{% url 'player' id=item.player.pk %}" class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Show athlete" %}">
                                 <i class="bi bi-person"></i>
                             </a>
                         </td>
@@ -65,19 +66,19 @@
         var table = $('#players').DataTable({
             responsive: true, 
             paging: true,
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
             language: {
-                lengthMenu: "Показати _MENU_ спортсменів на сторінку",
-                zeroRecords: "Спортсменів не знайдено",
-                info: "Показано _START_ - _END_ з _TOTAL_ спортсменів",
-                infoEmpty: "Показано 0 з 0 спортсменів",
-                infoFiltered: "(відфільтровано з _MAX_ спортсменів)",
-                search: "Пошук:",
+                lengthMenu: "{% trans "Show _MENU_ athletes per page" %}",
+                zeroRecords: "{% trans "No athletes found" %}",
+                info: "{% trans "Showing _START_ to _END_ of _TOTAL_ athletes" %}",
+                infoEmpty: "{% trans "Showing 0 of 0 athletes" %}",
+                infoFiltered: "{% trans "(filtered from _MAX_ athletes)" %}",
+                search: "{% trans "Search:" %}",
                 paginate: {
-                    first: "Початок",
-                    last: "Кінець",
-                    next: "Далі",
-                    previous: "Назад"
+                    first: "{% trans "First" %}",
+                    last: "{% trans "Last" %}",
+                    next: "{% trans "Next" %}",
+                    previous: "{% trans "Previous" %}"
                 }
             },
             columnDefs: [

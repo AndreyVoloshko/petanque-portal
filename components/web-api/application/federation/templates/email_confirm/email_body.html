@@ -1,9 +1,11 @@
+{% load i18n %}
 <!doctype html>
-<html lang="uk">
+{% get_current_language as CURRENT_LANGUAGE %}
+<html lang="{{ CURRENT_LANGUAGE }}">
 <body>
-    <p>Вітаємо, {{ user.username }}!</p>
-    <p>Для підтвердження email перейдіть за посиланням:</p>
+    <p>{% blocktrans with username=user.username %}Hello, {{ username }}!{% endblocktrans %}</p>
+    <p>{% trans "To confirm your email, follow this link:" %}</p>
     <p><a href="{{ confirm_url }}">{{ confirm_url }}</a></p>
-    <p>Посилання дійсне протягом 24 годин.</p>
+    <p>{% trans "The link is valid for 24 hours." %}</p>
 </body>
 </html>

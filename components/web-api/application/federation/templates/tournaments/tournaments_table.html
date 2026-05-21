@@ -1,16 +1,17 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="table-responsive">
     <table class="table table-hover" id="tournaments">
         <thead class="table-dark">
             <tr>
-                <th class="text-start">Дата</th>
-                <th class="text-start">Назва</th>
-                <th class="text-start filterable">Місце</th>
-                <th class="text-start filterable">Тип</th>
-                <th class="text-start">Сила</th>
-                <th class="text-start filterable">Організатор</th>
-                <th class="text-end no-sort">Дії</th>
+                <th class="text-start">{% trans "Date" %}</th>
+                <th class="text-start">{% trans "Name" %}</th>
+                <th class="text-start filterable">{% trans "Place" %}</th>
+                <th class="text-start filterable">{% trans "Type" %}</th>
+                <th class="text-start">{% trans "Power" %}</th>
+                <th class="text-start filterable">{% trans "Organizer" %}</th>
+                <th class="text-end no-sort">{% trans "Actions" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -47,7 +48,7 @@
                     {% endif %}
                 </td>
                 <td data-order="{{ item.power }}">
-                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Сила змагань">
+                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Competition power" %}">
                         <i class="bi bi-bar-chart"></i> {{ item.power }}
                     </span>
                 </td>
@@ -56,7 +57,7 @@
                         <i class="bi bi-people"></i> <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, 
                     {% else %}
                         {% if item.country == settings.CURRENT_COUNTRY %}
-                            <span class="badge bg-danger">Без клубу</span> 
+                            <span class="badge bg-danger">{% trans "No club" %}</span>
                         {% endif %}
                     {% endif %}
                     {{ item.country|country_icon|safe }}
@@ -64,7 +65,7 @@
                 <td class="text-end">
                     <div class="d-flex flex-wrap gap-1 justify-content-end">
                         <a href="{% url 'tournament' id=item.pk %}">
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Кількість команд">
+                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Number of teams" %}">
                                 <i class="bi bi-people"></i> {{ item|teams_count }}
                             </span>
                         </a>
@@ -94,20 +95,20 @@ $(document).ready(function() {
         ],
         responsive: true,
         paging: true,
-        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
         order: [[0, '{{ initial_order }}']],
         language: {
-            lengthMenu: "Показати _MENU_ змагань на сторінку",
-            zeroRecords: "Змагань не знайдено",
-            info: "Показано _START_ - _END_ з _TOTAL_ змагань",
-            infoEmpty: "Показано 0 з 0 змагань",
-            infoFiltered: "(відфільтровано з _MAX_ змагань)",
-            search: "Пошук:",
+            lengthMenu: "{% trans "Show _MENU_ competitions per page" %}",
+            zeroRecords: "{% trans "No competitions found" %}",
+            info: "{% trans "Showing _START_ to _END_ of _TOTAL_ competitions" %}",
+            infoEmpty: "{% trans "Showing 0 of 0 competitions" %}",
+            infoFiltered: "{% trans "(filtered from _MAX_ competitions)" %}",
+            search: "{% trans "Search:" %}",
             "paginate": {
-                "first":      "Початок",
-                "last":       "Кінець",
-                "next":       "Далі",
-                "previous":   "Назад"
+                "first":      "{% trans "First" %}",
+                "last":       "{% trans "Last" %}",
+                "next":       "{% trans "Next" %}",
+                "previous":   "{% trans "Previous" %}"
             }
         }
     });

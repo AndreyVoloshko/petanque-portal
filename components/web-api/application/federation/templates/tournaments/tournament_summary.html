@@ -1,9 +1,10 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="{% if full_width == "true" %}col-12{% else %}col-lg-7{% endif %}">
     <section class="p-3 rounded shadow">
         <h5 class="pb-2 border-bottom">
-            Змагання: {{ tournament.name }}
+            {% blocktrans with name=tournament.name %}Competition: {{ name }}{% endblocktrans %}
         </h5>
         <div class="">
 
@@ -13,13 +14,13 @@
                     {{ tournament|tournament_field:"place"|safe }}
 
                     {% if tournament.organizer_club %}
-                    <dt class="col-sm-5 fw-bold">Клуб-організатор</dt>
+                    <dt class="col-sm-5 fw-bold">{% trans "Organizer club" %}</dt>
                     <dd class="col-sm-7">
                         <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
                     </dd>
                     {% endif %}
 
-                    <dt class="col-sm-5 fw-bold">Тип</dt>
+                    <dt class="col-sm-5 fw-bold">{% trans "Type" %}</dt>
                     <dd class="col-sm-7">
                         {% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
                             {% if tournament.number_of_players_in_team_min <= 3 %}
@@ -37,31 +38,31 @@
                     {{ tournament|tournament_field:"start_date"|safe }}
                     {{ tournament|tournament_field:"start_time"|safe }}
                     {{ tournament|tournament_field:"date_registration_stop"|safe }}
-                    <dt class="col-sm-5 fw-bold">Додаткові дії</dt>
+                    <dt class="col-sm-5 fw-bold">{% trans "Additional actions" %}</dt>
                     <dd class="col-sm-7">
                         <div class="btn-group" role="group">
                             {{ tournament|tournament_registration_button|safe }}
                             {% if tournament.is_processing_finished %}
-                                <a class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Підсумковий протокол" href="{% url 'tournament_protocol' id=tournament.pk %}">
-                                    <i class="bi bi-file-earmark-text"></i> Підсумковий протокол
+                                <a class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Final protocol" %}" href="{% url 'tournament_protocol' id=tournament.pk %}">
+                                    <i class="bi bi-file-earmark-text"></i> {% trans "Final protocol" %}
                                 </a>
                             {% endif %}
                             <div class="btn-group dropdown" role="group">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="exportMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="bi bi-download"></i> Експорт
+                                    <i class="bi bi-download"></i> {% trans "Export" %}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="exportMenu">
-                                    <p class="dropdown-header">До друку</p>
+                                    <p class="dropdown-header">{% trans "For printing" %}</p>
                                     <a class="dropdown-item" target="_blank" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html">
-                                        <i class="bi bi-printer"></i> Команди
+                                        <i class="bi bi-printer"></i> {% trans "Teams" %}
                                     </a>
                                     <p><hr class="dropdown-divider"></p>
                                     <p class="dropdown-header">API</p>
                                     <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">
-                                        <i class="bi bi-file-earmark-spreadsheet"></i> Команди (csv)
+                                        <i class="bi bi-file-earmark-spreadsheet"></i> {% trans "Teams (csv)" %}
                                     </a>
                                     <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=json">
-                                        <i class="bi bi-file-earmark-code"></i> Команди (json)
+                                        <i class="bi bi-file-earmark-code"></i> {% trans "Teams (json)" %}
                                     </a>
                                 </div>
                             </div>    

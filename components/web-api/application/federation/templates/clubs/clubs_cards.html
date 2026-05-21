@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div id="club-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
     {% for item in items %}
@@ -24,7 +25,7 @@
                         </p>
                         {% if item.president %}
                         <p class="card-text text-muted small mb-1">
-                            <i class="bi bi-person-circle"></i> Президент: {{ item.president|user_profile_link|safe }}
+                            <i class="bi bi-person-circle"></i> {% trans "President" %}: {{ item.president|user_profile_link|safe }}
                         </p>
                         {% endif %}
                     </div>
@@ -35,17 +36,17 @@
 
                 <div class="row">
                     <div class="col-4">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Загальна кількість рейтингових пунктів">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Total rating points" %}">
                             <i class="bi bi-trophy"></i> {{ item|get_club_rating_points }}
                         </span>
                     </div>
                     <div class="col-4">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на спортсмена">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Average points per athlete" %}">
                             <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
                         </span>
                     </div>
                     <div class="col-4">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість спортсменів">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Number of athletes" %}">
                             <i class="bi bi-people"></i> {{ item|get_number_of_players }}
                         </span>
                     </div>
@@ -53,8 +54,8 @@
 
                 <div class="row mt-2">
                     <div class="col-4">
-                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="Рік заснування">
-                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
+                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="{% trans "Year founded" %}">
+                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} {% trans "yr." %}
                         </span>
                     </div>
                     <div class="col-8">

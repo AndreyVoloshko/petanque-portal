@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.utils.translation import gettext_lazy as _
 
 from federation.models.email_confirmation import EmailConfirmation
 
@@ -12,6 +13,7 @@ class ConfirmedPasswordResetForm(PasswordResetForm):
             'class': 'form-control',
             'autocomplete': 'email',
         })
+        self.fields['email'].label = _('Email address')
 
     def get_users(self, email):
         UserModel = get_user_model()

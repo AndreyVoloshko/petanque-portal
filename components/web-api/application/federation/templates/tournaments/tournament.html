@@ -22,7 +22,7 @@
                            role="tab"
                            aria-controls="tournament_teams"
                            aria-selected="true">
-                            <i class="bi bi-star"></i> Команди
+                            <i class="bi bi-star"></i> {% trans "Teams" %}
                         </a>
                     </li>
 
@@ -35,7 +35,7 @@
                            role="tab"
                            aria-controls="tournament_notes"
                            aria-selected="false">
-                            <i class="bi bi-pencil"></i> Нотатки
+                            <i class="bi bi-pencil"></i> {% trans "Notes" %}
                         </a>
                     </li>
                     {% endif %}
@@ -61,10 +61,10 @@
                                           name="tournament_notes_content"
                                           class="form-control"
                                           rows="10"
-                                          placeholder="Нотатки до підсумкового протоколу">{{ tournament.final_notes|trim }}</textarea>
+                                          placeholder="{% trans "Notes for the final protocol" %}">{{ tournament.final_notes|trim }}</textarea>
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-secondary">Зберегти</button>
+                                <button type="submit" class="btn btn-secondary">{% trans "Save" %}</button>
                             </div>
                         </form>
                     </div>

@@ -72,6 +72,7 @@ STATICFILES_FINDERS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -139,7 +140,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = get_credential('language')
+LANGUAGE_CODE = get_credential('language') or 'uk'
+LANGUAGES = [
+    ('uk', 'Українська'),
+    ('en', 'English'),
+]
+LANGUAGE_COOKIE_NAME = 'django_language'
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365
 CURRENT_COUNTRY = get_credential('country')
 
 TIME_ZONE = 'UTC'

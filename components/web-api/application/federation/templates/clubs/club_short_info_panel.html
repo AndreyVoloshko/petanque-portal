@@ -1,8 +1,9 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="col" data-club="{{ item.pk }}">
     <section class="p-3 rounded shadow">
-        <h5 class="pb-2 border-bottom fw-bold">Клуб</h5>
+        <h5 class="pb-2 border-bottom fw-bold">{% trans "Club" %}</h5>
         <div class="card">
             <div class="card-body">
                 {% if item %}
@@ -21,7 +22,7 @@
                             </p>
                             {% if item.president %}
                             <p class="card-text text-muted small mb-1">
-                                <i class="bi bi-person-circle"></i> Президент: {{ item.president|user_profile_link|safe }}
+                                <i class="bi bi-person-circle"></i> {% trans "President" %}: {{ item.president|user_profile_link|safe }}
                             </p>
                             {% endif %}
                         </div>
@@ -30,12 +31,12 @@
                     <div class="row">
                         <div class="row mb-1">
                             <div class="col-6">
-                                <span class="badge bg-warning" data-bs-toggle="tooltip" title="Рік заснування">
-                                    <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
+                                <span class="badge bg-warning" data-bs-toggle="tooltip" title="{% trans "Year founded" %}">
+                                    <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} {% trans "yr." %}
                                 </span>
                             </div>
                             <div class="col-6">
-                                <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість спортсменів">
+                                <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Number of athletes" %}">
                                     <i class="bi bi-people"></i> {{ item|get_number_of_players }}
                                 </span>
                             </div>
@@ -43,7 +44,7 @@
                     </div>
                 {% else %}
                     <div class="text-center">
-                        <span class="badge bg-danger p-2">Без клубу</span>
+                        <span class="badge bg-danger p-2">{% trans "No club" %}</span>
                     </div>
                 {% endif %}
             </div>

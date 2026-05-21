@@ -7,7 +7,7 @@ from federation.models.player import Player
 class National_team (models.Model):
     default_name = "-"
 
-    name = models.CharField(_('Повна назва команди'), max_length=150)
+    name = models.CharField(_('Full team name'), max_length=150)
     players = models.ManyToManyField(Player, through='PlayerNational_teamMembership', verbose_name="Гравці")
 
     def __str__(self):
@@ -30,16 +30,16 @@ class National_team (models.Model):
 # Players to Teams relation
 class PlayerNational_teamMembership(models.Model):
     POSITIONS = (
-        ('player', 'Гравець'),
-        ('coach', 'Тренер'),
-        ('main_coach', 'Головний тренер'),
-        ('capitan', 'Капітан'),
-        ('selection', 'Основний склад'),
+        ('player', _('Player')),
+        ('coach', _('Coach')),
+        ('main_coach', _('Head coach')),
+        ('capitan', _('Captain')),
+        ('selection', _('Main squad')),
     )
 
     player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
     team = models.ForeignKey(National_team, on_delete=models.CASCADE, verbose_name="Команди", null=True)
-    position = models.CharField(_('Позиція'), max_length=50, choices=POSITIONS)
+    position = models.CharField(_('Position'), max_length=50, choices=POSITIONS)
 
     class Meta:
         verbose_name = 'Належнiсть до команд'
@@ -67,4 +67,3 @@ class National_teamAdmin(admin.ModelAdmin):
     search_fields = ('name', 'city__name', )
     list_per_page = 25
     inlines = (MembershipInline,)
-

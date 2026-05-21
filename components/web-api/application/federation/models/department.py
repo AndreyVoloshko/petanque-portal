@@ -10,11 +10,11 @@ from federation.models.player import Player
 class Department(models.Model):
     default_name = "-"
 
-    name            = models.CharField(_('Назва'), max_length=1000, blank=False, null=False)
-    order           = models.IntegerField(_('Порядок у меню'), default=0)
+    name            = models.CharField(_('Name'), max_length=1000, blank=False, null=False)
+    order           = models.IntegerField(_('Menu order'), default=0)
     players         = models.ManyToManyField(Player, through='PlayerDepartmentMembership', verbose_name="Гравці")
-    date_created    = models.DateTimeField(_('Дата створення'), default=timezone.now)
-    notes           = models.TextField(_('Нотатки'), blank=True, null=True)
+    date_created    = models.DateTimeField(_('Creation date'), default=timezone.now)
+    notes           = models.TextField(_('Notes'), blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -28,9 +28,9 @@ class Department(models.Model):
 class PlayerDepartmentMembership(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Гравцi", null=True)
     team = models.ForeignKey(Department, on_delete=models.CASCADE, verbose_name="Підрозділи ФПУ", null=True)
-    role = models.CharField(_('Роль'), max_length=1000, blank=False, null=False)
-    description = models.TextField(_('Опис'), blank=True, null=True)
-    order = models.IntegerField(_('Порядок на сторінці'), default=0)
+    role = models.CharField(_('Role'), max_length=1000, blank=False, null=False)
+    description = models.TextField(_('Description'), blank=True, null=True)
+    order = models.IntegerField(_('Page order'), default=0)
 
     class Meta:
         verbose_name = 'Належнiсть до підрозділу'

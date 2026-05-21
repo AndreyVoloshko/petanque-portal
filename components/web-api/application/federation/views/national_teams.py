@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 
 
@@ -15,5 +16,5 @@ def national_teams(request, team_id=None):
         'teams': teams,
         'current_team': current_team,
         'current_team_players': current_team_players,
-        'page_title': "Національні збірні України",
+        'page_title': _("National Teams of Ukraine"),
     })

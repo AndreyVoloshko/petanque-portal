@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-4">
     {% for item in items %}
@@ -16,7 +17,7 @@
                             {% if item.current_club %}
                                 <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
                             {% else %}
-                                <span class="badge bg-danger">Без клубу</span>
+                                <span class="badge bg-danger">{% trans "No club" %}</span>
                             {% endif %} 
                             {{ item.country|country_icon|safe }}
                         </p>
@@ -27,17 +28,17 @@
 
                 <div class="row">
                     <div class="col-4">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Поточний рейтинг">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
                             <i class="bi bi-trophy"></i> {{ item|rating_position:"current_rating"|safe }}
                         </span>
                     </div>
                     <div class="col-4">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Рейтингові пункти">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Rating points" %}">
                             <i class="bi bi-graph-up"></i> {{ item|rating_points:"current_rating"|safe }}
                         </span>
                     </div>
                     <div class="col-4">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" title="Рейтингова сила">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Rating power" %}">
                             <i class="bi bi-lightning"></i> {{ item|rating_power:"current_power"|safe }}
                         </span>
                     </div>

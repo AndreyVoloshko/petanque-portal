@@ -1,65 +1,71 @@
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
     <div class="container">
         <div class="navbar-header">
+            <a class="navbar-brand portal-brand" href="/">
+                <img class="portal-brand-logo" src="{% static 'brand/petanque_federation_logo_transparent_clean.png' %}" alt="">
+                <span class="portal-brand-full">{% trans "Ukrainian Petanque Federation" %}</span>
+                <span class="portal-brand-short">FPU</span>
+            </a>
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="visually-hidden">Меню</span>
+                <span class="visually-hidden">{% trans "Menu" %}</span>
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="/">Федерація Петанку України</a>
         </div>
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item dropdown">
                     <a href="{% url 'clubs' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-house-door"></i> Федерація </a>
+                       aria-expanded="false"><i class="bi bi-house-door"></i> {% trans "Federation" %} </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> Структура</a></li>
-                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> Документи</a></li>
-                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-people"></i> Клуби</a></li>
-                        <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> Арбітри</a></li>
-                        <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> Тренери</a></li>
-                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> Національні збірні</a></li>
-                        <li><a class="dropdown-item" href="{% url 'sport_titles' %}"><i class="bi bi-award"></i> Спортивні звання</a></li>
-                        <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> Рекорди України</a></li>
+                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> {% trans "Structure" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> {% trans "Documents" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-people"></i> {% trans "Clubs" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> {% trans "Arbiters" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> {% trans "Coaches" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> {% trans "National teams" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sport_titles' %}"><i class="bi bi-award"></i> {% trans "Sports titles" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> {% trans "Ukrainian records" %}</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> Статистика порталу</a></li>
+                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> {% trans "Portal statistics" %}</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a href="{% url 'tournaments' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-trophy"></i> Змагання </a>
+                       aria-expanded="false"><i class="bi bi-trophy"></i> {% trans "Competitions" %} </a>
                     <ul class="dropdown-menu">
                 
                         <!-- Майбутні -->
-                        <li><h6 class="dropdown-header">Майбутні</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-hourglass"></i> Усі</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні</a></li>
+                        <li><h6 class="dropdown-header">{% trans "Upcoming" %}</h6></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-hourglass"></i> {% trans "All" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
                 
                         <li role="separator" class="dropdown-divider"></li>
                 
                         <!-- Результати -->
-                        <li><h6 class="dropdown-header">Результати</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> Усі</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> Рейтингові</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> Закордонні</a></li>
+                        <li><h6 class="dropdown-header">{% trans "Results" %}</h6></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> {% trans "All" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
                 
                         <li role="separator" class="dropdown-divider"></li>
                 
                         <!-- Календар -->
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar-week"></i> Календар</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar-week"></i> {% trans "Calendar" %}</a></li>
                 
                     </ul>
                 </li>                
                 <li class="nav-item dropdown">
                     <a href="#ratings" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-award"></i> Рейтинги </a>
+                       aria-expanded="false"><i class="bi bi-award"></i> {% trans "Rankings" %} </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart"></i> Загальний</a></li>
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> Інклюзивний</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart"></i> {% trans "Overall" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> {% trans "Inclusive" %}</a></li>
                         <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-clock-history"></i> Попередні сезони</a></li>
+                        <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-clock-history"></i> {% trans "Previous seasons" %}</a></li>
                         <!-- <li role="separator" class="dropdown-divider"></li>
                         <li class="dropdown-header">Неофіційні рейтинги</li>
                         <li><a href="{% url 'players' %}"><i class="bi bi-graph-up"></i> Повний рейтинг порталу</a></li> -->
@@ -74,25 +80,51 @@
                         {% if user.is_authenticated %}
                             {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
                             <li role="separator" class="dropdown-divider"></li> {% endcomment %}
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> Профіль</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Вийти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> {% trans "Profile" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> {% trans "Log out" %}</a></li>
                             {% if user.is_superuser %}
                             <li role="separator" class="dropdown-divider"></li>
-                            <li class="dropdown-header">Додаткові можливості</li>
-                            <li><a class="dropdown-item" class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-globe"></i> Адмін панель</a></li>
+                            <li class="dropdown-header">{% trans "Additional options" %}</li>
+                            <li><a class="dropdown-item" class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-globe"></i> {% trans "Admin panel" %}</a></li>
                             {% endif %}
                         {% else %}
                             {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li> {% endcomment %}
-                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Увійти</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> {% trans "Log in" %}</a></li>
                         {% endif %}
                     </ul>
                 </li>
             </ul>
             <form id="search-form" class="d-flex ms-auto">
                 <div class="input-group">
-                    <input type="text" id="search" class="form-control" title="Знайти спортсмена, клуб або змагання" placeholder="Знайти спортсмена, клуб або змагання">
-                    <button class="btn btn-outline-light"><i class="bi bi-search"></i></button>
+                    <input type="text" id="search" class="form-control" title="{% trans "Find an athlete, club, or competition" %}" placeholder="{% trans "Search" %}">
+                    <button class="btn portal-search-button" type="submit" aria-label="{% trans "Search" %}"><i class="bi bi-search"></i></button>
                 </div>
+            </form>
+            <form action="{% url 'set_language' %}" method="post" class="language-switcher ms-lg-3">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                {% if CURRENT_LANGUAGE == 'en' %}
+                    <input name="language" type="hidden" value="uk">
+                {% else %}
+                    <input name="language" type="hidden" value="en">
+                {% endif %}
+                <button class="language-current" type="submit" aria-label="{% trans "Language" %}">
+                    <span>{% trans "Language" %}:</span>
+                    {% if CURRENT_LANGUAGE == 'en' %}
+                        <svg class="lang-flag" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <path fill="#012169" d="M0 0h640v480H0z"></path>
+                            <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"></path>
+                            <path fill="#C8102E" d="m424 281 216 159v40L369 281h55zm-184 20 6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"></path>
+                            <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"></path>
+                            <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"></path>
+                        </svg>
+                    {% else %}
+                        <svg class="lang-flag" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <rect width="640" height="240" fill="#005BBB"></rect>
+                            <rect y="240" width="640" height="240" fill="#FFD500"></rect>
+                        </svg>
+                    {% endif %}
+                </button>
             </form>
         </div>
     </div>
@@ -101,6 +133,9 @@
 
 <script>
 $(function () {
+    const lightThemeLabel = "{% trans "Light theme" %}";
+    const darkThemeLabel = "{% trans "Dark theme" %}";
+
     // Search autocomplete
     $("#search").autocomplete({
         source: function (request, response) {
@@ -151,9 +186,9 @@ $(function () {
         localStorage.setItem("theme", theme);
         
         if (theme === "dark") {
-            themeToggle.html('<i class="bi bi-sun-fill"></i> Світла тема');
+            themeToggle.html('<i class="bi bi-sun-fill"></i> ' + lightThemeLabel);
         } else {
-            themeToggle.html('<i class="bi bi-moon-fill"></i> Темна тема');
+            themeToggle.html('<i class="bi bi-moon-fill"></i> ' + darkThemeLabel);
         }
     }
 });    

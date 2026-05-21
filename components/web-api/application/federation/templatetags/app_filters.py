@@ -11,6 +11,7 @@ from datetime import date
 from django.utils import formats
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
 from federation.helpers.general import get_model
 import json
 
@@ -52,7 +53,7 @@ def get_year(value):
 @register.filter(name='country_icon')
 def country_icon(country):
     if not country.code:
-        return '<span class="badge bg-danger">Країна не вказана</span>'
+        return '<span class="badge bg-danger">' + _('Country not specified') + '</span>'
     return '''
         ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country.code+'''"></i>
     '''
@@ -211,18 +212,18 @@ def gender (item):
     gender = item.gender
 
     gender_class = 'female'
-    gender_label = 'Жінка'
+    gender_label = _('Woman')
     if gender == 'M':
         gender_class = 'male'
-        gender_label = 'Чоловік'
+        gender_label = _('Man')
     return '<span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="'+ gender_label +'"><i class="bi bi-gender-'+ gender_class +'"></i> '+gender+'</span>'
 
 
 @register.filter(name="licence_number")
 def licence_number(item):
     if not item.is_licence_active:
-        return '<span class="badge bg-danger" data-bs-toggle="tooltip" title="Ліцензія">Без ліцензії</span>'
-    return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="Ліцензія">' + str(item.licence_number) + '</span>'
+        return '<span class="badge bg-danger" data-bs-toggle="tooltip" title="' + _('License') + '">' + _('No license') + '</span>'
+    return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="' + _('License') + '">' + str(item.licence_number) + '</span>'
 
 
 @register.filter(name="is_active_player_class")
@@ -244,7 +245,7 @@ def arbiter_label(player):
         <dl class="row">
             <dt class="col-4">
                 <a target="_blank" href="{reverse('arbiters')}">
-                    Категорія арбітра
+                    {_("Arbiter category")}
                 </a>
             </dt>
             <dd class="col-8">
@@ -262,7 +263,7 @@ def player_sport_title_label(player):
         <dl class="row">
             <dt class="col-4">
                 <a target="_blank" href="{reverse('sport_titles')}">
-                    Спортивне звання
+                    {_("Sports title")}
                 </a>
             </dt>
             <dd class="col-8">
@@ -281,7 +282,7 @@ def coach_label(player):
         <dl class="row">
             <dt class="col-4">
                 <a target="_blank" href="{reverse('coaches')}">
-                    Тренерська категорія
+                    {_("Coach category")}
                 </a>
             </dt>
             <dd class="col-8">
@@ -302,7 +303,7 @@ def player_national_teams(player):
         <dl class="row">
             <dt class="col-4">
                 <a target="_blank" href="{reverse('national_teams')}">
-                    Національні збірні
+                    {_("National teams")}
                 </a>
             </dt>
             <dd class="col-8">
@@ -328,7 +329,7 @@ def player_records(player):
         <dl class="row">
             <dt class="col-4">
                 <a target="_blank" href="{reverse('records')}">
-                    Національні рекорди
+                    {_("National records")}
                 </a>
             </dt>
             <dd class="col-8">
@@ -369,7 +370,7 @@ def tournament_field (item, field):
         
     elif field == "terms":
         if value:
-            value = '''<a class="btn btn-sm btn-secondary" target="_blank" href="''' + value.url + '''"><i class="bi bi-download"></i> Завантажити</a>'''
+            value = '''<a class="btn btn-sm btn-secondary" target="_blank" href="''' + value.url + '''"><i class="bi bi-download"></i> ''' + _('Download') + '''</a>'''
 
 
     if not value:
@@ -426,7 +427,7 @@ def team_place_in_tournament(tournament, player=False):
         team = tournament
 
     message = '''
-        <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Місце у змаганнях">
+        <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + _('Place in competition') + '''">
     '''
 
     place = str(team.place_min)
@@ -452,22 +453,26 @@ def team_place_in_tournament_for_admin(tournament, player=False):
         <div class="badge bg-success tournament-place-field">
             <input type="text" class="form-control form-control-sm tournament-place-field-min" 
                 name="{team_pk}-min" value="{place_min}" 
-                placeholder="Місце" 
+                placeholder="{place_placeholder}"
                 data-bs-toggle="tooltip" 
                 data-bs-placement="top" 
-                title="Місце у змаганнях" />
+                title="{place_title}" />
             - 
             <input type="text" class="form-control form-control-sm tournament-place-field-max" 
                 name="{team_pk}-max" value="{place_max}" 
-                placeholder="Місце (max)" 
+                placeholder="{place_max_placeholder}"
                 data-bs-toggle="tooltip" 
                 data-bs-placement="top" 
-                title="Місце у змаганнях (max). Залишити 0, якщо не треба" />
+                title="{place_max_title}" />
         </div>
     '''.format(
         team_pk=team.pk, 
         place_min=team.place_min, 
-        place_max=team.place_max
+        place_max=team.place_max,
+        place_placeholder=_('Place'),
+        place_title=_('Place in competition'),
+        place_max_placeholder=_('Place (max)'),
+        place_max_title=_('Place in competition (max). Leave 0 if not needed'),
     )
 
     return format_html(message)
@@ -577,11 +582,11 @@ def tournament_status(tournament):
     elif tournament.is_finished():
         button_class += " bg-secondary"
         icon_class = "bi bi-clock"
-        message = "Змагання завершено, але ще не опрацьовано"
+        message = _("Competition is finished but not processed yet")
     elif tournament.is_began():
         button_class += " bg-danger"
         icon_class = "bi bi-lightning-fill"
-        message = "Змагання проходять зараз"
+        message = _("Competition is in progress")
 
     if message:
         return f'''
@@ -600,7 +605,7 @@ def tournament_protocol(tournament):
 
     return f'''
         <a target="_blank" href="{reverse('tournament_protocol', args=[tournament.pk])}">
-            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Протокол змагань">
+            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{_("Competition protocol")}">
                <i class="bi bi-download"></i>
             </span>
         </a>
@@ -617,19 +622,22 @@ def tournament_registration(tournament):
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
+        message = _("Registration is open until %(date)s") % {
+            'date': format_datetime(tournament.date_registration_stop)
+        }
 
     if message:
         return format_html(
             '''
                 <a href="{}" class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
-                   <i class="{}"></i> Зареєструватися
+                   <i class="{}"></i> {}
                 </a>
             ''',
             reverse('register_team', args=[tournament.pk]),
             button_class,
             message,
-            icon_class
+            icon_class,
+            _("Register")
         )
     return ""
 
@@ -643,7 +651,9 @@ def tournament_registration_badge(tournament):
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
+        message = _("Registration is open until %(date)s") % {
+            'date': format_datetime(tournament.date_registration_stop)
+        }
 
     if message:
         return format_html(
@@ -671,19 +681,22 @@ def tournament_registration_button(tournament):
     if tournament.is_registration_opened():
         button_class = "btn btn-sm btn-success"
         icon_class = "bi bi-plus"
-        message = f"Зареєструватись на змагання можна до {format_datetime(tournament.date_registration_stop)}"
+        message = _("Registration is open until %(date)s") % {
+            'date': format_datetime(tournament.date_registration_stop)
+        }
 
     if message:
         return format_html(
             '''
             <a class="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}" href="{}">
-                <i class="{}"></i> Зареєструватися
+                <i class="{}"></i> {}
             </a>
             ''',
             button_class,
             message,
             reverse('register_team', args=[tournament.pk]),
-            icon_class
+            icon_class,
+            _("Register")
         )
     return ""
 
@@ -694,7 +707,7 @@ def tournament_registration_tab(tournament):
         return '''
             <li class="nav-item no-tab-link">
                 <a class="nav-link force-follow-link no-tab-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
-                    <i class="bi bi-plus"></i> Зареєструвати команду
+                    <i class="bi bi-plus"></i> ''' + _("Register team") + '''
                 </a>
             </li>
         '''

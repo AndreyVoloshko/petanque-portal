@@ -3,6 +3,7 @@
 {% load i18n %}
 
 {% block content %}
+    {% get_current_language as CURRENT_LANGUAGE %}
     <div class="container py-4">
         <div class="row">
             <div class="col-md-10 mx-auto">
@@ -15,7 +16,7 @@
 
     <script>
         $(document).ready(function() {
-            var initialLocaleCode = 'uk';
+            var initialLocaleCode = '{{ CURRENT_LANGUAGE|default:"uk" }}';
 
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -27,11 +28,11 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
                 },
                 buttonText: {
-                    today: "Сьогодні",
-                    month: "Місяць",
-                    week: "Тиждень",
-                    day: "День",
-                    list: "Список"
+                    today: "{% trans "Today" %}",
+                    month: "{% trans "Month" %}",
+                    week: "{% trans "Week" %}",
+                    day: "{% trans "Day" %}",
+                    list: "{% trans "List" %}"
                 },
                 navLinks: true, // Клики по неделям и дням
                 eventLimit: true, // "Еще X событий"

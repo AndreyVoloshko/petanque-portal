@@ -1,17 +1,18 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="table-responsive">
     <table class="table table-hover table-striped table-sm" id="players">
         <thead>
             <tr>
                 <th class="text-center"></th>
-                <th class="text-start">Бали</th>
-                <th class="text-start">Середній</th>
-                <th class="text-start">Назва</th>
-                <th class="text-start">Місто</th>
-                <th class="text-start">Рік заснування</th>
-                <th class="text-start">Президент</th>
-                <th class="text-start">Спортсменів</th>
+                <th class="text-start">{% trans "Points" %}</th>
+                <th class="text-start">{% trans "Average" %}</th>
+                <th class="text-start">{% trans "Name" %}</th>
+                <th class="text-start">{% trans "City" %}</th>
+                <th class="text-start">{% trans "Year founded" %}</th>
+                <th class="text-start">{% trans "President" %}</th>
+                <th class="text-start">{% trans "Athlete count" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -21,12 +22,12 @@
                         {{ item|club_logo:""|safe }}
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Загальна кількість рейтингових пунктів у клубі">
+                        <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Total rating points in the club" %}">
                             <i class="bi bi-trophy"></i> {{ item|get_club_rating_points }}
                         </span>
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Середня кількість балів на спортсмена">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Average points per athlete" %}">
                             <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
                         </span>
                     </td>
@@ -40,8 +41,8 @@
                         {{ item.city }} {{ item.city.country|country_flag|safe }}
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="Рік заснування">
-                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} р.
+                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="{% trans "Year founded" %}">
+                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} {% trans "yr." %}
                         </span>
                     </td>
                     <td class="text-start">
@@ -49,7 +50,7 @@
                     </td>
                     <td class="text-center">
                         <a href="{% url 'club' id=item.pk %}">
-                            <span class="badge bg-info" data-bs-toggle="tooltip" title="Кількість спортсменів">
+                            <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Number of athletes" %}">
                                 <i class="bi bi-people"></i> {{ item|get_number_of_players }}
                             </span>
                         </a>
@@ -75,19 +76,19 @@
             ],
             autoWidth: false,
             order: [[1, "desc"]],
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
             language: {
-                lengthMenu: "Показати _MENU_ клубів на сторінку",
-                zeroRecords: "Клубів не знайдено",
-                info: "Показано _START_ - _END_ з _TOTAL_ клубів",
-                infoEmpty: "Показано 0 з 0 клубів",
-                infoFiltered: "(відфільтровано з _MAX_ клубів)",
-                search: "Пошук",
+                lengthMenu: "{% trans "Show _MENU_ clubs per page" %}",
+                zeroRecords: "{% trans "No clubs found" %}",
+                info: "{% trans "Showing _START_ to _END_ of _TOTAL_ clubs" %}",
+                infoEmpty: "{% trans "Showing 0 of 0 clubs" %}",
+                infoFiltered: "{% trans "(filtered from _MAX_ clubs)" %}",
+                search: "{% trans "Search" %}",
                 paginate: {
-                    first: "Початок",
-                    last: "Кінець",
-                    next: "Далі",
-                    previous: "Назад"
+                    first: "{% trans "First" %}",
+                    last: "{% trans "Last" %}",
+                    next: "{% trans "Next" %}",
+                    previous: "{% trans "Previous" %}"
                 }
             }
         });

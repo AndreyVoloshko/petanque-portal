@@ -1,19 +1,20 @@
 {% load app_filters %}
+{% load i18n %}
 
 
 <div class="table-responsive">
     <table class="table table-striped table-hover" id="players">
         <thead class="table-dark">
             <tr>
-                <th class="text-start">Рейтинг</th>
-                <th class="text-start">Бали</th>
-                <th class="text-start">Сила</th>
-                <th class="text-start">Ім'я</th>
-                <th class="text-center filterable">Стать</th>
-                <th class="text-center filterable">Вік</th>
-                <th class="text-center">Ліцензія</th>
-                <th class="text-start filterable">Клуб</th>
-                <th class="text-end no-sort">Дії</th>
+                <th class="text-start">{% trans "Ranking" %}</th>
+                <th class="text-start">{% trans "Points" %}</th>
+                <th class="text-start">{% trans "Power" %}</th>
+                <th class="text-start">{% trans "First name" %}</th>
+                <th class="text-center filterable">{% trans "Gender" %}</th>
+                <th class="text-center filterable">{% trans "Age" %}</th>
+                <th class="text-center">{% trans "License" %}</th>
+                <th class="text-start filterable">{% trans "Club" %}</th>
+                <th class="text-end no-sort">{% trans "Actions" %}</th>
             </tr>
         </thead>
         <tfoot>
@@ -22,10 +23,10 @@
                 <th></th> <!-- Бали -->
                 <th></th> <!-- Сила -->
                 <th></th> <!-- Ім'я -->
-                <th><select class="form-select form-select-sm"><option value="">Усі</option></select></th> <!-- Стать -->
-                <th><select class="form-select form-select-sm"><option value="">Усі</option></select></th> <!-- Вік -->
+                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Стать -->
+                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Вік -->
                 <th></th> <!-- Ліцензія -->
-                <th><select class="form-select form-select-sm"><option value="">Усі</option></select></th> <!-- Клуб -->
+                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Клуб -->
                 <th></th> <!-- Дії -->
             </tr>
         </tfoot>
@@ -38,12 +39,12 @@
                         </span>
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Рейтингові пункти">
+                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
                             {{ item|rating_points:rating_field|safe }}
                         </span>
                     </td>
                     <td class="text-start">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Рейтингова сила">
+                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
                             {{ item|rating_power:rating_power_field|safe }}
                         </span>
                     </td>
@@ -55,11 +56,11 @@
                         {% if item.current_club %}
                             <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
                         {% else %}
-                            <span class="badge bg-danger">Без клубу</span>
+                            <span class="badge bg-danger">{% trans "No club" %}</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        <a href="{% url 'player' id=item.pk %}" class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Показати спортсмена">
+                        <a href="{% url 'player' id=item.pk %}" class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Show athlete" %}">
                             <i class="bi bi-person"></i>
                         </a>
                     </td>
@@ -76,19 +77,19 @@
         var table = $('#players').DataTable({
             responsive: true, 
             paging: true,
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "Усіx"]],
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
             language: {
-                lengthMenu: "Показати _MENU_ спортсменів на сторінку",
-                zeroRecords: "Спортсменів не знайдено",
-                info: "Показано _START_ - _END_ з _TOTAL_ спортсменів",
-                infoEmpty: "Показано 0 з 0 спортсменів",
-                infoFiltered: "(відфільтровано з _MAX_ спортсменів)",
-                search: "Пошук:",
+                lengthMenu: "{% trans "Show _MENU_ athletes per page" %}",
+                zeroRecords: "{% trans "No athletes found" %}",
+                info: "{% trans "Showing _START_ to _END_ of _TOTAL_ athletes" %}",
+                infoEmpty: "{% trans "Showing 0 of 0 athletes" %}",
+                infoFiltered: "{% trans "(filtered from _MAX_ athletes)" %}",
+                search: "{% trans "Search:" %}",
                 paginate: {
-                    first: "Початок",
-                    last: "Кінець",
-                    next: "Далі",
-                    previous: "Назад"
+                    first: "{% trans "First" %}",
+                    last: "{% trans "Last" %}",
+                    next: "{% trans "Next" %}",
+                    previous: "{% trans "Previous" %}"
                 }
             },
             columnDefs: [

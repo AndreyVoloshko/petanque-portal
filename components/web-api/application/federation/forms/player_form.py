@@ -15,7 +15,7 @@ class ImageThumbnailFileInput(ClearableFileInput):
     template = 'forms/profile/image_field.html'
 
 class PlayerForm(forms.ModelForm):
-    email = forms.EmailField(label="Email адреса", required=True)
+    email = forms.EmailField(label=_("Email address"), required=True)
 
     def __init__(self, *args, **kwargs):
         super(PlayerForm, self).__init__(*args, **kwargs)
@@ -74,7 +74,7 @@ class PlayerForm(forms.ModelForm):
                 css_class="row"
             ),
             Div(
-                Submit('submit', 'Зберегти', css_class='btn btn-success'),
+                Submit('submit', _('Save'), css_class='btn btn-success'),
                 css_class="col-lg-12 text-center mb-3"
             )
         )
@@ -84,8 +84,10 @@ class PlayerForm(forms.ModelForm):
         content_type = content.content_type.split('/')[0]
         if content_type in settings.CONTENT_TYPES:
             if content._size > settings.MAX_UPLOAD_SIZE:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (
-                filesizeformat(settings.MAX_UPLOAD_SIZE), filesizeformat(content._size)))
+                raise forms.ValidationError(_('Please keep filesize under %(max_size)s. Current filesize %(current_size)s') % {
+                    'max_size': filesizeformat(settings.MAX_UPLOAD_SIZE),
+                    'current_size': filesizeformat(content._size),
+                })
         else:
             raise forms.ValidationError(_('File type is not supported'))
         return content
@@ -119,21 +121,21 @@ class PlayerForm(forms.ModelForm):
                   'website',
                   'prefred_position')
         labels = {
-            "email": "Email адреса",
-            "avatar": "Аватар",
-            "name": "Iм'я",
-            "surname": "Прiзвище",
-            "second_name": "По батькові",
-            "birth_date": "Дата народження (дд.мм.рррр)",
-            "current_club": "Клуб",
-            "country": "Країна",
-            "licence_number": "Номер ліцензії",
-            "gender": "Стать",
-            "facebook": "Сторінка Facebook",
-            "twitter": "Сторінка Twitter",
-            "instagram": "Сторінка Instagram",
-            "website": "Пенсональна Web-сторінка",
-            "prefred_position": "Позиція"
+            "email": _("Email address"),
+            "avatar": _("Avatar"),
+            "name": _("First name"),
+            "surname": _("Last name"),
+            "second_name": _("Middle name"),
+            "birth_date": _("Date of birth (dd.mm.yyyy)"),
+            "current_club": _("Club"),
+            "country": _("Country"),
+            "licence_number": _("License number"),
+            "gender": _("Gender"),
+            "facebook": _("Facebook page"),
+            "twitter": _("Twitter page"),
+            "instagram": _("Instagram page"),
+            "website": _("Personal website"),
+            "prefred_position": _("Position")
         }
         widgets = {
             'avatar': ImageThumbnailFileInput,
