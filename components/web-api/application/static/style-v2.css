@@ -242,6 +242,24 @@ body {
 		margin: 0px !important;
 }
 
+.portal-search-button {
+	background: #ffffff;
+	border-color: var(--bs-border-color);
+	border-left: 0;
+	color: #6e7781;
+}
+
+.portal-search-button:hover,
+.portal-search-button:focus {
+	background: #ffffff;
+	border-color: var(--bs-border-color);
+	color: #424a53;
+}
+
+.portal-search-button:focus {
+	box-shadow: none;
+}
+
 .language-switcher {
 	align-items: center;
 	display: flex;
@@ -306,12 +324,22 @@ body {
 }
 
 .landing-title {
+	align-items: center;
+	display: flex;
 	font-size: 2.15rem;
 	font-weight: 700;
+	gap: 0.875rem;
 	letter-spacing: 0;
 	line-height: 1.12;
 	margin-bottom: 1rem;
 	max-width: 42rem;
+}
+
+.landing-title-logo {
+	display: block;
+	flex: 0 0 auto;
+	height: 3rem;
+	width: 3rem;
 }
 
 .landing-title a {
@@ -427,7 +455,13 @@ body {
 
 	.landing-title {
 		font-size: 2rem;
+		gap: 0.625rem;
 		margin-bottom: 0.875rem;
+	}
+
+	.landing-title-logo {
+		height: 2.5rem;
+		width: 2.5rem;
 	}
 
 	.landing-intro {
