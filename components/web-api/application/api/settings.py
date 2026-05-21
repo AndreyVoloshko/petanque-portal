@@ -187,20 +187,6 @@ AWS_SECRET_ACCESS_KEY = get_credential('s3_secret')
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_ENDPOINT_URL = "https://s3.%s.amazonaws.com" % AWS_S3_REGION_NAME
 
-STORAGES = {
-    'backup': {
-        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
-        'OPTIONS': {
-            'access_key': get_credential('s3_key'),
-            'secret_key': get_credential('s3_secret'),
-            'bucket_name': get_credential('s3_bucket'),
-            'region_name': AWS_S3_REGION_NAME,
-            'location': get_credential('s3_backups_folder'),
-            'endpoint_url': AWS_S3_ENDPOINT_URL,
-        },
-    },
-}
-
 DBBACKUP_CONNECTOR_MAPPING = {
     'postgresql': 'dbbackup.db.postgresql.PgDumpConnector',
     'django.db.backends.postgresql': 'dbbackup.db.postgresql.PgDumpConnector'
@@ -217,20 +203,38 @@ AWS_S3_OBJECT_PARAMETERS = {
 STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'media'
 
+STORAGES = {
+    'backup': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        'OPTIONS': {
+            'access_key': get_credential('s3_key'),
+            'secret_key': get_credential('s3_secret'),
+            'bucket_name': get_credential('s3_bucket'),
+            'region_name': AWS_S3_REGION_NAME,
+            'location': get_credential('s3_backups_folder'),
+            'endpoint_url': AWS_S3_ENDPOINT_URL,
+        },
+    },
+}
+
 if AWS_STORAGE_BUCKET_NAME:
-    STATICFILES_STORAGE = 'federation.storage.StaticStorage'
     STATIC_URL = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+STATICFILES_LOCATION+'/'
     STATIC_ROOT = STATIC_URL
-
-    DEFAULT_FILE_STORAGE = 'federation.storage.MediaStorage'
     MEDIA_ROOT = '//'+AWS_S3_CUSTOM_DOMAIN+'/'+MEDIAFILES_LOCATION+'/'
     MEDIA_URL = MEDIA_ROOT
+    STORAGES.update({
+        'default': {'BACKEND': 'federation.storage.MediaStorage'},
+        'staticfiles': {'BACKEND': 'federation.storage.StaticStorage'},
+    })
 else:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
-
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
     MEDIA_URL = '/media/'
+    STORAGES.update({
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+    })
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
