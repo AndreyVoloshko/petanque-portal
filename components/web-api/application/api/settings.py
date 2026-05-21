@@ -203,8 +203,6 @@ AWS_S3_OBJECT_PARAMETERS = {
 STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'media'
 
-DBBACKUP_STORAGE = 'backup'
-
 STORAGES = {
     'backup': {
         'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
