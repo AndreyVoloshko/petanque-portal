@@ -248,6 +248,8 @@ body {
 }
 
 #search-form .form-control:focus {
+	border-color: var(--bs-border-color);
+	border-right-color: #ffffff;
 	box-shadow: none;
 	outline: 0;
 }
