@@ -247,9 +247,13 @@ body {
 	outline: 2px solid #777;
 }
 
+#search-form .form-control {
+	border-right: 0;
+}
+
 #search-form .form-control:focus {
-	border-color: #777;
-	border-right-color: #ffffff;
+	border-color: transparent;
+	border-right: 0;
 	box-shadow: none;
 	outline: 0;
 }
@@ -271,6 +275,7 @@ body {
 .portal-search-button:focus {
 	background: #ffffff;
 	border-color: var(--bs-border-color);
+	border-left: 0;
 	color: #424a53;
 }
 
