@@ -248,7 +248,7 @@ body {
 }
 
 #search-form .form-control:focus {
-	border-color: var(--bs-border-color);
+	border-color: #777;
 	border-right-color: #ffffff;
 	box-shadow: none;
 	outline: 0;
