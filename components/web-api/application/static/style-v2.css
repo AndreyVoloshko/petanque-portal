@@ -249,6 +249,7 @@ body {
 
 #search-form .form-control:focus,
 #search-form .portal-search-button:focus {
+	border-color: var(--bs-border-color);
 	box-shadow: none;
 	outline: 0;
 }
