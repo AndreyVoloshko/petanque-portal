@@ -12,6 +12,7 @@ from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
+from federation.storage import StaticStorage
 from federation.views.login import _needs_email_prompt
 
 
@@ -154,3 +155,8 @@ class InitialLanguageMiddlewareTests(TestCase):
 
         self.assertEqual(response.content.decode(), 'uk')
         self.assertEqual(response.cookies['django_language'].value, 'uk')
+
+
+class StaticStorageTests(TestCase):
+    def test_manifest_storage_does_not_crash_on_missing_entries(self):
+        self.assertFalse(StaticStorage.manifest_strict)
