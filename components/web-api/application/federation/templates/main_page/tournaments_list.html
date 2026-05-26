@@ -18,12 +18,12 @@
                             <span class="tournament-card-tag tournament-card-tag-format">{{ meta.format }}</span>
                         {% endif %}
                         {% for tag in meta.audience_tags %}
-                            <span class="tournament-card-tag">{{ tag }}</span>
+                            <span class="tournament-card-tag {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
                         {% endfor %}
                     </div>
 
                     <div class="tournament-card-facts">
-                        <div class="tournament-card-fact">
+                        <div class="tournament-card-fact" data-bs-toggle="tooltip" title="{% trans "Date" %}">
                             <i class="bi bi-calendar-event"></i>
                             <span>{{ item.start_date|date:"d.m.Y" }}</span>
                         </div>
@@ -33,7 +33,7 @@
                                 <a data-bs-toggle="tooltip" title="{% trans "Venue" %}" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
                             </div>
                         {% endif %}
-                        <div class="tournament-card-fact">
+                        <div class="tournament-card-fact" data-bs-toggle="tooltip" title="{% trans "Organizer" %}">
                             <i class="bi bi-building"></i>
                             {% if item.organizer_club %}
                                 <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {{ item.country|country_icon|safe }}

@@ -583,6 +583,20 @@ def tournament_card_metadata(tournament):
     return get_tournament_card_metadata(tournament)
 
 
+@register.filter(name="tournament_audience_tag_class")
+def tournament_audience_tag_class(tag):
+    normalized_tag = str(tag or "").strip().lower()
+
+    if normalized_tag in ("чоловіки", "men"):
+        return "tournament-card-tag-men"
+    if normalized_tag in ("жінки", "women"):
+        return "tournament-card-tag-women"
+    if normalized_tag in ("молодь", "юніори", "юнаки", "youth", "juniors", "cadets"):
+        return "tournament-card-tag-youth"
+
+    return ""
+
+
 @register.filter(name="tournament_power_class")
 def tournament_power_class(power):
     return _tournament_power_class(power)

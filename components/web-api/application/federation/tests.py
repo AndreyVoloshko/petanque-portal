@@ -14,7 +14,12 @@ from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import Tournament
 from federation.storage import StaticStorage
-from federation.templatetags.app_filters import tournament_field, tournament_power_badge, tournament_power_class
+from federation.templatetags.app_filters import (
+    tournament_audience_tag_class,
+    tournament_field,
+    tournament_power_badge,
+    tournament_power_class,
+)
 from federation.utils.tournament_names import (
     get_tournament_card_metadata,
     get_tournament_display_name,
@@ -229,6 +234,14 @@ class TournamentDisplayNameTests(SimpleTestCase):
         self.assertEqual(tournament_power_class('29.0943'), 'tournament-power-9')
         self.assertEqual(tournament_power_class('39.9999'), 'tournament-power-9')
         self.assertEqual(tournament_power_class('40.0000'), 'tournament-power-10')
+
+    def test_tournament_audience_tags_have_semantic_color_classes(self):
+        self.assertEqual(tournament_audience_tag_class('Чоловіки'), 'tournament-card-tag-men')
+        self.assertEqual(tournament_audience_tag_class('Жінки'), 'tournament-card-tag-women')
+        self.assertEqual(tournament_audience_tag_class('Молодь'), 'tournament-card-tag-youth')
+        self.assertEqual(tournament_audience_tag_class('Юніори'), 'tournament-card-tag-youth')
+        self.assertEqual(tournament_audience_tag_class('Юнаки'), 'tournament-card-tag-youth')
+        self.assertEqual(tournament_audience_tag_class('Ветерани'), '')
 
     def test_tournament_power_badge_uses_consistent_label_icon_and_class(self):
         tournament = self.create_tournament('Тупіт копит')
