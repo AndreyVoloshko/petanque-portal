@@ -239,7 +239,7 @@ class TournamentDisplayNameTests(SimpleTestCase):
         self.assertIn('tournament-power-badge tournament-power-10', badge)
         self.assertIn(_('Competition power'), badge)
         self.assertIn('bi bi-star', badge)
-        self.assertTrue('40.0000' in badge or '40,0000' in badge)
+        self.assertTrue('40.00' in badge or '40,00' in badge)
 
     def test_tournament_field_uses_power_badge_for_power(self):
         tournament = self.create_tournament('Тупіт копит')

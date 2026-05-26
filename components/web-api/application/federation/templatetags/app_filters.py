@@ -642,7 +642,7 @@ def _format_tournament_power(power):
     if not power_value.is_finite():
         power_value = Decimal("0")
 
-    return formats.number_format(power_value, decimal_pos=4, force_grouping=False)
+    return formats.number_format(power_value, decimal_pos=2, force_grouping=False)
 
 
 @register.filter(name="tournament_status")

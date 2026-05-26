@@ -18,6 +18,8 @@ body {
   --portal-brand-border: rgba(var(--bs-primary-rgb), 0.18);
   --portal-border-subtle: rgba(var(--bs-dark-rgb), 0.12);
   --portal-icon-muted: #7a858b;
+  --portal-section-bg: #ffffff;
+  --portal-section-border: rgba(var(--bs-primary-rgb), 0.12);
   --portal-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
   --portal-stat-bg: #f2f6f8;
   --portal-stat-text: #334047;
@@ -513,17 +515,19 @@ body {
 }
 
 .homepage-section {
+  background: var(--portal-section-bg);
+  border: 1px solid var(--portal-section-border);
+  border-radius: 8px;
   display: grid;
   gap: 0.875rem;
+  padding: 1rem;
 }
 
 .homepage-section-header {
   align-items: center;
-  border-bottom: 1px solid var(--portal-border-subtle);
   display: flex;
   gap: 0.75rem;
   justify-content: space-between;
-  padding-bottom: 0.45rem;
 }
 
 .homepage-section-header h5 {
@@ -563,11 +567,30 @@ body {
   line-height: 1;
 }
 
+.tournament-card-grid {
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.tournament-card-grid > .col {
+  max-width: none;
+  min-width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+
 .tournament-card {
   --tournament-card-accent: var(--portal-brand);
   border: 1px solid rgba(var(--bs-primary-rgb), 0.16);
   border-radius: 8px;
   box-shadow: var(--portal-shadow-soft);
+  height: 100%;
 }
 
 .tournament-card-body {
@@ -787,6 +810,10 @@ body {
   .landing-title {
     font-size: 2.8rem;
   }
+
+  .tournament-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 575.98px) {
@@ -855,6 +882,10 @@ body {
 
   .homepage-content {
     gap: 1.15rem;
+  }
+
+  .homepage-section {
+    padding: 0.875rem;
   }
 
   .homepage-group-header h3 {

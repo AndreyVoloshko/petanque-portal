@@ -52,7 +52,7 @@
                 </td>
                 <td>
                     {% if item.organizer_club %}
-                        <i class="bi bi-people"></i> <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, 
+                        <i class="bi bi-building"></i> <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>,
                     {% else %}
                         {% if item.country == settings.CURRENT_COUNTRY %}
                             <span class="badge bg-danger">{% trans "No club" %}</span>
