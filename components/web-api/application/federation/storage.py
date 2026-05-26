@@ -6,6 +6,7 @@ import time, hashlib, os
 
 class StaticStorage(ManifestFilesMixin, S3Boto3Storage):
     location = settings.STATICFILES_LOCATION
+    manifest_strict = False
 
 
 class MediaStorage(S3Boto3Storage):
@@ -17,6 +18,7 @@ class MediaStorage(S3Boto3Storage):
 
         name = hashlib.md5(str(time.time()).encode('utf-8')).hexdigest() + file_extension
         return name
+
 
 class AvatarsStorage(S3Boto3Storage):
     location = settings.MEDIAFILES_LOCATION
