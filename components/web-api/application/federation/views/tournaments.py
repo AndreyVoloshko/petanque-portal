@@ -167,6 +167,7 @@ def tournament_teams_export(request, id):
             'tournament': {
                 'id': tournament.pk,
                 'name': tournament.name,
+                'display_name': tournament.get_display_name(),
                 'meta': tournament.meta,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time

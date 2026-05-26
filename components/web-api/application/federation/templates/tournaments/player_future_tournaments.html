@@ -20,7 +20,7 @@
                         </span>
                     </td>
                     <td class="text-start">
-                        <a href="{% url 'tournament' id=item.pk %}">{{ item.name }}</a>
+                        <a href="{% url 'tournament' id=item.pk %}">{{ item|tournament_display_name }}</a>
                     </td>
                     <td class="text-start">
                         <span class="btn btn-sm btn-light fw-bold text-truncate d-inline-block">

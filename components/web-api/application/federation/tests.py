@@ -1,10 +1,10 @@
 from datetime import date
+from types import SimpleNamespace
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
-from django.test import RequestFactory
-from django.test import TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.utils.translation import get_language
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
@@ -12,8 +12,122 @@ from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
+from federation.models.tournament import Tournament
 from federation.storage import StaticStorage
+from federation.utils.tournament_names import (
+    get_tournament_display_name,
+    tournament_display_name_matches,
+)
 from federation.views.login import _needs_email_prompt
+
+
+class TournamentDisplayNameTests(SimpleTestCase):
+    def create_tournament(self, name, year=2026, players_min=1, players_max=1, tournament_format='swiko'):
+        return Tournament(
+            name=name,
+            category='open',
+            place='Київ',
+            start_date=date(year, 5, 1),
+            number_of_players_in_team_min=players_min,
+            number_of_players_in_team_max=players_max,
+            format=tournament_format,
+        )
+
+    def test_adds_year_and_single_player_format(self):
+        tournament = self.create_tournament('Тупіт копит')
+
+        self.assertEqual(
+            tournament.get_display_name(),
+            'Тупіт копит. 2026. Тет-а-тет',
+        )
+        self.assertEqual(tournament.name, 'Тупіт копит')
+
+    def test_uses_team_size_format_names(self):
+        doublets = self.create_tournament('Тупіт копит', players_min=2, players_max=2)
+        triplets = self.create_tournament('Тупіт копит', players_min=3, players_max=4)
+        clubs = self.create_tournament('Чемпіонат України', players_min=6, players_max=10)
+
+        self.assertEqual(get_tournament_display_name(doublets), 'Тупіт копит. 2026. Дуплети')
+        self.assertEqual(get_tournament_display_name(triplets), 'Тупіт копит. 2026. Триплети')
+        self.assertEqual(get_tournament_display_name(clubs), 'Чемпіонат України. 2026. Клуби')
+
+    def test_uses_shooting_format_before_team_size(self):
+        tournament = self.create_tournament('Чемпіонат України (жінки, ІІІ ранг)', tournament_format='tir')
+
+        self.assertEqual(
+            get_tournament_display_name(tournament),
+            'Чемпіонат України (жінки, ІІІ ранг). 2026. Тир',
+        )
+
+    def test_does_not_duplicate_existing_year_or_format(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України 2026. Триплети',
+            players_min=3,
+            players_max=4,
+        )
+
+        self.assertEqual(
+            get_tournament_display_name(tournament),
+            'Чемпіонат України 2026. Триплети',
+        )
+
+    def test_detects_format_inside_parentheses_case_insensitively(self):
+        tournament = self.create_tournament(
+            'Всеукраїнські змагання "Каштани" (триплети)',
+            players_min=3,
+            players_max=4,
+        )
+
+        self.assertEqual(
+            get_tournament_display_name(tournament),
+            'Всеукраїнські змагання "Каштани" (триплети). 2026',
+        )
+
+    def test_detects_tete_a_tete_shorthand(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України (молодь, юніори, юнаки) тети',
+            players_min=1,
+            players_max=1,
+        )
+
+        self.assertEqual(
+            get_tournament_display_name(tournament),
+            'Чемпіонат України (молодь, юніори, юнаки) тети. 2026',
+        )
+
+    def test_trims_trailing_dot_before_appending_parts(self):
+        tournament = self.create_tournament('Тупіт копит. ', players_min=2, players_max=2)
+
+        self.assertEqual(
+            get_tournament_display_name(tournament),
+            'Тупіт копит. 2026. Дуплети',
+        )
+
+    def test_handles_missing_year_or_format(self):
+        without_year = SimpleNamespace(
+            name='Тупіт копит',
+            start_date=None,
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+        without_format = SimpleNamespace(
+            name='Тупіт копит',
+            start_date=date(2026, 5, 1),
+            number_of_players_in_team_min=4,
+            number_of_players_in_team_max=4,
+            format='swiko',
+        )
+
+        self.assertEqual(get_tournament_display_name(without_year), 'Тупіт копит. Дуплети')
+        self.assertEqual(get_tournament_display_name(without_format), 'Тупіт копит. 2026')
+
+    def test_display_name_search_matches_computed_year_and_format(self):
+        tournament = self.create_tournament('Тупіт копит', players_min=1, players_max=1)
+
+        self.assertTrue(tournament_display_name_matches(tournament, '2026 тет'))
+        self.assertTrue(tournament_display_name_matches(tournament, 'Тупіт копит'))
+        self.assertFalse(tournament_display_name_matches(tournament, '2025 дуплети'))
 
 
 class TeamCaptainSelectionTests(TestCase):
