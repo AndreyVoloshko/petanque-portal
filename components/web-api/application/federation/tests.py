@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase
-from django.utils.translation import get_language
+from django.utils.translation import get_language, override
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.middleware import InitialLanguageMiddleware
@@ -15,7 +15,10 @@ from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import Tournament
 from federation.storage import StaticStorage
 from federation.utils.tournament_names import (
+    get_tournament_card_metadata,
     get_tournament_display_name,
+    get_tournament_format_name,
+    get_localized_tournament_format_name,
     tournament_display_name_matches,
 )
 from federation.views.login import _needs_email_prompt
@@ -128,6 +131,94 @@ class TournamentDisplayNameTests(SimpleTestCase):
         self.assertTrue(tournament_display_name_matches(tournament, '2026 тет'))
         self.assertTrue(tournament_display_name_matches(tournament, 'Тупіт копит'))
         self.assertFalse(tournament_display_name_matches(tournament, '2025 дуплети'))
+
+    def test_card_metadata_separates_format_and_audience_from_parentheses(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України (тир, жінки)',
+            tournament_format='tir',
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Чемпіонат України',
+            'format': 'Тир',
+            'format_source': 'Тир',
+            'audience_tags': ['Жінки'],
+        })
+
+    def test_card_metadata_separates_format_only_parentheses(self):
+        tournament = self.create_tournament(
+            'Всеукраїнські змагання "Паланок" (дуплети)',
+            players_min=2,
+            players_max=2,
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Всеукраїнські змагання "Паланок"',
+            'format': 'Дуплети',
+            'format_source': 'Дуплети',
+            'audience_tags': [],
+        })
+
+    def test_card_metadata_handles_multiple_audience_tags_and_trailing_format(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України (молодь, юніори, юнаки) тети',
+            players_min=1,
+            players_max=1,
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Чемпіонат України',
+            'format': 'Тет-а-тет',
+            'format_source': 'Тет-а-тет',
+            'audience_tags': ['Молодь', 'Юніори', 'Юнаки'],
+        })
+
+    def test_card_metadata_normalizes_super_melee_variants(self):
+        tournament = self.create_tournament(
+            'July Rose Cup (супермеле)',
+            tournament_format='mele',
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament)['name'], 'July Rose Cup')
+        self.assertEqual(get_tournament_card_metadata(tournament)['format'], 'Супер-меле')
+
+    def test_card_metadata_strips_legacy_year_format_and_gender_segments(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України 2019. Тир. Жінки',
+            year=2019,
+            tournament_format='tir',
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Чемпіонат України',
+            'format': 'Тир',
+            'format_source': 'Тир',
+            'audience_tags': ['Жінки'],
+        })
+
+    def test_card_metadata_keeps_unknown_parenthetical_details(self):
+        tournament = self.create_tournament(
+            'Кубок області (етап 1)',
+            players_min=2,
+            players_max=2,
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Кубок області (етап 1)',
+            'format': 'Дуплети',
+            'format_source': 'Дуплети',
+            'audience_tags': [],
+        })
+
+    def test_format_names_are_localized(self):
+        tournament = self.create_tournament('Тупіт копит', players_min=2, players_max=2)
+
+        self.assertEqual(get_tournament_format_name(tournament), 'Дуплети')
+        with override('en'):
+            self.assertEqual(
+                get_localized_tournament_format_name(get_tournament_format_name(tournament)),
+                'Doubles',
+            )
 
 
 class TeamCaptainSelectionTests(TestCase):

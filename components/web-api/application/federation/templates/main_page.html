@@ -38,63 +38,80 @@
 {% endblock header %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <h3 class="text-muted"><a class="small" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-trophy"></i></a> {% trans "Competitions" %}</h3>
+<div class="container-fluid py-4 homepage-content">
+    <div class="homepage-group-header">
+        <h3 class="text-muted mb-0"><i class="bi bi-trophy"></i> {% trans "Competitions" %}</h3>
+        <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'tournaments' date_filter='future' %}">
+            <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+        </a>
+    </div>
     
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</h5>
-                {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
-            </section>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-star"></i> {% trans "Rating competitions" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
         </div>
-    </div>    
+        {% include "main_page/tournaments_list.html" with items=future_tournaments_rating %}
+    </section>
     
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-hourglass"></i> {% trans "Nearest upcoming" %}</h5>
-                {% include "main_page/tournaments_list.html" with items=future_tournaments %}
-            </section>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-hourglass"></i> {% trans "Nearest upcoming" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='non_rating' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
         </div>
+        {% include "main_page/tournaments_list.html" with items=future_tournaments %}
+    </section>
+
+    <div class="homepage-group-header">
+        <h3 class="text-muted mb-0"><i class="bi bi-award"></i> {% trans "Top Ukrainian athletes" %}</h3>
+        <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
+            <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+        </a>
     </div>
 
-    <h3 class="text-muted"><a class="small" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-award"></i></a> {% trans "Top Ukrainian athletes" %}</h3>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-gender-male"></i> {% trans "Men" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
+        </div>
+        {% include "main_page/players_list.html" with items=top_players_men %}
+    </section>
 
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-gender-male"></i> {% trans "Men" %}</h5>
-                {% include "main_page/players_list.html" with items=top_players_men %}
-            </section>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-gender-female"></i> {% trans "Women" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
         </div>
-    </div>
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-gender-female"></i> {% trans "Women" %}</h5>
-                {% include "main_page/players_list.html" with items=top_players_women %}
-            </section>
-        </div>
-    </div>
+        {% include "main_page/players_list.html" with items=top_players_women %}
+    </section>
 
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-person-lines-fill"></i> {% trans "Veterans" %}</h5>
-                {% include "main_page/players_list.html" with items=top_players_veteran %}
-            </section>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-person-lines-fill"></i> {% trans "Veterans" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
         </div>
-    </div>
+        {% include "main_page/players_list.html" with items=top_players_veteran %}
+    </section>
 
-    <div class="row g-4 py-3">
-        <div class="col-lg-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2"><i class="bi bi-rocket"></i> {% trans "Juniors and youth" %}</h5>
-                {% include "main_page/players_list.html" with items=top_players_espoir_and_junior %}
-            </section>
+    <section class="homepage-section">
+        <div class="homepage-section-header">
+            <h5><i class="bi bi-rocket"></i> {% trans "Juniors and youth" %}</h5>
+            <a class="btn btn-sm btn-outline-secondary homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
+                <i class="bi bi-arrow-right"></i> {% trans "View all" %}
+            </a>
         </div>
-    </div>
+        {% include "main_page/players_list.html" with items=top_players_espoir_and_junior %}
+    </section>
 </div>
 
 <script>

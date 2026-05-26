@@ -1,54 +1,68 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-3">
+<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-3 tournament-card-grid">
     
     {% for item in items %}
-    <div class="col">
-        <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title mb-2">
-                    <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">{{ item|tournament_display_name }}</a>
-                </h5>
-                <div class="row mb-2">
-                    <div class="col-4">
-                        <p class="card-text text-muted small">
-                            <i class="bi bi-calendar-event"></i> {{ item.start_date|date:"d.m.Y" }}
-                        </p>
+    {% with meta=item|tournament_card_metadata %}
+    <div class="col {% if forloop.counter > 3 %}d-none d-lg-block{% endif %}">
+        <article class="card tournament-card">
+            <div class="card-body tournament-card-body">
+                <div class="tournament-card-main">
+                    <h5 class="tournament-card-title">
+                        <a href="{% url 'tournament' id=item.pk %}">{{ meta.name }}</a>
+                    </h5>
+
+                    <div class="tournament-card-tags" aria-label="{% trans "Competition details" %}">
+                        {% if meta.format %}
+                            <span class="tournament-card-tag tournament-card-tag-format">{{ meta.format }}</span>
+                        {% endif %}
+                        {% for tag in meta.audience_tags %}
+                            <span class="tournament-card-tag">{{ tag }}</span>
+                        {% endfor %}
                     </div>
-                    <div class="col-8 text-end">
-                        <p class="card-text text-muted small">
-                            <i class="bi bi-people"></i> {% if item.organizer_club %}<a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% else %} <span class="badge bg-danger">{% trans "No club" %}</span> {% endif %}{{ item.country|country_icon|safe }}
-                        </p>
+
+                    <div class="tournament-card-facts">
+                        <div class="tournament-card-fact">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>{{ item.start_date|date:"d.m.Y" }}</span>
+                        </div>
+                        {% if item.place %}
+                            <div class="tournament-card-fact">
+                                <i class="bi bi-geo-alt"></i>
+                                <a data-bs-toggle="tooltip" title="{% trans "Venue" %}" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
+                            </div>
+                        {% endif %}
+                        <div class="tournament-card-fact">
+                            <i class="bi bi-people"></i>
+                            {% if item.organizer_club %}
+                                <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {{ item.country|country_icon|safe }}
+                            {% else %}
+                                {{ item.country|country_icon|safe }}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-                {% if item.place %}
-                <p class="card-text text-muted mb-1">
-                    <i class="bi bi-geo-alt"></i> <a data-bs-toggle="tooltip" title="{% trans "Venue" %}" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
-                </p>
-                {% endif %}
 
-                <hr class="my-2">
-
-                <div class="row">
-                    <div class="col-3">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Number of teams" %}">
-                            <i class="bi bi-people"></i> {{ item|teams_count }}
+                <div class="tournament-card-footer">
+                    <div class="tournament-card-stats">
+                        <span class="tournament-card-stat" data-bs-toggle="tooltip" title="{% trans "Number of teams" %}">
+                            <i class="bi bi-people"></i>
+                            <span>{{ item|teams_count }}</span>
+                        </span>
+                        <span class="tournament-card-stat {% if item.power <= 0 %}is-muted{% endif %}" data-bs-toggle="tooltip" title="{% trans "Competition power" %}">
+                            <i class="bi bi-star"></i>
+                            <span>{{ item.power|floatformat:4 }}</span>
                         </span>
                     </div>
-                    <div class="col-5">
+                    <div class="tournament-card-action">
                         {{ item|tournament_registration|safe }}
                     </div>
-                    <div class="col-4 text-end">
-                        <span class="badge bg-secondary" data-bs-toggle="tooltip" title="{% trans "Competition power" %}">
-                            <i class="bi bi-star"></i> {{ item.power }}
-                        </span>
-                    </div>
                 </div>
-
             </div>
-        </div>
+        </article>
     </div>
+    {% endwith %}
     {% endfor %}
 </div>
 
