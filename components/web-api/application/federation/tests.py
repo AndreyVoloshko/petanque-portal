@@ -146,3 +146,11 @@ class InitialLanguageMiddlewareTests(TestCase):
 
         self.assertEqual(response.content.decode(), 'uk')
         self.assertNotIn('django_language', response.cookies)
+
+    def test_missing_country_header_uses_default_language(self):
+        request = self.factory.get('/', HTTP_ACCEPT_LANGUAGE='en')
+
+        response = self.get_response(request)
+
+        self.assertEqual(response.content.decode(), 'uk')
+        self.assertEqual(response.cookies['django_language'].value, 'uk')

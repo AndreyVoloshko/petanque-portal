@@ -33,6 +33,11 @@ def detect_initial_language(request):
         language = _language_for_country(_normalize_country_code(request.META.get(header_name)))
         if language and check_for_language(language):
             return language
+
+    default_language = settings.LANGUAGE_CODE
+    if check_for_language(default_language):
+        return default_language
+
     return None
 
 
