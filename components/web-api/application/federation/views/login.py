@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from federation.models.email_confirmation import EmailConfirmation
-from federation.models.player import Player
 
 
 def _safe_next_url(request):
@@ -17,13 +16,6 @@ def _safe_next_url(request):
     if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
         return next_url
     return '/profile/'
-
-
-def _is_ukrainian_player(user):
-    try:
-        return str(user.player.country) == 'UA'
-    except Player.DoesNotExist:
-        return False
 
 
 def _sync_existing_email_confirmation(user):
@@ -52,9 +44,7 @@ def _sync_existing_email_confirmation(user):
 
 
 def _needs_email_prompt(user):
-    if _sync_existing_email_confirmation(user):
-        return True
-    return _is_ukrainian_player(user) and not user.email
+    return _sync_existing_email_confirmation(user)
 
 
 def application_login(request):

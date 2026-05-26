@@ -46,11 +46,9 @@
 
                 if (country === "UA") {
                     emailGroup.show();
-                    emailInput.prop("required", true);
-                    emailLabel.addClass("requiredField");
-                    if (!emailLabel.find(".asteriskField").length) {
-                        emailLabel.append('<span class="asteriskField">*</span>');
-                    }
+                    emailInput.prop("required", false);
+                    emailLabel.removeClass("requiredField");
+                    emailLabel.find(".asteriskField").remove();
                 } else {
                     emailGroup.hide();
                     emailInput.prop("required", false);
