@@ -47,6 +47,10 @@ msgstr "Зберегти"
 msgid "Email address"
 msgstr "Email адреса"
 
+#: federation/forms/registration_player_form.py:50
+msgid "Optional. You can leave this field empty."
+msgstr "Необов'язково. Це поле можна залишити порожнім."
+
 #: federation/forms/player_form.py:87
 #, python-format
 msgid "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"

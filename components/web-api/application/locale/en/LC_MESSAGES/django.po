@@ -46,6 +46,10 @@ msgstr "Save"
 msgid "Email address"
 msgstr "Email address"
 
+#: federation/forms/registration_player_form.py:50
+msgid "Optional. You can leave this field empty."
+msgstr "Optional. You can leave this field empty."
+
 #: federation/forms/player_form.py:87
 #, python-format
 msgid "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"

@@ -47,6 +47,7 @@ class RegistrationPlayerForm(forms.Form):
         self.fields['email'] = forms.EmailField(
             widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
             label=_("Email address"),
+            help_text=_("Optional. You can leave this field empty."),
             required=False,
         )
 
@@ -153,9 +154,6 @@ class RegistrationPlayerForm(forms.Form):
 
         country = cleaned_data.get('country')
         email = cleaned_data.get('email')
-        if country == 'UA' and not email:
-            self.add_error('email', _("Email is required for players from Ukraine"))
-
         if country != 'UA':
             cleaned_data['email'] = ''
             return cleaned_data
