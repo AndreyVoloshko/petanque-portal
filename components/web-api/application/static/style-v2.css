@@ -444,16 +444,21 @@ body {
   gap: 1.5rem;
 }
 
-.homepage-group-header,
-.homepage-section-header {
+.homepage-group-header {
   align-items: center;
   display: flex;
-  gap: 1rem;
-  justify-content: space-between;
+  margin-top: 0.4rem;
 }
 
-.homepage-group-header {
-  margin-top: 0.25rem;
+.homepage-group-header h3 {
+  align-items: center;
+  color: #3e4b52 !important;
+  display: inline-flex;
+  font-size: 1.55rem;
+  font-weight: 800;
+  gap: 0.55rem;
+  letter-spacing: 0;
+  line-height: 1.15;
 }
 
 .homepage-section {
@@ -461,10 +466,22 @@ body {
   gap: 0.875rem;
 }
 
+.homepage-section-header {
+  align-items: center;
+  border-bottom: 1px solid rgba(38, 50, 56, 0.12);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding-bottom: 0.45rem;
+}
+
 .homepage-section-header h5 {
+  align-items: center;
   color: #263238;
-  font-size: 1.18rem;
+  display: inline-flex;
+  font-size: 1.08rem;
   font-weight: 700;
+  gap: 0.42rem;
   letter-spacing: 0;
   line-height: 1.2;
   margin: 0;
@@ -472,12 +489,27 @@ body {
 
 .homepage-view-all {
   align-items: center;
-  border-radius: 999px;
+  color: #1f7d9a;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: 600;
-  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  gap: 0.15rem;
   line-height: 1.1;
+  padding: 0.15rem 0;
+  text-decoration: none;
+}
+
+.homepage-view-all:hover,
+.homepage-view-all:focus {
+  color: #17647d;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
+.homepage-view-all i {
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .tournament-card {
@@ -692,15 +724,18 @@ body {
     gap: 1.15rem;
   }
 
-  .homepage-group-header,
-  .homepage-section-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.55rem;
+  .homepage-group-header h3 {
+    font-size: 1.45rem;
   }
 
-  .homepage-view-all {
-    align-self: flex-start;
+  .homepage-section-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.75rem;
+  }
+
+  .homepage-section-header h5 {
+    font-size: 1.02rem;
   }
 
   .tournament-card-body {
