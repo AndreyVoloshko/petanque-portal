@@ -2,6 +2,7 @@
 .idea/
 .env
 .cache
+.playwright-mcp/
 petanque-portal/
 *.pyc
 __pycache__
