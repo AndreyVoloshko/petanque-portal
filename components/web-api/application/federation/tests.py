@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, timedelta
 from types import SimpleNamespace
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
@@ -19,6 +20,7 @@ from federation.templatetags.app_filters import (
     tournament_field,
     tournament_power_badge,
     tournament_power_class,
+    tournament_registration,
 )
 from federation.utils.tournament_names import (
     get_tournament_card_metadata,
@@ -263,6 +265,16 @@ class TournamentDisplayNameTests(SimpleTestCase):
         self.assertIn(_('Competition power'), field)
         self.assertIn('tournament-power-badge tournament-power-2', field)
         self.assertIn('bi bi-star', field)
+
+    def test_tournament_registration_uses_large_plus_icon(self):
+        tournament = self.create_tournament('Тупіт копит')
+        tournament.pk = 123
+        tournament.date_registration_stop = timezone.now() + timedelta(days=1)
+
+        registration = str(tournament_registration(tournament))
+
+        self.assertIn('bi bi-plus-lg', registration)
+        self.assertIn(_('Register'), registration)
 
 
 class TeamCaptainSelectionTests(TestCase):

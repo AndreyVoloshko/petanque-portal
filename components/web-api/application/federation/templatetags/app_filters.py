@@ -715,7 +715,7 @@ def tournament_registration(tournament):
 
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
-        icon_class = "bi bi-plus"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -744,7 +744,7 @@ def tournament_registration_badge(tournament):
 
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
-        icon_class = "bi bi-plus"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -774,7 +774,7 @@ def tournament_registration_button(tournament):
 
     if tournament.is_registration_opened():
         button_class = "btn btn-sm btn-success"
-        icon_class = "bi bi-plus"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -801,7 +801,7 @@ def tournament_registration_tab(tournament):
         return '''
             <li class="nav-item no-tab-link">
                 <a class="nav-link force-follow-link no-tab-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
-                    <i class="bi bi-plus"></i> ''' + _("Register team") + '''
+                    <i class="bi bi-plus-lg"></i> ''' + _("Register team") + '''
                 </a>
             </li>
         '''

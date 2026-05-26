@@ -23,8 +23,10 @@
                     </div>
 
                     <div class="tournament-card-facts">
-                        <div class="tournament-card-fact" data-bs-toggle="tooltip" title="{% trans "Date" %}">
-                            <i class="bi bi-calendar-event"></i>
+                        <div class="tournament-card-fact">
+                            <span class="tournament-card-fact-icon" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Date" %}">
+                                <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                            </span>
                             <span>{{ item.start_date|date:"d.m.Y" }}</span>
                         </div>
                         {% if item.place %}
@@ -33,8 +35,10 @@
                                 <a data-bs-toggle="tooltip" title="{% trans "Venue" %}" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
                             </div>
                         {% endif %}
-                        <div class="tournament-card-fact" data-bs-toggle="tooltip" title="{% trans "Organizer" %}">
-                            <i class="bi bi-building"></i>
+                        <div class="tournament-card-fact">
+                            <span class="tournament-card-fact-icon" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Organizer" %}">
+                                <i class="bi bi-building" aria-hidden="true"></i>
+                            </span>
                             {% if item.organizer_club %}
                                 <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {{ item.country|country_icon|safe }}
                             {% else %}

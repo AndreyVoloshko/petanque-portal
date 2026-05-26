@@ -29,6 +29,10 @@ body {
   --portal-text-heading: #263238;
   --portal-text-muted: var(--bs-gray-600);
   --portal-text-soft: #3e4b52;
+  --tournament-participants-icon: #1f5f8b;
+  --tournament-register-bg: #14834e;
+  --tournament-register-hover-bg: #0b6d3f;
+  --tournament-register-active-bg: #095b35;
   --tournament-tag-men-bg: #e7f0ff;
   --tournament-tag-men-border: #bfdbfe;
   --tournament-tag-men-text: #1d4ed8;
@@ -693,6 +697,18 @@ body {
   flex: 0 0 auto;
 }
 
+.tournament-card-fact-icon[data-bs-toggle="tooltip"] {
+  align-items: center;
+  cursor: help;
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  justify-content: center;
+  line-height: 1;
+  min-height: 1.15rem;
+  position: static !important;
+  width: 1.05rem;
+}
+
 .tournament-card-fact a {
   color: var(--portal-brand);
 }
@@ -748,6 +764,10 @@ body {
 .tournament-card-stat.is-muted {
   color: var(--portal-text-muted);
   font-weight: 600;
+}
+
+.tournament-card-stat .bi-people {
+  color: var(--tournament-participants-icon);
 }
 
 .tournament-power-none {
@@ -824,17 +844,36 @@ body {
 
 .tournament-card-action .badge {
   align-items: center;
-  border-radius: 999px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff !important;
   display: inline-flex !important;
   font-size: 0.86rem;
-  gap: 0.3rem;
+  gap: 0.35rem;
   min-height: 1.95rem;
   padding: 0.5rem 0.85rem;
+  transition: background-color 0.16s ease;
 }
 
-.tournament-card-action .badge .bi-plus {
-  font-size: 1.18rem;
+.tournament-card-action .badge.bg-success {
+  background-color: var(--tournament-register-bg) !important;
+}
+
+.tournament-card-action .badge.bg-success:hover,
+.tournament-card-action .badge.bg-success:focus {
+  background-color: var(--tournament-register-hover-bg) !important;
+  color: #fff !important;
+}
+
+.tournament-card-action .badge.bg-success:active {
+  background-color: var(--tournament-register-active-bg) !important;
+}
+
+.tournament-card-action .badge .bi-plus,
+.tournament-card-action .badge .bi-plus-lg {
+  font-size: 1.45rem;
   line-height: 1;
+  margin-left: -0.1rem;
 }
 
 @media (min-width: 992px) {
