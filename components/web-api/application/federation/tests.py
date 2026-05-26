@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase
-from django.utils.translation import get_language, override
+from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.middleware import InitialLanguageMiddleware
@@ -14,7 +14,7 @@ from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import Tournament
 from federation.storage import StaticStorage
-from federation.templatetags.app_filters import tournament_power_class
+from federation.templatetags.app_filters import tournament_field, tournament_power_badge, tournament_power_class
 from federation.utils.tournament_names import (
     get_tournament_card_metadata,
     get_tournament_display_name,
@@ -229,6 +229,27 @@ class TournamentDisplayNameTests(SimpleTestCase):
         self.assertEqual(tournament_power_class('29.0943'), 'tournament-power-9')
         self.assertEqual(tournament_power_class('39.9999'), 'tournament-power-9')
         self.assertEqual(tournament_power_class('40.0000'), 'tournament-power-10')
+
+    def test_tournament_power_badge_uses_consistent_label_icon_and_class(self):
+        tournament = self.create_tournament('Тупіт копит')
+        tournament.power = '40.0000'
+
+        badge = str(tournament_power_badge(tournament))
+
+        self.assertIn('tournament-power-badge tournament-power-10', badge)
+        self.assertIn(_('Competition power'), badge)
+        self.assertIn('bi bi-star', badge)
+        self.assertTrue('40.0000' in badge or '40,0000' in badge)
+
+    def test_tournament_field_uses_power_badge_for_power(self):
+        tournament = self.create_tournament('Тупіт копит')
+        tournament.power = '1.4884'
+
+        field = tournament_field(tournament, 'power')
+
+        self.assertIn(_('Competition power'), field)
+        self.assertIn('tournament-power-badge tournament-power-2', field)
+        self.assertIn('bi bi-star', field)
 
 
 class TeamCaptainSelectionTests(TestCase):

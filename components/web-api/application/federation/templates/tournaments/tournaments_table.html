@@ -9,7 +9,7 @@
                 <th class="text-start">{% trans "Name" %}</th>
                 <th class="text-start filterable">{% trans "Place" %}</th>
                 <th class="text-start filterable">{% trans "Type" %}</th>
-                <th class="text-start">{% trans "Power" %}</th>
+                <th class="text-start">{% trans "Competition power" %}</th>
                 <th class="text-start filterable">{% trans "Organizer" %}</th>
                 <th class="text-end no-sort">{% trans "Actions" %}</th>
             </tr>
@@ -48,9 +48,7 @@
                     {% endif %}
                 </td>
                 <td data-order="{{ item.power }}">
-                    <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Competition power" %}">
-                        <i class="bi bi-bar-chart"></i> {{ item.power }}
-                    </span>
+                    {{ item|tournament_power_badge|safe }}
                 </td>
                 <td>
                     {% if item.organizer_club %}

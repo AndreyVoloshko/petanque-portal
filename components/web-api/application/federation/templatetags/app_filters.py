@@ -348,12 +348,19 @@ def player_records(player):
 @register.filter(name="tournament_field")
 def tournament_field (item, field):
     value = getattr(item, field)
-    value_type = Tournament._meta.get_field(field).get_internal_type()
+    model_field = Tournament._meta.get_field(field)
+    label = str(model_field.verbose_name)
+    value_type = model_field.get_internal_type()
 
-    if not value:
+    if field == "power":
+        value = tournament_power_badge(item)
+        label = _("Competition power")
+    elif not value:
         return ''
 
-    if value_type == 'DateTimeField':
+    if field == "power":
+        pass
+    elif value_type == 'DateTimeField':
         value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
 
     elif value_type == "DateField":
@@ -379,7 +386,7 @@ def tournament_field (item, field):
         return ''
 
     return '''
-        <dt class="col-sm-5 fw-bold" title="''' + str(Tournament._meta.get_field(field).verbose_name) + '''">''' + str(Tournament._meta.get_field(field).verbose_name) + '''</dt>
+        <dt class="col-sm-5 fw-bold" title="''' + label + '''">''' + label + '''</dt>
         <dd class="col-sm-7">''' + str(value) + '''</dd>
     '''
 
@@ -578,6 +585,25 @@ def tournament_card_metadata(tournament):
 
 @register.filter(name="tournament_power_class")
 def tournament_power_class(power):
+    return _tournament_power_class(power)
+
+
+@register.filter(name="tournament_power_badge")
+def tournament_power_badge(tournament_or_power):
+    power = getattr(tournament_or_power, "power", tournament_or_power)
+    return format_html(
+        '''
+        <span class="badge tournament-power-badge {}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
+            <i class="bi bi-star"></i> {}
+        </span>
+        ''',
+        _tournament_power_class(power),
+        _("Competition power"),
+        _format_tournament_power(power),
+    )
+
+
+def _tournament_power_class(power):
     try:
         power_value = Decimal(str(power or 0))
     except (InvalidOperation, TypeError, ValueError):
@@ -605,6 +631,18 @@ def tournament_power_class(power):
         return "tournament-power-9"
 
     return "tournament-power-10"
+
+
+def _format_tournament_power(power):
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite():
+        power_value = Decimal("0")
+
+    return formats.number_format(power_value, decimal_pos=4, force_grouping=False)
 
 
 @register.filter(name="tournament_status")

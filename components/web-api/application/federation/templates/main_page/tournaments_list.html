@@ -50,10 +50,7 @@
                             <i class="bi bi-people"></i>
                             <span>{{ item|teams_count }}</span>
                         </span>
-                        <span class="tournament-card-stat tournament-card-power {{ item.power|tournament_power_class }}" data-bs-toggle="tooltip" title="{% trans "Competition power" %}">
-                            <i class="bi bi-star"></i>
-                            <span>{{ item.power|floatformat:4 }}</span>
-                        </span>
+                        {{ item|tournament_power_badge|safe }}
                     </div>
                     <div class="tournament-card-action">
                         {{ item|tournament_registration|safe }}

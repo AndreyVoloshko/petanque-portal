@@ -678,15 +678,24 @@ body {
   padding: 0.42rem 0.62rem;
 }
 
+.tournament-power-badge {
+  align-items: center;
+  background: var(--tournament-power-bg, var(--portal-stat-bg));
+  border: 1px solid var(--tournament-power-border, transparent);
+  border-radius: 999px;
+  color: var(--tournament-power-text, var(--portal-stat-text));
+  display: inline-flex !important;
+  font-size: 0.86rem;
+  font-weight: 700;
+  gap: 0.3rem;
+  line-height: 1;
+  min-height: 1.75rem;
+  padding: 0.42rem 0.62rem;
+}
+
 .tournament-card-stat.is-muted {
   color: var(--portal-text-muted);
   font-weight: 600;
-}
-
-.tournament-card-power {
-  background: var(--tournament-power-bg, var(--portal-stat-bg));
-  border-color: var(--tournament-power-border, transparent);
-  color: var(--tournament-power-text, var(--portal-stat-text));
 }
 
 .tournament-power-none {
