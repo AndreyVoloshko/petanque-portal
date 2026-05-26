@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from decimal import Decimal, InvalidOperation
 import os.path
 from federation.models.team import Team
 from federation.models.player import Player
@@ -573,6 +574,38 @@ def tournament_display_name(tournament):
 @register.filter(name="tournament_card_metadata")
 def tournament_card_metadata(tournament):
     return get_tournament_card_metadata(tournament)
+
+
+@register.filter(name="tournament_power_class")
+def tournament_power_class(power):
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite() or power_value <= 0:
+        return "tournament-power-none"
+    if power_value <= Decimal("1.4883"):
+        return "tournament-power-1"
+    if power_value <= Decimal("3.9043"):
+        return "tournament-power-2"
+    if power_value <= Decimal("8.7510"):
+        return "tournament-power-3"
+    if power_value <= Decimal("12.8965"):
+        return "tournament-power-4"
+    if power_value <= Decimal("17.1797"):
+        return "tournament-power-5"
+    if power_value <= Decimal("20.4864"):
+        return "tournament-power-6"
+    if power_value <= Decimal("23.6641"):
+        return "tournament-power-7"
+    if power_value <= Decimal("29.0942"):
+        return "tournament-power-8"
+    if power_value < Decimal("40"):
+        return "tournament-power-9"
+
+    return "tournament-power-10"
+
 
 @register.filter(name="tournament_status")
 def tournament_status(tournament):

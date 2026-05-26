@@ -14,6 +14,7 @@ from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import Tournament
 from federation.storage import StaticStorage
+from federation.templatetags.app_filters import tournament_power_class
 from federation.utils.tournament_names import (
     get_tournament_card_metadata,
     get_tournament_display_name,
@@ -219,6 +220,15 @@ class TournamentDisplayNameTests(SimpleTestCase):
                 get_localized_tournament_format_name(get_tournament_format_name(tournament)),
                 'Doubles',
             )
+
+    def test_tournament_power_class_uses_local_db_distribution_buckets(self):
+        self.assertEqual(tournament_power_class(0), 'tournament-power-none')
+        self.assertEqual(tournament_power_class('1.4883'), 'tournament-power-1')
+        self.assertEqual(tournament_power_class('1.4884'), 'tournament-power-2')
+        self.assertEqual(tournament_power_class('29.0942'), 'tournament-power-8')
+        self.assertEqual(tournament_power_class('29.0943'), 'tournament-power-9')
+        self.assertEqual(tournament_power_class('39.9999'), 'tournament-power-9')
+        self.assertEqual(tournament_power_class('40.0000'), 'tournament-power-10')
 
 
 class TeamCaptainSelectionTests(TestCase):
