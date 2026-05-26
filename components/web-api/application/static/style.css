@@ -1,79 +1,79 @@
 h2 {
-    font-size: 15px;
+  font-size: 15px;
 }
 input[type="file"] {
-    width: 100%;
-    overflow: hidden;
+  width: 100%;
+  overflow: hidden;
 }
 form .row {
-    min-height: 90px;
+  min-height: 90px;
 }
 
 .nav-tabs {
-    margin: 20px 0px;
+  margin: 20px 0px;
 }
 
 .tab-content.profile {
-    margin: 50px 0;
+  margin: 50px 0;
 }
 
 .flag-icon {
-    display: inline-block;
+  display: inline-block;
 }
 
 .logo-container {
-    overflow: hidden;
-    text-align: center;
-    vertical-align: top;
+  overflow: hidden;
+  text-align: center;
+  vertical-align: top;
 }
 
 .logo-container.big {
-    width: 100px;
-    height: 100px;
+  width: 100px;
+  height: 100px;
 }
 
 .logo-container img {
-    max-width: 100%;
-    max-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .sentence-line-break {
-    word-spacing: 100vw;
+  word-spacing: 100vw;
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .social-field div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .panel-body {
-    min-height: 170px;
+  min-height: 170px;
 }
 
 .label {
-    display: inline-block;
+  display: inline-block;
 }
 
 .inactive {
-    background: rgba(128, 128, 128, 0.2) none repeat scroll 0 0;
-    opacity: 0.4;
+  background: rgba(128, 128, 128, 0.2) none repeat scroll 0 0;
+  opacity: 0.4;
 }
 
 .empty_club_label {
-    display: block;
-    float: none;
-    font-size: 16px;
-    margin: auto;
-    width: 130px;
+  display: block;
+  float: none;
+  font-size: 16px;
+  margin: auto;
+  width: 130px;
 }
 
 .label-list-record {
-    margin: 3px 0px;
+  margin: 3px 0px;
 }
 
 /* CUSTOMIZE THE CAROUSEL
@@ -96,7 +96,8 @@ form .row {
 }
 .carousel-inner > .item > a > img,
 .carousel-inner > .item > img,
-.img-responsive, .thumbnail a > img,
+.img-responsive,
+.thumbnail a > img,
 .thumbnail > img {
   position: absolute;
   top: 0;
@@ -107,149 +108,171 @@ form .row {
 
 /* Authorization */
 .panel-login {
-	border-color: #ccc;
-	-webkit-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
-	-moz-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
-	box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+  border-color: #ccc;
+  -webkit-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.2);
 }
-.panel-login>.panel-heading {
-	color: #00415d;
-	background-color: #fff;
-	border-color: #fff;
-	text-align:center;
+.panel-login > .panel-heading {
+  color: #00415d;
+  background-color: #fff;
+  border-color: #fff;
+  text-align: center;
 }
-.panel-login>.panel-heading a{
-	text-decoration: none;
-	color: #666;
-	font-weight: bold;
-	font-size: 15px;
-	-webkit-transition: all 0.1s linear;
-	-moz-transition: all 0.1s linear;
-	transition: all 0.1s linear;
+.panel-login > .panel-heading a {
+  text-decoration: none;
+  color: #666;
+  font-weight: bold;
+  font-size: 15px;
+  -webkit-transition: all 0.1s linear;
+  -moz-transition: all 0.1s linear;
+  transition: all 0.1s linear;
 }
-.panel-login>.panel-heading a.active{
-	color: #029f5b;
-	font-size: 18px;
+.panel-login > .panel-heading a.active {
+  color: #029f5b;
+  font-size: 18px;
 }
-.panel-login>.panel-heading hr{
-	margin-top: 10px;
-	margin-bottom: 0px;
-	clear: both;
-	border: 0;
-	height: 1px;
-	background-image: -webkit-linear-gradient(left,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15),rgba(0, 0, 0, 0));
-	background-image: -moz-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
-	background-image: -ms-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
-	background-image: -o-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+.panel-login > .panel-heading hr {
+  margin-top: 10px;
+  margin-bottom: 0px;
+  clear: both;
+  border: 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(
+    left,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0)
+  );
+  background-image: -moz-linear-gradient(
+    left,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0)
+  );
+  background-image: -ms-linear-gradient(
+    left,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0)
+  );
+  background-image: -o-linear-gradient(
+    left,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0)
+  );
 }
-.panel-login input[type="text"],.panel-login input[type="email"],.panel-login input[type="password"] {
-	height: 45px;
-	border: 1px solid #ddd;
-	font-size: 16px;
-	-webkit-transition: all 0.1s linear;
-	-moz-transition: all 0.1s linear;
-	transition: all 0.1s linear;
+.panel-login input[type="text"],
+.panel-login input[type="email"],
+.panel-login input[type="password"] {
+  height: 45px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  -webkit-transition: all 0.1s linear;
+  -moz-transition: all 0.1s linear;
+  transition: all 0.1s linear;
 }
 .panel-login input:hover,
 .panel-login input:focus {
-	outline:none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
-	border-color: #ccc;
+  outline: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  border-color: #ccc;
 }
 .btn-login {
-	background-color: #59B2E0;
-	outline: none;
-	color: #fff;
-	font-size: 14px;
-	height: auto;
-	font-weight: normal;
-	padding: 14px 0;
-	text-transform: uppercase;
-	border-color: #59B2E6;
+  background-color: #59b2e0;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  height: auto;
+  font-weight: normal;
+  padding: 14px 0;
+  text-transform: uppercase;
+  border-color: #59b2e6;
 }
 .btn-login:hover,
 .btn-login:focus {
-	color: #fff;
-	background-color: #53A3CD;
-	border-color: #53A3CD;
+  color: #fff;
+  background-color: #53a3cd;
+  border-color: #53a3cd;
 }
 .forgot-password {
-	text-decoration: underline;
-	color: #888;
+  text-decoration: underline;
+  color: #888;
 }
 .forgot-password:hover,
 .forgot-password:focus {
-	text-decoration: underline;
-	color: #666;
+  text-decoration: underline;
+  color: #666;
 }
 
 .btn-register {
-	background-color: #1CB94E;
-	outline: none;
-	color: #fff;
-	font-size: 14px;
-	height: auto;
-	font-weight: normal;
-	padding: 14px 0;
-	text-transform: uppercase;
-	border-color: #1CB94A;
+  background-color: #1cb94e;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  height: auto;
+  font-weight: normal;
+  padding: 14px 0;
+  text-transform: uppercase;
+  border-color: #1cb94a;
 }
 .btn-register:hover,
 .btn-register:focus {
-	color: #fff;
-	background-color: #1CA347;
-	border-color: #1CA347;
+  color: #fff;
+  background-color: #1ca347;
+  border-color: #1ca347;
 }
 
 .avatar {
-    width: 100px;
+  width: 100px;
 }
 
 .icon-404 {
-    width: 50%;
-    margin: 50px auto;
-    display: block;
+  width: 50%;
+  margin: 50px auto;
+  display: block;
 }
 
 dl.tournament_summary {
-    margin: 0px 20px;
+  margin: 0px 20px;
 }
 
 /*
 Tournaments classes
 */
 .tournament {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 .tournament_goes_to_rating {
-    background: #daebcc !important;
-    border: #daebcc !important;
+  background: #daebcc !important;
+  border: #daebcc !important;
 }
 
 .tournament_ukrainian_league {
-    background: #ebcccc !important;
-    border: #ebcccc !important;
+  background: #ebcccc !important;
+  border: #ebcccc !important;
 }
 
 .tournament_away {
-    background: #d9edf7 !important;
-    border: #d9edf7 !important;
+  background: #d9edf7 !important;
+  border: #d9edf7 !important;
 }
 
 .tournament_b {
-    background: #eeeeee !important;
-    border: #eeeeee !important;
+  background: #eeeeee !important;
+  border: #eeeeee !important;
 }
 
 /*
 Calendar
 */
 #calendar {
-    max-width: 1000px;
-    margin: auto;
+  max-width: 1000px;
+  margin: auto;
 }
 .fc-content {
-    padding: 3px;
+  padding: 3px;
 }

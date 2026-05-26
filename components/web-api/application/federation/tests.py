@@ -1,9 +1,14 @@
 from datetime import date
 
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.middleware.locale import LocaleMiddleware
+from django.test import RequestFactory
 from django.test import TestCase
+from django.utils.translation import get_language
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
+from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
@@ -107,3 +112,37 @@ class OptionalRegistrationEmailTests(TestCase):
         EmailConfirmation.objects.create(user=user, email=user.email)
 
         self.assertTrue(_needs_email_prompt(user))
+
+
+class InitialLanguageMiddlewareTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def get_response(self, request):
+        middleware = InitialLanguageMiddleware(LocaleMiddleware(lambda req: HttpResponse(get_language())))
+        return middleware(request)
+
+    def test_sets_ukrainian_for_ukraine_country_header(self):
+        request = self.factory.get('/', HTTP_CF_IPCOUNTRY='UA')
+
+        response = self.get_response(request)
+
+        self.assertEqual(response.content.decode(), 'uk')
+        self.assertEqual(response.cookies['django_language'].value, 'uk')
+
+    def test_sets_english_for_non_ukraine_country_header(self):
+        request = self.factory.get('/', HTTP_CF_IPCOUNTRY='PL')
+
+        response = self.get_response(request)
+
+        self.assertEqual(response.content.decode(), 'en')
+        self.assertEqual(response.cookies['django_language'].value, 'en')
+
+    def test_existing_language_cookie_takes_priority(self):
+        request = self.factory.get('/', HTTP_CF_IPCOUNTRY='PL')
+        request.COOKIES['django_language'] = 'uk'
+
+        response = self.get_response(request)
+
+        self.assertEqual(response.content.decode(), 'uk')
+        self.assertNotIn('django_language', response.cookies)
