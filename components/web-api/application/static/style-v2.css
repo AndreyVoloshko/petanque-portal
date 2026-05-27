@@ -2131,3 +2131,20 @@ Tournaments classes
   background: rgba(var(--bs-secondary-rgb), 0.07) !important;
   border: rgba(var(--bs-secondary-rgb), 0.07) !important;
 }
+
+.tournament-name {
+  overflow: hidden;
+}
+
+.tournament-name a {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* table-layout: fixed is required for text-overflow to work inside DataTables */
+#tournaments {
+  table-layout: fixed !important;
+}

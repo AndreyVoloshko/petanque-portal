@@ -26,7 +26,12 @@
                     </div>
                 </td>
                 <td>
-                    <a href="{% url 'tournament' id=item.pk %}">{{ item|tournament_display_name }}</a>
+                    <div class="tournament-name">
+                        <a href="{% url 'tournament' id=item.pk %}"
+                           data-bs-toggle="tooltip"
+                           data-bs-placement="top"
+                           data-bs-title="{{ item.name }}">{{ item|tournament_display_name }}</a>
+                    </div>
                 </td>
                 <td>
                     <a target="_blank" href="https://maps.google.com?q={{ item.place }}">
@@ -91,7 +96,7 @@ $(document).ready(function() {
             { targets: 5, width: "13%" }, // Організатор
             { targets: 6, width: "9%" }, // Дії
         ],
-        responsive: true,
+        autoWidth: false,
         paging: true,
         lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
         order: [[0, '{{ initial_order }}']],
