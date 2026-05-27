@@ -605,14 +605,23 @@ def tournament_power_class(power):
 @register.filter(name="tournament_power_badge")
 def tournament_power_badge(tournament_or_power):
     power = getattr(tournament_or_power, "power", tournament_or_power)
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite() or power_value <= 0:
+        return ""
+
     return format_html(
         '''
         <span class="badge tournament-power-badge {}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
-            <i class="bi bi-star"></i> {}
+            <i class="bi bi-star"></i> <span class="tournament-power-label">{}</span> {}
         </span>
         ''',
         _tournament_power_class(power),
         _("Competition power"),
+        _("Power"),
         _format_tournament_power(power),
     )
 
@@ -714,7 +723,7 @@ def tournament_registration(tournament):
     icon_class = ""
 
     if tournament.is_registration_opened():
-        button_class = "badge bg-success"
+        button_class = "badge bg-success tournament-register-button"
         icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)

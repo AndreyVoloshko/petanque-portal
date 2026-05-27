@@ -1,62 +1,109 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-4">
+<div class="athlete-card-grid">
     {% for item in items %}
-    <div class="col">
-        <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        {{ item|user_avatar:"big"|safe }}
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{ item|user_profile_link|safe }}</h5>
-                        <p class="card-text text-muted small mb-1">
-                            <i class="bi bi-people"></i> 
+    <article class="card athlete-card">
+        <div class="card-body athlete-card-body">
+            <div class="athlete-card-hero">
+                <div class="athlete-card-profile">
+                    <a class="athlete-card-avatar" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}">
+                        {% if item.avatar %}
+                            <img src="{{ item.avatar.url }}" alt="{{ item.get_name }}" loading="lazy" decoding="async">
+                        {% else %}
+                            <span class="athlete-card-avatar-placeholder" aria-hidden="true">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <div class="athlete-card-copy">
+                        <div class="athlete-card-name-row">
+                            <h3 class="athlete-card-name">
+                                <a href="{% url 'player' id=item.pk %}">
+                                    <span>{{ item.surname|upper }}</span>
+                                    <span>{{ item.name }}</span>
+                                </a>
+                            </h3>
+                            {% if item.sport_title %}
+                            <span class="athlete-card-title-badge" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
+                                <i class="bi bi-award-fill" aria-hidden="true"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <p class="athlete-card-club">
+                            <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-users"></use></svg>
                             {% if item.current_club %}
                                 <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
-                            {% else %}
-                                <span class="badge bg-danger">{% trans "No club" %}</span>
-                            {% endif %} 
-                            {{ item.country|country_icon|safe }}
+                            {% endif %}
+                            <span class="athlete-card-country">{{ item.country|country_icon|safe }}</span>
                         </p>
                     </div>
                 </div>
 
-                <hr class="my-2" />
-
-                <div class="row">
-                    <div class="col-4">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
-                            <i class="bi bi-trophy"></i> {{ item|rating_position:"current_rating"|safe }}
-                        </span>
-                    </div>
-                    <div class="col-4">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Rating points" %}">
-                            <i class="bi bi-graph-up"></i> {{ item|rating_points:"current_rating"|safe }}
-                        </span>
-                    </div>
-                    <div class="col-4">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Rating power" %}">
-                            <i class="bi bi-lightning"></i> {{ item|rating_power:"current_power"|safe }}
-                        </span>
-                    </div>
+                <div class="athlete-card-rank" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
+                    <span class="athlete-card-rank-value">{{ item|rating_position:"current_rating"|safe }}</span>
+                    <span class="athlete-card-rank-label">{% trans "Place" %}</span>
                 </div>
+            </div>
 
-                <div class="row mt-2">
-                    <div class="col-4">
-                        {{ item|licence_number|safe }}
-                    </div>
-                    <div class="col-4">
-                        {{ item|gender|safe }}
-                    </div>
-                    <div class="col-4">
-                        {{ item|player_age_category|safe }}
-                    </div>
+            <div class="athlete-card-stats" aria-label="{% trans "Player ranking details" %}">
+                <div class="athlete-stat athlete-stat-points">
+                    <span class="athlete-stat-icon" aria-hidden="true">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+                    <span class="athlete-stat-copy">
+                        <span class="athlete-stat-value">{{ item.current_rating|floatformat:2 }}</span>
+                        <span class="athlete-stat-label">{% trans "Points" %}</span>
+                    </span>
+                </div>
+                <div class="athlete-stat athlete-stat-power">
+                    <span class="athlete-stat-icon" aria-hidden="true">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </span>
+                    <span class="athlete-stat-copy">
+                        <span class="athlete-stat-value">{{ item.current_power|floatformat:2 }}</span>
+                        <span class="athlete-stat-label">{% trans "Power" %}</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="athlete-card-meta" aria-label="{% trans "Player ranking details" %}">
+                <div class="athlete-chip athlete-chip-license">
+                    <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></span>
+                    <span class="athlete-chip-copy">
+                        <span class="athlete-chip-value">{% if item.is_licence_active and item.licence_number %}{{ item.licence_number }}{% else %}{% trans "No license" %}{% endif %}</span>
+                        <span class="athlete-chip-label">{% trans "License" %}</span>
+                    </span>
+                </div>
+                <div class="athlete-chip athlete-chip-gender">
+                    <span class="athlete-chip-icon" aria-hidden="true">
+                        {% if item.gender == "F" %}
+                            <i class="bi bi-gender-female"></i>
+                        {% else %}
+                            <i class="bi bi-gender-male"></i>
+                        {% endif %}
+                    </span>
+                    <span class="athlete-chip-copy">
+                        <span class="athlete-chip-value">{% if item.gender == "F" %}{% trans "Women" %} (F){% else %}{% trans "Men" %} (M){% endif %}</span>
+                        <span class="athlete-chip-label">{% trans "Gender" %}</span>
+                    </span>
+                </div>
+                <div class="athlete-chip athlete-chip-age">
+                    <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-people"></i></span>
+                    <span class="athlete-chip-copy">
+                        <span class="athlete-chip-value">{{ item|player_age_category|safe }}</span>
+                        <span class="athlete-chip-label">{% trans "Category" %}</span>
+                    </span>
                 </div>
             </div>
         </div>
-    </div>
+    </article>
+    {% empty %}
+    <article class="card athlete-card athlete-card-empty">
+        <div class="card-body athlete-card-body">
+            <p class="athlete-card-empty-text">{% trans "No athletes to show yet." %}</p>
+        </div>
+    </article>
     {% endfor %}
 </div>

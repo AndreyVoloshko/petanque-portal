@@ -12,6 +12,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: federation/templates/common/menu.html:9
+msgid "FPU"
+msgstr "FPU"
+
 #: federation/forms/authorization_profile_form.py:10
 #: federation/forms/authorization_profile_form.py:58
 msgid "Current password"
@@ -1242,6 +1246,50 @@ msgstr "Official portal for competitions, rankings, clubs, athletes, and federat
 msgid "Portal highlights"
 msgstr "Portal highlights"
 
+#: federation/templates/main_page.html:117
+msgid "Find upcoming tournaments, register your team, and follow official rating events."
+msgstr "Find upcoming tournaments, register your team, and follow official rating events."
+
+#: federation/templates/main_page.html:122
+msgid "All competitions"
+msgstr "All competitions"
+
+#: federation/templates/main_page.html:139
+msgid "Official tournaments that affect Ukrainian pétanque ratings."
+msgstr "Official tournaments that affect Ukrainian pétanque ratings."
+
+#: federation/templates/main_page.html:142
+msgid "View all rating competitions"
+msgstr "View all rating competitions"
+
+#: federation/templates/main_page.html:154
+msgid "Non-rating competitions"
+msgstr "Non-rating competitions"
+
+#: federation/templates/main_page.html:156
+msgid "Open, club, training and community tournaments."
+msgstr "Open, club, training and community tournaments."
+
+#: federation/templates/main_page.html:159
+msgid "View all non-rating competitions"
+msgstr "View all non-rating competitions"
+
+#: federation/templates/main_page.html:175
+msgid "Leading players of Ukraine with the highest ratings."
+msgstr "Leading players of Ukraine with the highest ratings."
+
+#: federation/templates/main_page.html:179
+msgid "View all athletes"
+msgstr "View all athletes"
+
+#: federation/templates/main_page.html:184
+msgid "Athlete ranking groups"
+msgstr "Athlete ranking groups"
+
+#: federation/templates/main_page.html:213
+msgid "Go to slide"
+msgstr "Go to slide"
+
 #: federation/templates/main_page.html:27
 msgid "Find current federation news, competitions, athletes, clubs, and more."
 msgstr "Find current federation news, competitions, athletes, clubs, and more."
@@ -1290,12 +1338,43 @@ msgstr "Current ranking"
 msgid "Rating power"
 msgstr "Rating power"
 
+#: federation/templates/main_page/players_list.html:35
+msgid "Player ranking details"
+msgstr "Player ranking details"
+
+#: federation/templates/main_page/players_list.html:57
+msgid "No athletes to show yet."
+msgstr "No athletes to show yet."
+
+#: federation/templates/main_page/tournaments_list.html:5
+msgid "Previous competitions"
+msgstr "Previous competitions"
+
+#: federation/templates/main_page/tournaments_list.html:69
+msgid "No upcoming competitions yet."
+msgstr "No upcoming competitions yet."
+
+#: federation/templates/main_page/tournaments_list.html:77
+msgid "Next competitions"
+msgstr "Next competitions"
+
+#: federation/templates/main_page/tournaments_list.html:54
+#, python-format
+msgid "%(counter)s team"
+msgid_plural "%(counter)s teams"
+msgstr[0] "%(counter)s team"
+msgstr[1] "%(counter)s teams"
+
 #: federation/templates/main_page/tournaments_list.html:35
 #: federation/templates/tournaments/player_past_away_tournaments.html:32
 #: federation/templates/tournaments/player_past_tournaments.html:32
 #: federation/templates/tournaments/tournaments_table.html:68
 msgid "Number of teams"
 msgstr "Number of teams"
+
+#: federation/templates/main_page/tournaments_list.html:67
+msgid "Registered teams count"
+msgstr "Registered teams count"
 
 #: federation/templates/main_page/tournaments_list.html:43
 #: federation/templates/tournaments/tournaments_table.html:51
