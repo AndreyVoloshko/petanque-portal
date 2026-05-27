@@ -26,7 +26,12 @@
                     </div>
                 </td>
                 <td>
-                    <a href="{% url 'tournament' id=item.pk %}">{{ item|tournament_display_name }}</a>
+                    <div class="tournament-name">
+                        <a href="{% url 'tournament' id=item.pk %}"
+                           data-bs-toggle="tooltip"
+                           data-bs-placement="top"
+                           data-bs-title="{{ item.name }}">{{ item|tournament_display_name }}</a>
+                    </div>
                 </td>
                 <td>
                     <a target="_blank" href="https://maps.google.com?q={{ item.place }}">

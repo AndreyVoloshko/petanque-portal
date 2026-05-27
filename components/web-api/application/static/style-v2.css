@@ -612,3 +612,10 @@ Tournaments classes
   background: rgba(var(--bs-secondary-rgb), 0.07) !important;
   border: rgba(var(--bs-secondary-rgb), 0.07) !important;
 }
+
+.tournament-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
