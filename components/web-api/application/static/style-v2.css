@@ -1518,7 +1518,15 @@ body {
   text-decoration: none;
 }
 
-.athlete-card-name-link span {
+.athlete-card-surname-line {
+  align-items: center;
+  display: flex;
+  gap: 0.28rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.athlete-card-name-text {
   display: block;
   overflow: hidden;
   overflow-wrap: normal;
