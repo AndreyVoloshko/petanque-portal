@@ -3,11 +3,11 @@
 
 <div class="athlete-card-grid">
     {% for item in items %}
-    <article class="card athlete-card">
+    <a class="card athlete-card" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
         <div class="card-body athlete-card-body">
             <div class="athlete-card-hero">
                 <div class="athlete-card-profile">
-                    <a class="athlete-card-avatar" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}">
+                    <span class="athlete-card-avatar" aria-hidden="true">
                         {% if item.avatar %}
                             <img src="{{ item.avatar.url }}" alt="{{ item.get_name }}" loading="lazy" decoding="async">
                         {% else %}
@@ -15,18 +15,18 @@
                                 <i class="bi bi-person-fill"></i>
                             </span>
                         {% endif %}
-                    </a>
+                    </span>
 
                     <div class="athlete-card-copy">
                         <div class="athlete-card-name-row">
                             <h3 class="athlete-card-name">
-                                <a href="{% url 'player' id=item.pk %}">
+                                <span class="athlete-card-name-link">
                                     <span>{{ item.surname|upper }}</span>
                                     <span>{{ item.name }}</span>
-                                </a>
+                                </span>
                             </h3>
                             {% if item.sport_title %}
-                            <span class="athlete-card-title-badge" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
+                            <span class="athlete-card-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
                                 <i class="bi bi-award-fill" aria-hidden="true"></i>
                             </span>
                             {% endif %}
@@ -34,7 +34,7 @@
                         <p class="athlete-card-club">
                             <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-users"></use></svg>
                             {% if item.current_club %}
-                                <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                                <span class="athlete-card-club-name">{{ item.current_club.short_name }}</span>
                             {% endif %}
                             <span class="athlete-card-country">{{ item.country|country_icon|safe }}</span>
                         </p>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="athlete-card-stats" aria-label="{% trans "Player ranking details" %}">
-                <div class="athlete-stat athlete-stat-points">
+                <div class="athlete-stat athlete-stat-points" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
                     <span class="athlete-stat-icon" aria-hidden="true">
                         <i class="bi bi-graph-up-arrow"></i>
                     </span>
@@ -57,7 +57,7 @@
                         <span class="athlete-stat-label">{% trans "Points" %}</span>
                     </span>
                 </div>
-                <div class="athlete-stat athlete-stat-power">
+                <div class="athlete-stat athlete-stat-power" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
                     <span class="athlete-stat-icon" aria-hidden="true">
                         <i class="bi bi-lightning-charge-fill"></i>
                     </span>
@@ -69,7 +69,7 @@
             </div>
 
             <div class="athlete-card-meta" aria-label="{% trans "Player ranking details" %}">
-                <div class="athlete-chip athlete-chip-license">
+                <div class="athlete-chip athlete-chip-license" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
                     <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></span>
                     <span class="athlete-chip-copy">
                         <span class="athlete-chip-value">{% if item.is_licence_active and item.licence_number %}{{ item.licence_number }}{% else %}{% trans "No license" %}{% endif %}</span>
@@ -98,7 +98,7 @@
                 </div>
             </div>
         </div>
-    </article>
+    </a>
     {% empty %}
     <article class="card athlete-card athlete-card-empty">
         <div class="card-body athlete-card-body">
