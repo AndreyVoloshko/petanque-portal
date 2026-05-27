@@ -625,6 +625,7 @@ Tournaments classes
   max-width: 100%;
 }
 
-#tournaments td:nth-child(2) {
-  max-width: 0;
+/* table-layout: fixed is required for text-overflow to work inside DataTables */
+#tournaments {
+  table-layout: fixed !important;
 }
