@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from federation.helpers.general import get_model
+from federation.utils.tournament_names import get_tournament_display_name
 import json
 
 register = template.Library()
@@ -564,6 +565,10 @@ def players_in_seasons(season, year):
 @register.filter(name="teams_count")
 def teams_count(tournament):
     return tournament.get_teams_count()
+
+@register.filter(name="tournament_display_name")
+def tournament_display_name(tournament):
+    return get_tournament_display_name(tournament)
 
 @register.filter(name="tournament_status")
 def tournament_status(tournament):

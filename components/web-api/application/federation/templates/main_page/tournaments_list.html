@@ -8,7 +8,7 @@
         <div class="card h-100">
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title mb-2">
-                    <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">{{ item.name }}</a>
+                    <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">{{ item|tournament_display_name }}</a>
                 </h5>
                 <div class="row mb-2">
                     <div class="col-4">

@@ -63,14 +63,14 @@
                     <ul class="list-group mb-3">
                         <li class="list-group-item">
                             {% trans "Largest competition by athletes" %}: <br />
-                            <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players.name }}</a>
+                            <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament_players.pk %}">{{ tournaments_data.ua_biggest_tournament_players|tournament_display_name }}</a>
                         </li>
                         <li class="list-group-item">
                             {% trans "Largest number of athletes" %}: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament_players_count }}</span>
                         </li>
                         <li class="list-group-item">
                             {% trans "Largest competition by teams" %}: <br />
-                            <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament.pk %}">{{ tournaments_data.ua_biggest_tournament.name }}</a>
+                            <a href="{% url 'tournament' id=tournaments_data.ua_biggest_tournament.pk %}">{{ tournaments_data.ua_biggest_tournament|tournament_display_name }}</a>
                         </li>
                         <li class="list-group-item">
                             {% trans "Largest number of teams" %}: <span class="badge bg-primary">{{ tournaments_data.ua_biggest_tournament|teams_count }}</span>

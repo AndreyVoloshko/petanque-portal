@@ -4,7 +4,7 @@
 <div class="{% if full_width == "true" %}col-12{% else %}col-lg-7{% endif %}">
     <section class="p-3 rounded shadow">
         <h5 class="pb-2 border-bottom">
-            {% blocktrans with name=tournament.name %}Competition: {{ name }}{% endblocktrans %}
+            {% blocktrans with name=tournament|tournament_display_name %}Competition: {{ name }}{% endblocktrans %}
         </h5>
         <div class="">
 

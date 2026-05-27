@@ -12,7 +12,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <b>{% trans "Competitions" %}</b>:
-                            <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament.name }}</a>
+                            <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament|tournament_display_name }}</a>
                         </div>
 
                         {% if is_registration_opened %}

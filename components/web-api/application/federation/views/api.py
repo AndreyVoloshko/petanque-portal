@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.models.player import Player
 from federation.models.club import Club
+from federation.utils.tournament_names import tournament_display_name_matches
 
 def tournaments_list(request):
     start_date = parse_datetime(request.GET.get('start'))
@@ -36,7 +37,7 @@ def tournaments_list(request):
             item = {
                 'id': tournament.pk,
                 'url': reverse('tournament', kwargs={'id':tournament.pk}),
-                'title': tournament.name,
+                'title': tournament.get_display_name(),
                 'start': tournament.start_date,
                 'end': tournament.start_date,
                 'className': classes,
@@ -58,7 +59,10 @@ def players_clubs_and_tournaments_list(request):
     if template:
         players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
         clubs = Club.objects.filter(name__icontains=template)
-        tournaments = Tournament.objects.filter(name__icontains=template)
+        tournaments = [
+            tournament for tournament in Tournament.objects.all()
+            if tournament_display_name_matches(tournament, template)
+        ]
 
         for player in players:
             item = {
@@ -81,7 +85,7 @@ def players_clubs_and_tournaments_list(request):
         for tournament in tournaments:
             item = {
                 'href': reverse('tournament', kwargs={'id':tournament.pk}),
-                'value': tournament.name,
+                'value': tournament.get_display_name(),
                 'disabled': 0,
             }
 

@@ -13,6 +13,7 @@ from federation.models.team import Team
 from django_countries.fields import CountryField
 from django.conf import settings
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
+from federation.utils.tournament_names import get_tournament_display_name
 
 
 # Tournaments
@@ -83,6 +84,9 @@ class Tournament(models.Model):
 
     def get_name(self):
         return self.name
+
+    def get_display_name(self):
+        return get_tournament_display_name(self)
 
     def get_max_players_per_team (self):
         if self.number_of_players_in_team_max:
