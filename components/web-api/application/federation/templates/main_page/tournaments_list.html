@@ -1,59 +1,111 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="row row-cols-1 row-cols-md-1 row-cols-lg-3 g-3">
-    
+<div class="landing-carousel tournament-carousel" data-landing-carousel>
+    <button class="landing-carousel-arrow landing-carousel-arrow-prev" type="button" data-carousel-prev aria-label="{% trans "Previous competitions" %}">
+        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-chevron-left"></use></svg>
+    </button>
+
+    <div class="landing-carousel-track tournament-card-grid" data-carousel-track>
     {% for item in items %}
-    <div class="col">
-        <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title mb-2">
-                    <a href="{% url 'tournament' id=item.pk %}" class="text-decoration-none">{{ item|tournament_display_name }}</a>
-                </h5>
-                <div class="row mb-2">
-                    <div class="col-4">
-                        <p class="card-text text-muted small">
-                            <i class="bi bi-calendar-event"></i> {{ item.start_date|date:"d.m.Y" }}
-                        </p>
+    {% with meta=item|tournament_card_metadata %}
+    <div class="landing-carousel-item">
+        <article class="card tournament-card">
+            <div class="card-body tournament-card-body">
+                <div class="tournament-card-main">
+                    <div class="tournament-card-tags" aria-label="{% trans "Competition details" %}">
+                        {% if meta.format %}
+                            <span class="tournament-card-tag tournament-card-tag-format" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Format" %}">{{ meta.format }}</span>
+                        {% endif %}
+                        {% for tag in meta.audience_tags %}
+                            <span class="tournament-card-tag {{ tag|tournament_audience_tag_class }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Category" %}">{{ tag }}</span>
+                        {% endfor %}
                     </div>
-                    <div class="col-8 text-end">
-                        <p class="card-text text-muted small">
-                            <i class="bi bi-people"></i> {% if item.organizer_club %}<a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>, {% else %} <span class="badge bg-danger">{% trans "No club" %}</span> {% endif %}{{ item.country|country_icon|safe }}
-                        </p>
+
+                    <h4 class="tournament-card-title">
+                        <a href="{% url 'tournament' id=item.pk %}" title="{{ meta.name }}">{{ meta.name }}</a>
+                    </h4>
+
+                    <div class="tournament-card-facts">
+                        <div class="tournament-card-fact" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Start date" %}">
+                            <span class="tournament-card-fact-icon">
+                                <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
+                            </span>
+                            <span>{{ item.start_date|date:"j F Y" }}</span>
+                        </div>
+                        {% if item.place %}
+                            <div class="tournament-card-fact" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Venue" %}">
+                                <span class="tournament-card-fact-icon">
+                                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-map-pin"></use></svg>
+                                </span>
+                                <a target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
+                            </div>
+                        {% endif %}
+                        <div class="tournament-card-fact" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Organizer" %}">
+                            <span class="tournament-card-fact-icon">
+                                <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-building"></use></svg>
+                            </span>
+                            <span class="tournament-card-organizer">
+                                {% if item.organizer_club %}
+                                    <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a><span class="tournament-card-separator">,</span>
+                                {% endif %}
+                                <span class="tournament-card-country">{{ item.country|country_icon|safe }}</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
-                {% if item.place %}
-                <p class="card-text text-muted mb-1">
-                    <i class="bi bi-geo-alt"></i> <a data-bs-toggle="tooltip" title="{% trans "Venue" %}" target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ item.place }}</a>
-                </p>
-                {% endif %}
 
-                <hr class="my-2">
+                <div class="tournament-card-bottom">
+                    {% if show_power %}
+                        <div class="tournament-card-power-row">
+                            {{ item|tournament_power_badge|safe }}
+                        </div>
+                    {% endif %}
 
-                <div class="row">
-                    <div class="col-3">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Number of teams" %}">
-                            <i class="bi bi-people"></i> {{ item|teams_count }}
-                        </span>
-                    </div>
-                    <div class="col-5">
-                        {{ item|tournament_registration|safe }}
-                    </div>
-                    <div class="col-4 text-end">
-                        <span class="badge bg-secondary" data-bs-toggle="tooltip" title="{% trans "Competition power" %}">
-                            <i class="bi bi-star"></i> {{ item.power }}
-                        </span>
+                    <div class="tournament-card-footer">
+                        <div class="tournament-card-stats">
+                            <span class="tournament-card-stat" data-bs-toggle="tooltip" title="{% trans "Registered teams count" %}">
+                                <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-users"></use></svg>
+                                {% with teams=item|teams_count %}
+                                    <span>{% blocktrans count counter=teams %}{{ counter }} team{% plural %}{{ counter }} teams{% endblocktrans %}</span>
+                                {% endwith %}
+                            </span>
+                            {% with registration=item|tournament_registration %}
+                                {% if registration %}
+                                    <div class="tournament-card-action">
+                                        {{ registration|safe }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>
+        </article>
+    </div>
+    {% endwith %}
+    {% empty %}
+    <div class="landing-carousel-item">
+        <article class="card tournament-card tournament-card-empty">
+            <div class="card-body tournament-card-body">
+                <p class="tournament-card-empty-text">{% trans "No upcoming competitions yet." %}</p>
+            </div>
+        </article>
     </div>
     {% endfor %}
+    </div>
+
+    <button class="landing-carousel-arrow landing-carousel-arrow-next" type="button" data-carousel-next aria-label="{% trans "Next competitions" %}">
+        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
+    </button>
+
+    <div class="landing-carousel-dots" data-carousel-dots aria-hidden="true"></div>
 </div>
 
 <script>
     $(document).ready(function() {
-        $('[data-bs-toggle="tooltip"]').tooltip();
+        $('[data-bs-toggle="tooltip"]').attr('data-bs-offset', '0,2').tooltip({
+            offset: [0, 2]
+        });
     });
 </script>

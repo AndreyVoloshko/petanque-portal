@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from decimal import Decimal, InvalidOperation
 import os.path
 from federation.models.team import Team
 from federation.models.player import Player
@@ -13,7 +14,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from federation.helpers.general import get_model
-from federation.utils.tournament_names import get_tournament_display_name
+from federation.utils.tournament_names import get_tournament_card_metadata, get_tournament_display_name
 import json
 
 register = template.Library()
@@ -347,12 +348,19 @@ def player_records(player):
 @register.filter(name="tournament_field")
 def tournament_field (item, field):
     value = getattr(item, field)
-    value_type = Tournament._meta.get_field(field).get_internal_type()
+    model_field = Tournament._meta.get_field(field)
+    label = str(model_field.verbose_name)
+    value_type = model_field.get_internal_type()
 
-    if not value:
+    if field == "power":
+        value = tournament_power_badge(item)
+        label = _("Competition power")
+    elif not value:
         return ''
 
-    if value_type == 'DateTimeField':
+    if field == "power":
+        pass
+    elif value_type == 'DateTimeField':
         value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
 
     elif value_type == "DateField":
@@ -378,7 +386,7 @@ def tournament_field (item, field):
         return ''
 
     return '''
-        <dt class="col-sm-5 fw-bold" title="''' + str(Tournament._meta.get_field(field).verbose_name) + '''">''' + str(Tournament._meta.get_field(field).verbose_name) + '''</dt>
+        <dt class="col-sm-5 fw-bold" title="''' + label + '''">''' + label + '''</dt>
         <dd class="col-sm-7">''' + str(value) + '''</dd>
     '''
 
@@ -570,6 +578,96 @@ def teams_count(tournament):
 def tournament_display_name(tournament):
     return get_tournament_display_name(tournament)
 
+@register.filter(name="tournament_card_metadata")
+def tournament_card_metadata(tournament):
+    return get_tournament_card_metadata(tournament)
+
+
+@register.filter(name="tournament_audience_tag_class")
+def tournament_audience_tag_class(tag):
+    normalized_tag = str(tag or "").strip().lower()
+
+    if normalized_tag in ("чоловіки", "men"):
+        return "tournament-card-tag-men"
+    if normalized_tag in ("жінки", "women"):
+        return "tournament-card-tag-women"
+    if normalized_tag in ("молодь", "юніори", "юнаки", "youth", "juniors", "cadets"):
+        return "tournament-card-tag-youth"
+
+    return ""
+
+
+@register.filter(name="tournament_power_class")
+def tournament_power_class(power):
+    return _tournament_power_class(power)
+
+
+@register.filter(name="tournament_power_badge")
+def tournament_power_badge(tournament_or_power):
+    power = getattr(tournament_or_power, "power", tournament_or_power)
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite() or power_value <= 0:
+        return ""
+
+    return format_html(
+        '''
+        <span class="badge tournament-power-badge {}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
+            <i class="bi bi-star"></i> <span class="tournament-power-label">{}</span> {}
+        </span>
+        ''',
+        _tournament_power_class(power),
+        _("Competition power"),
+        _("Power"),
+        _format_tournament_power(power),
+    )
+
+
+def _tournament_power_class(power):
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite() or power_value <= 0:
+        return "tournament-power-none"
+    if power_value <= Decimal("1.4883"):
+        return "tournament-power-1"
+    if power_value <= Decimal("3.9043"):
+        return "tournament-power-2"
+    if power_value <= Decimal("8.7510"):
+        return "tournament-power-3"
+    if power_value <= Decimal("12.8965"):
+        return "tournament-power-4"
+    if power_value <= Decimal("17.1797"):
+        return "tournament-power-5"
+    if power_value <= Decimal("20.4864"):
+        return "tournament-power-6"
+    if power_value <= Decimal("23.6641"):
+        return "tournament-power-7"
+    if power_value <= Decimal("29.0942"):
+        return "tournament-power-8"
+    if power_value < Decimal("40"):
+        return "tournament-power-9"
+
+    return "tournament-power-10"
+
+
+def _format_tournament_power(power):
+    try:
+        power_value = Decimal(str(power or 0))
+    except (InvalidOperation, TypeError, ValueError):
+        power_value = Decimal("0")
+
+    if not power_value.is_finite():
+        power_value = Decimal("0")
+
+    return formats.number_format(power_value, decimal_pos=2, force_grouping=False)
+
+
 @register.filter(name="tournament_status")
 def tournament_status(tournament):
     if tournament.is_processing_closed() and tournament.country == settings.CURRENT_COUNTRY:
@@ -625,8 +723,8 @@ def tournament_registration(tournament):
     icon_class = ""
 
     if tournament.is_registration_opened():
-        button_class = "badge bg-success"
-        icon_class = "bi bi-plus"
+        button_class = "badge bg-success tournament-register-button"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -655,7 +753,7 @@ def tournament_registration_badge(tournament):
 
     if tournament.is_registration_opened():
         button_class = "badge bg-success"
-        icon_class = "bi bi-plus"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -685,7 +783,7 @@ def tournament_registration_button(tournament):
 
     if tournament.is_registration_opened():
         button_class = "btn btn-sm btn-success"
-        icon_class = "bi bi-plus"
+        icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)
         }
@@ -712,7 +810,7 @@ def tournament_registration_tab(tournament):
         return '''
             <li class="nav-item no-tab-link">
                 <a class="nav-link force-follow-link no-tab-link" href="''' + reverse('register_team', args=[tournament.pk]) + '''">
-                    <i class="bi bi-plus"></i> ''' + _("Register team") + '''
+                    <i class="bi bi-plus-lg"></i> ''' + _("Register team") + '''
                 </a>
             </li>
         '''

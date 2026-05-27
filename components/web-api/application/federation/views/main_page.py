@@ -35,7 +35,7 @@ def main_page(request):
     top_players_veteran = players_objects.filter(birth_date__lte=min_age).order_by('-current_rating')[:items_limit]
 
     # tournament lists
-    items_limit = 6
+    items_limit = 12
     future_tournaments_rating = tournaments_model.get_list(date_filter='future', type_filter='rating')[:items_limit]
     future_tournaments_away = tournaments_model.get_list(date_filter='future', type_filter='away')[:items_limit]
     future_tournaments = tournaments_model.get_list(date_filter='future', type_filter='non_rating')[:items_limit]

@@ -13,6 +13,10 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+#: federation/templates/common/menu.html:9
+msgid "FPU"
+msgstr "ФПУ"
+
 #: federation/forms/authorization_profile_form.py:10
 #: federation/forms/authorization_profile_form.py:58
 msgid "Current password"
@@ -1243,6 +1247,50 @@ msgstr "Офіційний портал для змагань, рейтингі�
 msgid "Portal highlights"
 msgstr "Основне на порталі"
 
+#: federation/templates/main_page.html:117
+msgid "Find upcoming tournaments, register your team, and follow official rating events."
+msgstr "Знаходьте майбутні турніри, реєструйте команду та стежте за офіційними рейтинговими подіями."
+
+#: federation/templates/main_page.html:122
+msgid "All competitions"
+msgstr "Усі змагання"
+
+#: federation/templates/main_page.html:139
+msgid "Official tournaments that affect Ukrainian pétanque ratings."
+msgstr "Офіційні турніри, що впливають на українські рейтинги з петанку."
+
+#: federation/templates/main_page.html:142
+msgid "View all rating competitions"
+msgstr "Переглянути всі рейтингові змагання"
+
+#: federation/templates/main_page.html:154
+msgid "Non-rating competitions"
+msgstr "Нерейтингові змагання"
+
+#: federation/templates/main_page.html:156
+msgid "Open, club, training and community tournaments."
+msgstr "Відкриті, клубні, тренувальні та громадські турніри."
+
+#: federation/templates/main_page.html:159
+msgid "View all non-rating competitions"
+msgstr "Переглянути всі нерейтингові змагання"
+
+#: federation/templates/main_page.html:175
+msgid "Leading players of Ukraine with the highest ratings."
+msgstr "Провідні гравці України з найвищими рейтингами."
+
+#: federation/templates/main_page.html:179
+msgid "View all athletes"
+msgstr "Переглянути всіх спортсменів"
+
+#: federation/templates/main_page.html:184
+msgid "Athlete ranking groups"
+msgstr "Групи рейтингу спортсменів"
+
+#: federation/templates/main_page.html:213
+msgid "Go to slide"
+msgstr "Перейти до слайда"
+
 #: federation/templates/main_page.html:27
 msgid "Find current federation news, competitions, athletes, clubs, and more."
 msgstr "Знаходь актуальні новини федерації, змагання, спортсменів, клуби та інше."
@@ -1291,12 +1339,44 @@ msgstr "Поточний рейтинг"
 msgid "Rating power"
 msgstr "Рейтингова сила"
 
+#: federation/templates/main_page/players_list.html:35
+msgid "Player ranking details"
+msgstr "Деталі рейтингу гравця"
+
+#: federation/templates/main_page/players_list.html:57
+msgid "No athletes to show yet."
+msgstr "Поки немає спортсменів для показу."
+
+#: federation/templates/main_page/tournaments_list.html:5
+msgid "Previous competitions"
+msgstr "Попередні змагання"
+
+#: federation/templates/main_page/tournaments_list.html:69
+msgid "No upcoming competitions yet."
+msgstr "Поки немає майбутніх змагань."
+
+#: federation/templates/main_page/tournaments_list.html:77
+msgid "Next competitions"
+msgstr "Наступні змагання"
+
+#: federation/templates/main_page/tournaments_list.html:54
+#, python-format
+msgid "%(counter)s team"
+msgid_plural "%(counter)s teams"
+msgstr[0] "%(counter)s команда"
+msgstr[1] "%(counter)s команди"
+msgstr[2] "%(counter)s команд"
+
 #: federation/templates/main_page/tournaments_list.html:35
 #: federation/templates/tournaments/player_past_away_tournaments.html:32
 #: federation/templates/tournaments/player_past_tournaments.html:32
 #: federation/templates/tournaments/tournaments_table.html:68
 msgid "Number of teams"
 msgstr "Кількість команд"
+
+#: federation/templates/main_page/tournaments_list.html:67
+msgid "Registered teams count"
+msgstr "Кількість зареєстрованих команд"
 
 #: federation/templates/main_page/tournaments_list.html:43
 #: federation/templates/tournaments/tournaments_table.html:51
@@ -1892,7 +1972,7 @@ msgstr "Зареєструватись на змагання можна до %(d
 #: federation/templatetags/app_filters.py:640
 #: federation/templatetags/app_filters.py:699
 msgid "Register"
-msgstr "Зареєструватися"
+msgstr "Реєстрація"
 
 #: federation/views/email_confirm.py:39 federation/views/email_confirm.py:94
 msgid "This email is already used by another user."
@@ -1946,3 +2026,18 @@ msgstr "Команду видалено."
 #: federation/views/tournaments.py:76
 msgid "Team places updated."
 msgstr "Місця команд оновлено."
+
+#: federation/templates/main_page.html:45
+#: federation/templates/main_page.html:53
+#: federation/templates/main_page.html:63
+#: federation/templates/main_page.html:72
+#: federation/templates/main_page.html:80
+#: federation/templates/main_page.html:90
+#: federation/templates/main_page.html:100
+#: federation/templates/main_page.html:110
+msgid "View all"
+msgstr "Переглянути всі"
+
+#: federation/templates/main_page/tournaments_list.html:16
+msgid "Competition details"
+msgstr "Деталі змагання"
