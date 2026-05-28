@@ -13,6 +13,7 @@ from federation.models.team import Team
 from django_countries.fields import CountryField
 from django.conf import settings
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
+from federation.permissions import can_create_tournament
 from federation.utils.tournament_names import get_tournament_display_name
 
 
@@ -596,3 +597,6 @@ class ArbiterTeamTournamentAdminInline(admin.ModelAdmin):
                mark_as_ready_for_processing,
                full_power_and_rating_processing,
                erase_registration_dates]
+
+    def has_add_permission(self, request):
+        return can_create_tournament(request.user)

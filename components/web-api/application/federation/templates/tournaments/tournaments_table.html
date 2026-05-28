@@ -1,140 +1,164 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="table-responsive">
-    <table class="table table-hover" id="tournaments">
-        <thead class="table-dark">
-            <tr>
-                <th class="text-start">{% trans "Date" %}</th>
-                <th class="text-start">{% trans "Name" %}</th>
-                <th class="text-start filterable">{% trans "Place" %}</th>
-                <th class="text-start filterable">{% trans "Type" %}</th>
-                <th class="text-start">{% trans "Competition power" %}</th>
-                <th class="text-start filterable">{% trans "Organizer" %}</th>
-                <th class="text-end no-sort">{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr class="{{ item|tournaments_css_classes }}">
-                <td>
-                    <div class="d-flex flex-wrap gap-1 justify-content-end">
-                        <span class="badge bg-primary">
-                            <i class="bi bi-calendar"></i> {{ item.start_date|date:"Y-m-d" }}
-                        </span>
-                        {{ item|tournament_registration|safe }}
-                    </div>
-                </td>
-                <td>
-                    <div class="tournament-name">
-                        <a href="{% url 'tournament' id=item.pk %}"
-                           data-bs-toggle="tooltip"
-                           data-bs-placement="top"
-                           data-bs-title="{{ item.name }}">{{ item|tournament_display_name }}</a>
-                    </div>
-                </td>
-                <td>
-                    <a target="_blank" href="https://maps.google.com?q={{ item.place }}">
-                        <i class="bi bi-globe"></i>
-                    </a>
-                    {{ item.place }}
-                </td>
-                <td>
-                    {% if item.number_of_players_in_team_min == item.number_of_players_in_team_max %}
-                        {% if item.number_of_players_in_team_min <= 3 %}
-                            {% for i in "x"|rjust:item.number_of_players_in_team_min %}
-                                <i class="bi bi-person"></i>
-                            {% endfor %}
-                        {% else %}
-                            {{ item.number_of_players_in_team_min }} <i class="bi bi-person"></i>
-                        {% endif %}
-                    {% else %}
-                        {{ item.number_of_players_in_team_min }}-{{ item.number_of_players_in_team_max }} <i class="bi bi-person"></i>
-                    {% endif %}
-                </td>
-                <td data-order="{{ item.power }}">
-                    {{ item|tournament_power_badge|safe }}
-                </td>
-                <td>
-                    {% if item.organizer_club %}
-                        <i class="bi bi-building"></i> <a href="{% url 'club' id=item.organizer_club.pk %}">{{ item.organizer_club.short_name }}</a>,
-                    {% else %}
-                        {% if item.country == settings.CURRENT_COUNTRY %}
-                            <span class="badge bg-danger">{% trans "No club" %}</span>
-                        {% endif %}
-                    {% endif %}
-                    {{ item.country|country_icon|safe }}
-                </td>
-                <td class="text-end">
-                    <div class="d-flex flex-wrap gap-1 justify-content-end">
-                        <a href="{% url 'tournament' id=item.pk %}">
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Number of teams" %}">
-                                <i class="bi bi-people"></i> {{ item|teams_count }}
-                            </span>
+<div class="tournaments-results-surface">
+    {% if rows %}
+        <table class="tournaments-table">
+            <thead>
+                <tr>
+                    <th class="tournament-date-column">
+                        <a class="tournament-sort-link is-active" href="{{ sort_state.date_url }}" aria-label="{% trans "Сортувати за датою" %}">
+                            <span>{% trans "Дата" %}</span>
+                            <i class="bi {% if sort_state.date_direction == 'asc' %}bi-arrow-up-short{% else %}bi-arrow-down-short{% endif %}" aria-hidden="true"></i>
                         </a>
-                        {{ item|tournament_status|safe }}
-                        {{ item|tournament_protocol|safe }}
-                        {{ item|tournament_registration_badge|safe }}
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    </th>
+                    <th class="tournament-title-column">{% trans "Назва" %}</th>
+                    <th class="tournament-format-column">{% trans "Формат" %}</th>
+                    <th class="tournament-place-column">{% trans "Місце" %}</th>
+                    {% if show_strength %}
+                        <th class="tournament-strength-column">
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд." %}">
+                                {% trans "Сила" %} <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            </span>
+                        </th>
+                    {% endif %}
+                    <th class="tournament-status-column">{% trans "Статус" %}</th>
+                    <th class="tournament-actions-column">{% trans "Дії" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    {% with item=row.tournament %}
+                    <tr>
+                        <td class="tournament-date-cell" data-label="{% trans "Дата" %}">
+                            <div class="tournament-date-wrap">
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <div>
+                                    <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"j M Y" }}</time>
+                                    <span>{{ item.start_date|date:"l" }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="tournament-title-cell" data-label="{% trans "Назва" %}">
+                            <a class="tournament-title-link" href="{{ row.detail_url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.full_title }}">{{ row.title }}</a>
+                            <span class="tournament-team-count">
+                                <i class="bi bi-people" aria-hidden="true"></i>
+                                {{ row.teams_count_label }}
+                            </span>
+                        </td>
+                        <td class="tournament-format-cell" data-label="{% trans "Формат" %}">
+                            <div class="tournament-chip-list">
+                                {% for format_label in row.format_labels %}
+                                    <span class="tournament-chip tournament-chip-format">{{ format_label }}</span>
+                                {% endfor %}
+                                {% for tag in row.audience_tags %}
+                                    <span class="tournament-chip tournament-chip-audience">{{ tag }}</span>
+                                {% endfor %}
+                                <span class="tournament-chip tournament-chip-{{ row.openness_key }}">{{ row.openness_label }}</span>
+                            </div>
+                        </td>
+                        <td class="tournament-place-cell" data-label="{% trans "Місце" %}">
+                            <div class="tournament-place-line">
+                                {% if row.is_foreign %}
+                                    <i class="bi bi-globe2" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                {% endif %}
+                                {% if item.place %}
+                                    <a target="_blank" href="https://maps.google.com?q={{ item.place }}">{{ row.place_label }}</a>
+                                {% else %}
+                                    <span>{{ row.place_label }}</span>
+                                {% endif %}
+                                {% if row.country_code %}
+                                    <span class="tournament-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>
+                                {% endif %}
+                            </div>
+                            <div class="tournament-place-line tournament-organizer-line">
+                                <i class="bi bi-building" aria-hidden="true"></i>
+                                {% if row.organizer_url %}
+                                    <a href="{{ row.organizer_url }}">{{ row.organizer_label }}</a>
+                                {% else %}
+                                    <span>{{ row.organizer_label }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        {% if show_strength %}
+                            <td class="tournament-strength-cell" data-label="{% trans "Сила" %}">
+                                {% with power=item|tournament_power_badge %}
+                                    {% if power %}
+                                        {{ power|safe }}
+                                    {% else %}
+                                        <span class="tournaments-muted">—</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        {% endif %}
+                        <td class="tournament-status-cell" data-label="{% trans "Статус" %}">
+                            <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                            {% if row.status.note %}
+                                <span class="tournament-status-note">{{ row.status.note }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="tournament-actions-cell" data-label="{% trans "Дії" %}">
+                            <div class="tournament-actions">
+                                {% if row.status.key == "registration_open" %}
+                                    <a class="tournament-action tournament-action-primary" href="{{ row.registration_url }}">{% trans "Взяти участь" %}</a>
+                                {% endif %}
+                                {% if row.show_results_action %}
+                                    <a class="tournament-action tournament-action-results" href="{{ row.protocol_url }}">
+                                        <i class="bi bi-trophy" aria-hidden="true"></i>
+                                        <span>{% trans "Результати" %}</span>
+                                    </a>
+                                {% endif %}
+                                <a class="tournament-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="tournaments-pagination" aria-label="{% trans "Пагінація турнірів" %}">
+            <p>{{ pagination_summary }}</p>
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav class="tournaments-page-links" aria-label="{% trans "Сторінки" %}">
+                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.first }}{% else %}#{% endif %}" aria-label="{% trans "Перша сторінка" %}">
+                        <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
+                    </a>
+                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.previous }}{% else %}#{% endif %}" aria-label="{% trans "Попередня сторінка" %}">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </a>
+                    {% for page in pagination_pages %}
+                        {% if page == "ellipsis" %}
+                            <span class="tournaments-page-ellipsis">...</span>
+                        {% else %}
+                            <a class="tournaments-page-link {% if page_obj.number == page %}is-active{% endif %}" href="{{ pagination_urls.pages|get_item:page }}">{{ page }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.next }}{% else %}#{% endif %}" aria-label="{% trans "Наступна сторінка" %}">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </a>
+                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.last }}{% else %}#{% endif %}" aria-label="{% trans "Остання сторінка" %}">
+                        <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
+                    </a>
+                </nav>
+            {% endif %}
+            <div class="tournaments-page-size">
+                <span>{% trans "Показувати:" %}</span>
+                <span class="tournaments-page-size-value">10</span>
+            </div>
+        </div>
+    {% else %}
+        <div class="tournaments-empty-state">
+            <h2>{{ empty_state.title }}</h2>
+            <p>{{ empty_state.description }}</p>
+            {% if has_active_secondary_filters %}
+                <a class="tournament-reset-button" href="{{ reset_url }}">
+                    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                    <span>{% trans "Скинути фільтри" %}</span>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
-
-<script>
-$(document).ready(function() {
-    var table = $('#tournaments').DataTable({
-        columnDefs: [
-            { targets: 'no-sort', orderable: false },
-            { targets: 0, width: "10%" }, // Дата
-            { targets: 1, width: "35%" }, // Назва
-            { targets: 2, width: "15%" }, // Місце
-            { targets: 3, width: "8%" }, // Тип
-            { targets: 4, width: "10%", type: "num" }, // Сила
-            { targets: 5, width: "13%" }, // Організатор
-            { targets: 6, width: "9%" }, // Дії
-        ],
-        autoWidth: false,
-        paging: true,
-        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
-        order: [[0, '{{ initial_order }}']],
-        language: {
-            lengthMenu: "{% trans "Show _MENU_ competitions per page" %}",
-            zeroRecords: "{% trans "No competitions found" %}",
-            info: "{% trans "Showing _START_ to _END_ of _TOTAL_ competitions" %}",
-            infoEmpty: "{% trans "Showing 0 of 0 competitions" %}",
-            infoFiltered: "{% trans "(filtered from _MAX_ competitions)" %}",
-            search: "{% trans "Search:" %}",
-            "paginate": {
-                "first":      "{% trans "First" %}",
-                "last":       "{% trans "Last" %}",
-                "next":       "{% trans "Next" %}",
-                "previous":   "{% trans "Previous" %}"
-            }
-        }
-    });
-
-    // Фильтрация по select в footer
-    $('#tournaments tfoot select').on('change', function() {
-        let columnIndex = $(this).parent().index();
-        let value = $(this).val();
-        table.column(columnIndex).search(value).draw();
-    });
-
-    function initTooltips() {
-        setTimeout(function () {
-            $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
-                bootstrap.Tooltip.getInstance(this).update();
-            });
-        }, 300);
-    }
-
-    initTooltips();
-
-    table.on('draw.dt', function () {
-        initTooltips();
-    });
-});
-</script>

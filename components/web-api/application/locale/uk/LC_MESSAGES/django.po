@@ -1090,7 +1090,7 @@ msgstr "Рейтинги"
 #: federation/templates/common/menu.html:61
 #: federation/templates/statistics/statistics.html:22
 msgid "Overall"
-msgstr "Загальна"
+msgstr "Загальний"
 
 #: federation/templates/common/menu.html:62
 msgid "Inclusive"

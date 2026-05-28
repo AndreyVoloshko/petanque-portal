@@ -1,6 +1,6 @@
 {% load i18n static %}
 {% get_current_language as CURRENT_LANGUAGE %}
-<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
+<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-xl">
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand portal-brand" href="/">
@@ -39,17 +39,17 @@
                 
                         <!-- Майбутні -->
                         <li><h6 class="dropdown-header">{% trans "Upcoming" %}</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' %}"><i class="bi bi-hourglass"></i> {% trans "All" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='future' type_filter='away' %}"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future"><i class="bi bi-hourglass"></i> {% trans "All" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future&amp;type=rating"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future&amp;foreign=1"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
                 
                         <li role="separator" class="dropdown-divider"></li>
                 
                         <!-- Результати -->
                         <li><h6 class="dropdown-header">{% trans "Results" %}</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' %}"><i class="bi bi-check2-circle"></i> {% trans "All" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='rating' %}"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' date_filter='past' type_filter='away' %}"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past"><i class="bi bi-check2-circle"></i> {% trans "All" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past&amp;type=rating"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past&amp;foreign=1"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
                 
                         <li role="separator" class="dropdown-divider"></li>
                 
