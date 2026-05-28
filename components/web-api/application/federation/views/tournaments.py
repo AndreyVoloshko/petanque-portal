@@ -3,29 +3,620 @@ from django.http import JsonResponse
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Q
 import csv
 from transliterate import translit
 from django.http import HttpResponse
 from django.conf import settings
+from django.urls import reverse
+from django.utils import formats, timezone
 from django.utils.html import escape
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
+from urllib.parse import urlencode
 import logging, json
 from django.views.decorators.csrf import csrf_exempt
+from federation.permissions import can_create_tournament
+from federation.utils.tournament_names import get_tournament_card_metadata
 
 
 def tournaments(request, date_filter=None, type_filter=None):
-    order=None
-    frontend_order="asc"
-    if date_filter == 'past':
-        order = '-start_date'
-        frontend_order = "desc"
+    filters = _get_tournament_filters(request, date_filter, type_filter)
+    queryset = _get_tournaments_queryset(filters)
+    filter_options = _get_tournament_filter_options(queryset)
+    rows = [_build_tournament_row(tournament) for tournament in queryset]
+    rows = [row for row in rows if _row_matches_filters(row, filters)]
 
+    paginator = Paginator(rows, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    page_rows = page_obj.object_list
+    active_filters = _active_filter_params(filters)
+
+    page_title = _("Competitions")
     return render(request, 'tournaments/tournaments.html', {
-        'tournaments': Tournament.get_list(date_filter=date_filter, type_filter=type_filter, custom_order=order),
-        'initial_order': frontend_order,
-        'page_title': _("Competitions"),
+        'page_title': page_title,
+        'filters': filters,
+        'period_tabs': _get_period_tabs(filters),
+        'format_options': FORMAT_OPTIONS,
+        'category_options': CATEGORY_OPTIONS,
+        'status_options': STATUS_OPTIONS,
+        'place_options': filter_options['places'],
+        'club_options': filter_options['clubs'],
+        'rows': page_rows,
+        'show_strength': True,
+        'page_obj': page_obj,
+        'pagination_pages': _pagination_pages(page_obj),
+        'pagination_summary': _pagination_summary(page_obj),
+        'pagination_urls': _pagination_urls(filters, page_obj),
+        'sort_state': _get_sort_state(filters),
+        'active_filters': active_filters,
+        'has_active_secondary_filters': _has_active_secondary_filters(filters),
+        'reset_url': reverse('tournaments'),
+        'can_create_tournament': can_create_tournament(request.user),
+        'admin_add_url': reverse('admin:federation_tournament_add'),
+        'empty_state': _empty_state(filters),
     })
+
+
+PERIODS = ('future', 'ongoing', 'past')
+PERIOD_ROUTE_ALIASES = {
+    'future': 'future',
+    'current': 'ongoing',
+    'ongoing': 'ongoing',
+    'past': 'past',
+}
+TYPE_ROUTE_ALIASES = {
+    'rating': 'rating',
+    'non_rating': 'non_rating',
+    'away': 'all',
+}
+FORMAT_OPTIONS = (
+    ('tete', 'Тет-а-тет'),
+    ('doublets', 'Дуплети'),
+    ('triplets', 'Триплети'),
+    ('shooting', 'Тир'),
+    ('clubs', 'Клуби'),
+    ('supermelee', 'Супермеле'),
+)
+CATEGORY_OPTIONS = (
+    ('men', 'Чоловіки'),
+    ('women', 'Жінки'),
+    ('mixed', 'Змішані'),
+    ('juniors', 'Юніори'),
+    ('veterans', 'Ветерани 55+'),
+    ('open', 'Відкриті'),
+)
+STATUS_OPTIONS = (
+    ('registration_open', 'Реєстрація відкрита'),
+    ('registration_closed', 'Реєстрація закрита'),
+    ('registration_unavailable', 'Реєстрація недоступна'),
+    ('ongoing', 'Триває'),
+    ('finished', 'Завершено'),
+    ('cancelled', 'Скасовано'),
+)
+STATUS_LABELS = dict(STATUS_OPTIONS)
+PERIOD_LABELS = {
+    'future': 'Майбутні',
+    'ongoing': 'Теперішні',
+    'past': 'Минулі',
+}
+PERIOD_ICONS = {
+    'future': 'bi-calendar-event',
+    'ongoing': 'bi-shield-check',
+    'past': 'bi-clock-history',
+}
+FORMAT_LABEL_TO_KEY = {
+    'Тет-а-тет': 'tete',
+    'Дуплети': 'doublets',
+    'Триплети': 'triplets',
+    'Тир': 'shooting',
+    'Клуби': 'clubs',
+    'Супер-меле': 'supermelee',
+    'Супермеле': 'supermelee',
+}
+
+
+def _get_tournament_filters(request, date_filter, type_filter):
+    route_period = PERIOD_ROUTE_ALIASES.get(date_filter or '', 'future')
+    route_rating_type = TYPE_ROUTE_ALIASES.get(type_filter or '', 'all')
+    period = request.GET.get('period') or route_period
+    rating_type = request.GET.get('type') or route_rating_type
+
+    if period not in PERIODS:
+        period = 'future'
+
+    if rating_type not in ('all', 'rating', 'non_rating'):
+        rating_type = 'all'
+
+    sort = request.GET.get('sort') or _default_sort(period)
+    if sort not in ('date_asc', 'date_desc'):
+        sort = _default_sort(period)
+
+    foreign = _truthy(request.GET.get('foreign'))
+    if type_filter == 'away' and 'foreign' not in request.GET:
+        foreign = True
+
+    return {
+        'period': period,
+        'rating_type': rating_type,
+        'foreign': foreign,
+        'search': request.GET.get('q', '').strip(),
+        'format': request.GET.get('format', '').strip(),
+        'category': request.GET.get('category', '').strip(),
+        'place': request.GET.get('place', '').strip(),
+        'club': request.GET.get('club', '').strip(),
+        'status': request.GET.get('status', '').strip(),
+        'sort': sort,
+    }
+
+
+def _truthy(value):
+    return str(value or '').lower() in ('1', 'true', 'yes', 'on')
+
+
+def _get_tournaments_queryset(filters):
+    queryset = Tournament.objects.select_related('organizer_club').all()
+    queryset = _apply_rating_filter(queryset, filters['rating_type'])
+    queryset = _apply_foreign_filter(queryset, filters['foreign'])
+    queryset = _apply_period_filter(queryset, filters['period'])
+
+    if filters['sort'] == 'date_desc':
+        return queryset.order_by('-start_date', '-id')
+
+    return queryset.order_by('start_date', 'id')
+
+
+def _default_sort(period):
+    if period == 'past':
+        return 'date_desc'
+    return 'date_asc'
+
+
+def _apply_rating_filter(queryset, rating_type):
+    if rating_type == 'rating':
+        return queryset.filter(is_goes_to_rating=True)
+
+    if rating_type == 'non_rating':
+        return queryset.filter(is_goes_to_rating=False)
+
+    return queryset
+
+
+def _apply_foreign_filter(queryset, foreign):
+    if not foreign:
+        return queryset
+
+    current_country = getattr(settings, 'CURRENT_COUNTRY', None)
+    if current_country:
+        return queryset.filter(Q(category='away') | ~Q(country=current_country))
+
+    return queryset.filter(category='away')
+
+
+def _apply_period_filter(queryset, period):
+    today = timezone.localdate()
+
+    if period == 'past':
+        return queryset.filter(
+            Q(end_date__lt=today) |
+            Q(end_date__isnull=True, start_date__lt=today)
+        )
+
+    if period == 'ongoing':
+        return queryset.filter(
+            Q(start_date__lte=today, end_date__gte=today) |
+            Q(start_date=today, end_date__isnull=True)
+        )
+
+    return queryset.filter(start_date__gt=today)
+
+
+def _get_tournament_filter_options(queryset):
+    places = sorted({place for place in queryset.values_list('place', flat=True) if place})
+    clubs = {}
+
+    for tournament in queryset:
+        if tournament.organizer_club:
+            label = tournament.organizer_club.short_name or tournament.organizer_club.name
+            clubs[str(tournament.organizer_club_id)] = label
+
+    return {
+        'places': places,
+        'clubs': sorted(clubs.items(), key=lambda item: item[1].lower()),
+    }
+
+
+def _build_tournament_row(tournament):
+    metadata = get_tournament_card_metadata(tournament)
+    format_label = _display_format_label(metadata.get('format'))
+    audience_tags = [_display_category_label(tag) for tag in metadata.get('audience_tags', [])]
+    status = _tournament_status_data(tournament)
+    country_name = _country_name(tournament)
+    place_label = _place_label(tournament, country_name)
+    format_labels = metadata.get('format_tags') or [metadata.get('format')]
+    format_labels = [label for label in format_labels if label]
+
+    return {
+        'tournament': tournament,
+        'title': metadata.get('name') or tournament.get_name(),
+        'teams_count_label': _teams_count_label(tournament.get_teams_count()),
+        'format_label': format_label,
+        'format_labels': format_labels,
+        'format_keys': [FORMAT_LABEL_TO_KEY.get(label, '') for label in format_labels],
+        'audience_tags': audience_tags,
+        'category_keys': _category_keys(audience_tags),
+        'openness_label': _openness_label(tournament),
+        'openness_key': _openness_key(tournament),
+        'place_label': place_label,
+        'place_key': tournament.place or '',
+        'country_name': country_name,
+        'country_code': _country_code(tournament).lower(),
+        'is_foreign': _is_foreign_tournament(tournament),
+        'organizer_label': _organizer_label(tournament),
+        'organizer_url': _organizer_url(tournament),
+        'status': status,
+        'detail_url': reverse('tournament', args=[tournament.pk]),
+        'registration_url': reverse('register_team', args=[tournament.pk]),
+        'protocol_url': reverse('tournament_protocol', args=[tournament.pk]),
+        'show_results_action': tournament.is_processing_closed(),
+    }
+
+
+def _display_format_label(format_label):
+    if format_label == 'Супер-меле':
+        return 'Супермеле'
+    return format_label or ''
+
+
+def _teams_count_label(count):
+    count = int(count or 0)
+    if count % 10 == 1 and count % 100 != 11:
+        suffix = 'команда'
+    elif count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        suffix = 'команди'
+    else:
+        suffix = 'команд'
+    return '{} {}'.format(count, suffix)
+
+
+def _display_category_label(label):
+    if label in ('Мікст', 'Mix', 'Mixed'):
+        return 'Змішані'
+    if label == 'Ветерани':
+        return 'Ветерани 55+'
+    return label
+
+
+def _category_keys(tags):
+    if not tags:
+        return ['open']
+
+    keys = set()
+    for tag in tags:
+        normalized = str(tag).lower()
+        if 'чолов' in normalized:
+            keys.add('men')
+        if 'жін' in normalized:
+            keys.add('women')
+        if 'змішан' in normalized or 'мікст' in normalized:
+            keys.add('mixed')
+        if 'юніор' in normalized or 'молод' in normalized or 'юнак' in normalized:
+            keys.add('juniors')
+        if 'ветеран' in normalized:
+            keys.add('veterans')
+
+    return sorted(keys) or ['open']
+
+
+def _openness_label(tournament):
+    if _openness_key(tournament) == 'closed':
+        return 'Закритий'
+    return 'Відкритий'
+
+
+def _openness_key(tournament):
+    if tournament.category == 'fpu':
+        return 'closed'
+    return 'open'
+
+
+def _country_name(tournament):
+    country = getattr(tournament, 'country', None)
+    if not country:
+        return ''
+    return str(getattr(country, 'name', '') or '')
+
+
+def _country_code(tournament):
+    country = getattr(tournament, 'country', None)
+    return str(getattr(country, 'code', '') or country or '')
+
+
+def _place_label(tournament, country_name):
+    place = tournament.place or ''
+    if _is_foreign_tournament(tournament) and country_name and country_name.lower() not in place.lower():
+        return ', '.join(part for part in (place, country_name) if part)
+    return place or country_name or '—'
+
+
+def _is_foreign_tournament(tournament):
+    if tournament.category == 'away':
+        return True
+
+    current_country = getattr(settings, 'CURRENT_COUNTRY', None)
+    country_code = _country_code(tournament)
+    return bool(country_code and current_country and country_code != current_country)
+
+
+def _organizer_label(tournament):
+    if not tournament.organizer_club:
+        return 'Без клубу'
+    return tournament.organizer_club.short_name or tournament.organizer_club.name
+
+
+def _organizer_url(tournament):
+    if not tournament.organizer_club:
+        return ''
+    return reverse('club', args=[tournament.organizer_club.pk])
+
+
+def _tournament_status_data(tournament):
+    status_key = _tournament_status_key(tournament)
+    return {
+        'key': status_key,
+        'label': STATUS_LABELS[status_key],
+        'note': _tournament_status_note(tournament, status_key),
+    }
+
+
+def _tournament_status_key(tournament):
+    if _is_cancelled(tournament):
+        return 'cancelled'
+
+    today = timezone.localdate()
+    start_date = tournament.start_date
+    end_date = tournament.end_date
+
+    if start_date and start_date <= today:
+        if end_date and end_date >= today:
+            return 'ongoing'
+        if not end_date and start_date == today:
+            return 'ongoing'
+
+    if tournament.is_processing_closed() or _is_finished_by_dates(tournament, today):
+        return 'finished'
+
+    if tournament.date_registration_stop:
+        if tournament.date_registration_stop >= timezone.now():
+            return 'registration_open'
+        return 'registration_closed'
+
+    return 'registration_unavailable'
+
+
+def _is_finished_by_dates(tournament, today):
+    if tournament.end_date:
+        return tournament.end_date < today
+    return bool(tournament.start_date and tournament.start_date < today)
+
+
+def _is_cancelled(tournament):
+    if getattr(tournament, 'is_cancelled', False):
+        return True
+
+    try:
+        meta = json.loads(tournament.meta or '{}')
+    except (TypeError, ValueError):
+        return False
+
+    return bool(
+        meta.get('cancelled') or
+        meta.get('is_cancelled') or
+        meta.get('status') == 'cancelled'
+    )
+
+
+def _tournament_status_note(tournament, status_key):
+    if status_key in ('registration_open', 'registration_closed') and tournament.date_registration_stop:
+        return 'до {}'.format(formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT'))
+
+    if status_key == 'ongoing':
+        return _date_range_label(tournament)
+
+    if status_key == 'finished' and tournament.is_processing_closed():
+        return 'результати доступні'
+
+    return ''
+
+
+def _date_range_label(tournament):
+    if not tournament.start_date:
+        return ''
+
+    if tournament.end_date and tournament.end_date != tournament.start_date:
+        start = formats.date_format(tournament.start_date, 'SHORT_DATE_FORMAT')
+        end = formats.date_format(tournament.end_date, 'SHORT_DATE_FORMAT')
+        return '{} — {}'.format(start, end)
+
+    return formats.date_format(tournament.start_date, 'SHORT_DATE_FORMAT')
+
+
+def _row_matches_filters(row, filters):
+    if filters['search']:
+        tokens = filters['search'].lower().split()
+        haystack = ' '.join([
+            row['title'],
+            row['format_label'],
+            row['place_label'],
+            row['country_name'],
+            row['organizer_label'],
+            row['tournament'].get_display_name(),
+        ]).lower()
+        if not all(token in haystack for token in tokens):
+            return False
+
+    if filters['format'] and filters['format'] not in row['format_keys']:
+        return False
+
+    if filters['category'] and filters['category'] not in row['category_keys']:
+        return False
+
+    if filters['place'] and row['place_key'] != filters['place']:
+        return False
+
+    if filters['club'] and str(row['tournament'].organizer_club_id or '') != filters['club']:
+        return False
+
+    if filters['status'] and row['status']['key'] != filters['status']:
+        return False
+
+    return True
+
+
+def _get_period_tabs(filters):
+    tabs = []
+    for period in PERIODS:
+        tab_filters = dict(filters)
+        tab_filters['period'] = period
+        tabs.append({
+            'key': period,
+            'label': PERIOD_LABELS[period],
+            'icon': PERIOD_ICONS[period],
+            'count': _count_tournaments_for_filters(tab_filters),
+            'active': filters['period'] == period,
+            'url': _url_for_filters(tab_filters),
+        })
+
+    return tabs
+
+
+def _count_tournaments_for_filters(filters):
+    queryset = _get_tournaments_queryset(filters)
+    rows = [_build_tournament_row(tournament) for tournament in queryset]
+    return sum(1 for row in rows if _row_matches_filters(row, filters))
+
+
+def _active_filter_params(filters):
+    params = {
+        'period': filters['period'],
+    }
+
+    if filters['rating_type'] != 'all':
+        params['type'] = filters['rating_type']
+
+    if filters['foreign']:
+        params['foreign'] = '1'
+
+    for key in ('search', 'format', 'category', 'place', 'club', 'status'):
+        value = filters[key]
+        if value:
+            params['q' if key == 'search' else key] = value
+
+    if filters.get('sort') and filters['sort'] != _default_sort(filters['period']):
+        params['sort'] = filters['sort']
+
+    return params
+
+
+def _has_active_secondary_filters(filters):
+    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club', 'status')) or filters['foreign']
+
+
+def _url_for_filters(filters, page=None):
+    params = _active_filter_params(filters)
+    if page and page != 1:
+        params['page'] = page
+
+    query = urlencode(params)
+    if not query:
+        return reverse('tournaments')
+
+    return '{}?{}'.format(reverse('tournaments'), query)
+
+
+def _get_sort_state(filters):
+    direction = 'desc' if filters['sort'] == 'date_desc' else 'asc'
+    next_filters = dict(filters)
+    next_filters['sort'] = 'date_asc' if direction == 'desc' else 'date_desc'
+
+    return {
+        'date_direction': direction,
+        'date_url': _url_for_filters(next_filters),
+    }
+
+
+def _pagination_pages(page_obj):
+    paginator = page_obj.paginator
+    current = page_obj.number
+    pages = []
+
+    for number in paginator.page_range:
+        if number == 1 or number == paginator.num_pages or abs(number - current) <= 1:
+            pages.append(number)
+        elif pages and pages[-1] != 'ellipsis':
+            pages.append('ellipsis')
+
+    return pages
+
+
+def _pagination_urls(filters, page_obj):
+    urls = {
+        'first': _url_for_filters(filters, 1),
+        'last': _url_for_filters(filters, page_obj.paginator.num_pages),
+        'previous': '',
+        'next': '',
+        'pages': {},
+    }
+
+    if page_obj.has_previous():
+        urls['previous'] = _url_for_filters(filters, page_obj.previous_page_number())
+
+    if page_obj.has_next():
+        urls['next'] = _url_for_filters(filters, page_obj.next_page_number())
+
+    for page in _pagination_pages(page_obj):
+        if page != 'ellipsis':
+            urls['pages'][page] = _url_for_filters(filters, page)
+
+    return urls
+
+
+def _pagination_summary(page_obj):
+    total = page_obj.paginator.count
+    if total == 0:
+        return 'Показано 0 з 0 турнірів'
+
+    return 'Показано {}–{} з {} турнірів'.format(
+        page_obj.start_index(),
+        page_obj.end_index(),
+        total,
+    )
+
+
+def _empty_state(filters):
+    if _has_active_secondary_filters(filters):
+        return {
+            'title': 'Змагання не знайдено',
+            'description': 'Спробуйте змінити фільтри або очистити пошук.',
+        }
+
+    if filters['period'] == 'future':
+        return {
+            'title': 'Наразі немає майбутніх турнірів',
+            'description': 'Перегляньте минулі змагання або змініть фільтри.',
+        }
+
+    if filters['period'] == 'ongoing':
+        return {
+            'title': 'Зараз немає турнірів, що тривають',
+            'description': 'Перегляньте майбутні або минулі змагання.',
+        }
+
+    return {
+        'title': 'Минулі турніри не знайдено',
+        'description': 'Спробуйте змінити фільтри.',
+    }
 
 @csrf_exempt
 def tournament(request, id):

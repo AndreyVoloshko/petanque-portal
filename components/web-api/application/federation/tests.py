@@ -4,16 +4,18 @@ from types import SimpleNamespace
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
+from federation.models.club import Club
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import Tournament
+from federation.permissions import can_create_tournament
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
     tournament_audience_tag_class,
@@ -150,7 +152,24 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'name': 'Чемпіонат України',
             'format': 'Тир',
             'format_source': 'Тир',
+            'format_tags': ['Тир'],
             'audience_tags': ['Жінки'],
+        })
+
+    def test_card_metadata_separates_multiple_formats_and_audience_from_parentheses(self):
+        tournament = self.create_tournament(
+            'Чемпіонат світу (триплети, тир, чоловіки)',
+            players_min=3,
+            players_max=4,
+            tournament_format='tir',
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Чемпіонат світу',
+            'format': 'Триплети',
+            'format_source': 'Триплети',
+            'format_tags': ['Триплети', 'Тир'],
+            'audience_tags': ['Чоловіки'],
         })
 
     def test_card_metadata_separates_format_only_parentheses(self):
@@ -164,6 +183,7 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'name': 'Всеукраїнські змагання "Паланок"',
             'format': 'Дуплети',
             'format_source': 'Дуплети',
+            'format_tags': ['Дуплети'],
             'audience_tags': [],
         })
 
@@ -178,6 +198,7 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'name': 'Чемпіонат України',
             'format': 'Тет-а-тет',
             'format_source': 'Тет-а-тет',
+            'format_tags': ['Тет-а-тет'],
             'audience_tags': ['Молодь', 'Юніори', 'Юнаки'],
         })
 
@@ -201,6 +222,7 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'name': 'Чемпіонат України',
             'format': 'Тир',
             'format_source': 'Тир',
+            'format_tags': ['Тир'],
             'audience_tags': ['Жінки'],
         })
 
@@ -215,6 +237,7 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'name': 'Кубок області (етап 1)',
             'format': 'Дуплети',
             'format_source': 'Дуплети',
+            'format_tags': ['Дуплети'],
             'audience_tags': [],
         })
 
@@ -421,3 +444,196 @@ class InitialLanguageMiddlewareTests(TestCase):
 class StaticStorageTests(TestCase):
     def test_manifest_storage_does_not_crash_on_missing_entries(self):
         self.assertFalse(StaticStorage.manifest_strict)
+
+
+@override_settings(CURRENT_COUNTRY='UA')
+class TournamentListingPageTests(TestCase):
+    def create_tournament(
+        self,
+        name,
+        start_offset=20,
+        end_offset=None,
+        is_rating=False,
+        country='UA',
+        category='open',
+        registration_days=None,
+        players_min=2,
+        tournament_format='swiko',
+        club=None,
+        power='0',
+        processed=False,
+        meta=None,
+    ):
+        start_date = timezone.localdate() + timedelta(days=start_offset)
+        end_date = None
+        if end_offset is not None:
+            end_date = timezone.localdate() + timedelta(days=end_offset)
+
+        date_registration_stop = None
+        if registration_days is not None:
+            date_registration_stop = timezone.now() + timedelta(days=registration_days)
+
+        return Tournament.objects.create(
+            name=name,
+            category=category,
+            is_goes_to_rating=is_rating,
+            place='Київ',
+            country=country,
+            start_date=start_date,
+            end_date=end_date,
+            date_registration_stop=date_registration_stop,
+            number_of_players_in_team_min=players_min,
+            number_of_players_in_team_max=players_min,
+            format=tournament_format,
+            organizer_club=club,
+            power=power,
+            is_processing_finished=processed,
+            meta=meta,
+        )
+
+    def test_rating_route_preset_shows_future_rating_rows_and_strength(self):
+        self.create_tournament('Rating Cup', is_rating=True, power='22.2800')
+        self.create_tournament('Community Cup', is_rating=False, power='18.5000')
+
+        response = self.client.get('/tournaments/future/rating')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Rating Cup')
+        self.assertNotContains(response, 'Community Cup')
+        self.assertContains(response, 'tournament-strength-column')
+        self.assertContains(response, 'tournament-power-badge')
+        self.assertEqual(response.context['filters']['period'], 'future')
+        self.assertEqual(response.context['filters']['rating_type'], 'rating')
+
+    def test_non_rating_route_preset_shows_strength_column(self):
+        self.create_tournament('Rating Cup', is_rating=True, power='22.2800')
+        self.create_tournament('Community Cup', is_rating=False, power='18.5000')
+
+        response = self.client.get('/tournaments/future/non_rating')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Community Cup')
+        self.assertNotContains(response, 'Rating Cup')
+        self.assertContains(response, 'tournament-strength-column')
+        self.assertContains(response, 'tournament-power-badge')
+        self.assertEqual(response.context['filters']['rating_type'], 'non_rating')
+
+    def test_secondary_filters_and_registration_action_render(self):
+        club = Club.objects.create(name='Kyiv Petanque Club', short_name='KPC', address='Kyiv')
+        tournament = self.create_tournament(
+            'Kyiv Open (жінки)',
+            is_rating=False,
+            registration_days=5,
+            club=club,
+            players_min=3,
+        )
+        tournament.total_number_of_teams = 12
+        tournament.save(update_fields=['total_number_of_teams'])
+        self.create_tournament('Another Cup', is_rating=False)
+
+        response = self.client.get('/tournaments/', {
+            'period': 'future',
+            'q': 'Kyiv',
+            'category': 'women',
+            'status': 'registration_open',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Kyiv Open')
+        self.assertNotContains(response, 'Another Cup')
+        self.assertContains(response, 'Жінки')
+        self.assertContains(response, 'KPC')
+        self.assertContains(response, 'flag-icon-ua')
+        self.assertContains(response, '12 команд')
+        self.assertContains(response, 'Взяти участь')
+
+    def test_away_route_preset_enables_foreign_filter(self):
+        self.create_tournament('Domestic Cup', country='UA', category='open')
+        self.create_tournament('French Open', country='FR', category='away')
+
+        response = self.client.get('/tournaments/future/away')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'French Open')
+        self.assertNotContains(response, 'Domestic Cup')
+        self.assertTrue(response.context['filters']['foreign'])
+
+    def test_date_sort_can_be_reversed(self):
+        self.create_tournament('Soon Cup', start_offset=5)
+        self.create_tournament('Later Cup', start_offset=40)
+
+        response = self.client.get('/tournaments/', {
+            'period': 'future',
+            'sort': 'date_desc',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['rows'][0]['title'], 'Later Cup')
+        self.assertEqual(response.context['sort_state']['date_direction'], 'desc')
+        self.assertNotIn('sort=date_desc', response.context['sort_state']['date_url'])
+
+    def test_period_counts_respect_secondary_filters(self):
+        self.create_tournament('Shooting Cup', tournament_format='tir')
+        self.create_tournament('Doublets Cup', players_min=2)
+
+        response = self.client.get('/tournaments/', {
+            'period': 'future',
+            'format': 'shooting',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        future_tab = response.context['period_tabs'][0]
+        self.assertEqual(future_tab['key'], 'future')
+        self.assertEqual(future_tab['count'], 1)
+        self.assertEqual(response.context['page_obj'].paginator.count, 1)
+
+    def test_create_button_is_visible_only_for_allowlisted_superuser(self):
+        self.create_tournament('Future Cup')
+        allowed = User.objects.create_superuser(
+            id=1,
+            username='andreyvoloshko',
+            email='andreyvoloshko@gmail.com',
+            password='secret',
+        )
+
+        self.client.login(username='andreyvoloshko', password='secret')
+        response = self.client.get('/tournaments/')
+        self.assertContains(response, 'Додати турнір')
+
+        self.client.logout()
+        User.objects.create_superuser(
+            id=999,
+            username='not-allowlisted',
+            email='other@example.com',
+            password='secret',
+        )
+
+        self.client.login(username='not-allowlisted', password='secret')
+        response = self.client.get('/tournaments/')
+        self.assertNotContains(response, 'Додати турнір')
+
+    def test_permission_helper_requires_active_allowlisted_superuser(self):
+        self.assertTrue(can_create_tournament(User(
+            id=1,
+            username='andreyvoloshko',
+            is_active=True,
+            is_superuser=True,
+        )))
+        self.assertFalse(can_create_tournament(User(
+            id=1,
+            username='andreyvoloshko',
+            is_active=True,
+            is_superuser=False,
+        )))
+        self.assertFalse(can_create_tournament(User(
+            id=65,
+            username='wrong-user',
+            is_active=True,
+            is_superuser=True,
+        )))
+        self.assertFalse(can_create_tournament(User(
+            id=1839,
+            username='admin',
+            is_active=False,
+            is_superuser=True,
+        )))

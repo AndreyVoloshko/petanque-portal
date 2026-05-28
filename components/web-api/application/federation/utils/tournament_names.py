@@ -136,13 +136,19 @@ def get_localized_tournament_format_name(format_name):
 
 def get_tournament_card_metadata(tournament):
     raw_name = clean_tournament_name(getattr(tournament, "name", ""))
-    format_name = _find_format_in_text(raw_name) or get_tournament_format_name(tournament)
-    base_name, audience_tags = _extract_card_name_parts(raw_name, format_name)
+    format_names = _find_formats_in_text(raw_name)
+    fallback_format = get_tournament_format_name(tournament)
+    if fallback_format:
+        _append_unique(format_names, [fallback_format])
+
+    format_name = format_names[0] if format_names else None
+    base_name, audience_tags = _extract_card_name_parts(raw_name, format_names)
 
     return {
         "name": base_name,
         "format": get_localized_tournament_format_name(format_name),
         "format_source": format_name,
+        "format_tags": [get_localized_tournament_format_name(name) for name in format_names],
         "audience_tags": audience_tags,
     }
 
@@ -192,20 +198,33 @@ def _name_contains_format(name, format_name):
 
 
 def _find_format_in_text(text):
+    format_names = _find_formats_in_text(text)
+    return format_names[0] if format_names else None
+
+
+def _find_formats_in_text(text):
     normalized_text = clean_tournament_name(text).lower()
+    matches = []
+
     for format_name, aliases in _FORMAT_ALIASES.items():
         for alias in aliases:
-            if re.search(alias, normalized_text, flags=re.IGNORECASE):
-                return format_name
+            match = re.search(alias, normalized_text, flags=re.IGNORECASE)
+            if match:
+                matches.append((match.start(), format_name))
+                break
 
-    return None
+    format_names = []
+    for _, format_name in sorted(matches, key=lambda item: item[0]):
+        _append_unique(format_names, [format_name])
+
+    return format_names
 
 
-def _extract_card_name_parts(name, format_name):
+def _extract_card_name_parts(name, format_names):
     audience_tags = []
-    base_name = _remove_parenthetical_descriptors(name, format_name, audience_tags)
-    base_name = _remove_structured_suffixes(base_name, format_name, audience_tags)
-    base_name = _remove_inline_suffixes(base_name, format_name, audience_tags)
+    base_name = _remove_parenthetical_descriptors(name, format_names, audience_tags)
+    base_name = _remove_structured_suffixes(base_name, format_names, audience_tags)
+    base_name = _remove_inline_suffixes(base_name, format_names, audience_tags)
     base_name = _clean_display_part(base_name)
 
     if not base_name:
@@ -214,15 +233,15 @@ def _extract_card_name_parts(name, format_name):
     return base_name, audience_tags
 
 
-def _remove_parenthetical_descriptors(name, format_name, audience_tags):
+def _remove_parenthetical_descriptors(name, format_names, audience_tags):
     def replace_match(match):
         descriptor = match.group(1)
-        descriptor_tags = _extract_audience_tags(descriptor, format_name)
-        if descriptor_tags and _contains_only_card_metadata(descriptor, format_name):
+        descriptor_tags = _extract_audience_tags(descriptor, format_names)
+        if descriptor_tags and _contains_only_card_metadata(descriptor, format_names):
             _append_unique(audience_tags, descriptor_tags)
             return ""
 
-        if _text_contains_format(descriptor, format_name) and _contains_only_card_metadata(descriptor, format_name):
+        if _text_contains_format(descriptor, format_names) and _contains_only_card_metadata(descriptor, format_names):
             return ""
 
         return match.group(0)
@@ -230,7 +249,7 @@ def _remove_parenthetical_descriptors(name, format_name, audience_tags):
     return re.sub(r"\(([^()]*)\)", replace_match, name)
 
 
-def _remove_structured_suffixes(name, format_name, audience_tags):
+def _remove_structured_suffixes(name, format_names, audience_tags):
     parts = [part.strip() for part in re.split(r"\s*\.\s*", name) if part.strip()]
     if len(parts) <= 1:
         return name
@@ -241,13 +260,13 @@ def _remove_structured_suffixes(name, format_name, audience_tags):
             parts.pop()
             continue
 
-        descriptor_tags = _extract_audience_tags(last_part, format_name)
-        if descriptor_tags and _contains_only_card_metadata(last_part, format_name):
+        descriptor_tags = _extract_audience_tags(last_part, format_names)
+        if descriptor_tags and _contains_only_card_metadata(last_part, format_names):
             _append_unique(audience_tags, descriptor_tags)
             parts.pop()
             continue
 
-        if _text_contains_format(last_part, format_name) and _contains_only_card_metadata(last_part, format_name):
+        if _text_contains_format(last_part, format_names) and _contains_only_card_metadata(last_part, format_names):
             parts.pop()
             continue
 
@@ -256,47 +275,49 @@ def _remove_structured_suffixes(name, format_name, audience_tags):
     return ". ".join(parts)
 
 
-def _remove_inline_suffixes(name, format_name, audience_tags):
+def _remove_inline_suffixes(name, format_names, audience_tags):
     value = name
 
     value = re.sub(r"\s*(?:[.\-–—]\s*)?(?:19|20)\d{2}\s*$", "", value)
-    value = _remove_trailing_format(value, format_name)
+    value = _remove_trailing_format(value, format_names)
 
-    descriptor_tags = _extract_trailing_audience_tags(value, format_name)
+    descriptor_tags = _extract_trailing_audience_tags(value, format_names)
     if descriptor_tags:
         _append_unique(audience_tags, descriptor_tags)
         for tag in descriptor_tags:
             value = _remove_trailing_audience_label(value, tag)
 
-    value = _remove_trailing_format(value, format_name)
+    value = _remove_trailing_format(value, format_names)
     value = re.sub(r"\s*(?:[.\-–—]\s*)?(?:19|20)\d{2}\s*$", "", value)
 
     return value
 
 
-def _remove_trailing_format(value, format_name):
-    if not format_name:
+def _remove_trailing_format(value, format_names):
+    format_names = _as_format_list(format_names)
+    if not format_names:
         return value
 
     result = value
-    for alias in _FORMAT_ALIASES.get(format_name, ()):
-        result = re.sub(
-            r"[\s.\-–—,:;]*" + alias + r"\s*$",
-            "",
-            result,
-            flags=re.IGNORECASE,
-        )
+    for format_name in format_names:
+        for alias in _FORMAT_ALIASES.get(format_name, ()):
+            result = re.sub(
+                r"[\s.\-–—,:;]*" + alias + r"\s*$",
+                "",
+                result,
+                flags=re.IGNORECASE,
+            )
 
     return result
 
 
-def _extract_trailing_audience_tags(value, format_name):
+def _extract_trailing_audience_tags(value, format_names):
     pieces = re.split(r"[\s.\-–—,:;]+", value)
     if not pieces:
         return []
 
     last_piece = pieces[-1]
-    return _extract_audience_tags(last_piece, format_name)
+    return _extract_audience_tags(last_piece, format_names)
 
 
 def _remove_trailing_audience_label(value, tag):
@@ -312,14 +333,14 @@ def _remove_trailing_audience_label(value, tag):
     return value
 
 
-def _extract_audience_tags(text, format_name):
+def _extract_audience_tags(text, format_names):
     tags = []
     pieces = [piece.strip() for piece in re.split(r"[,;/]+", clean_tournament_name(text)) if piece.strip()]
     if not pieces:
         return []
 
     for piece in pieces:
-        piece_without_format = _remove_format_aliases(piece, format_name)
+        piece_without_format = _remove_format_aliases(piece, format_names)
         piece_without_format = _YEAR_RE.sub("", piece_without_format)
         piece_without_format = _clean_display_part(piece_without_format)
 
@@ -333,14 +354,14 @@ def _extract_audience_tags(text, format_name):
     return tags
 
 
-def _contains_only_card_metadata(text, format_name):
+def _contains_only_card_metadata(text, format_names):
     pieces = [piece.strip() for piece in re.split(r"[,;/]+", clean_tournament_name(text)) if piece.strip()]
     if not pieces:
         return False
 
     contains_metadata = False
     for piece in pieces:
-        piece_without_format = _remove_format_aliases(piece, format_name)
+        piece_without_format = _remove_format_aliases(piece, format_names)
         if piece_without_format != piece:
             contains_metadata = True
 
@@ -361,9 +382,9 @@ def _contains_only_card_metadata(text, format_name):
     return contains_metadata
 
 
-def _remove_format_aliases(value, format_name):
+def _remove_format_aliases(value, format_names):
     result = value
-    formats_to_remove = [format_name] if format_name else list(_FORMAT_ALIASES)
+    formats_to_remove = _as_format_list(format_names) or list(_FORMAT_ALIASES)
 
     for current_format in formats_to_remove:
         if not current_format:
@@ -374,11 +395,20 @@ def _remove_format_aliases(value, format_name):
     return result
 
 
-def _text_contains_format(text, format_name):
-    if format_name and _name_contains_format(text, format_name):
-        return True
+def _text_contains_format(text, format_names):
+    for format_name in _as_format_list(format_names):
+        if _name_contains_format(text, format_name):
+            return True
 
     return _find_format_in_text(text) is not None
+
+
+def _as_format_list(format_names):
+    if not format_names:
+        return []
+    if isinstance(format_names, (list, tuple, set)):
+        return [format_name for format_name in format_names if format_name]
+    return [format_names]
 
 
 def _normalize_audience_tag(value):

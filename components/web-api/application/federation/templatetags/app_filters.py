@@ -20,6 +20,11 @@ import json
 register = template.Library()
 
 
+@register.filter(name='get_item')
+def get_item(mapping, key):
+    return mapping.get(key, '')
+
+
 @register.filter(name='comma_concat')
 def comma_concat(str1, str2):
     return str(str1)+","+str(str2)
