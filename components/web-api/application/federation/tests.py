@@ -690,6 +690,23 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, '1 player')
         self.assertNotContains(response, '1 team')
 
+    def test_per_page_param_limits_tournament_listing_to_five_rows(self):
+        for index in range(6):
+            self.create_tournament('Future Cup {}'.format(index), start_offset=index + 1)
+
+        response = self.client.get('/tournaments/', {
+            'period': 'future',
+            'per_page': '5',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['page_size'], 5)
+        self.assertEqual(response.context['page_obj'].paginator.per_page, 5)
+        self.assertEqual(len(response.context['rows']), 5)
+        self.assertContains(response, 'class="tournaments-mobile-list"')
+        self.assertContains(response, 'per_page=5')
+        self.assertContains(response, 'tournaments-page-size-value">5</span>')
+
     def test_english_listing_localizes_labels_and_keeps_key_based_filters(self):
         self.create_tournament('Junior Triples Cup (юніори)', players_min=3)
         self.create_tournament('Senior Doublets Cup', players_min=2)

@@ -28,6 +28,9 @@
         <form class="tournament-foreign-form" method="get" action="{% url 'tournaments' %}">
             <input type="hidden" name="period" value="{{ filters.period }}">
             <input type="hidden" name="sort" value="{{ filters.sort }}">
+            {% if page_size != 10 %}
+                <input type="hidden" name="per_page" value="{{ page_size }}">
+            {% endif %}
             {% if filters.rating_type != "all" %}
                 <input type="hidden" name="type" value="{{ filters.rating_type }}">
             {% endif %}
@@ -42,9 +45,6 @@
             {% endif %}
             {% if filters.place %}
                 <input type="hidden" name="place" value="{{ filters.place }}">
-            {% endif %}
-            {% if filters.club %}
-                <input type="hidden" name="club" value="{{ filters.club }}">
             {% endif %}
             {% if filters.status %}
                 <input type="hidden" name="status" value="{{ filters.status }}">
@@ -63,6 +63,9 @@
     <form class="tournament-filter-form" method="get" action="{% url 'tournaments' %}">
         <input type="hidden" name="period" value="{{ filters.period }}">
         <input type="hidden" name="sort" value="{{ filters.sort }}">
+        {% if page_size != 10 %}
+            <input type="hidden" name="per_page" value="{{ page_size }}">
+        {% endif %}
         {% if filters.rating_type != "all" %}
             <input type="hidden" name="type" value="{{ filters.rating_type }}">
         {% endif %}
@@ -110,17 +113,6 @@
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">{% trans "Організатор" %}</span>
-            <i class="bi bi-building" aria-hidden="true"></i>
-            <select name="club">
-                <option value="">{% trans "Організатор" %}</option>
-                {% for value,label in club_options %}
-                    <option value="{{ value }}" {% if filters.club == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label class="tournament-filter-field">
             <span class="visually-hidden">{% trans "Статус" %}</span>
             <i class="bi bi-flag" aria-hidden="true"></i>
             <select name="status">
@@ -141,22 +133,71 @@
 </section>
 
 <script>
-$(document).ready(function() {
-    const $filterForm = $('.tournament-filter-form');
-    const $foreignForm = $('.tournament-foreign-form');
+(function() {
+    function enforceMobilePageSize() {
+        if (!window.matchMedia || !window.URL || !window.URLSearchParams) {
+            return false;
+        }
 
-    $filterForm.find('select').on('change', function() {
-        $filterForm.trigger('submit');
-    });
+        if (!window.matchMedia('(max-width: 767.98px)').matches) {
+            return false;
+        }
 
-    $foreignForm.find('input[type="checkbox"]').on('change', function() {
-        $foreignForm.trigger('submit');
-    });
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('per_page') === '5') {
+            return false;
+        }
 
-    $('[data-bs-toggle="tooltip"]').attr('data-bs-offset', '0,2').tooltip({
-        offset: [0, 2]
-    });
-});
+        url.searchParams.set('per_page', '5');
+        url.searchParams.delete('page');
+        window.location.replace(url.toString());
+        return true;
+    }
+
+    if (enforceMobilePageSize()) {
+        return;
+    }
+
+    function initTournamentControls() {
+        const filterForm = document.querySelector('.tournament-filter-form');
+        const foreignForm = document.querySelector('.tournament-foreign-form');
+
+        if (filterForm) {
+            filterForm.querySelectorAll('select').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    filterForm.submit();
+                });
+            });
+        }
+
+        if (foreignForm) {
+            foreignForm.querySelectorAll('input[type="checkbox"]').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    foreignForm.submit();
+                });
+            });
+        }
+
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(element) {
+            element.setAttribute('data-bs-offset', '0,2');
+            if (window.bootstrap && window.bootstrap.Tooltip) {
+                new window.bootstrap.Tooltip(element, {
+                    offset: [0, 2]
+                });
+            } else if (window.jQuery && window.jQuery.fn.tooltip) {
+                window.jQuery(element).tooltip({
+                    offset: [0, 2]
+                });
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTournamentControls);
+    } else {
+        initTournamentControls();
+    }
+})();
 </script>
 
 {% endblock %}
