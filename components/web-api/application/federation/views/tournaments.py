@@ -13,12 +13,20 @@ from django.urls import reverse
 from django.utils import formats, timezone
 from django.utils.html import escape
 from django.http import HttpResponseRedirect
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
-import logging, json
+import logging, json, re
 from django.views.decorators.csrf import csrf_exempt
 from federation.permissions import can_create_tournament
 from federation.utils.tournament_names import get_tournament_card_metadata
+
+
+_SPACES_RE = re.compile(r'\s+')
+
+
+def _current_language():
+    language = get_language() or 'uk'
+    return 'uk' if language.startswith('uk') else 'en'
 
 
 def tournaments(request, date_filter=None, type_filter=None):
@@ -72,34 +80,88 @@ TYPE_ROUTE_ALIASES = {
     'away': 'all',
 }
 FORMAT_OPTIONS = (
-    ('tete', 'Тет-а-тет'),
-    ('doublets', 'Дуплети'),
-    ('triplets', 'Триплети'),
-    ('shooting', 'Тир'),
-    ('clubs', 'Клуби'),
-    ('supermelee', 'Супермеле'),
+    ('tete', _('Тет-а-тет')),
+    ('doublets', _('Дуплети')),
+    ('triplets', _('Триплети')),
+    ('shooting', _('Тир')),
+    ('clubs', _('Клуби')),
+    ('supermelee', _('Супермеле')),
 )
 CATEGORY_OPTIONS = (
-    ('men', 'Чоловіки'),
-    ('women', 'Жінки'),
-    ('mixed', 'Змішані'),
-    ('juniors', 'Юніори'),
-    ('veterans', 'Ветерани 55+'),
-    ('open', 'Відкриті'),
+    ('men', _('Чоловіки')),
+    ('women', _('Жінки')),
+    ('mixed', _('Змішані')),
+    ('juniors', _('Юніори')),
+    ('veterans', _('Ветерани 55+')),
+    ('open', _('Відкриті')),
 )
 STATUS_OPTIONS = (
-    ('registration_open', 'Реєстрація відкрита'),
-    ('registration_closed', 'Реєстрація закрита'),
-    ('registration_unavailable', 'Реєстрація недоступна'),
-    ('ongoing', 'Триває'),
-    ('finished', 'Завершено'),
-    ('cancelled', 'Скасовано'),
+    ('registration_open', _('Реєстрація відкрита')),
+    ('registration_closed', _('Реєстрація закрита')),
+    ('registration_unavailable', _('Реєстрація недоступна')),
+    ('ongoing', _('Триває')),
+    ('finished', _('Завершено')),
+    ('cancelled', _('Скасовано')),
 )
 STATUS_LABELS = dict(STATUS_OPTIONS)
+COUNTRY_LABELS = {
+    'AT': {'uk': 'Австрія', 'en': 'Austria'},
+    'BE': {'uk': 'Бельгія', 'en': 'Belgium'},
+    'BG': {'uk': 'Болгарія', 'en': 'Bulgaria'},
+    'CZ': {'uk': 'Чехія', 'en': 'Czechia'},
+    'ES': {'uk': 'Іспанія', 'en': 'Spain'},
+    'FR': {'uk': 'Франція', 'en': 'France'},
+    'GR': {'uk': 'Греція', 'en': 'Greece'},
+    'HR': {'uk': 'Хорватія', 'en': 'Croatia'},
+    'HU': {'uk': 'Угорщина', 'en': 'Hungary'},
+    'IL': {'uk': 'Ізраїль', 'en': 'Israel'},
+    'LV': {'uk': 'Латвія', 'en': 'Latvia'},
+    'MY': {'uk': 'Малайзія', 'en': 'Malaysia'},
+    'NL': {'uk': 'Нідерланди', 'en': 'Netherlands'},
+    'PL': {'uk': 'Польща', 'en': 'Poland'},
+    'SK': {'uk': 'Словаччина', 'en': 'Slovakia'},
+    'UA': {'uk': 'Україна', 'en': 'Ukraine'},
+}
+COUNTRY_ALIASES = {
+    'австрія': 'AT',
+    'austria': 'AT',
+    'бельгія': 'BE',
+    'belgium': 'BE',
+    'болгарія': 'BG',
+    'bulgaria': 'BG',
+    'croatia': 'HR',
+    'czech republic': 'CZ',
+    'czechia': 'CZ',
+    'греція': 'GR',
+    'greece': 'GR',
+    'hungary': 'HU',
+    'іспанія': 'ES',
+    'ізраїль': 'IL',
+    'israel': 'IL',
+    'latvia': 'LV',
+    'латвія': 'LV',
+    'малайзія': 'MY',
+    'malaysia': 'MY',
+    'netherlands': 'NL',
+    'нідерланди': 'NL',
+    'poland': 'PL',
+    'польща': 'PL',
+    'slovakia': 'SK',
+    'словаччина': 'SK',
+    'словаччнина': 'SK',
+    'spain': 'ES',
+    'україна': 'UA',
+    'угорщина': 'HU',
+    'ukraine': 'UA',
+    'france': 'FR',
+    'франція': 'FR',
+    'хорватія': 'HR',
+    'чехія': 'CZ',
+}
 PERIOD_LABELS = {
-    'future': 'Майбутні',
-    'ongoing': 'Теперішні',
-    'past': 'Минулі',
+    'future': _('Майбутні'),
+    'ongoing': _('Теперішні'),
+    'past': _('Минулі'),
 }
 PERIOD_ICONS = {
     'future': 'bi-calendar-event',
@@ -108,12 +170,18 @@ PERIOD_ICONS = {
 }
 FORMAT_LABEL_TO_KEY = {
     'Тет-а-тет': 'tete',
+    'Tete-a-tete': 'tete',
     'Дуплети': 'doublets',
+    'Doubles': 'doublets',
     'Триплети': 'triplets',
+    'Triples': 'triplets',
     'Тир': 'shooting',
+    'Shooting': 'shooting',
     'Клуби': 'clubs',
+    'Clubs': 'clubs',
     'Супер-меле': 'supermelee',
     'Супермеле': 'supermelee',
+    'Super melee': 'supermelee',
 }
 
 
@@ -232,26 +300,31 @@ def _build_tournament_row(tournament):
     format_label = _display_format_label(metadata.get('format'))
     audience_tags = [_display_category_label(tag) for tag in metadata.get('audience_tags', [])]
     status = _tournament_status_data(tournament)
-    country_name = _country_name(tournament)
-    place_label = _place_label(tournament, country_name)
+    country_data = _display_country_data(tournament)
+    place_label = _place_label(tournament, country_data)
     format_labels = metadata.get('format_tags') or [metadata.get('format')]
     format_labels = [label for label in format_labels if label]
+    format_keys = [FORMAT_LABEL_TO_KEY.get(label, '') for label in format_labels]
 
     return {
         'tournament': tournament,
         'title': metadata.get('name') or tournament.get_name(),
-        'teams_count_label': _teams_count_label(tournament.get_teams_count()),
+        'full_title': tournament.name,
+        'teams_count_label': _registered_count_label(
+            tournament.get_teams_count(),
+            _is_single_player_format(tournament, format_keys),
+        ),
         'format_label': format_label,
         'format_labels': format_labels,
-        'format_keys': [FORMAT_LABEL_TO_KEY.get(label, '') for label in format_labels],
+        'format_keys': format_keys,
         'audience_tags': audience_tags,
         'category_keys': _category_keys(audience_tags),
         'openness_label': _openness_label(tournament),
         'openness_key': _openness_key(tournament),
         'place_label': place_label,
         'place_key': tournament.place or '',
-        'country_name': country_name,
-        'country_code': _country_code(tournament).lower(),
+        'country_name': country_data['name'],
+        'country_code': country_data['code'].lower(),
         'is_foreign': _is_foreign_tournament(tournament),
         'organizer_label': _organizer_label(tournament),
         'organizer_url': _organizer_url(tournament),
@@ -264,27 +337,50 @@ def _build_tournament_row(tournament):
 
 
 def _display_format_label(format_label):
-    if format_label == 'Супер-меле':
-        return 'Супермеле'
+    if format_label in ('Супер-меле', 'Super melee'):
+        return _('Супермеле') if format_label == 'Супер-меле' else format_label
     return format_label or ''
 
 
-def _teams_count_label(count):
+def _registered_count_label(count, is_single_player_format=False):
     count = int(count or 0)
+    if is_single_player_format:
+        if _current_language() == 'en':
+            return ngettext('%(count)d player', '%(count)d players', count) % {'count': count}
+        return '{} {}'.format(count, _uk_plural(count, 'гравець', 'гравці', 'гравців'))
+
+    if _current_language() == 'en':
+        return ngettext('%(count)d team', '%(count)d teams', count) % {'count': count}
+
+    return '{} {}'.format(count, _uk_plural(count, 'команда', 'команди', 'команд'))
+
+
+def _uk_plural(count, singular, few, many):
     if count % 10 == 1 and count % 100 != 11:
-        suffix = 'команда'
-    elif count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
-        suffix = 'команди'
-    else:
-        suffix = 'команд'
-    return '{} {}'.format(count, suffix)
+        return singular
+    if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        return few
+    return many
+
+
+def _is_single_player_format(tournament, format_keys):
+    if 'tete' in format_keys:
+        return True
+
+    try:
+        players_min = int(tournament.number_of_players_in_team_min or 0)
+        players_max = int(tournament.number_of_players_in_team_max or 0)
+    except (TypeError, ValueError):
+        return False
+
+    return players_min == 1 and players_max == 1
 
 
 def _display_category_label(label):
     if label in ('Мікст', 'Mix', 'Mixed'):
-        return 'Змішані'
-    if label == 'Ветерани':
-        return 'Ветерани 55+'
+        return _('Змішані') if _current_language() == 'uk' else 'Mixed'
+    if label in ('Ветерани', 'Veterans'):
+        return _('Ветерани 55+')
     return label
 
 
@@ -295,15 +391,20 @@ def _category_keys(tags):
     keys = set()
     for tag in tags:
         normalized = str(tag).lower()
-        if 'чолов' in normalized:
+        if 'чолов' in normalized or normalized in ('men', 'male'):
             keys.add('men')
-        if 'жін' in normalized:
+        if 'жін' in normalized or normalized in ('women', 'female'):
             keys.add('women')
-        if 'змішан' in normalized or 'мікст' in normalized:
+        if 'змішан' in normalized or 'мікст' in normalized or normalized in ('mixed', 'mix'):
             keys.add('mixed')
-        if 'юніор' in normalized or 'молод' in normalized or 'юнак' in normalized:
+        if (
+            'юніор' in normalized or
+            'молод' in normalized or
+            'юнак' in normalized or
+            normalized in ('juniors', 'junior', 'youth', 'cadets', 'cadet')
+        ):
             keys.add('juniors')
-        if 'ветеран' in normalized:
+        if 'ветеран' in normalized or normalized in ('veterans', 'veteran', 'veterans 55+'):
             keys.add('veterans')
 
     return sorted(keys) or ['open']
@@ -311,8 +412,8 @@ def _category_keys(tags):
 
 def _openness_label(tournament):
     if _openness_key(tournament) == 'closed':
-        return 'Закритий'
-    return 'Відкритий'
+        return _('Закритий')
+    return _('Відкритий')
 
 
 def _openness_key(tournament):
@@ -333,11 +434,75 @@ def _country_code(tournament):
     return str(getattr(country, 'code', '') or country or '')
 
 
-def _place_label(tournament, country_name):
+def _localized_country_name(country_code):
+    labels = COUNTRY_LABELS.get(country_code, {})
+    return labels.get(_current_language()) or labels.get('uk') or ''
+
+
+def _display_country_data(tournament):
+    place_country_code = _infer_country_code_from_place(tournament.place)
+    code = place_country_code or _country_code(tournament).upper()
+    name = _localized_country_name(code) or _country_name(tournament)
+    return {
+        'code': code,
+        'name': name,
+        'inferred_from_place': bool(place_country_code),
+    }
+
+
+def _infer_country_code_from_place(place):
+    for part in _place_parts(place):
+        code = COUNTRY_ALIASES.get(part)
+        if code:
+            return code
+    return ''
+
+
+def _place_parts(place):
+    normalized = str(place or '').lower()
+    return [
+        _clean_place_part(part)
+        for part in normalized.split(',')
+        if _clean_place_part(part)
+    ]
+
+
+def _clean_place_part(part):
+    return _SPACES_RE.sub(' ', str(part or '').strip().lower())
+
+
+def _place_label(tournament, country_data):
     place = tournament.place or ''
-    if _is_foreign_tournament(tournament) and country_name and country_name.lower() not in place.lower():
+    country_name = country_data['name']
+    country_code = country_data['code']
+    current_country = getattr(settings, 'CURRENT_COUNTRY', None)
+
+    if country_data['inferred_from_place'] and len(_place_parts(place)) == 1:
+        return country_name
+
+    if _place_contains_country(place, country_code, country_name):
+        return place
+
+    if (
+        _is_foreign_tournament(tournament) and
+        country_name and
+        country_code != current_country
+    ):
         return ', '.join(part for part in (place, country_name) if part)
+
     return place or country_name or '—'
+
+
+def _place_contains_country(place, country_code, country_name):
+    parts = _place_parts(place)
+    if not parts:
+        return False
+
+    aliases = {alias for alias, code in COUNTRY_ALIASES.items() if code == country_code}
+    for label in COUNTRY_LABELS.get(country_code, {}).values():
+        aliases.add(_clean_place_part(label))
+
+    return any(part in aliases for part in parts)
 
 
 def _is_foreign_tournament(tournament):
@@ -351,7 +516,7 @@ def _is_foreign_tournament(tournament):
 
 def _organizer_label(tournament):
     if not tournament.organizer_club:
-        return 'Без клубу'
+        return _('Без клубу')
     return tournament.organizer_club.short_name or tournament.organizer_club.name
 
 
@@ -419,13 +584,13 @@ def _is_cancelled(tournament):
 
 def _tournament_status_note(tournament, status_key):
     if status_key in ('registration_open', 'registration_closed') and tournament.date_registration_stop:
-        return 'до {}'.format(formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT'))
+        return '{} {}'.format(_('до'), formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT'))
 
     if status_key == 'ongoing':
         return _date_range_label(tournament)
 
     if status_key == 'finished' and tournament.is_processing_closed():
-        return 'результати доступні'
+        return _('результати доступні')
 
     return ''
 
@@ -446,12 +611,12 @@ def _row_matches_filters(row, filters):
     if filters['search']:
         tokens = filters['search'].lower().split()
         haystack = ' '.join([
-            row['title'],
-            row['format_label'],
-            row['place_label'],
-            row['country_name'],
-            row['organizer_label'],
-            row['tournament'].get_display_name(),
+            str(row['title']),
+            str(row['format_label']),
+            str(row['place_label']),
+            str(row['country_name']),
+            str(row['organizer_label']),
+            str(row['tournament'].get_display_name()),
         ]).lower()
         if not all(token in haystack for token in tokens):
             return False
@@ -479,6 +644,7 @@ def _get_period_tabs(filters):
     for period in PERIODS:
         tab_filters = dict(filters)
         tab_filters['period'] = period
+        tab_filters['sort'] = _default_sort(period)
         tabs.append({
             'key': period,
             'label': PERIOD_LABELS[period],
@@ -585,37 +751,37 @@ def _pagination_urls(filters, page_obj):
 def _pagination_summary(page_obj):
     total = page_obj.paginator.count
     if total == 0:
-        return 'Показано 0 з 0 турнірів'
+        return _('Показано 0 з 0 турнірів')
 
-    return 'Показано {}–{} з {} турнірів'.format(
-        page_obj.start_index(),
-        page_obj.end_index(),
-        total,
-    )
+    return _('Показано %(start)s–%(end)s з %(total)s турнірів') % {
+        'start': page_obj.start_index(),
+        'end': page_obj.end_index(),
+        'total': total,
+    }
 
 
 def _empty_state(filters):
     if _has_active_secondary_filters(filters):
         return {
-            'title': 'Змагання не знайдено',
-            'description': 'Спробуйте змінити фільтри або очистити пошук.',
+            'title': _('Змагання не знайдено'),
+            'description': _('Спробуйте змінити фільтри або очистити пошук.'),
         }
 
     if filters['period'] == 'future':
         return {
-            'title': 'Наразі немає майбутніх турнірів',
-            'description': 'Перегляньте минулі змагання або змініть фільтри.',
+            'title': _('Наразі немає майбутніх турнірів'),
+            'description': _('Перегляньте минулі змагання або змініть фільтри.'),
         }
 
     if filters['period'] == 'ongoing':
         return {
-            'title': 'Зараз немає турнірів, що тривають',
-            'description': 'Перегляньте майбутні або минулі змагання.',
+            'title': _('Зараз немає турнірів, що тривають'),
+            'description': _('Перегляньте майбутні або минулі змагання.'),
         }
 
     return {
-        'title': 'Минулі турніри не знайдено',
-        'description': 'Спробуйте змінити фільтри.',
+        'title': _('Минулі турніри не знайдено'),
+        'description': _('Спробуйте змінити фільтри.'),
     }
 
 @csrf_exempt

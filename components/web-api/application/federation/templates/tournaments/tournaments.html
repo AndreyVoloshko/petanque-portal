@@ -5,17 +5,17 @@
 {% block content %}
 <section class="tournaments-page" aria-labelledby="tournaments-page-title">
     <div class="tournaments-titlebar">
-        <h1 id="tournaments-page-title">Турніри</h1>
+        <h1 id="tournaments-page-title">{% trans "Турніри" %}</h1>
         {% if can_create_tournament %}
             <a class="create-tournament-button" href="{{ admin_add_url }}">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                <span>Додати турнір</span>
+                <span>{% trans "Додати турнір" %}</span>
             </a>
         {% endif %}
     </div>
 
     <div class="tournaments-control-row">
-        <nav class="tournament-period-tabs" aria-label="Період турнірів">
+        <nav class="tournament-period-tabs" aria-label="{% trans "Період турнірів" %}">
             {% for tab in period_tabs %}
                 <a class="tournament-period-tab {% if tab.active %}is-active{% endif %}" href="{{ tab.url }}" {% if tab.active %}aria-current="page"{% endif %}>
                     <i class="bi {{ tab.icon }}" aria-hidden="true"></i>
@@ -53,7 +53,7 @@
                 <input type="checkbox" name="foreign" value="1" {% if filters.foreign %}checked{% endif %}>
                 <span class="tournament-toggle-label">
                     <i class="bi bi-globe2" aria-hidden="true"></i>
-                    Закордонні
+                    {% trans "Закордонні" %}
                 </span>
                 <span class="tournament-toggle-switch" aria-hidden="true"></span>
             </label>
@@ -71,16 +71,16 @@
         {% endif %}
 
         <label class="tournament-filter-field tournament-filter-search">
-            <span class="visually-hidden">Пошук</span>
+            <span class="visually-hidden">{% trans "Пошук" %}</span>
             <i class="bi bi-search" aria-hidden="true"></i>
-            <input type="search" name="q" value="{{ filters.search }}" placeholder="Пошук за назвою, містом або клубом...">
+            <input type="search" name="q" value="{{ filters.search }}" placeholder="{% trans "Пошук за назвою, містом або клубом..." %}">
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">Формат</span>
+            <span class="visually-hidden">{% trans "Формат" %}</span>
             <i class="bi bi-globe" aria-hidden="true"></i>
             <select name="format">
-                <option value="">Формат</option>
+                <option value="">{% trans "Формат" %}</option>
                 {% for value,label in format_options %}
                     <option value="{{ value }}" {% if filters.format == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
@@ -88,10 +88,10 @@
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">Стать / категорія</span>
+            <span class="visually-hidden">{% trans "Стать / категорія" %}</span>
             <i class="bi bi-person" aria-hidden="true"></i>
             <select name="category">
-                <option value="">Стать / категорія</option>
+                <option value="">{% trans "Стать / категорія" %}</option>
                 {% for value,label in category_options %}
                     <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
@@ -99,10 +99,10 @@
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">Місце</span>
+            <span class="visually-hidden">{% trans "Місце" %}</span>
             <i class="bi bi-geo-alt" aria-hidden="true"></i>
             <select name="place">
-                <option value="">Місце</option>
+                <option value="">{% trans "Місце" %}</option>
                 {% for place in place_options %}
                     <option value="{{ place }}" {% if filters.place == place %}selected{% endif %}>{{ place }}</option>
                 {% endfor %}
@@ -110,10 +110,10 @@
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">Організатор</span>
+            <span class="visually-hidden">{% trans "Організатор" %}</span>
             <i class="bi bi-building" aria-hidden="true"></i>
             <select name="club">
-                <option value="">Організатор</option>
+                <option value="">{% trans "Організатор" %}</option>
                 {% for value,label in club_options %}
                     <option value="{{ value }}" {% if filters.club == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
@@ -121,24 +121,19 @@
         </label>
 
         <label class="tournament-filter-field">
-            <span class="visually-hidden">Статус</span>
+            <span class="visually-hidden">{% trans "Статус" %}</span>
             <i class="bi bi-flag" aria-hidden="true"></i>
             <select name="status">
-                <option value="">Статус</option>
+                <option value="">{% trans "Статус" %}</option>
                 {% for value,label in status_options %}
                     <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
         </label>
 
-        <button class="tournament-filter-submit" type="submit">
-            <i class="bi bi-funnel" aria-hidden="true"></i>
-            <span>Застосувати</span>
-        </button>
-
         <a class="tournament-reset-button" href="{{ reset_url }}">
             <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-            <span>Скинути фільтри</span>
+            <span>{% trans "Скинути фільтри" %}</span>
         </a>
     </form>
 

@@ -1,4 +1,5 @@
 {% load app_filters %}
+{% load i18n %}
 
 <div class="tournaments-results-surface">
     {% if rows %}
@@ -6,30 +7,30 @@
             <thead>
                 <tr>
                     <th class="tournament-date-column">
-                        <a class="tournament-sort-link is-active" href="{{ sort_state.date_url }}" aria-label="Сортувати за датою">
-                            <span>Дата</span>
+                        <a class="tournament-sort-link is-active" href="{{ sort_state.date_url }}" aria-label="{% trans "Сортувати за датою" %}">
+                            <span>{% trans "Дата" %}</span>
                             <i class="bi {% if sort_state.date_direction == 'asc' %}bi-arrow-up-short{% else %}bi-arrow-down-short{% endif %}" aria-hidden="true"></i>
                         </a>
                     </th>
-                    <th>Назва</th>
-                    <th>Формат</th>
-                    <th>Місце</th>
+                    <th class="tournament-title-column">{% trans "Назва" %}</th>
+                    <th class="tournament-format-column">{% trans "Формат" %}</th>
+                    <th class="tournament-place-column">{% trans "Місце" %}</th>
                     {% if show_strength %}
                         <th class="tournament-strength-column">
-                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд.">
-                                Сила <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд." %}">
+                                {% trans "Сила" %} <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </span>
                         </th>
                     {% endif %}
-                    <th>Статус</th>
-                    <th class="tournament-actions-column">Дії</th>
+                    <th class="tournament-status-column">{% trans "Статус" %}</th>
+                    <th class="tournament-actions-column">{% trans "Дії" %}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in rows %}
                     {% with item=row.tournament %}
                     <tr>
-                        <td class="tournament-date-cell" data-label="Дата">
+                        <td class="tournament-date-cell" data-label="{% trans "Дата" %}">
                             <div class="tournament-date-wrap">
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
                                 <div>
@@ -38,14 +39,14 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="tournament-title-cell" data-label="Назва">
-                            <a class="tournament-title-link" href="{{ row.detail_url }}">{{ row.title }}</a>
+                        <td class="tournament-title-cell" data-label="{% trans "Назва" %}">
+                            <a class="tournament-title-link" href="{{ row.detail_url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.full_title }}">{{ row.title }}</a>
                             <span class="tournament-team-count">
                                 <i class="bi bi-people" aria-hidden="true"></i>
                                 {{ row.teams_count_label }}
                             </span>
                         </td>
-                        <td class="tournament-format-cell" data-label="Формат">
+                        <td class="tournament-format-cell" data-label="{% trans "Формат" %}">
                             <div class="tournament-chip-list">
                                 {% for format_label in row.format_labels %}
                                     <span class="tournament-chip tournament-chip-format">{{ format_label }}</span>
@@ -56,7 +57,7 @@
                                 <span class="tournament-chip tournament-chip-{{ row.openness_key }}">{{ row.openness_label }}</span>
                             </div>
                         </td>
-                        <td class="tournament-place-cell" data-label="Місце">
+                        <td class="tournament-place-cell" data-label="{% trans "Місце" %}">
                             <div class="tournament-place-line">
                                 {% if row.is_foreign %}
                                     <i class="bi bi-globe2" aria-hidden="true"></i>
@@ -82,7 +83,7 @@
                             </div>
                         </td>
                         {% if show_strength %}
-                            <td class="tournament-strength-cell" data-label="Сила">
+                            <td class="tournament-strength-cell" data-label="{% trans "Сила" %}">
                                 {% with power=item|tournament_power_badge %}
                                     {% if power %}
                                         {{ power|safe }}
@@ -92,24 +93,24 @@
                                 {% endwith %}
                             </td>
                         {% endif %}
-                        <td class="tournament-status-cell" data-label="Статус">
+                        <td class="tournament-status-cell" data-label="{% trans "Статус" %}">
                             <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
                             {% if row.status.note %}
                                 <span class="tournament-status-note">{{ row.status.note }}</span>
                             {% endif %}
                         </td>
-                        <td class="tournament-actions-cell" data-label="Дії">
+                        <td class="tournament-actions-cell" data-label="{% trans "Дії" %}">
                             <div class="tournament-actions">
                                 {% if row.status.key == "registration_open" %}
-                                    <a class="tournament-action tournament-action-primary" href="{{ row.registration_url }}">Взяти участь</a>
+                                    <a class="tournament-action tournament-action-primary" href="{{ row.registration_url }}">{% trans "Взяти участь" %}</a>
                                 {% endif %}
                                 {% if row.show_results_action %}
                                     <a class="tournament-action tournament-action-results" href="{{ row.protocol_url }}">
                                         <i class="bi bi-trophy" aria-hidden="true"></i>
-                                        <span>Результати</span>
+                                        <span>{% trans "Результати" %}</span>
                                     </a>
                                 {% endif %}
-                                <a class="tournament-action" href="{{ row.detail_url }}">Деталі</a>
+                                <a class="tournament-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                             </div>
                         </td>
                     </tr>
@@ -118,14 +119,14 @@
             </tbody>
         </table>
 
-        <div class="tournaments-pagination" aria-label="Пагінація турнірів">
+        <div class="tournaments-pagination" aria-label="{% trans "Пагінація турнірів" %}">
             <p>{{ pagination_summary }}</p>
             {% if page_obj.paginator.num_pages > 1 %}
-                <nav class="tournaments-page-links" aria-label="Сторінки">
-                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.first }}{% else %}#{% endif %}" aria-label="Перша сторінка">
+                <nav class="tournaments-page-links" aria-label="{% trans "Сторінки" %}">
+                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.first }}{% else %}#{% endif %}" aria-label="{% trans "Перша сторінка" %}">
                         <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
                     </a>
-                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.previous }}{% else %}#{% endif %}" aria-label="Попередня сторінка">
+                    <a class="tournaments-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ pagination_urls.previous }}{% else %}#{% endif %}" aria-label="{% trans "Попередня сторінка" %}">
                         <i class="bi bi-chevron-left" aria-hidden="true"></i>
                     </a>
                     {% for page in pagination_pages %}
@@ -135,16 +136,16 @@
                             <a class="tournaments-page-link {% if page_obj.number == page %}is-active{% endif %}" href="{{ pagination_urls.pages|get_item:page }}">{{ page }}</a>
                         {% endif %}
                     {% endfor %}
-                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.next }}{% else %}#{% endif %}" aria-label="Наступна сторінка">
+                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.next }}{% else %}#{% endif %}" aria-label="{% trans "Наступна сторінка" %}">
                         <i class="bi bi-chevron-right" aria-hidden="true"></i>
                     </a>
-                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.last }}{% else %}#{% endif %}" aria-label="Остання сторінка">
+                    <a class="tournaments-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ pagination_urls.last }}{% else %}#{% endif %}" aria-label="{% trans "Остання сторінка" %}">
                         <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
                     </a>
                 </nav>
             {% endif %}
             <div class="tournaments-page-size">
-                <span>Показувати:</span>
+                <span>{% trans "Показувати:" %}</span>
                 <span class="tournaments-page-size-value">10</span>
             </div>
         </div>
@@ -155,7 +156,7 @@
             {% if has_active_secondary_filters %}
                 <a class="tournament-reset-button" href="{{ reset_url }}">
                     <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-                    <span>Скинути фільтри</span>
+                    <span>{% trans "Скинути фільтри" %}</span>
                 </a>
             {% endif %}
         </div>

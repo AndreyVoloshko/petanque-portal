@@ -1129,6 +1129,274 @@ msgstr "Find an athlete, club, or competition"
 msgid "Language"
 msgstr "Language"
 
+#: federation/templates/tournaments/tournaments.html
+#: federation/views/tournaments.py
+msgid "Турніри"
+msgstr "Tournaments"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Додати турнір"
+msgstr "Add tournament"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Період турнірів"
+msgstr "Tournament period"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Закордонні"
+msgstr "Foreign"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Пошук"
+msgstr "Search"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Пошук за назвою, містом або клубом..."
+msgstr "Search by name, city or club..."
+
+#: federation/templates/tournaments/tournaments.html
+#: federation/templates/tournaments/tournaments_table.html
+#: federation/views/tournaments.py
+msgid "Формат"
+msgstr "Format"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Стать / категорія"
+msgstr "Gender / category"
+
+#: federation/templates/tournaments/tournaments.html
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Місце"
+msgstr "Location"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Організатор"
+msgstr "Organizer"
+
+#: federation/templates/tournaments/tournaments.html
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Статус"
+msgstr "Status"
+
+#: federation/templates/tournaments/tournaments.html
+msgid "Застосувати"
+msgstr "Apply"
+
+#: federation/templates/tournaments/tournaments.html
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Скинути фільтри"
+msgstr "Reset filters"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Сортувати за датою"
+msgstr "Sort by date"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Дата"
+msgstr "Date"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Назва"
+msgstr "Name"
+
+#: federation/templates/tournaments/tournaments_table.html
+#: federation/views/tournaments.py
+msgid "Сила"
+msgstr "Strength"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд."
+msgstr "Tournament strength is calculated by the Federation rating rules and depends on participant composition and team rating indicators."
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Дії"
+msgstr "Actions"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Взяти участь"
+msgstr "Join"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Результати"
+msgstr "Results"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Деталі"
+msgstr "Details"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Пагінація турнірів"
+msgstr "Tournament pagination"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Сторінки"
+msgstr "Pages"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Перша сторінка"
+msgstr "First page"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Попередня сторінка"
+msgstr "Previous page"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Наступна сторінка"
+msgstr "Next page"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Остання сторінка"
+msgstr "Last page"
+
+#: federation/templates/tournaments/tournaments_table.html
+msgid "Показувати:"
+msgstr "Show:"
+
+#: federation/views/tournaments.py
+msgid "Тет-а-тет"
+msgstr "Tete-a-tete"
+
+#: federation/views/tournaments.py
+msgid "Дуплети"
+msgstr "Doubles"
+
+#: federation/views/tournaments.py
+msgid "Триплети"
+msgstr "Triples"
+
+#: federation/views/tournaments.py
+msgid "Тир"
+msgstr "Shooting"
+
+#: federation/views/tournaments.py
+msgid "Клуби"
+msgstr "Clubs"
+
+#: federation/views/tournaments.py
+msgid "Супермеле"
+msgstr "Super melee"
+
+#: federation/views/tournaments.py
+msgid "Чоловіки"
+msgstr "Men"
+
+#: federation/views/tournaments.py
+msgid "Жінки"
+msgstr "Women"
+
+#: federation/views/tournaments.py
+msgid "Змішані"
+msgstr "Mixed"
+
+#: federation/views/tournaments.py
+msgid "Юніори"
+msgstr "Juniors"
+
+#: federation/views/tournaments.py
+msgid "Ветерани 55+"
+msgstr "Veterans 55+"
+
+#: federation/views/tournaments.py
+msgid "Відкриті"
+msgstr "Open"
+
+#: federation/views/tournaments.py
+msgid "Реєстрація відкрита"
+msgstr "Registration open"
+
+#: federation/views/tournaments.py
+msgid "Реєстрація закрита"
+msgstr "Registration closed"
+
+#: federation/views/tournaments.py
+msgid "Реєстрація недоступна"
+msgstr "Registration unavailable"
+
+#: federation/views/tournaments.py
+msgid "Триває"
+msgstr "Ongoing"
+
+#: federation/views/tournaments.py
+msgid "Завершено"
+msgstr "Finished"
+
+#: federation/views/tournaments.py
+msgid "Скасовано"
+msgstr "Cancelled"
+
+#: federation/views/tournaments.py
+msgid "Майбутні"
+msgstr "Future"
+
+#: federation/views/tournaments.py
+msgid "Теперішні"
+msgstr "Current"
+
+#: federation/views/tournaments.py
+msgid "Минулі"
+msgstr "Past"
+
+#: federation/views/tournaments.py
+msgid "Закритий"
+msgstr "Closed"
+
+#: federation/views/tournaments.py
+msgid "Відкритий"
+msgstr "Open"
+
+#: federation/views/tournaments.py
+msgid "Без клубу"
+msgstr "No club"
+
+#: federation/views/tournaments.py
+msgid "до"
+msgstr "until"
+
+#: federation/views/tournaments.py
+msgid "результати доступні"
+msgstr "results available"
+
+#: federation/views/tournaments.py
+msgid "Показано 0 з 0 турнірів"
+msgstr "Showing 0 of 0 tournaments"
+
+#: federation/views/tournaments.py
+#, python-format
+msgid "Показано %(start)s–%(end)s з %(total)s турнірів"
+msgstr "Showing %(start)s–%(end)s of %(total)s tournaments"
+
+#: federation/views/tournaments.py
+msgid "Змагання не знайдено"
+msgstr "No competitions found"
+
+#: federation/views/tournaments.py
+msgid "Спробуйте змінити фільтри або очистити пошук."
+msgstr "Try changing filters or clearing the search."
+
+#: federation/views/tournaments.py
+msgid "Наразі немає майбутніх турнірів"
+msgstr "There are no future tournaments right now"
+
+#: federation/views/tournaments.py
+msgid "Перегляньте минулі змагання або змініть фільтри."
+msgstr "Check past competitions or change the filters."
+
+#: federation/views/tournaments.py
+msgid "Зараз немає турнірів, що тривають"
+msgstr "There are no ongoing tournaments right now"
+
+#: federation/views/tournaments.py
+msgid "Перегляньте майбутні або минулі змагання."
+msgstr "Check future or past competitions."
+
+#: federation/views/tournaments.py
+msgid "Минулі турніри не знайдено"
+msgstr "No past tournaments found"
+
+#: federation/views/tournaments.py
+msgid "Спробуйте змінити фільтри."
+msgstr "Try changing the filters."
+
 #: federation/templates/common/menu.html:140
 msgid "Light theme"
 msgstr "Light theme"

@@ -463,6 +463,7 @@ class TournamentListingPageTests(TestCase):
         power='0',
         processed=False,
         meta=None,
+        place='Київ',
     ):
         start_date = timezone.localdate() + timedelta(days=start_offset)
         end_date = None
@@ -477,7 +478,7 @@ class TournamentListingPageTests(TestCase):
             name=name,
             category=category,
             is_goes_to_rating=is_rating,
-            place='Київ',
+            place=place,
             country=country,
             start_date=start_date,
             end_date=end_date,
@@ -558,6 +559,31 @@ class TournamentListingPageTests(TestCase):
         self.assertNotContains(response, 'Domestic Cup')
         self.assertTrue(response.context['filters']['foreign'])
 
+    def test_away_country_display_uses_place_country_and_avoids_duplicates(self):
+        self.create_tournament('Spain Cup', country='UA', category='away', place='Іспанія')
+        self.create_tournament('Slovakia Cup', country='SK', category='away', place='Словаччнина')
+        self.create_tournament('Slovakia Address Cup', country='SK', category='away', place='Slovakia, Galanta')
+        self.create_tournament('Poland Address Cup', country='PL', category='away', place='Poland, Zywiec, Kopernika 2')
+        self.create_tournament('Czech Address Cup', country='CZ', category='away', place='Czech Republic, Liblice')
+
+        response = self.client.get('/tournaments/future/away')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Іспанія')
+        self.assertContains(response, 'flag-icon-es')
+        self.assertNotContains(response, 'Іспанія, Україна')
+        self.assertNotContains(response, 'flag-icon-ua')
+        self.assertContains(response, 'Словаччина')
+        self.assertContains(response, 'flag-icon-sk')
+        self.assertNotContains(response, 'Словаччнина, Словаччина')
+        self.assertNotContains(response, 'Словаччина, Словаччина')
+        self.assertContains(response, 'Slovakia, Galanta')
+        self.assertNotContains(response, 'Slovakia, Galanta, Словаччина')
+        self.assertContains(response, 'Poland, Zywiec, Kopernika 2')
+        self.assertNotContains(response, 'Poland, Zywiec, Kopernika 2, Польща')
+        self.assertContains(response, 'Czech Republic, Liblice')
+        self.assertNotContains(response, 'Czech Republic, Liblice, Чехія')
+
     def test_date_sort_can_be_reversed(self):
         self.create_tournament('Soon Cup', start_offset=5)
         self.create_tournament('Later Cup', start_offset=40)
@@ -572,6 +598,36 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(response.context['sort_state']['date_direction'], 'desc')
         self.assertNotIn('sort=date_desc', response.context['sort_state']['date_url'])
 
+    def test_ongoing_period_uses_dates_only(self):
+        self.create_tournament('Today Cup', start_offset=0)
+        self.create_tournament('Multi Day Cup', start_offset=-1, end_offset=1)
+        self.create_tournament('Past Single Day Cup', start_offset=-1)
+        self.create_tournament('Future Cup', start_offset=1)
+
+        response = self.client.get('/tournaments/', {'period': 'ongoing'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Today Cup')
+        self.assertContains(response, 'Multi Day Cup')
+        self.assertNotContains(response, 'Past Single Day Cup')
+        self.assertNotContains(response, 'Future Cup')
+
+    def test_past_period_tab_uses_desc_sort_by_default(self):
+        self.create_tournament('Old Past Cup', start_offset=-40)
+        self.create_tournament('Recent Past Cup', start_offset=-5)
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        past_tab = next(tab for tab in response.context['period_tabs'] if tab['key'] == 'past')
+        self.assertNotIn('sort=date_asc', past_tab['url'])
+        self.assertNotIn('sort=date_desc', past_tab['url'])
+
+        past_response = self.client.get(past_tab['url'])
+        self.assertEqual(past_response.status_code, 200)
+        self.assertEqual(past_response.context['sort_state']['date_direction'], 'desc')
+        self.assertEqual(past_response.context['rows'][0]['title'], 'Recent Past Cup')
+
     def test_period_counts_respect_secondary_filters(self):
         self.create_tournament('Shooting Cup', tournament_format='tir')
         self.create_tournament('Doublets Cup', players_min=2)
@@ -585,6 +641,76 @@ class TournamentListingPageTests(TestCase):
         future_tab = response.context['period_tabs'][0]
         self.assertEqual(future_tab['key'], 'future')
         self.assertEqual(future_tab['count'], 1)
+        self.assertEqual(response.context['page_obj'].paginator.count, 1)
+
+    def test_filter_form_auto_submits_without_apply_button(self):
+        self.create_tournament('Future Cup')
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-filter-submit')
+        self.assertNotContains(response, 'Apply')
+
+    def test_tournament_name_has_full_name_tooltip(self):
+        self.create_tournament('Full Cup (триплети, тур, чоловіки)', players_min=3)
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Full Cup')
+        self.assertContains(response, 'title="Full Cup (триплети, тур, чоловіки)"')
+        self.assertContains(response, 'data-bs-toggle="tooltip"')
+
+    def test_tete_a_tete_listing_uses_player_count_label(self):
+        tete = self.create_tournament('Tete Cup', players_min=1)
+        tete.total_number_of_teams = 8
+        tete.save(update_fields=['total_number_of_teams'])
+        doublets = self.create_tournament('Doublets Cup', players_min=2)
+        doublets.total_number_of_teams = 4
+        doublets.save(update_fields=['total_number_of_teams'])
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '8 гравців')
+        self.assertContains(response, '4 команди')
+        self.assertNotContains(response, '8 команд')
+
+    def test_tete_a_tete_listing_uses_localized_player_count_label(self):
+        tete = self.create_tournament('Tete Cup', players_min=1)
+        tete.total_number_of_teams = 1
+        tete.save(update_fields=['total_number_of_teams'])
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '1 player')
+        self.assertNotContains(response, '1 team')
+
+    def test_english_listing_localizes_labels_and_keeps_key_based_filters(self):
+        self.create_tournament('Junior Triples Cup (юніори)', players_min=3)
+        self.create_tournament('Senior Doublets Cup', players_min=2)
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/tournaments/', {
+            'period': 'future',
+            'category': 'juniors',
+            'format': 'triplets',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Tournaments')
+        self.assertContains(response, 'Future')
+        self.assertContains(response, 'Juniors')
+        self.assertContains(response, 'Triples')
+        self.assertContains(response, 'No club')
+        self.assertContains(response, '0 teams')
+        self.assertContains(response, 'Junior Triples Cup')
+        self.assertNotContains(response, 'Senior Doublets Cup')
+        self.assertNotContains(response, 'Змагання не знайдено')
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
 
     def test_create_button_is_visible_only_for_allowlisted_superuser(self):
