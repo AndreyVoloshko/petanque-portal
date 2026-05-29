@@ -17,7 +17,7 @@ from .views.records import records
 from .views.sport_titles import sport_titles
 from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export, tournament_protocol
 from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list, submit_tournament_results
-from .views.documents import documents
+from .views.documents import documents, document_download
 from .views.national_teams import national_teams
 from .views.seasons import seasons
 from .views.register import register_team, register_player
@@ -90,6 +90,7 @@ urlpatterns = [
     re_path(r'^sport_titles/$', sport_titles,          name='sport_titles'),
 
     re_path(r'^documents/$',     documents,                name='documents'),
+    re_path(r'^documents/(?P<pk>\d+)/download/$', document_download, name='document_download'),
 
     re_path(r'^departments/$', departments, name='departments'),
 

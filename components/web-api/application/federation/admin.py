@@ -20,6 +20,14 @@ class DocumentCategoryAdmin(admin.ModelAdmin):
     ordering = ('order', 'name')
 
 
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'document_date', 'download_count', 'is_active')
+    list_filter = ('category', 'is_active')
+    search_fields = ('name', 'notes')
+    readonly_fields = ('download_count', 'created_at')
+    ordering = ('-document_date', '-created_at')
+
+
 # Register your models here.
 admin.site.register(City, CityAdmin)
 admin.site.register(Club, ClubAdmin)
@@ -29,7 +37,7 @@ admin.site.register(Tournament, ArbiterTeamTournamentAdminInline)
 admin.site.register(National_team, National_teamAdmin)
 admin.site.register(Record)
 admin.site.register(DocumentCategory, DocumentCategoryAdmin)
-admin.site.register(Document)
+admin.site.register(Document, DocumentAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Department, DepartmentAdmin)
 admin.site.register(EmailConfirmation)
