@@ -624,7 +624,9 @@ def _is_cancelled(tournament):
 
 def _tournament_status_note(tournament, status_key):
     if status_key in ('registration_open', 'registration_closed') and tournament.date_registration_stop:
-        return '{} {}'.format(_('до'), formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT'))
+        date_str = formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT')
+        time_str = formats.time_format(tournament.date_registration_stop, 'H:i')
+        return '{} {} {}'.format(_('до'), date_str, time_str)
 
     if status_key == 'ongoing':
         return _date_range_label(tournament)

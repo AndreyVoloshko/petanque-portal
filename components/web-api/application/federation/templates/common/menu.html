@@ -90,6 +90,7 @@
                         {% else %}
                             {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li> {% endcomment %}
                             <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> {% trans "Log in" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register_player' %}"><i class="bi bi-person-plus"></i> {% trans "Register" %}</a></li>
                         {% endif %}
                     </ul>
                 </li>

@@ -15,7 +15,7 @@
                     <th class="tournament-title-column">{% trans "Назва" %}</th>
                     <th class="tournament-format-column">{% trans "Формат" %}</th>
                     <th class="tournament-place-column">{% trans "Місце" %}</th>
-                    {% if show_strength %}
+                    {% if show_strength and not filters.foreign %}
                         <th class="tournament-strength-column">
                             <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд." %}">
                                 {% trans "Сила" %} <i class="bi bi-info-circle" aria-hidden="true"></i>
@@ -29,7 +29,7 @@
             <tbody>
                 {% for row in rows %}
                     {% with item=row.tournament %}
-                    <tr>
+                    <tr class="tournament-row-clickable" data-href="{{ row.detail_url }}">
                         <td class="tournament-date-cell" data-label="{% trans "Дата" %}">
                             <div class="tournament-date-wrap">
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
@@ -73,6 +73,7 @@
                                     <span class="tournament-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>
                                 {% endif %}
                             </div>
+                            {% if not row.is_foreign %}
                             <div class="tournament-place-line tournament-organizer-line">
                                 <i class="bi bi-building" aria-hidden="true"></i>
                                 {% if row.organizer_url %}
@@ -81,8 +82,9 @@
                                     <span>{{ row.organizer_label }}</span>
                                 {% endif %}
                             </div>
+                            {% endif %}
                         </td>
-                        {% if show_strength %}
+                        {% if show_strength and not filters.foreign %}
                             <td class="tournament-strength-cell" data-label="{% trans "Сила" %}">
                                 {% with power=item|tournament_power_badge %}
                                     {% if power %}
@@ -172,6 +174,7 @@
                                         <span class="tournament-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>
                                     {% endif %}
                                 </span>
+                                {% if not row.is_foreign %}
                                 <span class="tournament-place-line tournament-organizer-line">
                                     <i class="bi bi-building" aria-hidden="true"></i>
                                     {% if row.organizer_url %}
@@ -180,9 +183,10 @@
                                         <span>{{ row.organizer_label }}</span>
                                     {% endif %}
                                 </span>
+                                {% endif %}
                             </div>
 
-                            {% if show_strength %}
+                            {% if show_strength and not filters.foreign %}
                                 <div class="tournament-tablet-power">
                                     {% with power=item|tournament_power_badge %}
                                         {% if power %}
@@ -259,6 +263,7 @@
                                         <span class="tournament-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>
                                     {% endif %}
                                 </div>
+                                {% if not row.is_foreign %}
                                 <div class="tournament-mobile-info-line">
                                     <i class="bi bi-building" aria-hidden="true"></i>
                                     {% if row.organizer_url %}
@@ -267,9 +272,10 @@
                                         <span>{{ row.organizer_label }}</span>
                                     {% endif %}
                                 </div>
+                                {% endif %}
                             </div>
                             <div class="tournament-mobile-status-panel">
-                                {% if show_strength %}
+                                {% if show_strength and not filters.foreign %}
                                     {% with power=item|tournament_power_badge %}
                                         {% if power %}
                                             <div class="tournament-mobile-power">{{ power|safe }}</div>

@@ -84,6 +84,7 @@ def register_player(request):
                         user=user,
                         name=player_registration_form.cleaned_data['name'],
                         surname=player_registration_form.cleaned_data['surname'],
+                        second_name=player_registration_form.cleaned_data.get('patronymic') or '',
                         birth_date=player_registration_form.cleaned_data['birth_date'],
                         country=player_registration_form.cleaned_data['country'],
                         gender=player_registration_form.cleaned_data['gender'],

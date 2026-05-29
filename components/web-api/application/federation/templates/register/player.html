@@ -38,28 +38,32 @@
                 dateFormat: "yy-mm-dd"
             });
 
-            function toggleEmailField() {
+            function toggleCountryFields() {
                 var country = $("#id_country").val();
                 var emailGroup = $("#email-field-group");
                 var emailInput = $("#id_email");
                 var emailLabel = $("label[for='id_email']");
+                var patronymicGroup = $("#patronymic-field-group");
 
                 if (country === "UA") {
                     emailGroup.show();
+                    patronymicGroup.show();
                     emailInput.prop("required", false);
                     emailLabel.removeClass("requiredField");
                     emailLabel.find(".asteriskField").remove();
                 } else {
                     emailGroup.hide();
+                    patronymicGroup.hide();
                     emailInput.prop("required", false);
                     emailInput.val("");
+                    $("#id_patronymic").val("");
                     emailLabel.removeClass("requiredField");
                     emailLabel.find(".asteriskField").remove();
                 }
             }
 
-            $("#id_country").on("change", toggleEmailField);
-            toggleEmailField();
+            $("#id_country").on("change", toggleCountryFields);
+            toggleCountryFields();
         });
     </script>
 {% endblock %}

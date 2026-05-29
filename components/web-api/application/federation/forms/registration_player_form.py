@@ -19,6 +19,7 @@ class RegistrationPlayerForm(forms.Form):
         super(RegistrationPlayerForm, self).__init__(*args, **kwargs)
         selected_country = self.data.get('country') if self.data else self.initial.get('country')
         email_style = '' if selected_country == 'UA' else 'display: none;'
+        patronymic_style = '' if selected_country == 'UA' else 'display: none;'
 
         self.fields['name'] = forms.CharField(
             widget=forms.TextInput(),
@@ -30,6 +31,13 @@ class RegistrationPlayerForm(forms.Form):
             widget=forms.TextInput(),
             label=_("Last name"),
             required=True,
+        )
+
+        self.fields['patronymic'] = forms.CharField(
+            widget=forms.TextInput(),
+            label=_("Patronymic"),
+            help_text=_("Optional. Required for tournament result protocols."),
+            required=False,
         )
 
         self.fields['birth_date'] = forms.CharField(
@@ -86,6 +94,12 @@ class RegistrationPlayerForm(forms.Form):
             Div(
                 'surname',
                 css_class="col-lg-12 mb-3"
+            ),
+            Div(
+                'patronymic',
+                css_id="patronymic-field-group",
+                css_class="col-lg-12 mb-3",
+                style=patronymic_style
             ),
             Div(
                 'birth_date',
@@ -156,6 +170,7 @@ class RegistrationPlayerForm(forms.Form):
         email = cleaned_data.get('email')
         if country != 'UA':
             cleaned_data['email'] = ''
+            cleaned_data['patronymic'] = ''
             return cleaned_data
 
         if email and User.objects.filter(email__iexact=email).exists():

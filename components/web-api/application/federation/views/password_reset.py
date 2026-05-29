@@ -12,6 +12,7 @@ class ConfirmedPasswordResetForm(PasswordResetForm):
         self.fields['email'].widget.attrs.update({
             'class': 'form-control',
             'autocomplete': 'email',
+            'placeholder': _('your.email@example.com'),
         })
         self.fields['email'].label = _('Email address')
 
