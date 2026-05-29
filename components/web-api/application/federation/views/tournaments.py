@@ -69,7 +69,6 @@ def tournaments(request, date_filter=None, type_filter=None):
         'period_tabs': _get_period_tabs(filters),
         'format_options': FORMAT_OPTIONS,
         'category_options': CATEGORY_OPTIONS,
-        'status_options': STATUS_OPTIONS,
         'place_options': filter_options['places'],
         'rows': page_rows,
         'show_strength': True,
@@ -116,15 +115,14 @@ CATEGORY_OPTIONS = (
     ('veterans', _('Ветерани 55+')),
     ('open', _('Відкриті')),
 )
-STATUS_OPTIONS = (
-    ('registration_open', _('Реєстрація відкрита')),
-    ('registration_closed', _('Реєстрація закрита')),
-    ('registration_unavailable', _('Реєстрація недоступна')),
-    ('ongoing', _('Триває')),
-    ('finished', _('Завершено')),
-    ('cancelled', _('Скасовано')),
-)
-STATUS_LABELS = dict(STATUS_OPTIONS)
+STATUS_LABELS = {
+    'registration_open': _('Реєстрація відкрита'),
+    'registration_closed': _('Реєстрація закрита'),
+    'registration_unavailable': _('Реєстрація недоступна'),
+    'ongoing': _('Триває'),
+    'finished': _('Завершено'),
+    'cancelled': _('Скасовано'),
+}
 COUNTRY_LABELS = {
     'AT': {'uk': 'Австрія', 'en': 'Austria'},
     'BE': {'uk': 'Бельгія', 'en': 'Belgium'},
@@ -235,7 +233,6 @@ def _get_tournament_filters(request, date_filter, type_filter):
         'category': request.GET.get('category', '').strip(),
         'place': request.GET.get('place', '').strip(),
         'club': request.GET.get('club', '').strip(),
-        'status': request.GET.get('status', '').strip(),
         'sort': sort,
         'page_size': _get_page_size(request),
     }
@@ -676,9 +673,6 @@ def _row_matches_filters(row, filters):
     if filters['club'] and str(row['tournament'].organizer_club_id or '') != filters['club']:
         return False
 
-    if filters['status'] and row['status']['key'] != filters['status']:
-        return False
-
     return True
 
 
@@ -717,7 +711,7 @@ def _active_filter_params(filters):
     if filters['foreign']:
         params['foreign'] = '1'
 
-    for key in ('search', 'format', 'category', 'place', 'club', 'status'):
+    for key in ('search', 'format', 'category', 'place', 'club'):
         value = filters[key]
         if value:
             params['q' if key == 'search' else key] = value
@@ -732,7 +726,7 @@ def _active_filter_params(filters):
 
 
 def _has_active_secondary_filters(filters):
-    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club', 'status')) or filters['foreign']
+    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club')) or filters['foreign']
 
 
 def _url_for_filters(filters, page=None):

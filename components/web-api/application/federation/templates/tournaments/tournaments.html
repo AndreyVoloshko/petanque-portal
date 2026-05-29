@@ -46,9 +46,6 @@
             {% if filters.place %}
                 <input type="hidden" name="place" value="{{ filters.place }}">
             {% endif %}
-            {% if filters.status %}
-                <input type="hidden" name="status" value="{{ filters.status }}">
-            {% endif %}
             <label class="tournament-toggle">
                 <input type="checkbox" name="foreign" value="1" {% if filters.foreign %}checked{% endif %}>
                 <span class="tournament-toggle-label">
@@ -108,17 +105,6 @@
                 <option value="">{% trans "Місце" %}</option>
                 {% for place in place_options %}
                     <option value="{{ place }}" {% if filters.place == place %}selected{% endif %}>{{ place }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label class="tournament-filter-field">
-            <span class="visually-hidden">{% trans "Статус" %}</span>
-            <i class="bi bi-flag" aria-hidden="true"></i>
-            <select name="status">
-                <option value="">{% trans "Статус" %}</option>
-                {% for value,label in status_options %}
-                    <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
         </label>

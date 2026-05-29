@@ -536,7 +536,6 @@ class TournamentListingPageTests(TestCase):
             'period': 'future',
             'q': 'Kyiv',
             'category': 'women',
-            'status': 'registration_open',
         })
 
         self.assertEqual(response.status_code, 200)
