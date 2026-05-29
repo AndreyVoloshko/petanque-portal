@@ -78,6 +78,13 @@ class RegistrationPlayerForm(forms.Form):
             required=True,
         )
 
+        self.fields['licence_number'] = forms.CharField(
+            widget=forms.TextInput(),
+            label=_("License number"),
+            help_text=_("Only for players who already have a license issued by the federation."),
+            required=False,
+        )
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_player')
@@ -125,6 +132,10 @@ class RegistrationPlayerForm(forms.Form):
             ),
             Div(
                 'gender',
+                css_class="col-lg-12 mb-3"
+            ),
+            Div(
+                'licence_number',
                 css_class="col-lg-12 mb-3"
             ),
             Div(

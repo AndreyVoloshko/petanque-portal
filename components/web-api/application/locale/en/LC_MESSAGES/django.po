@@ -120,6 +120,10 @@ msgstr "Country"
 msgid "License number"
 msgstr "License number"
 
+#: federation/forms/registration_player_form.py
+msgid "Only for players who already have a license issued by the federation."
+msgstr "Only for players who already have a license issued by the federation."
+
 #: federation/forms/player_form.py:133
 #: federation/forms/registration_player_form.py:68
 #: federation/models/player.py:70

@@ -121,6 +121,10 @@ msgstr "Країна"
 msgid "License number"
 msgstr "Номер ліцензії"
 
+#: federation/forms/registration_player_form.py
+msgid "Only for players who already have a license issued by the federation."
+msgstr "Тільки для гравців, які вже мають ліцензію, видану федерацією."
+
 #: federation/forms/player_form.py:133
 #: federation/forms/registration_player_form.py:68
 #: federation/models/player.py:70

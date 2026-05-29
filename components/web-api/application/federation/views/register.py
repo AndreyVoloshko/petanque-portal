@@ -88,6 +88,7 @@ def register_player(request):
                         birth_date=player_registration_form.cleaned_data['birth_date'],
                         country=player_registration_form.cleaned_data['country'],
                         gender=player_registration_form.cleaned_data['gender'],
+                        licence_number=player_registration_form.cleaned_data.get('licence_number') or None,
                     )
                     player.save()
 
