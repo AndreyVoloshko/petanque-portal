@@ -22,6 +22,27 @@ from federation.utils.tournament_names import get_tournament_card_metadata
 
 
 _SPACES_RE = re.compile(r'\s+')
+DEFAULT_TOURNAMENTS_PAGE_SIZE = 10
+MOBILE_TOURNAMENTS_PAGE_SIZE = 5
+TOURNAMENTS_PAGE_SIZE_PARAM = 'per_page'
+TOURNAMENTS_PAGE_SIZE_OPTIONS = {
+    DEFAULT_TOURNAMENTS_PAGE_SIZE,
+    MOBILE_TOURNAMENTS_PAGE_SIZE,
+}
+UK_FULL_MONTHS_GENITIVE = {
+    1: 'Січня',
+    2: 'Лютого',
+    3: 'Березня',
+    4: 'Квітня',
+    5: 'Травня',
+    6: 'Червня',
+    7: 'Липня',
+    8: 'Серпня',
+    9: 'Вересня',
+    10: 'Жовтня',
+    11: 'Листопада',
+    12: 'Грудня',
+}
 
 
 def _current_language():
@@ -36,7 +57,7 @@ def tournaments(request, date_filter=None, type_filter=None):
     rows = [_build_tournament_row(tournament) for tournament in queryset]
     rows = [row for row in rows if _row_matches_filters(row, filters)]
 
-    paginator = Paginator(rows, 10)
+    paginator = Paginator(rows, filters['page_size'])
     page_obj = paginator.get_page(request.GET.get('page'))
     page_rows = page_obj.object_list
     active_filters = _active_filter_params(filters)
@@ -48,19 +69,18 @@ def tournaments(request, date_filter=None, type_filter=None):
         'period_tabs': _get_period_tabs(filters),
         'format_options': FORMAT_OPTIONS,
         'category_options': CATEGORY_OPTIONS,
-        'status_options': STATUS_OPTIONS,
         'place_options': filter_options['places'],
-        'club_options': filter_options['clubs'],
         'rows': page_rows,
         'show_strength': True,
         'page_obj': page_obj,
+        'page_size': filters['page_size'],
         'pagination_pages': _pagination_pages(page_obj),
         'pagination_summary': _pagination_summary(page_obj),
         'pagination_urls': _pagination_urls(filters, page_obj),
         'sort_state': _get_sort_state(filters),
         'active_filters': active_filters,
         'has_active_secondary_filters': _has_active_secondary_filters(filters),
-        'reset_url': reverse('tournaments'),
+        'reset_url': _reset_url(filters),
         'can_create_tournament': can_create_tournament(request.user),
         'admin_add_url': reverse('admin:federation_tournament_add'),
         'empty_state': _empty_state(filters),
@@ -95,15 +115,14 @@ CATEGORY_OPTIONS = (
     ('veterans', _('Ветерани 55+')),
     ('open', _('Відкриті')),
 )
-STATUS_OPTIONS = (
-    ('registration_open', _('Реєстрація відкрита')),
-    ('registration_closed', _('Реєстрація закрита')),
-    ('registration_unavailable', _('Реєстрація недоступна')),
-    ('ongoing', _('Триває')),
-    ('finished', _('Завершено')),
-    ('cancelled', _('Скасовано')),
-)
-STATUS_LABELS = dict(STATUS_OPTIONS)
+STATUS_LABELS = {
+    'registration_open': _('Реєстрація відкрита'),
+    'registration_closed': _('Реєстрація закрита'),
+    'registration_unavailable': _('Реєстрація недоступна'),
+    'ongoing': _('Триває'),
+    'finished': _('Завершено'),
+    'cancelled': _('Скасовано'),
+}
 COUNTRY_LABELS = {
     'AT': {'uk': 'Австрія', 'en': 'Austria'},
     'BE': {'uk': 'Бельгія', 'en': 'Belgium'},
@@ -214,9 +233,21 @@ def _get_tournament_filters(request, date_filter, type_filter):
         'category': request.GET.get('category', '').strip(),
         'place': request.GET.get('place', '').strip(),
         'club': request.GET.get('club', '').strip(),
-        'status': request.GET.get('status', '').strip(),
         'sort': sort,
+        'page_size': _get_page_size(request),
     }
+
+
+def _get_page_size(request):
+    try:
+        page_size = int(request.GET.get(TOURNAMENTS_PAGE_SIZE_PARAM, DEFAULT_TOURNAMENTS_PAGE_SIZE))
+    except (TypeError, ValueError):
+        return DEFAULT_TOURNAMENTS_PAGE_SIZE
+
+    if page_size in TOURNAMENTS_PAGE_SIZE_OPTIONS:
+        return page_size
+
+    return DEFAULT_TOURNAMENTS_PAGE_SIZE
 
 
 def _truthy(value):
@@ -282,16 +313,9 @@ def _apply_period_filter(queryset, period):
 
 def _get_tournament_filter_options(queryset):
     places = sorted({place for place in queryset.values_list('place', flat=True) if place})
-    clubs = {}
-
-    for tournament in queryset:
-        if tournament.organizer_club:
-            label = tournament.organizer_club.short_name or tournament.organizer_club.name
-            clubs[str(tournament.organizer_club_id)] = label
 
     return {
         'places': places,
-        'clubs': sorted(clubs.items(), key=lambda item: item[1].lower()),
     }
 
 
@@ -310,6 +334,8 @@ def _build_tournament_row(tournament):
         'tournament': tournament,
         'title': metadata.get('name') or tournament.get_name(),
         'full_title': tournament.name,
+        'date_label': _date_full_month_label(tournament.start_date),
+        'weekday_label': formats.date_format(tournament.start_date, 'l') if tournament.start_date else '',
         'teams_count_label': _registered_count_label(
             tournament.get_teams_count(),
             _is_single_player_format(tournament, format_keys),
@@ -334,6 +360,20 @@ def _build_tournament_row(tournament):
         'protocol_url': reverse('tournament_protocol', args=[tournament.pk]),
         'show_results_action': tournament.is_processing_closed(),
     }
+
+
+def _date_full_month_label(value):
+    if not value:
+        return ''
+
+    if _current_language() == 'uk':
+        return '{} {} {}'.format(
+            value.day,
+            UK_FULL_MONTHS_GENITIVE[value.month],
+            value.year,
+        )
+
+    return formats.date_format(value, 'j F Y')
 
 
 def _display_format_label(format_label):
@@ -633,9 +673,6 @@ def _row_matches_filters(row, filters):
     if filters['club'] and str(row['tournament'].organizer_club_id or '') != filters['club']:
         return False
 
-    if filters['status'] and row['status']['key'] != filters['status']:
-        return False
-
     return True
 
 
@@ -674,7 +711,7 @@ def _active_filter_params(filters):
     if filters['foreign']:
         params['foreign'] = '1'
 
-    for key in ('search', 'format', 'category', 'place', 'club', 'status'):
+    for key in ('search', 'format', 'category', 'place', 'club'):
         value = filters[key]
         if value:
             params['q' if key == 'search' else key] = value
@@ -682,11 +719,14 @@ def _active_filter_params(filters):
     if filters.get('sort') and filters['sort'] != _default_sort(filters['period']):
         params['sort'] = filters['sort']
 
+    if filters.get('page_size') and filters['page_size'] != DEFAULT_TOURNAMENTS_PAGE_SIZE:
+        params[TOURNAMENTS_PAGE_SIZE_PARAM] = filters['page_size']
+
     return params
 
 
 def _has_active_secondary_filters(filters):
-    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club', 'status')) or filters['foreign']
+    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club')) or filters['foreign']
 
 
 def _url_for_filters(filters, page=None):
@@ -699,6 +739,16 @@ def _url_for_filters(filters, page=None):
         return reverse('tournaments')
 
     return '{}?{}'.format(reverse('tournaments'), query)
+
+
+def _reset_url(filters):
+    if filters.get('page_size') == DEFAULT_TOURNAMENTS_PAGE_SIZE:
+        return reverse('tournaments')
+
+    return '{}?{}'.format(
+        reverse('tournaments'),
+        urlencode({TOURNAMENTS_PAGE_SIZE_PARAM: filters['page_size']}),
+    )
 
 
 def _get_sort_state(filters):
