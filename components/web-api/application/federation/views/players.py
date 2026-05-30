@@ -50,20 +50,25 @@ def player(request, id):
     this_year_tournaments_count = past_tournaments.filter(start_date__year=current_year).count()
     this_year_b_tournaments_count = past_b_tournaments.filter(start_date__year=current_year).count()
     this_year_liga_tournaments_count = past_tournaments.filter(start_date__year=current_year).count()
-    this_year_rating_tournaments_count = past_tournaments.filter(start_date__year=current_year,is_goes_to_rating=True).count()
+    this_year_rating_tournaments_count = past_tournaments.filter(start_date__year=current_year, is_goes_to_rating=True).count()
     this_year_away_tournaments_count = past_away_tournaments.filter(start_date__year=current_year).count()
 
     player_summary_info = {
         'this_year_tournaments_count': this_year_tournaments_count,
         'this_year_b_tournaments_count': this_year_b_tournaments_count,
-        'this_year_tournaments_count': this_year_liga_tournaments_count,
+        'this_year_liga_tournaments_count': this_year_liga_tournaments_count,
         'this_year_rating_tournaments_count': this_year_rating_tournaments_count,
-        'this_year_away_tournaments_count': this_year_away_tournaments_count
+        'this_year_away_tournaments_count': this_year_away_tournaments_count,
     }
+
+    recent_tournaments = list(past_tournaments.order_by('-start_date')[:6])
 
     season_rating_field = "rating"
     seasons_model = get_model('Season')
     player_seasons = seasons_model.objects.filter(player=player).order_by('-year')
+
+    from federation.models.national_teams import PlayerNational_teamMembership
+    national_team_memberships = PlayerNational_teamMembership.objects.filter(player=player).select_related('team')
 
     return render(request, 'players/player.html', {
         'player': player,
@@ -72,6 +77,8 @@ def player(request, id):
         'future_tournaments': future_tournaments,
         'past_b_tournaments': past_b_tournaments,
         'past_away_tournaments': past_away_tournaments,
+        'recent_tournaments': recent_tournaments,
+        'national_team_memberships': national_team_memberships,
         'season_rating_field': season_rating_field,
-        'player_seasons': player_seasons
+        'player_seasons': player_seasons,
     })
