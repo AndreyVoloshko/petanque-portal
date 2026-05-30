@@ -1,119 +1,391 @@
 {% extends "common/page_base.html" %}
 {% load app_filters %}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
-    <div class="row">
-        {% include "players/player_info_panel.html" with item=player %}
-        {% trans "Club" as club_title %}
-        {% include "clubs/club_short_info_panel.html" with item=player.current_club page_title=club_title %}
-    </div>
-    <div class="clearfix pt-4"></div>
+<section class="player-page">
+    <nav class="player-breadcrumbs" aria-label="breadcrumb">
+        <a href="/" class="player-breadcrumb-link"><i class="bi bi-house-door-fill"></i></a>
+        <i class="bi bi-chevron-right player-breadcrumb-sep"></i>
+        <a href="{% url 'players' %}" class="player-breadcrumb-link">{% trans "Players" %}</a>
+        <i class="bi bi-chevron-right player-breadcrumb-sep"></i>
+        <span class="player-breadcrumb-current">{% trans "Player profile" %}</span>
+    </nav>
 
-    <div class="row">
-        <div class="col-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">{% trans "Athlete information" %}</h5>
-                
-                <ul class="nav nav-pills mb-3" id="playerTabs" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active"
-                                id="player-tournaments-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#player_tournaments"
-                                type="button"
-                                role="tab"
-                                aria-controls="player_tournaments"
-                                aria-selected="true">
-                            <i class="bi bi-list"></i> {% trans "Competitions" %}
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link"
-                                id="player-ratings-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#player_ratings"
-                                type="button"
-                                role="tab"
-                                aria-controls="player_ratings"
-                                aria-selected="false">
-                            <i class="bi bi-star"></i> {% trans "Additional information" %}
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="tab-content" id="playerTabsContent">
-                    <div class="tab-pane fade show active" id="player_tournaments" role="tabpanel" aria-labelledby="player-tournaments-tab">
-                        <section class="p-3 rounded shadow">
-                            <ul class="nav nav-pills mb-3" id="tournamentTabs" role="tablist">
-                                <li class="nav-item">
-                                    <button class="nav-link active"
-                                            id="player-past-tournaments-tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#player_past_tournaments"
-                                            type="button"
-                                            role="tab"
-                                            aria-controls="player_past_tournaments"
-                                            aria-selected="true">
-                                        <i class="bi bi-check2-circle"></i> {% trans "Ukrainian" %}
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link"
-                                            id="player-away-tournaments-tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#player_away_tournaments"
-                                            type="button"
-                                            role="tab"
-                                            aria-controls="player_away_tournaments"
-                                            aria-selected="false">
-                                        <i class="bi bi-airplane"></i> {% trans "International" %}
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="nav-link"
-                                            id="player-future-tournaments-tab"
-                                            data-bs-toggle="tab"
-                                            data-bs-target="#player_future_tournaments"
-                                            type="button"
-                                            role="tab"
-                                            aria-controls="player_future_tournaments"
-                                            aria-selected="false">
-                                        <i class="bi bi-hourglass"></i> {% trans "Upcoming" %}
-                                    </button>
-                                </li>
-                            </ul>
-
-                            <div class="tab-content" id="tournamentTabsContent">
-                                <div class="tab-pane fade show active"
-                                     id="player_past_tournaments"
-                                     role="tabpanel"
-                                     aria-labelledby="player-past-tournaments-tab">
-                                    {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
-                                </div>
-                                <div class="tab-pane fade"
-                                     id="player_away_tournaments"
-                                     role="tabpanel"
-                                     aria-labelledby="player-away-tournaments-tab">
-                                    {% include "tournaments/player_past_away_tournaments.html" with items=past_away_tournaments player=player table_id="player_away_tournaments_table" initial_order="desc" %}
-                                </div>
-                                <div class="tab-pane fade"
-                                     id="player_future_tournaments"
-                                     role="tabpanel"
-                                     aria-labelledby="player-future-tournaments-tab">
-                                    {% include "tournaments/player_future_tournaments.html" with items=future_tournaments player=player table_id="player_future_tournaments_table" initial_order="asc" %}
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <div class="tab-pane fade" id="player_ratings" role="tabpanel" aria-labelledby="player-ratings-tab">
-                        <section class="p-3 rounded shadow">
-                            {% include "players/player_statistic_and_records_info_panel.html" with item=player player_summary_info=player_summary_info %}
-                        </section>
-                    </div>
-                </div>
-            </section>
+    <div class="player-hero-card">
+        <div class="player-hero-avatar">
+            {% if player.avatar %}
+                <img src="{{ settings.MEDIA_URL }}{{ player.avatar }}" alt="{{ player.get_name }}">
+            {% else %}
+                <img src="{% static 'default.png' %}" alt="{{ player.get_name }}">
+            {% endif %}
+        </div>
+        <div class="player-hero-info">
+            <span class="player-id-chip">#{{ player.pk }}</span>
+            <h1 class="player-hero-name">{{ player.get_name }}</h1>
+            <div class="player-hero-chips">
+                {% if player.sport_title %}
+                    <span class="player-chip player-chip-sport-title">
+                        <i class="bi bi-award"></i>
+                        {{ player.get_sport_title_display }}
+                    </span>
+                {% endif %}
+                {% for membership in national_team_memberships %}
+                    <span class="player-chip player-chip-national-team">
+                        <i class="bi bi-people-fill"></i>
+                        {% trans "National team player" %}
+                    </span>
+                {% endfor %}
+                {% if player.arbiter_level %}
+                    <span class="player-chip player-chip-arbiter">
+                        <i class="bi bi-shield-check"></i>
+                        {{ player.get_arbiter_level_display }}
+                    </span>
+                {% endif %}
+            </div>
         </div>
     </div>
+
+    <div class="player-info-grid">
+        <div class="player-details-card player-card">
+            <h2 class="player-card-title player-card-title-collapsible" data-bs-toggle="collapse" data-bs-target="#player-details-body" aria-expanded="false">
+                <i class="bi bi-person-badge"></i>
+                {% trans "Details" %}
+                <i class="bi bi-chevron-down player-collapse-icon"></i>
+            </h2>
+            <div class="player-card-body collapse" id="player-details-body">
+            <div class="player-details-list">
+                <div class="player-detail-row">
+                    <i class="bi bi-calendar3"></i>
+                    <span class="player-detail-label">{% trans "Date of birth" %}</span>
+                    <span class="player-detail-value">
+                        {% if player.birth_date %}{{ player.birth_date|date:"d.m.Y" }}{% else %}&mdash;{% endif %}
+                    </span>
+                </div>
+                <div class="player-detail-row">
+                    <i class="bi bi-person"></i>
+                    <span class="player-detail-label">{% trans "Gender" %}</span>
+                    <span class="player-detail-value">
+                        {% if player.gender %}{{ player.get_gender_display }}{% else %}&mdash;{% endif %}
+                    </span>
+                </div>
+                {% if player.current_club and player.current_club.city %}
+                <div class="player-detail-row">
+                    <i class="bi bi-geo-alt"></i>
+                    <span class="player-detail-label">{% trans "City" %}</span>
+                    <span class="player-detail-value">{{ player.current_club.city }}</span>
+                </div>
+                {% endif %}
+                <div class="player-detail-row">
+                    <i class="bi bi-flag"></i>
+                    <span class="player-detail-label">{% trans "Country" %}</span>
+                    <span class="player-detail-value">
+                        {% if player.country %}{{ player.country.name }}{% else %}&mdash;{% endif %}
+                    </span>
+                </div>
+                {% if player.user.email %}
+                <div class="player-detail-row">
+                    <i class="bi bi-envelope"></i>
+                    <span class="player-detail-label">{% trans "Email" %}</span>
+                    <span class="player-detail-value">{{ player.user.email }}</span>
+                </div>
+                {% endif %}
+                {% if player.prefred_position %}
+                <div class="player-detail-row">
+                    <i class="bi bi-bullseye"></i>
+                    <span class="player-detail-label">{% trans "Position" %}</span>
+                    <span class="player-detail-value">{{ player.get_prefred_position_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+
+        <div class="player-club-card player-card">
+            <h2 class="player-card-title player-card-title-collapsible" data-bs-toggle="collapse" data-bs-target="#player-club-body" aria-expanded="false">
+                <i class="bi bi-building"></i>
+                {% trans "Club" %}
+                <i class="bi bi-chevron-down player-collapse-icon"></i>
+            </h2>
+            <div class="player-card-body collapse" id="player-club-body">
+            {% if player.current_club %}
+                <div class="player-club-content">
+                    <div class="player-club-logo">
+                        {% if player.current_club.logo %}
+                            <img src="{{ settings.MEDIA_URL }}{{ player.current_club.logo }}" alt="{{ player.current_club.short_name }}">
+                        {% else %}
+                            <div class="player-club-logo-placeholder">
+                                <i class="bi bi-shield"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="player-club-info">
+                        <a href="{% url 'club' id=player.current_club.pk %}" class="player-club-name">{{ player.current_club.short_name }}</a>
+                        <div class="player-club-meta-grid">
+                            {% if player.current_club.city %}
+                            <div class="player-club-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span class="player-club-meta-label">{% trans "City" %}</span>
+                                <span class="player-club-meta-value">{{ player.current_club.city }}</span>
+                            </div>
+                            {% endif %}
+                            {% if player.current_club.city.country %}
+                            <div class="player-club-meta-item">
+                                <i class="bi bi-globe2"></i>
+                                <span class="player-club-meta-label">{% trans "Region" %}</span>
+                                <span class="player-club-meta-value">{{ player.current_club.city.country.name }}</span>
+                            </div>
+                            {% endif %}
+                            {% if player.current_club.date_created %}
+                            <div class="player-club-meta-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span class="player-club-meta-label">{% trans "Member since" %}</span>
+                                <span class="player-club-meta-value">{{ player.current_club.date_created|date:"Y" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if player.prefred_position %}
+                            <div class="player-club-meta-item">
+                                <i class="bi bi-hand-index"></i>
+                                <span class="player-club-meta-label">{% trans "Position" %}</span>
+                                <span class="player-club-meta-value">{{ player.get_prefred_position_display }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="player-club-empty">
+                    <i class="bi bi-building"></i>
+                    <span>{% trans "No club" %}</span>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+
+        <div class="player-stats-card player-card">
+            <h2 class="player-card-title player-card-title-collapsible" data-bs-toggle="collapse" data-bs-target="#player-stats-body" aria-expanded="true">
+                <i class="bi bi-bar-chart-line"></i>
+                {% trans "Player statistics" %}
+                <i class="bi bi-chevron-down player-collapse-icon"></i>
+            </h2>
+            <div class="player-card-body collapse show" id="player-stats-body">
+            <div class="player-stats-grid">
+                <div class="player-stat-tile player-stat-rating">
+                    <span class="player-stat-label">{% trans "Rating" %}</span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">{{ player.current_rating|floatformat:0 }}</span>
+                        <i class="bi bi-graph-up-arrow player-stat-icon"></i>
+                    </div>
+                </div>
+                <div class="player-stat-tile player-stat-power">
+                    <span class="player-stat-label">{% trans "Power" %}</span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">{{ player.current_power|floatformat:1 }}</span>
+                        <i class="bi bi-lightning-charge player-stat-icon"></i>
+                    </div>
+                </div>
+                <div class="player-stat-tile player-stat-rating-comp">
+                    <span class="player-stat-label">{% trans "Rating competitions" %}</span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">{{ player_summary_info.this_year_rating_tournaments_count }}</span>
+                        <i class="bi bi-trophy player-stat-icon"></i>
+                    </div>
+                </div>
+                <div class="player-stat-tile player-stat-international">
+                    <span class="player-stat-label">{% trans "International competitions" %}</span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">{{ player_summary_info.this_year_away_tournaments_count }}</span>
+                        <i class="bi bi-globe2 player-stat-icon"></i>
+                    </div>
+                </div>
+                <div class="player-stat-tile player-stat-total">
+                    <span class="player-stat-label">{% trans "Total competitions" %}</span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">{{ player_summary_info.this_year_tournaments_count }}</span>
+                        <i class="bi bi-collection player-stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="player-tournaments-section player-card">
+        <div class="player-tournaments-header">
+            <h2 class="player-card-title">
+                <i class="bi bi-trophy"></i>
+                {% trans "Tournaments" %}
+            </h2>
+            {% if past_tournaments.count > 6 %}
+            <a href="#player-all-tournaments" class="player-tournaments-view-all-link" data-bs-toggle="collapse">
+                {% trans "View all tournaments" %}
+            </a>
+            {% endif %}
+        </div>
+
+        {% if recent_tournaments %}
+        <div class="player-tournaments-table-wrap">
+            <table class="player-tournaments-table">
+                <thead>
+                    <tr>
+                        <th class="pt-col-date">{% trans "Date" %}</th>
+                        <th class="pt-col-name">{% trans "Name" %}</th>
+                        <th class="pt-col-format">{% trans "Format" %}</th>
+                        <th class="pt-col-place">{% trans "Place" %}</th>
+                        <th class="pt-col-team">{% trans "Team" %}</th>
+                        <th class="pt-col-status">{% trans "Status" %}</th>
+                        <th class="pt-col-power">{% trans "Power" %}</th>
+                        <th class="pt-col-points">{% trans "Points" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_tournaments %}
+                    <tr class="player-tournament-row {{ item|is_tournament_in_player_rating:player|safe }}" data-href="{% url 'tournament' id=item.pk %}">
+                        <td class="pt-col-date" data-label="{% trans "Date" %}">
+                            <div class="pt-date-wrap">
+                                <i class="bi bi-calendar3"></i>
+                                <div>
+                                    <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"d M Y" }}</time>
+                                    <span>{{ item.start_date|date:"l" }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="pt-col-name" data-label="{% trans "Name" %}">
+                            <a href="{% url 'tournament' id=item.pk %}" class="pt-tournament-link">{{ item|tournament_display_name }}</a>
+                            {% if item.place %}
+                                <span class="pt-tournament-location">{% trans "c." %} {{ item.place }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="pt-col-format" data-label="{% trans "Format" %}">
+                            <div class="pt-chip-list">
+                                {% with meta=item|tournament_card_metadata %}
+                                    {% for tag in meta.format_tags %}
+                                        <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
+                                    {% endfor %}
+                                    {% for tag in meta.audience_tags %}
+                                        <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </td>
+                        <td class="pt-col-place" data-label="{% trans "Place" %}">
+                            <span class="pt-place-value">
+                                {{ item|team_min_place_in_tournament:player|safe }}
+                            </span>
+                            <span class="pt-place-sep">/</span>
+                            <span class="pt-place-total">{{ item|teams_count }}</span>
+                        </td>
+                        <td class="pt-col-team" data-label="{% trans "Team" %}">
+                            <span class="pt-team-name">{{ item|team_short_name_in_tournament:player|safe }}</span>
+                        </td>
+                        <td class="pt-col-status" data-label="{% trans "Status" %}">
+                            {{ item|tournament_power_badge|safe }}
+                        </td>
+                        <td class="pt-col-power" data-label="{% trans "Power" %}">
+                            {% with power=item|team_power_in_tournament:player %}
+                                {% if power %}
+                                    <span class="pt-power-chip">{{ power }}</span>
+                                {% else %}
+                                    <span class="pt-muted">&mdash;</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="pt-col-points" data-label="{% trans "Points" %}">
+                            {% with points=item|team_rating_points_in_tournament:player %}
+                                {% if points %}
+                                    <span class="pt-points-chip">{{ points }}</span>
+                                {% else %}
+                                    <span class="pt-muted">&mdash;</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="player-tournaments-mobile-list">
+            {% for item in recent_tournaments %}
+            <a href="{% url 'tournament' id=item.pk %}" class="player-tournament-mobile-card {{ item|is_tournament_in_player_rating:player|safe }}">
+                <div class="ptm-top">
+                    <div class="ptm-date">
+                        <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"d M" }}</time>
+                        <span>{{ item.start_date|date:"Y" }}</span>
+                    </div>
+                    <div class="ptm-main">
+                        <span class="ptm-title">{{ item|tournament_display_name }}</span>
+                        {% if item.place %}
+                            <span class="ptm-location">{% trans "c." %} {{ item.place }}</span>
+                        {% endif %}
+                        <div class="ptm-chips">
+                            {% with meta=item|tournament_card_metadata %}
+                                {% for tag in meta.format_tags %}
+                                    <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
+                                {% endfor %}
+                                {% for tag in meta.audience_tags %}
+                                    <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
+                                {% endfor %}
+                            {% endwith %}
+                            {{ item|tournament_power_badge|safe }}
+                        </div>
+                    </div>
+                    <i class="bi bi-chevron-right ptm-chevron"></i>
+                </div>
+                <div class="ptm-bottom">
+                    {% with power=item|team_power_in_tournament:player %}
+                        {% if power %}
+                            <span class="pt-power-chip">{{ power }}</span>
+                        {% endif %}
+                    {% endwith %}
+                    {% with points=item|team_rating_points_in_tournament:player %}
+                        {% if points %}
+                            <span class="pt-points-chip">{{ points }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if past_tournaments.count > 6 %}
+        <div class="player-tournaments-footer">
+            <a href="#player-all-tournaments" class="player-view-all-btn" data-bs-toggle="collapse">
+                {% trans "View all tournaments" %} <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="player-tournaments-empty">
+            <i class="bi bi-trophy"></i>
+            <p>{% trans "No competitions found" %}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if past_tournaments.count > 6 %}
+    <div class="collapse player-all-tournaments-section" id="player-all-tournaments">
+        <div class="player-card">
+            <h2 class="player-card-title">
+                <i class="bi bi-list-ul"></i>
+                {% trans "All tournaments" %}
+            </h2>
+            {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<script>
+(function() {
+    document.querySelectorAll('.player-tournament-row[data-href]').forEach(function(row) {
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a')) return;
+            window.location.href = row.dataset.href;
+        });
+    });
+})();
+</script>
 {% endblock %}
