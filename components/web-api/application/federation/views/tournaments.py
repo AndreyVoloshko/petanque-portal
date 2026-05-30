@@ -976,6 +976,14 @@ def tournament_teams_export(request, id):
         return response
 
     elif output_format == 'json':
+        def _player_brief(player):
+            return {
+                'id': player.pk,
+                'name': player.name,
+                'surname': player.surname,
+                'second_name': player.second_name,
+            }
+
         result = {
             'tournament': {
                 'id': tournament.pk,
@@ -983,7 +991,14 @@ def tournament_teams_export(request, id):
                 'display_name': tournament.get_display_name(),
                 'meta': tournament.meta,
                 'start_date': tournament.start_date,
-                'start_time': tournament.start_time
+                'start_time': tournament.start_time,
+                'organizer_club': {'id': tournament.organizer_club.pk, 'name': tournament.organizer_club.name} if tournament.organizer_club else None,
+                'main_organizer': _player_brief(tournament.main_organizer) if tournament.main_organizer else None,
+                'federation_delegat': _player_brief(tournament.federation_delegat) if tournament.federation_delegat else None,
+                'arbiters': [
+                    {**_player_brief(m.arbiter), 'is_main_arbiter': m.is_main_arbiter}
+                    for m in tournament.arbitertournamentmembership_set.select_related('arbiter').all()
+                ],
             },
             'teams': []
         }

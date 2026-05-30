@@ -101,9 +101,16 @@ Returns tournament data with registered teams and players.
   "tournament": {
     "id": 1,
     "name": "Tournament Name",
+    "display_name": "Tournament Name (Open)",
     "meta": "...",
     "start_date": "2024-06-01",
-    "start_time": "10:00:00"
+    "start_time": "10:00:00",
+    "organizer_club": { "id": 3, "name": "Club Name" },
+    "main_organizer": { "id": 10, "name": "Ivan", "surname": "Petrenko", "second_name": "" },
+    "federation_delegat": { "id": 11, "name": "Olena", "surname": "Kovalenko", "second_name": "" },
+    "arbiters": [
+      { "id": 12, "name": "Mykola", "surname": "Sydorenko", "second_name": "", "is_main_arbiter": true }
+    ]
   },
   "teams": [
     {
