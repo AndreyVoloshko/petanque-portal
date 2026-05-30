@@ -374,6 +374,14 @@ msgstr "Чоловік"
 msgid "Woman"
 msgstr "Жінка"
 
+#: federation/templates/players/players_table.html:80
+msgid "Female"
+msgstr "Жіноча"
+
+#: federation/templates/players/players_table.html:83
+msgid "Male"
+msgstr "Чоловіча"
+
 #: federation/models/player.py:21
 msgid "Junior sports arbiter"
 msgstr "Юний спортивний арбітр"
@@ -797,6 +805,10 @@ msgstr "Президент"
 #: federation/views/players.py:35
 msgid "Athletes"
 msgstr "Спортсмени"
+
+#: federation/views/players.py:35
+msgid "Rating"
+msgstr "Рейтинг"
 
 #: federation/templates/clubs/club_info_panel.html:21
 #: federation/templates/clubs/grid_item_club.html:42
@@ -1508,6 +1520,61 @@ msgstr "Сила"
 #: federation/templates/tournaments/tournaments_table.html:14
 msgid "Actions"
 msgstr "Дії"
+
+#: federation/templates/players/players.html:17
+msgid "Official athlete ranking by points and power"
+msgstr "Офіційний рейтинг спортсменів за балами та силою"
+
+#: federation/templates/players/players.html:18
+msgid "Rankings are based on current official federation rating metrics."
+msgstr "Рейтинг базується на поточних офіційних рейтингових показниках Федерації."
+
+#: federation/templates/players/players.html:24
+msgid "Search athletes"
+msgstr "Пошук спортсменів"
+
+#: federation/templates/players/players.html:28
+msgid "Athlete filters"
+msgstr "Фільтри спортсменів"
+
+#: federation/templates/players/players_table.html:4
+msgid "All clubs"
+msgstr "Усі клуби"
+
+#: federation/templates/players/players_table.html:5
+msgid "All age categories"
+msgstr "Усі вікові категорії"
+
+#: federation/templates/players/players_table.html:6
+msgid "All athletes"
+msgstr "Усі спортсмени"
+
+#: federation/templates/players/players_table.html:9
+#: federation/templates/players/players_table.html:22
+#: federation/templates/players/players_table.html:75
+msgid "Sex"
+msgstr "Стать"
+
+#: federation/templates/players/players_table.html:10
+msgid "Search by name, club, license, sex, age, points..."
+msgstr "Пошук за ім'ям, клубом, ліцензією, статтю, віком, балами..."
+
+#: federation/templates/players/players_table.html:10
+msgid "Search by name or club..."
+msgstr "Пошук за ім'ям або клубом..."
+
+#: federation/templates/players/players_table.html:11
+msgid "Athletes per page"
+msgstr "Спортсменів на сторінку"
+
+#: federation/templates/players/players_table.html:12
+msgid "all"
+msgstr "усіх"
+
+#: federation/templates/players/players_table.html:19
+#: federation/templates/players/players_table.html:37
+msgid "Athlete"
+msgstr "Спортсмен"
 
 #: federation/templates/players/players_table.html:63
 #: federation/templates/seasons/players_list.html:53

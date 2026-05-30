@@ -1,137 +1,379 @@
 {% load app_filters %}
 {% load i18n %}
 
+{% trans "All clubs" as all_clubs_label %}
+{% trans "All age categories" as all_age_categories_label %}
+{% trans "All athletes" as all_athletes_label %}
+{% trans "Club" as club_label %}
+{% trans "Age" as age_label %}
+{% trans "Sex" as sex_label %}
+{% trans "Search by name or club..." as athlete_search_placeholder %}
+{% trans "Athletes per page" as athletes_per_page_label %}
+{% trans "all" as all_page_size_label %}
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover" id="players">
-        <thead class="table-dark">
-            <tr>
-                <th class="text-start">{% trans "Ranking" %}</th>
-                <th class="text-start">{% trans "Points" %}</th>
-                <th class="text-start">{% trans "Power" %}</th>
-                <th class="text-start">{% trans "First name" %}</th>
-                <th class="text-center filterable">{% trans "Gender" %}</th>
-                <th class="text-center filterable">{% trans "Age" %}</th>
-                <th class="text-center">{% trans "License" %}</th>
-                <th class="text-start filterable">{% trans "Club" %}</th>
-                <th class="text-end no-sort">{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th></th> <!-- Рейтинг -->
-                <th></th> <!-- Бали -->
-                <th></th> <!-- Сила -->
-                <th></th> <!-- Ім'я -->
-                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Стать -->
-                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Вік -->
-                <th></th> <!-- Ліцензія -->
-                <th><select class="form-select form-select-sm"><option value="">{% trans "All" %}</option></select></th> <!-- Клуб -->
-                <th></th> <!-- Дії -->
-            </tr>
-        </tfoot>
-        <tbody>
-            {% for item in items %}
-                <tr class="{{ item|is_active_player_class }}">
-                    <td class="text-start">
-                        <span class="badge bg-success">
-                            {{ item|rating_position:rating_filters|safe }}
-                        </span>
-                    </td>
-                    <td class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
-                            {{ item|rating_points:rating_field|safe }}
-                        </span>
-                    </td>
-                    <td class="text-start">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
-                            {{ item|rating_power:rating_power_field|safe }}
-                        </span>
-                    </td>
-                    <td class="text-start">{{ item|user_profile_link|safe }}</td>
-                    <td class="text-center">{{ item|gender|safe }}</td>
-                    <td class="text-center">{{ item|player_age_category|safe }}</td>
-                    <td class="text-center">{{ item|licence_number|safe }}</td>
-                    <td class="text-start">
-                        {% if item.current_club %}
-                            <a href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
-                        {% else %}
-                            <span class="badge bg-danger">{% trans "No club" %}</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-end">
-                        <a href="{% url 'player' id=item.pk %}" class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Show athlete" %}">
-                            <i class="bi bi-person"></i>
-                        </a>
-                    </td>
+<div class="players-results-surface">
+    <div class="players-table-responsive">
+        <table class="players-table" id="players">
+            <thead>
+                <tr>
+                    <th class="players-rank-column">{% trans "Ranking" %}</th>
+                    <th class="players-athlete-column">{% trans "Athlete" %}</th>
+                    <th class="players-points-column">{% trans "Points" %}</th>
+                    <th class="players-power-column">{% trans "Power" %}</th>
+                    <th class="players-sex-column filterable no-sort">{% trans "Sex" %}</th>
+                    <th class="players-age-column filterable no-sort">{% trans "Age" %}</th>
+                    <th class="players-license-column no-sort">{% trans "License" %}</th>
+                    <th class="players-club-column filterable no-sort">{% trans "Club" %}</th>
+                    <th class="players-action-column no-sort" aria-label="{% trans "Actions" %}"></th>
+                    <th class="players-mobile-card-column no-sort" aria-hidden="true"></th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr class="players-row {{ item|is_active_player_class }}" data-href="{% url 'player' id=item.pk %}">
+                        <td class="players-rank-cell" data-label="{% trans "Ranking" %}" data-order="{{ item|rating_position:rating_filters }}">
+                            <span class="players-rank-badge">
+                                <span class="players-rank-value">{{ item|rating_position:rating_filters|safe }}</span>
+                                <span class="players-rank-label-mobile">{% trans "Place" %}</span>
+                            </span>
+                        </td>
+                        <td class="players-athlete-cell" data-label="{% trans "Athlete" %}">
+                            <a class="players-athlete-link" href="{% url 'player' id=item.pk %}">
+                                <span class="players-athlete-avatar" aria-hidden="true">
+                                    {% if item.avatar %}
+                                        <img src="{{ item.avatar.url }}" alt="{{ item.get_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                        <span class="players-athlete-avatar-placeholder" hidden>
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+                                    {% else %}
+                                        <span class="players-athlete-avatar-placeholder">
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+                                    {% endif %}
+                                </span>
+                                <span class="players-athlete-copy">
+                                    <span class="players-athlete-name">
+                                        {{ item.get_name }}
+                                        {% if item.sport_title %}
+                                            <span class="players-athlete-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
+                                                <i class="bi bi-award-fill" aria-hidden="true"></i>
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="players-athlete-meta-mobile">
+                                        {% if item.current_club %}
+                                            <span class="players-athlete-meta-line">
+                                                <i class="bi bi-people" aria-hidden="true"></i>
+                                                <span>{{ item.current_club.short_name }}</span>
+                                            </span>
+                                        {% endif %}
+                                        <span class="players-athlete-meta-line">
+                                            {% if item.current_club and item.current_club.city %}
+                                                <span>{{ item.current_club.city.name }}</span>
+                                            {% endif %}
+                                            {% if item.country %}
+                                                <span class="players-athlete-country">{{ item.country.name }} {{ item.country|country_flag|safe }}</span>
+                                            {% endif %}
+                                        </span>
+                                    </span>
+                                </span>
+                            </a>
+                        </td>
+                        <td class="players-points-cell" data-label="{% trans "Points" %}" data-order="{{ item|rating_points:rating_field }}">
+                            <span class="players-metric-badge players-points-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
+                                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                <span class="players-metric-copy">
+                                    <span class="players-metric-value">{{ item|rating_points:rating_field|floatformat:2 }}</span>
+                                    <span class="players-metric-label">{% trans "Points" %}</span>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="players-power-cell" data-label="{% trans "Power" %}" data-order="{{ item|rating_power:rating_power_field }}">
+                            <span class="players-metric-badge players-power-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
+                                <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+                                <span class="players-metric-copy">
+                                    <span class="players-metric-value">{{ item|rating_power:rating_power_field|floatformat:2 }}</span>
+                                    <span class="players-metric-label">{% trans "Power" %}</span>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="players-sex-cell" data-label="{% trans "Sex" %}">
+                            <span class="players-sex-badge players-sex-badge-{{ item.gender|lower }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if item.gender == "F" %}{% trans "Women" %}{% else %}{% trans "Men" %}{% endif %}">
+                                {% if item.gender == "F" %}
+                                    <i class="bi bi-gender-female" aria-hidden="true"></i>
+                                    <span class="players-sex-copy">
+                                        <span class="players-sex-value">{% trans "Women" %}</span>
+                                        <span class="players-sex-label">{% trans "Sex" %}</span>
+                                    </span>
+                                {% else %}
+                                    <i class="bi bi-gender-male" aria-hidden="true"></i>
+                                    <span class="players-sex-copy">
+                                        <span class="players-sex-value">{% trans "Men" %}</span>
+                                        <span class="players-sex-label">{% trans "Sex" %}</span>
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td class="players-age-cell" data-label="{% trans "Age" %}">
+                            <span class="players-age-badge">
+                                <i class="bi bi-people players-age-icon" aria-hidden="true"></i>
+                                {{ item|player_age_category|safe }}
+                                <span class="players-age-label">{% trans "Category" %}</span>
+                            </span>
+                        </td>
+                        <td class="players-license-cell" data-label="{% trans "License" %}">
+                            {% if item.is_licence_active and item.licence_number %}
+                                <span class="players-license-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
+                                    <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                                    <span class="players-license-copy">
+                                        <span class="players-license-number">{{ item.licence_number }}</span>
+                                        <span class="players-license-label">{% trans "License" %}</span>
+                                    </span>
+                                </span>
+                            {% else %}
+                                <span class="players-license-badge players-license-badge-missing" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
+                                    {% trans "No license" %}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="players-club-cell" data-label="{% trans "Club" %}">
+                            {% if item.current_club %}
+                                <span class="players-club-wrap">
+                                    <a class="players-club-link" href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
+                                    {% if item.current_club.city %}
+                                        <span class="players-club-city">{{ item.current_club.city.name }}</span>
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                <span class="players-no-club">{% trans "No club" %}</span>
+                            {% endif %}
+                        </td>
+                        <td class="players-action-cell" data-label="{% trans "Actions" %}">
+                            <a href="{% url 'player' id=item.pk %}" class="players-row-action" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Show athlete" %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
+                                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td class="players-mobile-card-cell" data-label="{% trans "Athlete" %}">
+                            {% with rank_value=item|rating_position:rating_filters points_value=item|rating_points:rating_field power_value=item|rating_power:rating_power_field card_extra_class="players-mobile-rating-card" %}
+                                {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value card_extra_class=card_extra_class %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
-
 
 <script>
     $(document).ready(function() {
         var table = $('#players').DataTable({
-            responsive: true, 
+            autoWidth: false,
+            dom: '<"players-generated-controls"lf>rt<"players-table-footer"ip>',
+            order: [[0, 'asc']],
+            pageLength: 25,
             paging: true,
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
+            pagingType: 'simple_numbers',
+            searchDelay: 0,
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{{ all_page_size_label|escapejs }}"]],
             language: {
                 lengthMenu: "{% trans "Show _MENU_ athletes per page" %}",
                 zeroRecords: "{% trans "No athletes found" %}",
                 info: "{% trans "Showing _START_ to _END_ of _TOTAL_ athletes" %}",
                 infoEmpty: "{% trans "Showing 0 of 0 athletes" %}",
                 infoFiltered: "{% trans "(filtered from _MAX_ athletes)" %}",
-                search: "{% trans "Search:" %}",
+                search: "",
+                searchPlaceholder: "{{ athlete_search_placeholder|escapejs }}",
                 paginate: {
-                    first: "{% trans "First" %}",
-                    last: "{% trans "Last" %}",
-                    next: "{% trans "Next" %}",
-                    previous: "{% trans "Previous" %}"
+                    next: '<i class="bi bi-chevron-right" aria-hidden="true"></i><span class="visually-hidden">{% trans "Next" %}</span>',
+                    previous: '<i class="bi bi-chevron-left" aria-hidden="true"></i><span class="visually-hidden">{% trans "Previous" %}</span>'
                 }
             },
             columnDefs: [
                 { targets: 'no-sort', orderable: false },
+                { targets: 'players-action-column', searchable: false },
+                { targets: 'players-mobile-card-column', searchable: false },
+                { targets: [0, 2, 3], type: 'num' }
             ]
         });
-    
-        $('#players tfoot select').on('change', function() {
-            let columnIndex = $(this).parent().index();
-            let value = $(this).val();
-            table.column(columnIndex).search(value).draw();
-        });
-    
-        table.columns('.filterable').every(function() {
-            let column = this;
-            let select = $(column.footer()).find('select');
-    
-            column.data().unique().sort().each(function(d, j) {
-                let tmp = document.createElement("DIV");
-                tmp.innerHTML = d;
-                let cleanValue = tmp.textContent || tmp.innerText || "";
-    
-                if (cleanValue) {
-                    select.append(`<option value="${cleanValue}">${cleanValue}</option>`);
-                }
-            });
-        });
-    
-        function initTooltips() {
-            setTimeout(function () {
-                $('[data-bs-toggle="tooltip"]').tooltip('dispose').tooltip().on('shown.bs.tooltip', function () {
-                    bootstrap.Tooltip.getInstance(this).update();
-                });
-            }, 300);
+
+        var activeFilters = {
+            club: '',
+            age: '',
+            sex: ''
+        };
+
+        function normalizeFilterText(value) {
+            return (value || '').replace(/\s+/g, ' ').trim();
         }
 
+        function getRowFilterValues(row) {
+            var $row = $(row);
+            return {
+                club: normalizeFilterText($row.find('.players-club-link').first().text()),
+                age: normalizeFilterText($row.find('.players-age-badge .badge').first().text()),
+                sex: normalizeFilterText($row.find('.players-sex-value').first().text())
+            };
+        }
+
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            if (settings.nTable !== table.table().node()) {
+                return true;
+            }
+
+            var row = table.row(dataIndex).node();
+            if (!row) {
+                return true;
+            }
+
+            var values = getRowFilterValues(row);
+
+            if (activeFilters.club && values.club !== activeFilters.club) {
+                return false;
+            }
+            if (activeFilters.age && values.age !== activeFilters.age) {
+                return false;
+            }
+            if (activeFilters.sex && values.sex !== activeFilters.sex) {
+                return false;
+            }
+
+            return true;
+        });
+
+        function rehomeDataTableControls() {
+            var $length = $('#players_length');
+            var $search = $('#players_filter');
+            var $footerLengthMount = $('.players-footer-length-mount');
+
+            if (!$footerLengthMount.length) {
+                $footerLengthMount = $('<div class="players-footer-length-mount"></div>');
+                $('.players-table-footer').append($footerLengthMount);
+            }
+
+            $footerLengthMount.empty().append($length);
+            $('.players-search-mount').empty().append($search);
+            $('.players-generated-controls').hide();
+
+            $length.find('select').attr('aria-label', "{{ athletes_per_page_label|escapejs }}");
+
+            var $searchLabel = $search.find('label');
+            $searchLabel.contents().filter(function() {
+                return this.nodeType === 3;
+            }).remove();
+            if (!$searchLabel.find('.players-search-icon').length) {
+                $searchLabel.prepend('<i class="bi bi-search players-search-icon" aria-hidden="true"></i>');
+            }
+            $search.find('input')
+                .attr('aria-label', "{{ athlete_search_placeholder|escapejs }}")
+                .attr('placeholder', "{{ athlete_search_placeholder|escapejs }}");
+        }
+
+        function buildFilterControls() {
+            var filterConfig = [
+                {
+                    key: 'club',
+                    column: 7,
+                    icon: 'bi-building',
+                    label: "{{ all_clubs_label|escapejs }}",
+                    ariaLabel: "{{ club_label|escapejs }}",
+                    valueSelector: '.players-club-link'
+                },
+                {
+                    key: 'age',
+                    column: 5,
+                    icon: 'bi-people',
+                    label: "{{ all_age_categories_label|escapejs }}",
+                    ariaLabel: "{{ age_label|escapejs }}",
+                    valueSelector: '.players-age-badge .badge'
+                },
+                {
+                    key: 'sex',
+                    column: 4,
+                    icon: 'bi-gender-ambiguous',
+                    label: "{{ all_athletes_label|escapejs }}",
+                    ariaLabel: "{{ sex_label|escapejs }}",
+                    valueSelector: '.players-sex-value'
+                }
+            ];
+
+            var $filters = $('.players-filter-controls').empty();
+
+            filterConfig.forEach(function(config) {
+                var values = [];
+                var seen = {};
+                if (config.valueSelector) {
+                    table.rows().nodes().each(function(row) {
+                        var value = normalizeFilterText($(row).find(config.valueSelector).first().text());
+                        if (value && !seen[value]) {
+                            seen[value] = true;
+                            values.push(value);
+                        }
+                    });
+                }
+
+                values.sort(function(a, b) {
+                    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                var $field = $('<label class="players-filter-field"></label>');
+                var $select = $('<select class="players-filter-select"></select>')
+                    .attr('aria-label', config.ariaLabel)
+                    .append($('<option></option>').attr('value', '').text(config.label));
+
+                values.forEach(function(value) {
+                    $select.append($('<option></option>').attr('value', value).text(value));
+                });
+
+                $select.on('change', function() {
+                    activeFilters[config.key] = normalizeFilterText(this.value);
+                    table.draw();
+                });
+
+                $field.append($('<i></i>').addClass('bi ' + config.icon).attr('aria-hidden', 'true'));
+                $field.append($select);
+                $filters.append($field);
+            });
+        }
+
+        function initTooltips() {
+            setTimeout(function () {
+                var $tooltips = $('[data-bs-toggle="tooltip"]');
+                $tooltips.attr('data-bs-offset', '0,2');
+                if (window.bootstrap && window.bootstrap.Tooltip) {
+                    $tooltips.each(function() {
+                        var instance = window.bootstrap.Tooltip.getInstance(this);
+                        if (instance) {
+                            instance.dispose();
+                        }
+                        new window.bootstrap.Tooltip(this, {
+                            offset: [0, 2]
+                        });
+                    });
+                } else if ($.fn.tooltip) {
+                    $tooltips.tooltip('dispose').tooltip({
+                        offset: [0, 2]
+                    });
+                }
+            }, 100);
+        }
+
+        $('#players tbody').on('click', 'tr.players-row', function(e) {
+            if ($(e.target).closest('a, button, input, select').length) {
+                return;
+            }
+            var href = $(this).data('href');
+            if (href) {
+                window.location.href = href;
+            }
+        });
+
+        rehomeDataTableControls();
+        buildFilterControls();
         initTooltips();
 
         table.on('draw.dt', function () {
             initTooltips();
-        });        
+        });
     });
 </script>
-    
-    
