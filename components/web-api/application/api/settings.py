@@ -276,7 +276,7 @@ DEFAULT_FROM_EMAIL = formataddr((smtp_from_name, smtp_from_email)) if smtp_from_
 
 PASSWORD_RESET_TIMEOUT = 86400
 
-FEDERATION_TELEGRAM_LINK = get_credential('federation_telegram_link') or 'https://t.me/petanque_ukraine'
+FEDERATION_TELEGRAM_LINK = get_credential('federation_telegram_link') or 'https://t.me/andrewkamenev'
 
 if not get_credential('smtp_host'):
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

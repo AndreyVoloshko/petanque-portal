@@ -178,10 +178,23 @@
         });
     }
 
+    function initRowClicks() {
+        document.querySelectorAll('.tournament-row-clickable').forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('a, button')) return;
+                window.location.href = row.dataset.href;
+            });
+        });
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTournamentControls);
+        document.addEventListener('DOMContentLoaded', function() {
+            initTournamentControls();
+            initRowClicks();
+        });
     } else {
         initTournamentControls();
+        initRowClicks();
     }
 })();
 </script>

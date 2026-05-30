@@ -2559,6 +2559,15 @@ Tournaments classes
   border-bottom: 0;
 }
 
+.tournaments-table tbody tr.tournament-row-clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tournaments-table tbody tr.tournament-row-clickable:hover {
+  background-color: #f8f9fa;
+}
+
 .tournament-date-column {
   width: 13.5rem;
 }

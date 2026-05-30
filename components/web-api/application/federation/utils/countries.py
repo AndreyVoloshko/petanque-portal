@@ -7,9 +7,14 @@ EU_COUNTRIES = [
     'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
 ]
 
+EXCLUDED_COUNTRIES = ['RU', 'BY', 'IR']
+
 
 def get_ordered_country_choices():
-    all_countries = [(code, str(name)) for code, name in countries]
+    all_countries = [
+        (code, str(name)) for code, name in countries
+        if code not in EXCLUDED_COUNTRIES
+    ]
 
     ukraine = [('UA', 'Україна')]
     eu = sorted(

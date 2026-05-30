@@ -54,6 +54,14 @@ msgstr "Email address"
 msgid "Optional. You can leave this field empty."
 msgstr "Optional. You can leave this field empty."
 
+#: federation/forms/registration_player_form.py
+msgid "Patronymic"
+msgstr "Patronymic"
+
+#: federation/forms/registration_player_form.py
+msgid "Optional. Required for tournament result protocols."
+msgstr "Optional. Required for tournament result protocols."
+
 #: federation/forms/player_form.py:87
 #, python-format
 msgid "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"
@@ -111,6 +119,10 @@ msgstr "Country"
 #: federation/forms/player_form.py:132 federation/models/player.py:65
 msgid "License number"
 msgstr "License number"
+
+#: federation/forms/registration_player_form.py
+msgid "Only for players who already have a license issued by the federation."
+msgstr "Only for players who already have a license issued by the federation."
 
 #: federation/forms/player_form.py:133
 #: federation/forms/registration_player_form.py:68
@@ -1564,8 +1576,8 @@ msgstr "Find current federation news, competitions, athletes, clubs, and more."
 
 #: federation/templates/main_page.html:18
 #, python-format
-msgid "Ready to throw boules? Start now by choosing <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
-msgstr "Ready to throw boules? Start now by choosing <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
+msgid "Ready to throw boules? Start now — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">register</a> and choose <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
+msgstr "Ready to throw boules? Start now — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">register</a> and choose <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
 
 #: federation/templates/main_page.html:41
 msgid "Nearest upcoming"
@@ -1704,6 +1716,14 @@ msgstr "Contact the administrators for help:"
 #: federation/templates/password_reset/request.html:14
 msgid "Federation Telegram chat"
 msgstr "Federation Telegram chat"
+
+#: federation/views/password_reset.py
+msgid "your.email@example.com"
+msgstr "your.email@example.com"
+
+#: federation/templates/password_reset/request.html
+msgid "If you don't remember your email, contact the administration via"
+msgstr "If you don't remember your email, contact the administration via"
 
 #: federation/templates/password_reset/request.html:27
 msgid "Send recovery email"

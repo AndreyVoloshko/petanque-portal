@@ -96,7 +96,7 @@
                 <svg class="landing-svg-icon"><use href="#landing-icon-map-pin"></use></svg>
             </span>
             <p class="landing-line">
-                <span>{% url 'clubs' as clubs_url %}{% blocktrans %}Ready to throw boules? Start now by choosing <a href="{{ clubs_url }}" class="fw-bold text-decoration-none">a nearby club</a>.{% endblocktrans %}</span>
+                <span>{% url 'clubs' as clubs_url %}{% url 'register_player' as register_url %}{% blocktrans %}Ready to throw boules? Start now — <a href="{{ register_url }}" class="fw-bold text-decoration-none">register</a> and choose <a href="{{ clubs_url }}" class="fw-bold text-decoration-none">a nearby club</a>.{% endblocktrans %}</span>
             </p>
             <svg class="landing-action-chevron" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
         </div>

@@ -55,6 +55,14 @@ msgstr "Email адреса"
 msgid "Optional. You can leave this field empty."
 msgstr "Необов'язково. Це поле можна залишити порожнім."
 
+#: federation/forms/registration_player_form.py
+msgid "Patronymic"
+msgstr "По батькові"
+
+#: federation/forms/registration_player_form.py
+msgid "Optional. Required for tournament result protocols."
+msgstr "Необов'язково. Потрібно для протоколів результатів змагань."
+
 #: federation/forms/player_form.py:87
 #, python-format
 msgid "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"
@@ -112,6 +120,10 @@ msgstr "Країна"
 #: federation/forms/player_form.py:132 federation/models/player.py:65
 msgid "License number"
 msgstr "Номер ліцензії"
+
+#: federation/forms/registration_player_form.py
+msgid "Only for players who already have a license issued by the federation."
+msgstr "Тільки для гравців, які вже мають ліцензію, видану федерацією."
 
 #: federation/forms/player_form.py:133
 #: federation/forms/registration_player_form.py:68
@@ -1297,8 +1309,8 @@ msgstr "Знаходь актуальні новини федерації, зм�
 
 #: federation/templates/main_page.html:18
 #, python-format
-msgid "Ready to throw boules? Start now by choosing <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
-msgstr "Готовий кидати кулі? Розпочни зараз - обери <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">клуб поблизу</a>."
+msgid "Ready to throw boules? Start now — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">register</a> and choose <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
+msgstr "Готовий кидати кулі? Розпочни зараз — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">зареєструйся</a> та обери <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">клуб поблизу</a>."
 
 #: federation/templates/main_page.html:41
 msgid "Nearest upcoming"
@@ -1438,6 +1450,14 @@ msgstr "Сконтактуйтеся з адміністраторами для 
 #: federation/templates/password_reset/request.html:14
 msgid "Federation Telegram chat"
 msgstr "Telegram чат федерації"
+
+#: federation/views/password_reset.py
+msgid "your.email@example.com"
+msgstr "ваш.email@example.com"
+
+#: federation/templates/password_reset/request.html
+msgid "If you don't remember your email, contact the administration via"
+msgstr "Якщо ви не пам'ятаєте свій email, зв'яжіться з адміністрацією через"
 
 #: federation/templates/password_reset/request.html:27
 msgid "Send recovery email"
