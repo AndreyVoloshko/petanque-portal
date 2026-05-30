@@ -4,6 +4,32 @@
 
 {% block content %}
 
-    {% include "common/table_page.html" with page_title=page_title table_template="players/players_table.html" items=players rating_filters=rating_filters rating_field=rating_field %}
+{% include "common/landing_icon_sprite.html" %}
+
+<section class="players-page" aria-labelledby="players-page-title">
+    <div class="players-titlebar">
+        <div class="players-title-copy">
+            <h1 id="players-page-title">
+                {{ page_title }}
+                <span class="players-title-icon" aria-hidden="true">
+                    <i class="bi bi-award"></i>
+                </span>
+            </h1>
+            <p>
+                {% trans "Official athlete ranking by points and power" %}
+                <span class="players-page-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rankings are based on current official federation rating metrics." %}">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="players-control-panel">
+        <div class="players-search-mount" aria-label="{% trans "Search athletes" %}"></div>
+        <div class="players-filter-controls" aria-label="{% trans "Athlete filters" %}"></div>
+    </div>
+
+    {% include "players/players_table.html" with items=players %}
+</section>
 
 {% endblock %}

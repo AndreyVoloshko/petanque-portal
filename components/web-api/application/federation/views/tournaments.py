@@ -728,7 +728,11 @@ def _active_filter_params(filters):
 
 
 def _has_active_secondary_filters(filters):
-    return any(filters[key] for key in ('search', 'format', 'category', 'place', 'club')) or filters['foreign']
+    return (
+        filters['rating_type'] != 'all' or
+        filters['foreign'] or
+        any(filters[key] for key in ('search', 'format', 'category', 'place', 'club'))
+    )
 
 
 def _url_for_filters(filters, page=None):

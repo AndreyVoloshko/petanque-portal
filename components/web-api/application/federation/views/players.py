@@ -32,7 +32,7 @@ def players(request, licence_filter=None, rating_filter=None):
         'rating_filters': rating_field+","+str(licence_filter),
         'rating_field': rating_field,
         'rating_power_field': rating_power_field,
-        'page_title': _("Athletes"),
+        'page_title': _("Rating"),
     })
 
 
