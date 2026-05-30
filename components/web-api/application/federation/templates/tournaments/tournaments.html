@@ -25,36 +25,69 @@
             {% endfor %}
         </nav>
 
-        <form class="tournament-foreign-form" method="get" action="{% url 'tournaments' %}">
-            <input type="hidden" name="period" value="{{ filters.period }}">
-            <input type="hidden" name="sort" value="{{ filters.sort }}">
-            {% if page_size != 10 %}
-                <input type="hidden" name="per_page" value="{{ page_size }}">
-            {% endif %}
-            {% if filters.rating_type != "all" %}
-                <input type="hidden" name="type" value="{{ filters.rating_type }}">
-            {% endif %}
-            {% if filters.search %}
-                <input type="hidden" name="q" value="{{ filters.search }}">
-            {% endif %}
-            {% if filters.format %}
-                <input type="hidden" name="format" value="{{ filters.format }}">
-            {% endif %}
-            {% if filters.category %}
-                <input type="hidden" name="category" value="{{ filters.category }}">
-            {% endif %}
-            {% if filters.place %}
-                <input type="hidden" name="place" value="{{ filters.place }}">
-            {% endif %}
-            <label class="tournament-toggle">
-                <input type="checkbox" name="foreign" value="1" {% if filters.foreign %}checked{% endif %}>
-                <span class="tournament-toggle-label">
-                    <i class="bi bi-globe2" aria-hidden="true"></i>
-                    {% trans "Закордонні" %}
-                </span>
-                <span class="tournament-toggle-switch" aria-hidden="true"></span>
-            </label>
-        </form>
+        <div class="tournament-toggle-group">
+            <form class="tournament-toggle-form tournament-rating-form" method="get" action="{% url 'tournaments' %}">
+                <input type="hidden" name="period" value="{{ filters.period }}">
+                <input type="hidden" name="sort" value="{{ filters.sort }}">
+                {% if page_size != 10 %}
+                    <input type="hidden" name="per_page" value="{{ page_size }}">
+                {% endif %}
+                {% if filters.foreign %}
+                    <input type="hidden" name="foreign" value="1">
+                {% endif %}
+                {% if filters.search %}
+                    <input type="hidden" name="q" value="{{ filters.search }}">
+                {% endif %}
+                {% if filters.format %}
+                    <input type="hidden" name="format" value="{{ filters.format }}">
+                {% endif %}
+                {% if filters.category %}
+                    <input type="hidden" name="category" value="{{ filters.category }}">
+                {% endif %}
+                {% if filters.place %}
+                    <input type="hidden" name="place" value="{{ filters.place }}">
+                {% endif %}
+                <label class="tournament-toggle">
+                    <input type="checkbox" name="type" value="rating" {% if filters.rating_type == "rating" %}checked{% endif %}>
+                    <span class="tournament-toggle-label">
+                        <i class="bi bi-award" aria-hidden="true"></i>
+                        {% trans "Ranked only" %}
+                    </span>
+                    <span class="tournament-toggle-switch" aria-hidden="true"></span>
+                </label>
+            </form>
+
+            <form class="tournament-toggle-form tournament-foreign-form" method="get" action="{% url 'tournaments' %}">
+                <input type="hidden" name="period" value="{{ filters.period }}">
+                <input type="hidden" name="sort" value="{{ filters.sort }}">
+                {% if page_size != 10 %}
+                    <input type="hidden" name="per_page" value="{{ page_size }}">
+                {% endif %}
+                {% if filters.rating_type != "all" %}
+                    <input type="hidden" name="type" value="{{ filters.rating_type }}">
+                {% endif %}
+                {% if filters.search %}
+                    <input type="hidden" name="q" value="{{ filters.search }}">
+                {% endif %}
+                {% if filters.format %}
+                    <input type="hidden" name="format" value="{{ filters.format }}">
+                {% endif %}
+                {% if filters.category %}
+                    <input type="hidden" name="category" value="{{ filters.category }}">
+                {% endif %}
+                {% if filters.place %}
+                    <input type="hidden" name="place" value="{{ filters.place }}">
+                {% endif %}
+                <label class="tournament-toggle">
+                    <input type="checkbox" name="foreign" value="1" {% if filters.foreign %}checked{% endif %}>
+                    <span class="tournament-toggle-label">
+                        <i class="bi bi-globe2" aria-hidden="true"></i>
+                        {% trans "Закордонні" %}
+                    </span>
+                    <span class="tournament-toggle-switch" aria-hidden="true"></span>
+                </label>
+            </form>
+        </div>
     </div>
 
     <form class="tournament-filter-form" method="get" action="{% url 'tournaments' %}">
@@ -146,7 +179,7 @@
 
     function initTournamentControls() {
         const filterForm = document.querySelector('.tournament-filter-form');
-        const foreignForm = document.querySelector('.tournament-foreign-form');
+        const toggleForms = document.querySelectorAll('.tournament-toggle-form');
 
         if (filterForm) {
             filterForm.querySelectorAll('select').forEach(function(select) {
@@ -156,13 +189,13 @@
             });
         }
 
-        if (foreignForm) {
-            foreignForm.querySelectorAll('input[type="checkbox"]').forEach(function(input) {
+        toggleForms.forEach(function(form) {
+            form.querySelectorAll('input[type="checkbox"]').forEach(function(input) {
                 input.addEventListener('change', function() {
-                    foreignForm.submit();
+                    form.submit();
                 });
             });
-        }
+        });
 
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(element) {
             element.setAttribute('data-bs-offset', '0,2');

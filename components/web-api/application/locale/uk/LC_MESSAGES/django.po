@@ -2108,3 +2108,7 @@ msgstr "Переглянути всі"
 #: federation/templates/main_page/tournaments_list.html:16
 msgid "Competition details"
 msgstr "Деталі змагання"
+
+#: federation/templates/tournaments/tournaments.html:57
+msgid "Ranked only"
+msgstr "Лише рейтингові"

@@ -149,7 +149,7 @@
                             {% endif %}
                         </td>
                         <td class="players-action-cell" data-label="{% trans "Actions" %}">
-                            <a href="{% url 'player' id=item.pk %}" class="players-row-action" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Show athlete" %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
+                            <a href="{% url 'player' id=item.pk %}" class="players-row-action" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
                                 <i class="bi bi-chevron-right" aria-hidden="true"></i>
                             </a>
                         </td>

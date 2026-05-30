@@ -2355,7 +2355,19 @@ Tournaments classes
   text-align: center;
 }
 
-.tournament-foreign-form {
+.tournament-toggle-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.tournament-toggle-form {
+  display: flex;
+  flex: 0 0 auto;
   margin: 0;
 }
 
@@ -3634,20 +3646,17 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 .players-row-action {
   align-items: center;
-  border: 1px solid transparent;
-  border-radius: 999px;
   color: #23304a;
   display: inline-flex !important;
   height: 2.1rem;
   justify-content: center;
   text-decoration: none;
+  transition: color 0.18s ease;
   width: 2.1rem;
 }
 
 .players-row-action:hover,
 .players-row-action:focus {
-  background: #eaf4f8;
-  border-color: #b8d3de;
   color: #1f5f8b;
 }
 
@@ -3969,8 +3978,10 @@ table.dataTable.players-table thead th.sorting_desc::after {
     width: 100%;
   }
 
-  .tournament-foreign-form {
-    justify-self: start;
+  .tournament-toggle-group {
+    justify-content: center;
+    justify-self: center;
+    width: 100%;
   }
 
   .tournament-filter-form {
@@ -3982,7 +3993,17 @@ table.dataTable.players-table thead th.sorting_desc::after {
   }
 }
 
-@media (max-width: 1199.98px) and (min-width: 768px) {
+@media (max-width: 767.98px) {
+  .tournament-toggle-group {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    justify-self: start;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px),
+  (min-width: 768px) and (max-width: 1400px) and (pointer: coarse) {
   .players-results-surface {
     background: transparent;
     border: 0;
@@ -4049,6 +4070,53 @@ table.dataTable.players-table thead th.sorting_desc::after {
   .players-mobile-card-cell .athlete-card.players-mobile-rating-card:focus-within {
     box-shadow: 0 10px 28px rgba(15, 45, 75, 0.1);
     transform: none !important;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-hero {
+    min-height: 7.9rem;
+    padding: 1rem 5.15rem 1.55rem 1rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.38rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-name-link {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-given-line {
+    order: 1;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-surname-line {
+    order: 2;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-title-badge {
+    margin-top: 0.02rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-stats {
+    margin-left: 0.9rem;
+    margin-right: 0.9rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-card-meta {
+    column-gap: 0.9rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 0.8rem 0.95rem 0.9rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-chip {
+    gap: 0.42rem;
+    padding: 0.62rem 0.68rem;
+  }
+
+  .players-mobile-card-cell .athlete-card.players-mobile-rating-card .athlete-chip + .athlete-chip::before {
+    display: none;
   }
 }
 
