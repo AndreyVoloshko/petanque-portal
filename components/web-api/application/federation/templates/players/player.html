@@ -60,7 +60,7 @@
                 <div class="player-detail-row">
                     <i class="bi bi-calendar3"></i>
                     <span class="player-detail-label">{% trans "Age category" %}</span>
-                    <span class="player-detail-value">{{ player|player_age_category }}</span>
+                    <span class="player-detail-value">{{ player|player_age_category|safe }}</span>
                 </div>
                 {% endif %}
                 <div class="player-detail-row">
