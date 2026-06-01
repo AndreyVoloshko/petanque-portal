@@ -18,6 +18,7 @@ from federation.models.tournament import Tournament
 from federation.permissions import can_create_tournament
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
+    licence_number,
     tournament_audience_tag_class,
     tournament_field,
     tournament_power_badge,
@@ -272,10 +273,11 @@ class TournamentDisplayNameTests(SimpleTestCase):
         tournament = self.create_tournament('Тупіт копит')
         tournament.power = '40.0000'
 
-        badge = str(tournament_power_badge(tournament))
+        with override('en'):
+            badge = str(tournament_power_badge(tournament))
 
         self.assertIn('tournament-power-badge tournament-power-10', badge)
-        self.assertIn(_('Competition power'), badge)
+        self.assertIn('Tournament power affects how many rating points results are worth.', badge)
         self.assertIn('bi bi-star', badge)
         self.assertTrue('40.00' in badge or '40,00' in badge)
 
@@ -352,6 +354,51 @@ class TeamCaptainSelectionTests(TestCase):
 
         self.assertEqual(team.pk, legacy_team.pk)
         self.assert_team_capitan(team, second_player)
+
+
+class PlayerLicenseListTests(TestCase):
+    def create_player(self, username, is_licence_active=True, licence_number_value=None):
+        user = User.objects.create_user(username=username)
+
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            is_licence_active=is_licence_active,
+            licence_number=licence_number_value,
+        )
+
+    def test_actual_players_list_requires_active_license_number(self):
+        licensed = self.create_player('licensed', licence_number_value='00001')
+        self.create_player('missing-number', licence_number_value=None)
+        self.create_player('blank-number', licence_number_value='')
+        self.create_player('inactive', is_licence_active=False, licence_number_value='00002')
+
+        self.assertEqual(list(Player.get_actual_players_list()), [licensed])
+
+    def test_licence_number_badge_treats_missing_number_as_no_license(self):
+        player = self.create_player('missing-number', licence_number_value=None)
+
+        with override('en'):
+            badge = str(licence_number(player))
+
+        self.assertIn('No license', badge)
+        self.assertIn('bg-danger', badge)
+
+    def test_licensed_players_page_uses_server_pagination(self):
+        for index in range(55):
+            self.create_player('licensed-{}'.format(index), licence_number_value='{:05d}'.format(index))
+        self.create_player('missing-number', licence_number_value=None)
+
+        response = self.client.get('/players/licence')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['page_size'], 50)
+        self.assertEqual(response.context['page_obj'].paginator.count, 55)
+        self.assertEqual(len(response.context['players']), 50)
+        self.assertNotContains(response, 'players-license-badge-missing')
 
 
 class OptionalRegistrationEmailTests(TestCase):

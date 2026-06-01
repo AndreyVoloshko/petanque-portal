@@ -10,6 +10,9 @@
 {% trans "Search by name or club..." as athlete_search_placeholder %}
 {% trans "Athletes per page" as athletes_per_page_label %}
 {% trans "all" as all_page_size_label %}
+{% trans "Rating points are earned from tournament results. More points means a higher place in the official rating." as points_help_text %}
+{% trans "Power summarizes an athlete's strongest recent rating results. It is used to estimate how strong teams and tournaments are." as power_help_text %}
+{% trans "License shows whether the athlete currently has an active federation license and displays the license number when available." as license_help_text %}
 
 <div class="players-results-surface">
     <div class="players-table-responsive">
@@ -18,11 +21,35 @@
                 <tr>
                     <th class="players-rank-column">{% trans "Ranking" %}</th>
                     <th class="players-athlete-column">{% trans "Athlete" %}</th>
-                    <th class="players-points-column">{% trans "Points" %}</th>
-                    <th class="players-power-column">{% trans "Power" %}</th>
+                    <th class="players-points-column">
+                        <span class="players-column-heading">
+                            {% trans "Points" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ points_help_text }}</span>
+                            </button>
+                        </span>
+                    </th>
+                    <th class="players-power-column">
+                        <span class="players-column-heading">
+                            {% trans "Power" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ power_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ power_help_text }}</span>
+                            </button>
+                        </span>
+                    </th>
                     <th class="players-sex-column filterable no-sort">{% trans "Sex" %}</th>
                     <th class="players-age-column filterable no-sort">{% trans "Age" %}</th>
-                    <th class="players-license-column no-sort">{% trans "License" %}</th>
+                    <th class="players-license-column no-sort">
+                        <span class="players-column-heading">
+                            {% trans "License" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ license_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ license_help_text }}</span>
+                            </button>
+                        </span>
+                    </th>
                     <th class="players-club-column filterable no-sort">{% trans "Club" %}</th>
                     <th class="players-action-column no-sort" aria-label="{% trans "Actions" %}"></th>
                     <th class="players-mobile-card-column no-sort" aria-hidden="true"></th>
@@ -80,7 +107,7 @@
                             </a>
                         </td>
                         <td class="players-points-cell" data-label="{% trans "Points" %}" data-order="{{ item|rating_points:rating_field }}">
-                            <span class="players-metric-badge players-points-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
+                            <span class="players-metric-badge players-points-badge">
                                 <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                                 <span class="players-metric-copy">
                                     <span class="players-metric-value">{{ item|rating_points:rating_field|floatformat:2 }}</span>
@@ -89,7 +116,7 @@
                             </span>
                         </td>
                         <td class="players-power-cell" data-label="{% trans "Power" %}" data-order="{{ item|rating_power:rating_power_field }}">
-                            <span class="players-metric-badge players-power-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
+                            <span class="players-metric-badge players-power-badge">
                                 <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
                                 <span class="players-metric-copy">
                                     <span class="players-metric-value">{{ item|rating_power:rating_power_field|floatformat:2 }}</span>
@@ -98,7 +125,7 @@
                             </span>
                         </td>
                         <td class="players-sex-cell" data-label="{% trans "Sex" %}">
-                            <span class="players-sex-badge players-sex-badge-{{ item.gender|lower }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if item.gender == "F" %}{% trans "Women" %}{% else %}{% trans "Men" %}{% endif %}">
+                            <span class="players-sex-badge players-sex-badge-{{ item.gender|lower }}">
                                 {% if item.gender == "F" %}
                                     <i class="bi bi-gender-female" aria-hidden="true"></i>
                                     <span class="players-sex-copy">
@@ -123,7 +150,7 @@
                         </td>
                         <td class="players-license-cell" data-label="{% trans "License" %}">
                             {% if item.is_licence_active and item.licence_number %}
-                                <span class="players-license-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
+                                <span class="players-license-badge">
                                     <i class="bi bi-person-vcard" aria-hidden="true"></i>
                                     <span class="players-license-copy">
                                         <span class="players-license-number">{{ item.licence_number }}</span>
@@ -131,7 +158,7 @@
                                     </span>
                                 </span>
                             {% else %}
-                                <span class="players-license-badge players-license-badge-missing" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
+                                <span class="players-license-badge players-license-badge-missing">
                                     {% trans "No license" %}
                                 </span>
                             {% endif %}
@@ -163,201 +190,179 @@
             </tbody>
         </table>
     </div>
+
+    <div class="players-table-footer" aria-label="{% trans "Athlete pagination" %}">
+        <p class="players-pagination-summary">{{ player_pagination_summary }}</p>
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="players-page-links" aria-label="{% trans "Pages" %}">
+                <ul class="pagination">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        <a class="page-link players-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ player_pagination_urls.first }}{% else %}#{% endif %}" aria-label="{% trans "First page" %}">
+                            <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        <a class="page-link players-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ player_pagination_urls.previous }}{% else %}#{% endif %}" aria-label="{% trans "Previous page" %}">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    {% for page in player_pagination_pages %}
+                        {% if page == "ellipsis" %}
+                            <li class="page-item disabled"><span class="page-link players-page-ellipsis">...</span></li>
+                        {% else %}
+                            <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                                <a class="page-link players-page-link" href="{{ player_pagination_urls.pages|get_item:page }}">{{ page }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link players-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ player_pagination_urls.next }}{% else %}#{% endif %}" aria-label="{% trans "Next page" %}">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link players-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ player_pagination_urls.last }}{% else %}#{% endif %}" aria-label="{% trans "Last page" %}">
+                            <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+        <div class="players-footer-length-mount">
+            <form class="players-page-size-form" method="get" action="{{ request.path }}">
+                {% for name,value in player_active_params.items %}
+                    {% if name != "per_page" %}
+                        <input type="hidden" name="{{ name }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                <label>
+                    <span>{% trans "Athletes per page" %}</span>
+                    <select name="per_page" aria-label="{% trans "Athletes per page" %}">
+                        {% for option in page_size_options %}
+                            <option value="{{ option }}" {% if page_size == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
-    $(document).ready(function() {
-        var table = $('#players').DataTable({
-            autoWidth: false,
-            dom: '<"players-generated-controls"lf>rt<"players-table-footer"ip>',
-            order: [[0, 'asc']],
-            pageLength: 25,
-            paging: true,
-            pagingType: 'simple_numbers',
-            searchDelay: 0,
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{{ all_page_size_label|escapejs }}"]],
-            language: {
-                lengthMenu: "{% trans "Show _MENU_ athletes per page" %}",
-                zeroRecords: "{% trans "No athletes found" %}",
-                info: "{% trans "Showing _START_ to _END_ of _TOTAL_ athletes" %}",
-                infoEmpty: "{% trans "Showing 0 of 0 athletes" %}",
-                infoFiltered: "{% trans "(filtered from _MAX_ athletes)" %}",
-                search: "",
-                searchPlaceholder: "{{ athlete_search_placeholder|escapejs }}",
-                paginate: {
-                    next: '<i class="bi bi-chevron-right" aria-hidden="true"></i><span class="visually-hidden">{% trans "Next" %}</span>',
-                    previous: '<i class="bi bi-chevron-left" aria-hidden="true"></i><span class="visually-hidden">{% trans "Previous" %}</span>'
-                }
-            },
-            columnDefs: [
-                { targets: 'no-sort', orderable: false },
-                { targets: 'players-action-column', searchable: false },
-                { targets: 'players-mobile-card-column', searchable: false },
-                { targets: [0, 2, 3], type: 'num' }
-            ]
-        });
-
-        var activeFilters = {
-            club: '',
-            age: '',
-            sex: ''
-        };
-
-        function normalizeFilterText(value) {
-            return (value || '').replace(/\s+/g, ' ').trim();
+(function() {
+    function desiredPageSize() {
+        if (!window.matchMedia) {
+            return 50;
         }
 
-        function getRowFilterValues(row) {
-            var $row = $(row);
-            return {
-                club: normalizeFilterText($row.find('.players-club-link').first().text()),
-                age: normalizeFilterText($row.find('.players-age-badge .badge').first().text()),
-                sex: normalizeFilterText($row.find('.players-sex-value').first().text())
-            };
+        if (window.matchMedia('(max-width: 767.98px)').matches) {
+            return 25;
         }
 
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            if (settings.nTable !== table.table().node()) {
-                return true;
-            }
-
-            var row = table.row(dataIndex).node();
-            if (!row) {
-                return true;
-            }
-
-            var values = getRowFilterValues(row);
-
-            if (activeFilters.club && values.club !== activeFilters.club) {
-                return false;
-            }
-            if (activeFilters.age && values.age !== activeFilters.age) {
-                return false;
-            }
-            if (activeFilters.sex && values.sex !== activeFilters.sex) {
-                return false;
-            }
-
-            return true;
-        });
-
-        function rehomeDataTableControls() {
-            var $length = $('#players_length');
-            var $search = $('#players_filter');
-            var $footerLengthMount = $('.players-footer-length-mount');
-
-            if (!$footerLengthMount.length) {
-                $footerLengthMount = $('<div class="players-footer-length-mount"></div>');
-                $('.players-table-footer').append($footerLengthMount);
-            }
-
-            $footerLengthMount.empty().append($length);
-            $('.players-search-mount').empty().append($search);
-            $('.players-generated-controls').hide();
-
-            $length.find('select').attr('aria-label', "{{ athletes_per_page_label|escapejs }}");
-
-            var $searchLabel = $search.find('label');
-            $searchLabel.contents().filter(function() {
-                return this.nodeType === 3;
-            }).remove();
-            if (!$searchLabel.find('.players-search-icon').length) {
-                $searchLabel.prepend('<i class="bi bi-search players-search-icon" aria-hidden="true"></i>');
-            }
-            $search.find('input')
-                .attr('aria-label', "{{ athlete_search_placeholder|escapejs }}")
-                .attr('placeholder', "{{ athlete_search_placeholder|escapejs }}");
+        if (window.matchMedia('(max-width: 1199.98px)').matches) {
+            return 30;
         }
 
-        function buildFilterControls() {
-            var filterConfig = [
-                {
-                    key: 'club',
-                    column: 7,
-                    icon: 'bi-building',
-                    label: "{{ all_clubs_label|escapejs }}",
-                    ariaLabel: "{{ club_label|escapejs }}",
-                    valueSelector: '.players-club-link'
-                },
-                {
-                    key: 'age',
-                    column: 5,
-                    icon: 'bi-people',
-                    label: "{{ all_age_categories_label|escapejs }}",
-                    ariaLabel: "{{ age_label|escapejs }}",
-                    valueSelector: '.players-age-badge .badge'
-                },
-                {
-                    key: 'sex',
-                    column: 4,
-                    icon: 'bi-gender-ambiguous',
-                    label: "{{ all_athletes_label|escapejs }}",
-                    ariaLabel: "{{ sex_label|escapejs }}",
-                    valueSelector: '.players-sex-value'
-                }
-            ];
+        return 50;
+    }
 
-            var $filters = $('.players-filter-controls').empty();
-
-            filterConfig.forEach(function(config) {
-                var values = [];
-                var seen = {};
-                if (config.valueSelector) {
-                    table.rows().nodes().each(function(row) {
-                        var value = normalizeFilterText($(row).find(config.valueSelector).first().text());
-                        if (value && !seen[value]) {
-                            seen[value] = true;
-                            values.push(value);
-                        }
-                    });
-                }
-
-                values.sort(function(a, b) {
-                    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-                });
-
-                var $field = $('<label class="players-filter-field"></label>');
-                var $select = $('<select class="players-filter-select"></select>')
-                    .attr('aria-label', config.ariaLabel)
-                    .append($('<option></option>').attr('value', '').text(config.label));
-
-                values.forEach(function(value) {
-                    $select.append($('<option></option>').attr('value', value).text(value));
-                });
-
-                $select.on('change', function() {
-                    activeFilters[config.key] = normalizeFilterText(this.value);
-                    table.draw();
-                });
-
-                $field.append($('<i></i>').addClass('bi ' + config.icon).attr('aria-hidden', 'true'));
-                $field.append($select);
-                $filters.append($field);
-            });
+    function enforceResponsivePageSize() {
+        if (!window.URL || !window.URLSearchParams) {
+            return false;
         }
 
-        function initTooltips() {
-            setTimeout(function () {
-                var $tooltips = $('[data-bs-toggle="tooltip"]');
-                $tooltips.attr('data-bs-offset', '0,2');
-                if (window.bootstrap && window.bootstrap.Tooltip) {
-                    $tooltips.each(function() {
-                        var instance = window.bootstrap.Tooltip.getInstance(this);
-                        if (instance) {
-                            instance.dispose();
-                        }
-                        new window.bootstrap.Tooltip(this, {
-                            offset: [0, 2]
-                        });
-                    });
-                } else if ($.fn.tooltip) {
-                    $tooltips.tooltip('dispose').tooltip({
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('per_page')) {
+            return false;
+        }
+
+        const targetSize = desiredPageSize();
+        if (targetSize === 50) {
+            return false;
+        }
+
+        url.searchParams.set('per_page', String(targetSize));
+        url.searchParams.delete('page');
+        window.location.replace(url.toString());
+        return true;
+    }
+
+    if (enforceResponsivePageSize()) {
+        return;
+    }
+
+    function initTooltips() {
+        setTimeout(function () {
+            var $tooltips = $('[data-bs-toggle="tooltip"]');
+            $tooltips.attr('data-bs-offset', '0,2');
+            if (window.bootstrap && window.bootstrap.Tooltip) {
+                $tooltips.each(function() {
+                    var instance = window.bootstrap.Tooltip.getInstance(this);
+                    if (instance) {
+                        instance.dispose();
+                    }
+                    new window.bootstrap.Tooltip(this, {
                         offset: [0, 2]
                     });
-                }
-            }, 100);
+                });
+            } else if ($.fn.tooltip) {
+                $tooltips.tooltip('dispose').tooltip({
+                    offset: [0, 2]
+                });
+            }
+        }, 100);
+    }
+
+    function initFilters() {
+        const form = document.querySelector('.players-filter-form');
+        if (!form) {
+            return;
         }
 
+        form.querySelectorAll('select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
+        });
+    }
+
+    function initPageSize() {
+        const form = document.querySelector('.players-page-size-form');
+        if (!form) {
+            return;
+        }
+
+        const select = form.querySelector('select[name="per_page"]');
+        if (select) {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+    }
+
+    function initTableScroll() {
+        const scrollKey = 'players-table-scroll';
+        document.querySelectorAll('.players-page-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (!link.classList.contains('is-disabled') && link.getAttribute('href') !== '#') {
+                    window.sessionStorage.setItem(scrollKey, '1');
+                }
+            });
+        });
+
+        if (window.sessionStorage.getItem(scrollKey) === '1') {
+            window.sessionStorage.removeItem(scrollKey);
+            const table = document.querySelector('.players-results-surface');
+            if (table) {
+                table.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    }
+
+    function initRowClicks() {
         $('#players tbody').on('click', 'tr.players-row', function(e) {
             if ($(e.target).closest('a, button, input, select').length) {
                 return;
@@ -367,13 +372,25 @@
                 window.location.href = href;
             }
         });
+    }
 
-        rehomeDataTableControls();
-        buildFilterControls();
+    function initPlayersTable() {
+        initFilters();
+        initPageSize();
         initTooltips();
+        initTableScroll();
+        initRowClicks();
 
-        table.on('draw.dt', function () {
-            initTooltips();
+        $(document).on('click', '.players-column-help', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
         });
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPlayersTable);
+    } else {
+        initPlayersTable();
+    }
+})();
 </script>

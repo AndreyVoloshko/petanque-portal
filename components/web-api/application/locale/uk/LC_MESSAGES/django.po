@@ -847,6 +847,10 @@ msgstr "Спортсменів"
 msgid "City"
 msgstr "Місто"
 
+#: federation/templates/players/player.html
+msgid "Region"
+msgstr "Регіон"
+
 #: federation/templates/clubs/club_info_panel.html:40
 msgid "Social media"
 msgstr "Соцмережі"
@@ -2133,30 +2137,115 @@ msgstr "Деталі змагання"
 msgid "Ranked only"
 msgstr "Лише рейтингові"
 
-#: federation/templates/players/player.html
-msgid "Details"
-msgstr "Деталі"
+#: federation/templatetags/app_filters.py
+msgid "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points."
+msgstr "Сила змагання впливає на те, скільки рейтингових балів дає результат. Вона оцінює силу складу змагання за найсильнішими командами, які грали; вища сила означає, що те саме місце дає більше рейтингових балів."
+
+#: federation/templates/players/players.html
+msgid "This table shows the official athlete rating. Points come from tournament results; power summarizes the athlete's strongest recent rating results and helps determine how strong teams and tournaments are."
+msgstr "Ця таблиця показує офіційний рейтинг спортсменів. Бали нараховуються за результати змагань; сила підсумовує найсильніші нещодавні рейтингові результати спортсмена і допомагає визначати силу команд та змагань."
+
+#: federation/templates/players/players_table.html
+msgid "Rating points are earned from tournament results. More points means a higher place in the official rating."
+msgstr "Рейтингові бали нараховуються за результати змагань. Більше балів означає вище місце в офіційному рейтингу."
+
+#: federation/templates/players/players_table.html
+msgid "Power summarizes an athlete's strongest recent rating results. It is used to estimate how strong teams and tournaments are."
+msgstr "Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її використовують, щоб оцінювати силу команд і змагань."
+
+#: federation/templates/players/players_table.html
+msgid "License shows whether the athlete currently has an active federation license and displays the license number when available."
+msgstr "Ліцензія показує, чи має спортсмен активну ліцензію федерації, і відображає її номер, якщо він доступний."
 
 #: federation/templates/players/player.html
-msgid "Tournaments"
-msgstr "Змагання"
+msgid "Official place in the current player rating among active licensed players. A lower place number means a higher rating."
+msgstr "Офіційне місце у поточному рейтингу серед спортсменів з активною ліцензією. Менший номер місця означає вищий рейтинг."
 
 #: federation/templates/players/player.html
-msgid "View all tournaments"
-msgstr "Всі змагання"
+msgid "Power summarizes the player's strongest recent rating results. It is used to estimate team and tournament strength."
+msgstr "Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її використовують для оцінки сили команд і змагань."
 
 #: federation/templates/players/player.html
-msgid "All tournaments"
-msgstr "Всі змагання"
+msgid "Finished competitions in the current year that count toward the rating."
+msgstr "Завершені змагання поточного року, які враховуються у рейтингу."
+
+#: federation/templates/players/player.html
+msgid "International competitions this player played in during the current year."
+msgstr "Закордонні змагання, у яких спортсмен грав протягом поточного року."
+
+#: federation/templates/players/player.html
+msgid "All competitions this player played in during the current year, including rating, B, and international competitions."
+msgstr "Усі змагання, у яких спортсмен грав протягом поточного року, включно з рейтинговими, B-турнірами та закордонними змаганнями."
+
+#: federation/templates/players/player.html
+msgid "This year competitions"
+msgstr "Змагання цього року"
+
+#: federation/templates/players/player.html
+msgid "Current rating points earned from the player's strongest recent rating tournament results."
+msgstr "Поточні рейтингові бали, набрані за найсильніші нещодавні результати спортсмена у рейтингових змаганнях."
+
+#: federation/templates/players/player.html
+msgid "Rating this year"
+msgstr "Рейтингові цього року"
+
+#: federation/templates/players/player.html
+msgid "International this year"
+msgstr "Закордонні цього року"
+
+#: federation/templates/players/player.html
+msgid "Players"
+msgstr "Спортсмени"
 
 #: federation/templates/players/player.html
 msgid "Player profile"
 msgstr "Профіль спортсмена"
 
 #: federation/templates/players/player.html
+msgid "Details"
+msgstr "Деталі"
+
+#: federation/templates/players/player.html
 msgid "Player statistics"
 msgstr "Статистика спортсмена"
 
 #: federation/templates/players/player.html
+msgid "National team player"
+msgstr "Гравець збірної"
+
+#: federation/templates/players/player.html
 msgid "Member since"
-msgstr "Учасник з"
+msgstr "У клубі з"
+
+#: federation/templates/players/player.html
+msgid "Tournaments"
+msgstr "Змагання"
+
+#: federation/templates/players/player.html
+#: federation/templatetags/app_filters.py
+msgid "Team power in this tournament is calculated from the power of the players in this player's team."
+msgstr "Сила команди у цьому змаганні розраховується з показників сили гравців у команді цього спортсмена."
+
+#: federation/templates/players/player.html
+msgid "Rating points earned by this player's team in this tournament."
+msgstr "Рейтингові бали, які команда цього спортсмена набрала у цьому змаганні."
+
+#: federation/templates/players/player.html
+msgid "Sort tournaments"
+msgstr "Сортування змагань"
+
+#: federation/templates/players/player.html
+msgid "Sort"
+msgstr "Сортувати"
+
+#: federation/templates/players/player.html
+msgid "Sort by date"
+msgstr "Сортувати за датою"
+
+#: federation/templates/players/player.html
+msgid "Sort by place"
+msgstr "Сортувати за місцем"
+
+#: federation/templates/players/player.html
+msgid "Sort by points"
+msgstr "Сортувати за балами"

@@ -3,7 +3,17 @@
 {% load i18n %}
 {% load static %}
 
+{% block main_classes %}portal-page-content-wide{% endblock %}
+
 {% block content %}
+{% trans "Official place in the current player rating among active licensed players. A lower place number means a higher rating." as rating_place_help_text %}
+{% trans "Current rating points earned from the player's strongest recent rating tournament results." as rating_points_help_text %}
+{% trans "Power summarizes the player's strongest recent rating results. It is used to estimate team and tournament strength." as power_help_text %}
+{% trans "Finished competitions in the current year that count toward the rating." as rating_competitions_help_text %}
+{% trans "International competitions this player played in during the current year." as international_competitions_help_text %}
+{% trans "All competitions this player played in during the current year, including rating, B, and international competitions." as total_competitions_help_text %}
+{% trans "Team power in this tournament is calculated from the power of the players in this player's team." as tournament_team_power_help_text %}
+{% trans "Rating points earned by this player's team in this tournament." as tournament_points_help_text %}
 <section class="player-page">
     <nav class="player-breadcrumbs" aria-label="breadcrumb">
         <a href="/" class="player-breadcrumb-link"><i class="bi bi-house-door-fill"></i></a>
@@ -22,7 +32,19 @@
             {% endif %}
         </div>
         <div class="player-hero-info">
-            <span class="player-id-chip">#{{ player.pk }}</span>
+            {% if player.is_licence_active and player.licence_number %}
+                <span class="players-license-badge player-hero-license-badge">
+                    <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                    <span class="players-license-copy">
+                        <span class="players-license-number">{{ player.licence_number }}</span>
+                        <span class="players-license-label">{% trans "License" %}</span>
+                    </span>
+                </span>
+            {% else %}
+                <span class="players-license-badge players-license-badge-missing player-hero-license-badge">
+                    {% trans "No license" %}
+                </span>
+            {% endif %}
             <h1 class="player-hero-name">{{ player.get_name }}</h1>
             <div class="player-hero-chips">
                 {% if player.sport_title %}
@@ -127,21 +149,17 @@
                             <div class="player-club-meta-item">
                                 <i class="bi bi-globe2"></i>
                                 <span class="player-club-meta-label">{% trans "Region" %}</span>
-                                <span class="player-club-meta-value">{{ player.current_club.city.country.name }}</span>
+                                <span class="player-club-meta-value player-club-country-value">
+                                    {{ player.current_club.city.country.name }}
+                                    {{ player.current_club.city.country|country_flag|safe }}
+                                </span>
                             </div>
                             {% endif %}
                             {% if player.current_club.date_created %}
                             <div class="player-club-meta-item">
                                 <i class="bi bi-calendar-event"></i>
                                 <span class="player-club-meta-label">{% trans "Member since" %}</span>
-                                <span class="player-club-meta-value">{{ player.current_club.date_created|date:"Y" }}</span>
-                            </div>
-                            {% endif %}
-                            {% if player.prefred_position %}
-                            <div class="player-club-meta-item">
-                                <i class="bi bi-hand-index"></i>
-                                <span class="player-club-meta-label">{% trans "Position" %}</span>
-                                <span class="player-club-meta-value">{{ player.get_prefred_position_display }}</span>
+                                <span class="player-club-meta-value">{{ player.current_club.date_created|date:"E Y" }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -165,35 +183,80 @@
             <div class="player-card-body collapse show" id="player-stats-body">
             <div class="player-stats-grid">
                 <div class="player-stat-tile player-stat-rating">
-                    <span class="player-stat-label">{% trans "Rating" %}</span>
+                    <span class="player-stat-label">
+                        {% trans "Ranking place" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ rating_place_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ rating_place_help_text }}</span>
+                        </button>
+                    </span>
+                    <div class="player-stat-row">
+                        <span class="player-stat-value">
+                            {% if player_rating_position %}{{ player_rating_position }}{% else %}&mdash;{% endif %}
+                        </span>
+                        <i class="bi bi-trophy player-stat-icon"></i>
+                    </div>
+                </div>
+                <div class="player-stat-tile player-stat-points">
+                    <span class="player-stat-label">
+                        {% trans "Rating points" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ rating_points_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ rating_points_help_text }}</span>
+                        </button>
+                    </span>
                     <div class="player-stat-row">
                         <span class="player-stat-value">{{ player.current_rating|floatformat:0 }}</span>
                         <i class="bi bi-graph-up-arrow player-stat-icon"></i>
                     </div>
                 </div>
                 <div class="player-stat-tile player-stat-power">
-                    <span class="player-stat-label">{% trans "Power" %}</span>
+                    <span class="player-stat-label">
+                        {% trans "Power" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ power_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ power_help_text }}</span>
+                        </button>
+                    </span>
                     <div class="player-stat-row">
                         <span class="player-stat-value">{{ player.current_power|floatformat:1 }}</span>
                         <i class="bi bi-lightning-charge player-stat-icon"></i>
                     </div>
                 </div>
                 <div class="player-stat-tile player-stat-rating-comp">
-                    <span class="player-stat-label">{% trans "Rating competitions" %}</span>
+                    <span class="player-stat-label">
+                        {% trans "Rating this year" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ rating_competitions_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ rating_competitions_help_text }}</span>
+                        </button>
+                    </span>
                     <div class="player-stat-row">
                         <span class="player-stat-value">{{ player_summary_info.this_year_rating_tournaments_count }}</span>
                         <i class="bi bi-trophy player-stat-icon"></i>
                     </div>
                 </div>
                 <div class="player-stat-tile player-stat-international">
-                    <span class="player-stat-label">{% trans "International competitions" %}</span>
+                    <span class="player-stat-label">
+                        {% trans "International this year" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ international_competitions_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ international_competitions_help_text }}</span>
+                        </button>
+                    </span>
                     <div class="player-stat-row">
                         <span class="player-stat-value">{{ player_summary_info.this_year_away_tournaments_count }}</span>
                         <i class="bi bi-globe2 player-stat-icon"></i>
                     </div>
                 </div>
                 <div class="player-stat-tile player-stat-total">
-                    <span class="player-stat-label">{% trans "Total competitions" %}</span>
+                    <span class="player-stat-label">
+                        {% trans "This year competitions" %}
+                        <button class="player-stat-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ total_competitions_help_text }}">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">{{ total_competitions_help_text }}</span>
+                        </button>
+                    </span>
                     <div class="player-stat-row">
                         <span class="player-stat-value">{{ player_summary_info.this_year_tournaments_count }}</span>
                         <i class="bi bi-collection player-stat-icon"></i>
@@ -210,31 +273,80 @@
                 <i class="bi bi-trophy"></i>
                 {% trans "Tournaments" %}
             </h2>
-            {% if past_tournaments.count > 6 %}
-            <a href="#player-all-tournaments" class="player-tournaments-view-all-link" data-bs-toggle="collapse">
-                {% trans "View all tournaments" %}
-            </a>
-            {% endif %}
         </div>
 
-        {% if recent_tournaments %}
+        {% if player_tournaments %}
+        <div class="player-tournaments-sort-controls" aria-label="{% trans "Sort tournaments" %}">
+            <span class="pt-sort-label">{% trans "Sort" %}</span>
+            <button class="pt-sort-control" type="button" data-sort-button="date" aria-label="{% trans "Sort by date" %}">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                {% trans "Date" %}
+                <i class="bi bi-arrow-down-up pt-sort-icon" aria-hidden="true"></i>
+            </button>
+            <button class="pt-sort-control" type="button" data-sort-button="place" aria-label="{% trans "Sort by place" %}">
+                <i class="bi bi-award" aria-hidden="true"></i>
+                {% trans "Place" %}
+                <i class="bi bi-arrow-down-up pt-sort-icon" aria-hidden="true"></i>
+            </button>
+            <button class="pt-sort-control" type="button" data-sort-button="points" aria-label="{% trans "Sort by points" %}">
+                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                {% trans "Points" %}
+                <i class="bi bi-arrow-down-up pt-sort-icon" aria-hidden="true"></i>
+            </button>
+        </div>
+
         <div class="player-tournaments-table-wrap">
-            <table class="player-tournaments-table">
+            <table class="player-tournaments-table" data-player-tournaments-table>
                 <thead>
                     <tr>
-                        <th class="pt-col-date">{% trans "Date" %}</th>
+                        <th class="pt-col-date" aria-sort="descending">
+                            <button class="pt-sort-button" type="button" data-sort-button="date" aria-label="{% trans "Sort by date" %}">
+                                {% trans "Date" %}
+                                <i class="bi bi-arrow-down pt-sort-icon" aria-hidden="true"></i>
+                            </button>
+                        </th>
                         <th class="pt-col-name">{% trans "Name" %}</th>
                         <th class="pt-col-format">{% trans "Format" %}</th>
-                        <th class="pt-col-place">{% trans "Place" %}</th>
+                        <th class="pt-col-place">
+                            <button class="pt-sort-button" type="button" data-sort-button="place" aria-label="{% trans "Sort by place" %}">
+                                {% trans "Place" %}
+                                <i class="bi bi-arrow-down-up pt-sort-icon" aria-hidden="true"></i>
+                            </button>
+                        </th>
                         <th class="pt-col-team">{% trans "Team" %}</th>
-                        <th class="pt-col-status">{% trans "Competition power" %}</th>
-                        <th class="pt-col-power">{% trans "Team power" %}</th>
-                        <th class="pt-col-points">{% trans "Points" %}</th>
+                        <th class="pt-col-power">
+                            <span class="pt-heading-with-help">
+                                {% trans "Power" %}
+                                <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}">
+                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                    <span class="visually-hidden">{{ tournament_team_power_help_text }}</span>
+                                </button>
+                            </span>
+                        </th>
+                        <th class="pt-col-points">
+                            <span class="pt-heading-with-help">
+                                <button class="pt-sort-button" type="button" data-sort-button="points" aria-label="{% trans "Sort by points" %}">
+                                    {% trans "Points" %}
+                                    <i class="bi bi-arrow-down-up pt-sort-icon" aria-hidden="true"></i>
+                                </button>
+                                <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
+                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                    <span class="visually-hidden">{{ tournament_points_help_text }}</span>
+                                </button>
+                            </span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in recent_tournaments %}
-                    <tr class="player-tournament-row {{ item|is_tournament_in_player_rating:player|safe }}" data-href="{% url 'tournament' id=item.pk %}">
+                    {% for item in player_tournaments %}
+                    {% with place=item|team_min_place_in_tournament:player teams=item|teams_count power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
+                    <tr class="player-tournament-row {{ item|is_tournament_in_player_rating:player|safe }}"
+                        data-href="{% url 'tournament' id=item.pk %}"
+                        data-sort-index="{{ forloop.counter0 }}"
+                        data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
+                        data-sort-place="{{ place }}"
+                        data-sort-teams="{{ teams }}"
+                        data-sort-points="{{ points|default:'0' }}">
                         <td class="pt-col-date" data-label="{% trans "Date" %}">
                             <div class="pt-date-wrap">
                                 <i class="bi bi-calendar3"></i>
@@ -264,44 +376,48 @@
                         </td>
                         <td class="pt-col-place" data-label="{% trans "Place" %}">
                             <span class="pt-place-value">
-                                {{ item|team_min_place_in_tournament:player|safe }}
+                                {{ place }}
                             </span>
                             <span class="pt-place-sep">/</span>
-                            <span class="pt-place-total">{{ item|teams_count }}</span>
+                            <span class="pt-place-total">{{ teams }}</span>
                         </td>
                         <td class="pt-col-team" data-label="{% trans "Team" %}">
-                            <span class="pt-team-name">{{ item|team_short_name_in_tournament:player|safe }}</span>
+                            {{ item|team_players_in_tournament:player }}
                         </td>
-                        <td class="pt-col-status" data-label="{% trans "Competition power" %}">
-                            {{ item|tournament_power_badge|safe }}
-                        </td>
-                        <td class="pt-col-power" data-label="{% trans "Team power" %}">
-                            {% with power=item|team_power_in_tournament:player %}
+                        <td class="pt-col-power" data-label="{% trans "Power" %}">
                                 {% if power %}
-                                    <span class="pt-power-chip">{{ power }}</span>
+                                    {{ power|team_power_badge|safe }}
                                 {% else %}
                                     <span class="pt-muted">&mdash;</span>
                                 {% endif %}
-                            {% endwith %}
                         </td>
                         <td class="pt-col-points" data-label="{% trans "Points" %}">
-                            {% with points=item|team_rating_points_in_tournament:player %}
                                 {% if points %}
-                                    <span class="pt-points-chip">{{ points }}</span>
+                                    <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
+                                        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                        <span>{{ points }}</span>
+                                    </span>
                                 {% else %}
                                     <span class="pt-muted">&mdash;</span>
                                 {% endif %}
-                            {% endwith %}
                         </td>
                     </tr>
+                    {% endwith %}
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
         <div class="player-tournaments-mobile-list">
-            {% for item in recent_tournaments %}
-            <a href="{% url 'tournament' id=item.pk %}" class="player-tournament-mobile-card {{ item|is_tournament_in_player_rating:player|safe }}">
+            {% for item in player_tournaments %}
+            {% with place=item|team_min_place_in_tournament:player teams=item|teams_count power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
+            <a href="{% url 'tournament' id=item.pk %}"
+               class="player-tournament-mobile-card {{ item|is_tournament_in_player_rating:player|safe }}"
+               data-sort-index="{{ forloop.counter0 }}"
+               data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
+               data-sort-place="{{ place }}"
+               data-sort-teams="{{ teams }}"
+               data-sort-points="{{ points|default:'0' }}">
                 <div class="ptm-top">
                     <div class="ptm-date">
                         <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"d M" }}</time>
@@ -321,34 +437,32 @@
                                     <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
                                 {% endfor %}
                             {% endwith %}
-                            {{ item|tournament_power_badge|safe }}
                         </div>
+                        <span class="ptm-team">{{ item|team_players_in_tournament:player }}</span>
                     </div>
                     <i class="bi bi-chevron-right ptm-chevron"></i>
                 </div>
                 <div class="ptm-bottom">
-                    {% with power=item|team_power_in_tournament:player %}
+                    <span class="ptm-place-chip" aria-label="{% trans "Place" %}">
+                        <i class="bi bi-award" aria-hidden="true"></i>
+                        <span class="pt-place-value">{{ place }}</span>
+                        <span class="pt-place-sep">/</span>
+                        <span class="pt-place-total">{{ teams }}</span>
+                    </span>
                         {% if power %}
-                            <span class="pt-power-chip">{{ power }}</span>
+                            {{ power|team_power_badge|safe }}
                         {% endif %}
-                    {% endwith %}
-                    {% with points=item|team_rating_points_in_tournament:player %}
                         {% if points %}
-                            <span class="pt-points-chip">{{ points }}</span>
+                            <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
+                                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                <span>{{ points }}</span>
+                            </span>
                         {% endif %}
-                    {% endwith %}
                 </div>
             </a>
+            {% endwith %}
             {% endfor %}
         </div>
-
-        {% if past_tournaments.count > 6 %}
-        <div class="player-tournaments-footer">
-            <a href="#player-all-tournaments" class="player-view-all-btn" data-bs-toggle="collapse">
-                {% trans "View all tournaments" %} <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
-        {% endif %}
 
         {% else %}
         <div class="player-tournaments-empty">
@@ -357,28 +471,163 @@
         </div>
         {% endif %}
     </div>
-
-    {% if past_tournaments.count > 6 %}
-    <div class="collapse player-all-tournaments-section" id="player-all-tournaments">
-        <div class="player-card">
-            <h2 class="player-card-title">
-                <i class="bi bi-list-ul"></i>
-                {% trans "All tournaments" %}
-            </h2>
-            {% include "tournaments/player_past_tournaments.html" with items=past_tournaments player=player table_id="player_past_tournaments_table" initial_order="desc" %}
-        </div>
-    </div>
-    {% endif %}
 </section>
 
 <script>
 (function() {
+    if (window.bootstrap && window.bootstrap.Tooltip) {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(element) {
+            window.bootstrap.Tooltip.getOrCreateInstance(element);
+        });
+    } else if (window.jQuery && window.jQuery.fn && window.jQuery.fn.tooltip) {
+        window.jQuery('[data-bs-toggle="tooltip"]').tooltip();
+    }
+
     document.querySelectorAll('.player-tournament-row[data-href]').forEach(function(row) {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a')) return;
             window.location.href = row.dataset.href;
         });
     });
+
+    const tournamentSection = document.querySelector('.player-tournaments-section');
+    if (!tournamentSection) return;
+
+    const sortState = {
+        key: 'date',
+        direction: 'desc'
+    };
+    const sortDefaults = {
+        date: 'desc',
+        place: 'asc',
+        points: 'desc'
+    };
+
+    function parseSortNumber(value) {
+        const normalized = String(value || '0').replace(',', '.');
+        const parsed = Number.parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function getSortValue(element, key) {
+        if (key === 'date') {
+            const timestamp = Date.parse(element.dataset.sortDate || '');
+            return Number.isFinite(timestamp) ? timestamp : 0;
+        }
+
+        if (key === 'place') {
+            const place = parseSortNumber(element.dataset.sortPlace);
+            const teams = parseSortNumber(element.dataset.sortTeams);
+            return {
+                isZero: place <= 0,
+                ratio: teams > 0 ? place / teams : Number.POSITIVE_INFINITY,
+                place,
+                teams
+            };
+        }
+
+        return parseSortNumber(element.dataset['sort' + key.charAt(0).toUpperCase() + key.slice(1)]);
+    }
+
+    function comparePlace(a, b, direction) {
+        const first = getSortValue(a, 'place');
+        const second = getSortValue(b, 'place');
+
+        if (first.isZero !== second.isZero) {
+            return first.isZero ? 1 : -1;
+        }
+
+        if (first.isZero && second.isZero) {
+            return parseSortNumber(a.dataset.sortIndex) - parseSortNumber(b.dataset.sortIndex);
+        }
+
+        if (first.ratio !== second.ratio) {
+            return direction === 'asc' ? first.ratio - second.ratio : second.ratio - first.ratio;
+        }
+
+        if (first.place !== second.place) {
+            return direction === 'asc' ? first.place - second.place : second.place - first.place;
+        }
+
+        if (first.teams !== second.teams) {
+            return direction === 'asc' ? second.teams - first.teams : first.teams - second.teams;
+        }
+
+        return parseSortNumber(a.dataset.sortIndex) - parseSortNumber(b.dataset.sortIndex);
+    }
+
+    function compareItems(a, b, key, direction) {
+        if (key === 'place') {
+            return comparePlace(a, b, direction);
+        }
+
+        const first = getSortValue(a, key);
+        const second = getSortValue(b, key);
+
+        if (first !== second) {
+            return direction === 'asc' ? first - second : second - first;
+        }
+
+        return parseSortNumber(a.dataset.sortIndex) - parseSortNumber(b.dataset.sortIndex);
+    }
+
+    function reorderItems(selector, parentSelector, key, direction) {
+        const parent = tournamentSection.querySelector(parentSelector);
+        if (!parent) return;
+
+        Array.from(parent.querySelectorAll(selector))
+            .sort(function(a, b) {
+                return compareItems(a, b, key, direction);
+            })
+            .forEach(function(item) {
+                parent.appendChild(item);
+            });
+    }
+
+    function updateSortButtons(key, direction) {
+        tournamentSection.querySelectorAll('[data-sort-button]').forEach(function(button) {
+            const isActive = button.dataset.sortButton === key;
+            const icon = button.querySelector('.pt-sort-icon');
+
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+            if (icon) {
+                icon.classList.remove('bi-arrow-down-up', 'bi-arrow-down', 'bi-arrow-up');
+                icon.classList.add(isActive ? (direction === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down') : 'bi-arrow-down-up');
+            }
+        });
+
+        tournamentSection.querySelectorAll('.player-tournaments-table th').forEach(function(header) {
+            header.removeAttribute('aria-sort');
+        });
+
+        const activeHeader = tournamentSection.querySelector('.player-tournaments-table th .pt-sort-button[data-sort-button="' + key + '"]');
+        if (activeHeader) {
+            activeHeader.closest('th').setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+        }
+    }
+
+    function sortTournaments(key, direction) {
+        sortState.key = key;
+        sortState.direction = direction;
+        reorderItems('.player-tournament-row', '.player-tournaments-table tbody', key, direction);
+        reorderItems('.player-tournament-mobile-card', '.player-tournaments-mobile-list', key, direction);
+        updateSortButtons(key, direction);
+    }
+
+    tournamentSection.querySelectorAll('[data-sort-button]').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const key = button.dataset.sortButton;
+            const direction = sortState.key === key
+                ? (sortState.direction === 'asc' ? 'desc' : 'asc')
+                : (sortDefaults[key] || 'asc');
+
+            sortTournaments(key, direction);
+        });
+    });
+
+    sortTournaments(sortState.key, sortState.direction);
 })();
 </script>
 {% endblock %}

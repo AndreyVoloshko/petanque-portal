@@ -11,7 +11,7 @@ from federation.models.department import PlayerDepartmentMembership
 from datetime import date
 from django.utils import formats
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext as _
 from federation.helpers.general import get_model
 from federation.utils.tournament_names import get_tournament_card_metadata, get_tournament_display_name
@@ -61,14 +61,18 @@ def get_year(value):
 def country_icon(country):
     if not country.code:
         return '<span class="badge bg-danger">' + _('Country not specified') + '</span>'
+    country_code = str(country.code).lower()
     return '''
-        ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country.code+'''"></i>
+        ''' + str(country.name) + '''&nbsp;<i class="flag-icon flag-icon-'''+country_code+'''"></i>
     '''
 
 @register.filter(name='country_flag')
 def country_flag(country):
+    if not country or not country.code:
+        return ''
+    country_code = str(country.code).lower()
     return '''
-        &nbsp;<i data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + str(country.name) + '''" class="flag-icon flag-icon-'''+country.code+'''"></i>
+        &nbsp;<i data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + str(country.name) + '''" class="flag-icon flag-icon-'''+country_code+'''"></i>
     '''
 
 
@@ -228,7 +232,7 @@ def gender (item):
 
 @register.filter(name="licence_number")
 def licence_number(item):
-    if not item.is_licence_active:
+    if not item.is_licence_active or not item.licence_number:
         return '<span class="badge bg-danger" data-bs-toggle="tooltip" title="' + _('License') + '">' + _('No license') + '</span>'
     return '<span class="badge bg-primary" data-bs-toggle="tooltip" title="' + _('License') + '">' + str(item.licence_number) + '</span>'
 
@@ -405,6 +409,34 @@ def team_short_name_in_tournament(tournament, player):
     team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
 
     return team.team.get_short_name()
+
+
+@register.filter(name="team_players_in_tournament")
+def team_players_in_tournament(tournament, player):
+    all_player_teams = Team.objects.filter(players=player)
+    membership = (
+        TeamTournamentMembership.objects
+        .filter(tournament=tournament, team__in=all_player_teams)
+        .select_related('team')
+        .prefetch_related('team__players')
+        .first()
+    )
+
+    if not membership or not membership.team:
+        return ''
+
+    players = membership.team.players.all().order_by('surname', 'name')
+    if not players:
+        return membership.team.get_short_name()
+
+    return format_html(
+        '<span class="pt-team-players">{}</span>',
+        format_html_join(
+            '',
+            '<span class="pt-team-player">{}</span>',
+            ((team_player.get_name(),) for team_player in players),
+        )
+    )
 
 @register.filter(name="team_rating_points_in_tournament")
 def team_rating_points_in_tournament(tournament, player):
@@ -610,6 +642,19 @@ def tournament_power_class(power):
 @register.filter(name="tournament_power_badge")
 def tournament_power_badge(tournament_or_power):
     power = getattr(tournament_or_power, "power", tournament_or_power)
+    return _power_badge(power)
+
+
+@register.filter(name="team_power_badge")
+def team_power_badge(power):
+    tooltip = _(
+        "Team power in this tournament is calculated from the power of the players in this player's team."
+    )
+
+    return _power_badge(power, tooltip)
+
+
+def _power_badge(power, tooltip=None):
     try:
         power_value = Decimal(str(power or 0))
     except (InvalidOperation, TypeError, ValueError):
@@ -618,20 +663,28 @@ def tournament_power_badge(tournament_or_power):
     if not power_value.is_finite() or power_value <= 0:
         return ""
 
+    tooltip_attrs = {}
+    if tooltip:
+        tooltip_attrs = {
+            "data-bs-toggle": "tooltip",
+            "data-bs-placement": "top",
+            "title": tooltip,
+        }
+
     return format_html(
-        '''
-        <span class="badge tournament-power-badge {}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}">
-            <i class="bi bi-star"></i> <span class="tournament-power-label">{}</span> {}
-        </span>
-        ''',
+        '<span class="badge tournament-power-badge {}"{}>'
+        '<i class="bi bi-star"></i> <span class="tournament-power-label">{}</span> {}'
+        '</span>',
         _tournament_power_class(power),
-        _("Competition power"),
+        format_html_join("", ' {}="{}"', tooltip_attrs.items()),
         _("Power"),
         _format_tournament_power(power),
     )
 
 
 def _tournament_power_class(power):
+    # These distribution buckets are kept as stable semantic classes for markup/tests.
+    # CSS intentionally uses one visual color for positive power values.
     try:
         power_value = Decimal(str(power or 0))
     except (InvalidOperation, TypeError, ValueError):

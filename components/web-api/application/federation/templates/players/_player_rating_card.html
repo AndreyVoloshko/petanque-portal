@@ -53,7 +53,7 @@
         </div>
 
         <div class="athlete-card-stats" aria-label="{% trans "Player ranking details" %}">
-            <div class="athlete-stat athlete-stat-points" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating points" %}">
+            <div class="athlete-stat athlete-stat-points">
                 <span class="athlete-stat-icon" aria-hidden="true">
                     <i class="bi bi-graph-up-arrow"></i>
                 </span>
@@ -62,7 +62,7 @@
                     <span class="athlete-stat-label">{% trans "Points" %}</span>
                 </span>
             </div>
-            <div class="athlete-stat athlete-stat-power" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rating power" %}">
+            <div class="athlete-stat athlete-stat-power">
                 <span class="athlete-stat-icon" aria-hidden="true">
                     <i class="bi bi-lightning-charge-fill"></i>
                 </span>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="athlete-card-meta" aria-label="{% trans "Player ranking details" %}">
-            <div class="athlete-chip athlete-chip-license" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "License" %}">
+            <div class="athlete-chip athlete-chip-license">
                 <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></span>
                 <span class="athlete-chip-copy">
                     <span class="athlete-chip-value">{% if item.is_licence_active and item.licence_number %}{{ item.licence_number }}{% else %}{% trans "No license" %}{% endif %}</span>

@@ -17,7 +17,7 @@
                     <th class="tournament-place-column">{% trans "Місце" %}</th>
                     {% if show_strength and not filters.foreign %}
                         <th class="tournament-strength-column">
-                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Сила турніру визначається за правилами рейтингу Федерації та залежить від складу учасників і рейтингових показників команд." %}">
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points." %}">
                                 {% trans "Сила" %} <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </span>
                         </th>
@@ -121,10 +121,13 @@
             </tbody>
         </table>
 
-        <div class="tournaments-tablet-list" aria-label="{% trans "Список турнірів" %}">
-            {% for row in rows %}
-                {% with item=row.tournament %}
-                    <article class="tournament-tablet-card">
+        <div class="tournaments-responsive-list" data-tournaments-responsive-list></div>
+
+        <template id="tournaments-tablet-template">
+            <div class="tournaments-tablet-list" aria-label="{% trans "Список турнірів" %}">
+                {% for row in rows %}
+                    {% with item=row.tournament %}
+                        <article class="tournament-tablet-card">
                         <div class="tournament-tablet-side">
                             <div class="tournament-tablet-date">
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
@@ -211,15 +214,17 @@
                             {% endif %}
                             <a class="tournament-tablet-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                         </div>
-                    </article>
-                {% endwith %}
-            {% endfor %}
-        </div>
+                        </article>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </template>
 
-        <div class="tournaments-mobile-list" aria-label="{% trans "Список турнірів" %}">
-            {% for row in rows %}
-                {% with item=row.tournament %}
-                    <article class="tournament-mobile-card">
+        <template id="tournaments-mobile-template">
+            <div class="tournaments-mobile-list" aria-label="{% trans "Список турнірів" %}">
+                {% for row in rows %}
+                    {% with item=row.tournament %}
+                        <article class="tournament-mobile-card">
                         <div class="tournament-mobile-meta">
                             <div class="tournament-mobile-date">
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
@@ -303,10 +308,11 @@
                             {% endif %}
                             <a class="tournament-mobile-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                         </div>
-                    </article>
-                {% endwith %}
-            {% endfor %}
-        </div>
+                        </article>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </template>
 
         <div class="tournaments-pagination" aria-label="{% trans "Пагінація турнірів" %}">
             <p>{{ pagination_summary }}</p>

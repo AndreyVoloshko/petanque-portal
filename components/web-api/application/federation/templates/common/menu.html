@@ -63,7 +63,6 @@
                        aria-expanded="false"><i class="bi bi-award"></i> {% trans "Rankings" %} </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart"></i> {% trans "Overall" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='inclusive' rating_filter='inclusive' %}"><i class="bi bi-graph-up"></i> {% trans "Inclusive" %}</a></li>
                         <li role="separator" class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'season' %}"><i class="bi bi-clock-history"></i> {% trans "Previous seasons" %}</a></li>
                         <!-- <li role="separator" class="dropdown-divider"></li>
