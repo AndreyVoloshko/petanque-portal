@@ -56,13 +56,13 @@
             </h2>
             <div class="player-card-body collapse" id="player-details-body">
             <div class="player-details-list">
+                {% if player.birth_date %}
                 <div class="player-detail-row">
                     <i class="bi bi-calendar3"></i>
-                    <span class="player-detail-label">{% trans "Date of birth" %}</span>
-                    <span class="player-detail-value">
-                        {% if player.birth_date %}{{ player.birth_date|date:"d.m.Y" }}{% else %}&mdash;{% endif %}
-                    </span>
+                    <span class="player-detail-label">{% trans "Age category" %}</span>
+                    <span class="player-detail-value">{{ player|player_age_category }}</span>
                 </div>
+                {% endif %}
                 <div class="player-detail-row">
                     <i class="bi bi-person"></i>
                     <span class="player-detail-label">{% trans "Gender" %}</span>
@@ -84,13 +84,6 @@
                         {% if player.country %}{{ player.country.name }}{% else %}&mdash;{% endif %}
                     </span>
                 </div>
-                {% if player.user.email %}
-                <div class="player-detail-row">
-                    <i class="bi bi-envelope"></i>
-                    <span class="player-detail-label">{% trans "Email" %}</span>
-                    <span class="player-detail-value">{{ player.user.email }}</span>
-                </div>
-                {% endif %}
                 {% if player.prefred_position %}
                 <div class="player-detail-row">
                     <i class="bi bi-bullseye"></i>
