@@ -2141,8 +2141,28 @@ div.table-responsive > div.dataTables_wrapper > div.row {
 Tournaments classes
 */
 .tournament_goes_to_rating td {
-  background: rgba(var(--bs-success-rgb), 0.07) !important;
-  border: rgba(var(--bs-success-rgb), 0.07) !important;
+  background-color: #f6fefa !important;
+  box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.06);
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.tournament_goes_to_rating td:first-child {
+  box-shadow:
+    inset 3px 0 0 #34d399,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06);
+}
+
+.tournament_goes_to_rating:hover td {
+  background-color: #ecfdf5 !important;
+  box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+}
+
+.tournament_goes_to_rating:hover td:first-child {
+  box-shadow:
+    inset 3px 0 0 #10b981,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.08);
 }
 
 .tournament_away td {
@@ -5973,6 +5993,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   width: 9%;
 }
 .pt-col-points {
+  min-width: 6.75rem;
   width: 9%;
 }
 
@@ -6060,6 +6081,92 @@ table.dataTable.players-table thead th.sorting_desc::after {
   font-size: 13px;
 }
 
+.pt-place-chip {
+  align-items: center;
+  background: #f7f9fc;
+  border: 1px solid #d9e3ef;
+  border-radius: 999px;
+  color: #12213f;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  gap: 0.22rem;
+  justify-content: center;
+  line-height: 1;
+  min-height: 1.5rem;
+  padding: 0.3rem 0.62rem 0.3rem 0.56rem;
+  white-space: nowrap;
+}
+
+.pt-place-chip .bi {
+  align-items: center;
+  color: #64748b;
+  display: inline-flex;
+  flex: 0 0 0.85rem;
+  font-size: 0.8rem;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+  transform: translateY(-0.01em);
+}
+
+.pt-place-chip .pt-place-value,
+.pt-place-chip .pt-place-sep,
+.pt-place-chip .pt-place-total {
+  align-items: center;
+  display: inline-flex;
+  font-size: inherit;
+  line-height: 1;
+}
+
+.pt-place-chip .pt-place-sep {
+  margin: 0;
+  transform: translateY(-0.02em);
+}
+
+.pt-place-chip--gold {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.12);
+  color: #78350f;
+}
+
+.pt-place-chip--gold .bi,
+.pt-place-chip--gold .pt-place-value,
+.pt-place-chip--gold .pt-place-sep,
+.pt-place-chip--gold .pt-place-total {
+  color: #78350f;
+}
+
+.pt-place-chip--silver {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  color: #334155;
+}
+
+.pt-place-chip--silver .bi,
+.pt-place-chip--silver .pt-place-value,
+.pt-place-chip--silver .pt-place-sep,
+.pt-place-chip--silver .pt-place-total {
+  color: #334155;
+}
+
+.pt-place-chip--bronze {
+  background: #ffedd5;
+  border-color: #c2410c;
+  box-shadow: inset 0 0 0 1px rgba(194, 65, 12, 0.1);
+  color: #7c2d12;
+}
+
+.pt-place-chip--bronze .bi,
+.pt-place-chip--bronze .pt-place-value,
+.pt-place-chip--bronze .pt-place-sep,
+.pt-place-chip--bronze .pt-place-total {
+  color: #7c2d12;
+}
+
 .pt-team-name {
   font-size: 13px;
   font-weight: 600;
@@ -6092,6 +6199,11 @@ table.dataTable.players-table thead th.sorting_desc::after {
   line-height: 1;
   min-height: 1.5rem;
   padding: 0.3rem 0.52rem;
+  white-space: nowrap;
+}
+
+.pt-points-chip span {
+  white-space: nowrap;
 }
 
 .pt-points-chip .bi {
@@ -6129,7 +6241,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   display: block;
   text-decoration: none;
   color: inherit;
-  padding: 16px 0;
+  padding: 16px 14px 16px 18px;
   border-bottom: 1px solid #f0f4f8;
 }
 
@@ -6197,27 +6309,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
   margin-top: 8px;
 }
 
-.ptm-place-chip {
-  align-items: center;
-  background: #f7f9fc;
-  border: 1px solid #d9e3ef;
-  border-radius: 999px;
-  color: #12213f;
-  display: inline-flex;
-  font-size: 0.8rem;
-  font-weight: 800;
-  gap: 0.25rem;
-  line-height: 1;
-  min-height: 1.5rem;
-  padding: 0.3rem 0.52rem;
-}
-
-.ptm-place-chip .bi {
-  color: #64748b;
-  font-size: 0.8rem;
-  line-height: 1;
-}
-
 .ptm-chevron {
   flex-shrink: 0;
   color: #9aa8b5;
@@ -6242,7 +6333,92 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 /* Row highlight for rating tournaments */
 .player-tournament-row.tournament_goes_to_rating {
-  background: #f9fefb;
+  background-color: #f6fefa;
+  box-shadow:
+    inset 3px 0 0 #34d399,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06);
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.player-tournament-row.tournament_goes_to_rating:hover {
+  background-color: #ecfdf5;
+  box-shadow:
+    inset 3px 0 0 #10b981,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+}
+
+.player-tournament-mobile-card.tournament_goes_to_rating {
+  background-color: #f6fefa;
+  box-shadow:
+    inset 3px 0 0 #34d399,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06);
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.player-tournament-mobile-card.tournament_goes_to_rating:hover {
+  background-color: #ecfdf5;
+  box-shadow:
+    inset 3px 0 0 #10b981,
+    inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 984.98px) {
+  .player-tournaments-table-wrap {
+    display: none;
+  }
+
+  .player-tournaments-mobile-list {
+    display: block;
+  }
+
+  .player-tournaments-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .player-tournaments-sort-controls {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+
+  .pt-sort-label {
+    color: #5b6b78;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .pt-sort-control {
+    align-items: center;
+    appearance: none;
+    background: #f8fbff;
+    border: 1px solid #dbe6f3;
+    border-radius: 999px;
+    color: #5b6b78;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1;
+    min-height: 30px;
+    padding: 0 10px;
+  }
+
+  .pt-sort-control:hover,
+  .pt-sort-control:focus,
+  .pt-sort-control.is-active {
+    background: #eaf3ff;
+    border-color: #bfdbfe;
+    color: #005bd8;
+  }
 }
 
 /* ===== Player Page — Tablet ===== */
