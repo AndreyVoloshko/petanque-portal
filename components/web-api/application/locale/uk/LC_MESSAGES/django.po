@@ -2136,3 +2136,27 @@ msgstr "Лише рейтингові"
 #: federation/templates/players/player.html
 msgid "Details"
 msgstr "Деталі"
+
+#: federation/templates/players/player.html
+msgid "Tournaments"
+msgstr "Змагання"
+
+#: federation/templates/players/player.html
+msgid "View all tournaments"
+msgstr "Всі змагання"
+
+#: federation/templates/players/player.html
+msgid "All tournaments"
+msgstr "Всі змагання"
+
+#: federation/templates/players/player.html
+msgid "Player profile"
+msgstr "Профіль спортсмена"
+
+#: federation/templates/players/player.html
+msgid "Player statistics"
+msgstr "Статистика спортсмена"
+
+#: federation/templates/players/player.html
+msgid "Member since"
+msgstr "Учасник з"
