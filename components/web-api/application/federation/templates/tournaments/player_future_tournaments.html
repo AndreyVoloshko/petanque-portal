@@ -28,9 +28,9 @@
                         </span>
                     </td>
                     <td data-order="{{ item|team_power_in_tournament:player|safe }}" class="text-start">
-                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Team power" %}">
-                            <i class="bi bi-lightning-charge"></i> {{ item|team_power_in_tournament:player|safe }}
-                        </span>
+                        {% with power=item|team_power_in_tournament:player %}
+                            {% if power %}<span class="pt-power-chip">{{ power }}</span>{% else %}<span class="pt-muted">&mdash;</span>{% endif %}
+                        {% endwith %}
                     </td>
                 </tr>
             {% endfor %}

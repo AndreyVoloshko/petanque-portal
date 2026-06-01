@@ -227,8 +227,7 @@
                         <th class="pt-col-format">{% trans "Format" %}</th>
                         <th class="pt-col-place">{% trans "Place" %}</th>
                         <th class="pt-col-team">{% trans "Team" %}</th>
-                        <th class="pt-col-status">{% trans "Status" %}</th>
-                        <th class="pt-col-power">{% trans "Power" %}</th>
+                        <th class="pt-col-power">{% trans "Team power" %}</th>
                         <th class="pt-col-points">{% trans "Points" %}</th>
                     </tr>
                 </thead>
@@ -272,10 +271,7 @@
                         <td class="pt-col-team" data-label="{% trans "Team" %}">
                             <span class="pt-team-name">{{ item|team_short_name_in_tournament:player|safe }}</span>
                         </td>
-                        <td class="pt-col-status" data-label="{% trans "Status" %}">
-                            {{ item|tournament_power_badge|safe }}
-                        </td>
-                        <td class="pt-col-power" data-label="{% trans "Power" %}">
+                        <td class="pt-col-power" data-label="{% trans "Team power" %}">
                             {% with power=item|team_power_in_tournament:player %}
                                 {% if power %}
                                     <span class="pt-power-chip">{{ power }}</span>

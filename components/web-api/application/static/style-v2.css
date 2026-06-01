@@ -57,37 +57,37 @@ body {
   --tournament-power-none-bg: #f2f4f7;
   --tournament-power-none-border: #d9dee7;
   --tournament-power-none-text: #667085;
-  --tournament-power-1-bg: #e7f6ff;
-  --tournament-power-1-border: #bae6fd;
-  --tournament-power-1-text: #176b8f;
-  --tournament-power-2-bg: #def7ff;
-  --tournament-power-2-border: #a5f3fc;
-  --tournament-power-2-text: #0e7490;
-  --tournament-power-3-bg: #e0f7f2;
-  --tournament-power-3-border: #99f6e4;
-  --tournament-power-3-text: #0f766e;
-  --tournament-power-4-bg: #ecfdf3;
-  --tournament-power-4-border: #bbf7d0;
-  --tournament-power-4-text: #15803d;
-  --tournament-power-5-bg: #f7fee7;
-  --tournament-power-5-border: #d9f99d;
-  --tournament-power-5-text: #4d7c0f;
-  --tournament-power-6-bg: #fef9c3;
-  --tournament-power-6-border: #fde68a;
-  --tournament-power-6-text: #854d0e;
-  --tournament-power-7-bg: #fff1b8;
-  --tournament-power-7-border: #fcd34d;
-  --tournament-power-7-text: #92400e;
-  --tournament-power-8-bg: #ffdfb8;
-  --tournament-power-8-border: #ff9f43;
-  --tournament-power-8-text: #9a3412;
-  --tournament-power-9-bg: #ffb15c;
-  --tournament-power-9-border: #ff7a1a;
-  --tournament-power-9-text: #7c2d12;
-  --tournament-power-10-bg: #ff5a1f;
-  --tournament-power-10-border: #ea3f0b;
-  --tournament-power-10-text: #ffffff;
-  --tournament-power-top-shadow: 0 0 0 3px rgba(255, 122, 26, 0.16);
+  --tournament-power-1-bg: #eff6ff;
+  --tournament-power-1-border: #bfdbfe;
+  --tournament-power-1-text: #1d4ed8;
+  --tournament-power-2-bg: #eff6ff;
+  --tournament-power-2-border: #bfdbfe;
+  --tournament-power-2-text: #1d4ed8;
+  --tournament-power-3-bg: #eff6ff;
+  --tournament-power-3-border: #bfdbfe;
+  --tournament-power-3-text: #1d4ed8;
+  --tournament-power-4-bg: #eff6ff;
+  --tournament-power-4-border: #bfdbfe;
+  --tournament-power-4-text: #1d4ed8;
+  --tournament-power-5-bg: #eff6ff;
+  --tournament-power-5-border: #bfdbfe;
+  --tournament-power-5-text: #1d4ed8;
+  --tournament-power-6-bg: #eff6ff;
+  --tournament-power-6-border: #bfdbfe;
+  --tournament-power-6-text: #1d4ed8;
+  --tournament-power-7-bg: #eff6ff;
+  --tournament-power-7-border: #bfdbfe;
+  --tournament-power-7-text: #1d4ed8;
+  --tournament-power-8-bg: #eff6ff;
+  --tournament-power-8-border: #bfdbfe;
+  --tournament-power-8-text: #1d4ed8;
+  --tournament-power-9-bg: #eff6ff;
+  --tournament-power-9-border: #bfdbfe;
+  --tournament-power-9-text: #1d4ed8;
+  --tournament-power-10-bg: #eff6ff;
+  --tournament-power-10-border: #bfdbfe;
+  --tournament-power-10-text: #1d4ed8;
+  --tournament-power-top-shadow: none;
 }
 
 .portal-footer {
@@ -5930,9 +5930,8 @@ table.dataTable.players-table thead th.sorting_desc::after {
 .pt-col-format { width: 18%; }
 .pt-col-place { width: 8%; }
 .pt-col-team { width: 12%; }
-.pt-col-status { width: 12%; }
-.pt-col-power { width: 7%; }
-.pt-col-points { width: 7%; }
+.pt-col-power { width: 10%; }
+.pt-col-points { width: 10%; }
 
 .pt-date-wrap {
   display: flex;
@@ -6011,9 +6010,9 @@ table.dataTable.players-table thead th.sorting_desc::after {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
-  background: #eaf3ff;
-  border: 1px solid #bfdbfe;
-  color: #075bd8;
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  color: #92400e;
   font-size: 13px;
   font-weight: 700;
 }
@@ -6232,12 +6231,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 6px 16px;
-  }
-
-  /* Hide status column on tablet for space */
-  .player-tournaments-table thead th.pt-col-status,
-  .player-tournaments-table tbody td.pt-col-status {
-    display: none;
   }
 
   .pt-col-format {
