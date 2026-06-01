@@ -17,17 +17,57 @@
             </h1>
             <p>
                 {% trans "Official athlete ranking by points and power" %}
-                <span class="players-page-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Rankings are based on current official federation rating metrics." %}">
+                <span class="players-page-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "This table shows the official athlete rating. Points come from tournament results; power summarizes the athlete's strongest recent rating results and helps determine how strong teams and tournaments are." %}">
                     <i class="bi bi-info-circle" aria-hidden="true"></i>
                 </span>
             </p>
         </div>
     </div>
 
-    <div class="players-control-panel">
-        <div class="players-search-mount" aria-label="{% trans "Search athletes" %}"></div>
-        <div class="players-filter-controls" aria-label="{% trans "Athlete filters" %}"></div>
-    </div>
+    <form class="players-control-panel players-filter-form" method="get" action="{{ request.path }}">
+        {% if page_size != 50 %}
+            <input type="hidden" name="per_page" value="{{ page_size }}">
+        {% endif %}
+
+        <div class="players-search-mount" aria-label="{% trans "Search athletes" %}">
+            <label class="players-search-label">
+                <i class="bi bi-search players-search-icon" aria-hidden="true"></i>
+                <input class="players-search-input" type="search" name="q" value="{{ player_filters.search }}" placeholder="{% trans "Search by name or club..." %}" aria-label="{% trans "Search by name or club..." %}">
+            </label>
+        </div>
+
+        <div class="players-filter-controls" aria-label="{% trans "Athlete filters" %}">
+            <label class="players-filter-field">
+                <i class="bi bi-building" aria-hidden="true"></i>
+                <select class="players-filter-select" name="club" aria-label="{% trans "Club" %}">
+                    <option value="">{% trans "All clubs" %}</option>
+                    {% for club in player_filter_options.clubs %}
+                        <option value="{{ club }}" {% if player_filters.club == club %}selected{% endif %}>{{ club }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <select class="players-filter-select" name="age" aria-label="{% trans "Age" %}">
+                    <option value="">{% trans "All age categories" %}</option>
+                    {% for age in player_filter_options.ages %}
+                        <option value="{{ age }}" {% if player_filters.age == age %}selected{% endif %}>{{ age }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-gender-ambiguous" aria-hidden="true"></i>
+                <select class="players-filter-select" name="sex" aria-label="{% trans "Sex" %}">
+                    <option value="">{% trans "All athletes" %}</option>
+                    {% for value,label in player_filter_options.sexes %}
+                        <option value="{{ value }}" {% if player_filters.sex == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+    </form>
 
     {% include "players/players_table.html" with items=players %}
 </section>

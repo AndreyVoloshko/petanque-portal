@@ -71,6 +71,7 @@ STATICFILES_FINDERS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'federation.middleware.InitialLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',

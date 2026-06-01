@@ -145,10 +145,12 @@ class Player(models.Model):
     '''
     @classmethod
     def get_actual_players_list(self):
-        """
-        return Player.objects.all().exclude(is_licence_active=False)
-        """
-        return Player.objects.all().exclude(is_licence_active=False)
+        return (
+            Player.objects
+            .filter(is_licence_active=True)
+            .exclude(licence_number__isnull=True)
+            .exclude(licence_number='')
+        )
 
     '''
     Ranking among all players including non-licensed

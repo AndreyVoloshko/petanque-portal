@@ -1,5 +1,5 @@
 {% include "common/header.html" %}
-<main class="container mt-5 pt-4 flex-grow-1 portal-page-content" style="flex: 1 0 auto; min-height: calc(100vh - 190px);">
+<main class="container mt-5 pt-4 flex-grow-1 portal-page-content {% block main_classes %}{% endblock %}" style="flex: 1 0 auto; min-height: calc(100vh - 190px);">
     {% include "common/messages.html" %}
 
     {% block content %}{% endblock %}
