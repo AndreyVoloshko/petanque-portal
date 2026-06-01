@@ -375,11 +375,18 @@
                             </div>
                         </td>
                         <td class="pt-col-place" data-label="{% trans "Place" %}">
-                            <span class="pt-place-value">
-                                {{ place }}
-                            </span>
-                            <span class="pt-place-sep">/</span>
-                            <span class="pt-place-total">{{ teams }}</span>
+                            {% if place == "1" or place == "2" or place == "3" %}
+                                <span class="pt-place-chip {% if place == "1" %}pt-place-chip--gold{% elif place == "2" %}pt-place-chip--silver{% elif place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
+                                    <i class="bi bi-award" aria-hidden="true"></i>
+                                    <span class="pt-place-value">{{ place }}</span>
+                                    <span class="pt-place-sep">/</span>
+                                    <span class="pt-place-total">{{ teams }}</span>
+                                </span>
+                            {% else %}
+                                <span class="pt-place-value">{{ place }}</span>
+                                <span class="pt-place-sep">/</span>
+                                <span class="pt-place-total">{{ teams }}</span>
+                            {% endif %}
                         </td>
                         <td class="pt-col-team" data-label="{% trans "Team" %}">
                             {{ item|team_players_in_tournament:player }}
@@ -395,7 +402,7 @@
                                 {% if points %}
                                     <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
                                         <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
-                                        <span>{{ points }}</span>
+                                        <span>{{ points|floatformat:2 }}</span>
                                     </span>
                                 {% else %}
                                     <span class="pt-muted">&mdash;</span>
@@ -443,7 +450,7 @@
                     <i class="bi bi-chevron-right ptm-chevron"></i>
                 </div>
                 <div class="ptm-bottom">
-                    <span class="ptm-place-chip" aria-label="{% trans "Place" %}">
+                    <span class="pt-place-chip ptm-place-chip {% if place == "1" %}pt-place-chip--gold{% elif place == "2" %}pt-place-chip--silver{% elif place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
                         <i class="bi bi-award" aria-hidden="true"></i>
                         <span class="pt-place-value">{{ place }}</span>
                         <span class="pt-place-sep">/</span>
@@ -455,7 +462,7 @@
                         {% if points %}
                             <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
                                 <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
-                                <span>{{ points }}</span>
+                                <span>{{ points|floatformat:2 }}</span>
                             </span>
                         {% endif %}
                 </div>
