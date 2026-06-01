@@ -34,12 +34,12 @@
                             </span>
                         </div>
                         <div class="col-4">
-                            <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Rating points" %}">
+                            <span class="pt-points-chip" data-bs-toggle="tooltip" title="{% trans "Rating points" %}">
                                 <i class="bi bi-graph-up"></i> {{ item|rating_points:rating_field|safe }}
                             </span>
                         </div>
                         <div class="col-4">
-                            <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Rating power" %}">
+                            <span class="pt-power-chip" data-bs-toggle="tooltip" title="{% trans "Rating power" %}">
                                 <i class="bi bi-lightning"></i> {{ item|rating_power:rating_power_field|safe }}
                             </span>
                         </div>

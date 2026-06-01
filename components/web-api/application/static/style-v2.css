@@ -5930,8 +5930,9 @@ table.dataTable.players-table thead th.sorting_desc::after {
 .pt-col-format { width: 18%; }
 .pt-col-place { width: 8%; }
 .pt-col-team { width: 12%; }
-.pt-col-power { width: 10%; }
-.pt-col-points { width: 10%; }
+.pt-col-status { width: 11%; }
+.pt-col-power { width: 8%; }
+.pt-col-points { width: 8%; }
 
 .pt-date-wrap {
   display: flex;

@@ -29,7 +29,7 @@
                     </td>
                     <td data-order="{{ item|team_min_place_in_tournament:player|safe }}" class="text-start">
                         {{ item|team_place_in_tournament:player|safe }} /
-                        <span class="badge bg-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Number of teams" %}">
+                        <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Number of teams" %}">
                             {{ item|teams_count }}
                         </span>
                     </td>
