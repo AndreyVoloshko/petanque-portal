@@ -2249,3 +2249,24 @@ msgstr "Сортувати за місцем"
 #: federation/templates/players/player.html
 msgid "Sort by points"
 msgstr "Сортувати за балами"
+
+#: federation/templates/seasons/seasons.html
+#, python-format
+msgid "%(year)s season rating"
+msgstr "Рейтинг сезону %(year)s"
+
+#: federation/templates/seasons/seasons.html
+msgid "Historical athlete ranking"
+msgstr "Історичний рейтинг спортсменів"
+
+#: federation/templates/seasons/seasons.html
+msgid "Season rating uses tournament results from the selected calendar year: January 1 through December 31."
+msgstr "Рейтинг сезону використовує результати турнірів за обраний календарний рік: з 1 січня до 31 грудня."
+
+#: federation/templates/seasons/seasons.html
+msgid "Seasons"
+msgstr "Сезони"
+
+#: federation/views/seasons.py
+msgid "Season rating"
+msgstr "Рейтинг сезону"

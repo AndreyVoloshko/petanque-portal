@@ -4,16 +4,80 @@
 
 {% block content %}
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2 col-lg-2 col-xl-2">
-            {% include "seasons/seasons_list.html" with items=years active_item=year %}
-        </div>
-        
-        <div class="col-md-10 col-lg-10 col-xl-10">
-            {% include "seasons/players_list.html" with items=players year=year rating_filters=rating_filters rating_field=rating_field %}
+{% include "common/landing_icon_sprite.html" %}
+
+<section class="players-page seasons-rating-page" aria-labelledby="players-page-title">
+    <div class="players-titlebar">
+        <div class="players-title-copy">
+            <h1 id="players-page-title">
+                {% blocktrans %}{{ year }} season rating{% endblocktrans %}
+                <span class="players-title-icon" aria-hidden="true">
+                    <i class="bi bi-clock-history"></i>
+                </span>
+            </h1>
+            <p>
+                {% trans "Historical athlete ranking" %}
+                <span class="players-page-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Season rating uses tournament results from the selected calendar year: January 1 through December 31." %}">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                </span>
+            </p>
         </div>
     </div>
-</div>
+
+    <nav class="season-year-tabs" aria-label="{% trans "Seasons" %}">
+        {% for item in years %}
+            <a href="{{ item.url }}" class="season-year-tab {% if item.year == year %}is-active{% endif %}">
+                {{ item.year }}
+            </a>
+        {% endfor %}
+    </nav>
+
+    <form class="players-control-panel players-filter-form" method="get" action="{{ request.path }}">
+        {% if page_size != 50 %}
+            <input type="hidden" name="per_page" value="{{ page_size }}">
+        {% endif %}
+
+        <div class="players-search-mount" aria-label="{% trans "Search athletes" %}">
+            <label class="players-search-label">
+                <i class="bi bi-search players-search-icon" aria-hidden="true"></i>
+                <input class="players-search-input" type="search" name="q" value="{{ player_filters.search }}" placeholder="{% trans "Search by name or club..." %}" aria-label="{% trans "Search by name or club..." %}">
+            </label>
+        </div>
+
+        <div class="players-filter-controls" aria-label="{% trans "Athlete filters" %}">
+            <label class="players-filter-field">
+                <i class="bi bi-building" aria-hidden="true"></i>
+                <select class="players-filter-select" name="club" aria-label="{% trans "Club" %}">
+                    <option value="">{% trans "All clubs" %}</option>
+                    {% for club in player_filter_options.clubs %}
+                        <option value="{{ club }}" {% if player_filters.club == club %}selected{% endif %}>{{ club }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <select class="players-filter-select" name="age" aria-label="{% trans "Age" %}">
+                    <option value="">{% trans "All age categories" %}</option>
+                    {% for age in player_filter_options.ages %}
+                        <option value="{{ age }}" {% if player_filters.age == age %}selected{% endif %}>{{ age }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-gender-ambiguous" aria-hidden="true"></i>
+                <select class="players-filter-select" name="sex" aria-label="{% trans "Sex" %}">
+                    <option value="">{% trans "All athletes" %}</option>
+                    {% for value,label in player_filter_options.sexes %}
+                        <option value="{{ value }}" {% if player_filters.sex == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+    </form>
+
+    {% include "players/players_table.html" with items=players %}
+</section>
 
 {% endblock %}

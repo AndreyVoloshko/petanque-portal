@@ -554,6 +554,48 @@ def rating_power(player, field_to_display):
     return str(value)
 
 
+def _is_season_rating_item(item):
+    return hasattr(item, 'year') and hasattr(item, 'player_id')
+
+
+@register.filter(name="rating_item_player")
+def rating_item_player(item):
+    if _is_season_rating_item(item):
+        return item.player
+    return item
+
+
+@register.filter(name="rating_item_club")
+def rating_item_club(item):
+    if _is_season_rating_item(item):
+        return item.club
+    return item.current_club
+
+
+@register.filter(name="rating_item_points")
+def rating_item_points(item, field_to_display):
+    if _is_season_rating_item(item):
+        return season_rating_points(item, field_to_display)
+    return rating_points(item, field_to_display)
+
+
+@register.filter(name="rating_item_power")
+def rating_item_power(item, field_to_display):
+    if not field_to_display:
+        return '0'
+    return rating_power(item, field_to_display)
+
+
+@register.filter(name="rating_item_position")
+def rating_item_position(item, args):
+    if _is_season_rating_item(item):
+        display_rank = getattr(item, 'display_rank', None)
+        if display_rank is not None:
+            return str(display_rank)
+        return season_rating_position(item, args)
+    return rating_position(item, args)
+
+
 @register.filter(name="season_rating_points")
 def season_rating_points(season_item, field_to_display):
     value = getattr(season_item, field_to_display)

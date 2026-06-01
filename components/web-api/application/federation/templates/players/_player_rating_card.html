@@ -38,7 +38,9 @@
                     </div>
                     <p class="athlete-card-club">
                         <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-users"></use></svg>
-                        {% if item.current_club %}
+                        {% if rating_club %}
+                            <span class="athlete-card-club-name">{{ rating_club.short_name }}</span>
+                        {% elif item.current_club %}
                             <span class="athlete-card-club-name">{{ item.current_club.short_name }}</span>
                         {% endif %}
                         <span class="athlete-card-country">{{ item.country|country_icon|safe }}</span>
@@ -62,15 +64,17 @@
                     <span class="athlete-stat-label">{% trans "Points" %}</span>
                 </span>
             </div>
-            <div class="athlete-stat athlete-stat-power">
-                <span class="athlete-stat-icon" aria-hidden="true">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                </span>
-                <span class="athlete-stat-copy">
-                    <span class="athlete-stat-value">{{ power_value|floatformat:2 }}</span>
-                    <span class="athlete-stat-label">{% trans "Power" %}</span>
-                </span>
-            </div>
+            {% if show_power %}
+                <div class="athlete-stat athlete-stat-power">
+                    <span class="athlete-stat-icon" aria-hidden="true">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </span>
+                    <span class="athlete-stat-copy">
+                        <span class="athlete-stat-value">{{ power_value|floatformat:2 }}</span>
+                        <span class="athlete-stat-label">{% trans "Power" %}</span>
+                    </span>
+                </div>
+            {% endif %}
         </div>
 
         <div class="athlete-card-meta" aria-label="{% trans "Player ranking details" %}">
@@ -97,7 +101,13 @@
             <div class="athlete-chip athlete-chip-age">
                 <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-people"></i></span>
                 <span class="athlete-chip-copy">
-                    <span class="athlete-chip-value">{{ item|player_age_category|safe }}</span>
+                    <span class="athlete-chip-value">
+                        {% if age_year %}
+                            {{ item|season_player_age_category:age_year|safe }}
+                        {% else %}
+                            {{ item|player_age_category|safe }}
+                        {% endif %}
+                    </span>
                     <span class="athlete-chip-label">{% trans "Category" %}</span>
                 </span>
             </div>

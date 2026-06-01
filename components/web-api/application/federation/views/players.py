@@ -55,6 +55,7 @@ def players(request, licence_filter=None, rating_filter=None):
         'rating_filters': rating_field+","+str(licence_filter),
         'rating_field': rating_field,
         'rating_power_field': rating_power_field,
+        'show_power_column': True,
         'page_title': _("Rating"),
         'page_obj': page_obj,
         'page_size': player_filters['page_size'],

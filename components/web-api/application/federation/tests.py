@@ -1,4 +1,6 @@
+import re
 from datetime import date, timedelta
+from decimal import Decimal
 from types import SimpleNamespace
 
 from django.contrib.auth.models import User
@@ -13,9 +15,11 @@ from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.club import Club
 from federation.models.player import Player
+from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
-from federation.models.tournament import Tournament
+from federation.models.tournament import TeamTournamentMembership, Tournament
 from federation.permissions import can_create_tournament
+from federation.services.season_snapshots import generate_season_rating_snapshot
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
     licence_number,
@@ -354,6 +358,169 @@ class TeamCaptainSelectionTests(TestCase):
 
         self.assertEqual(team.pk, legacy_team.pk)
         self.assert_team_capitan(team, second_player)
+
+
+class SeasonSnapshotGenerationTests(TestCase):
+    def create_player(self, username):
+        club = Club.objects.create(
+            name=f'{username.title()} Club',
+            short_name=username.upper(),
+            address='Kyiv',
+        )
+        user = User.objects.create_user(username=username)
+
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            current_club=club,
+            is_licence_active=True,
+            licence_number=username,
+        )
+
+    def create_tournament_membership(
+        self,
+        player,
+        year,
+        points,
+        is_goes_to_rating=True,
+        is_b_tournament=False,
+        is_ukrainian_league=False,
+    ):
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=player)
+        tournament = Tournament.objects.create(
+            name=f'Season Cup {year}',
+            category='open',
+            place='Kyiv',
+            start_date=date(year, 5, 1),
+            format='swiko',
+            is_processing_finished=True,
+            is_goes_to_rating=is_goes_to_rating,
+            is_b_tournament=is_b_tournament,
+            is_ukrainian_league=is_ukrainian_league,
+        )
+
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            rating_points=points,
+        )
+
+    def test_generates_snapshot_rows_from_processed_tournament_memberships(self):
+        player = self.create_player('snapshot-player')
+        inactive_player = self.create_player('inactive-snapshot-player')
+        zero_points_player = self.create_player('zero-points-snapshot-player')
+        self.create_tournament_membership(
+            player,
+            2024,
+            Decimal('12.5000'),
+            is_b_tournament=True,
+            is_ukrainian_league=True,
+        )
+        self.create_tournament_membership(player, 2025, Decimal('99.0000'))
+        self.create_tournament_membership(zero_points_player, 2024, Decimal('0.0000'))
+
+        result = generate_season_rating_snapshot(2024)
+
+        season = Season.objects.get(year=2024, player=player)
+        self.assertEqual(result.created, 1)
+        self.assertEqual(result.updated, 0)
+        self.assertEqual(season.club, player.current_club)
+        self.assertEqual(season.rating, Decimal('12.5000'))
+        self.assertEqual(season.rating_b, Decimal('12.5000'))
+        self.assertEqual(season.rating_liga, Decimal('12.5000'))
+        player.refresh_from_db()
+        self.assertEqual(player.current_rating, Decimal('0.0000'))
+        self.assertFalse(Season.objects.filter(year=2024, player=inactive_player).exists())
+        self.assertFalse(Season.objects.filter(year=2024, player=zero_points_player).exists())
+
+    def test_rerun_skips_existing_rows_unless_replace_is_requested(self):
+        player = self.create_player('rerun-player')
+        self.create_tournament_membership(player, 2024, Decimal('20.0000'))
+        Season.objects.create(
+            year=2024,
+            player=player,
+            club=player.current_club,
+            rating=Decimal('1.0000'),
+        )
+
+        skipped_result = generate_season_rating_snapshot(2024)
+        season = Season.objects.get(year=2024, player=player)
+        self.assertEqual(skipped_result.created, 0)
+        self.assertEqual(skipped_result.updated, 0)
+        self.assertEqual(skipped_result.skipped, 1)
+        self.assertEqual(season.rating, Decimal('1.0000'))
+
+        replaced_result = generate_season_rating_snapshot(2024, replace=True)
+        season.refresh_from_db()
+        self.assertEqual(replaced_result.created, 0)
+        self.assertEqual(replaced_result.updated, 1)
+        self.assertEqual(season.rating, Decimal('20.0000'))
+
+    def test_replace_removes_stale_rows_without_season_results(self):
+        player_with_results = self.create_player('replace-result-player')
+        stale_player = self.create_player('stale-player')
+        self.create_tournament_membership(player_with_results, 2024, Decimal('15.0000'))
+        Season.objects.create(
+            year=2024,
+            player=stale_player,
+            club=stale_player.current_club,
+            rating=Decimal('0.0000'),
+        )
+
+        result = generate_season_rating_snapshot(2024, replace=True)
+
+        self.assertEqual(result.deleted, 1)
+        self.assertTrue(Season.objects.filter(year=2024, player=player_with_results).exists())
+        self.assertFalse(Season.objects.filter(year=2024, player=stale_player).exists())
+
+    def test_replace_removes_rows_when_year_has_no_qualifying_results(self):
+        stale_player = self.create_player('empty-year-stale-player')
+        Season.objects.create(
+            year=2024,
+            player=stale_player,
+            club=stale_player.current_club,
+            rating=Decimal('10.0000'),
+        )
+
+        result = generate_season_rating_snapshot(2024, replace=True)
+
+        self.assertEqual(result.deleted, 1)
+        self.assertFalse(Season.objects.filter(year=2024).exists())
+
+    def test_season_page_uses_unique_display_ranks(self):
+        first_player = self.create_player('first-tied-player')
+        second_player = self.create_player('second-tied-player')
+        Season.objects.create(year=2024, player=first_player, club=first_player.current_club, rating=Decimal('10.0000'))
+        Season.objects.create(year=2024, player=second_player, club=second_player.current_club, rating=Decimal('10.0000'))
+
+        response = self.client.get('/seasons/2024')
+
+        self.assertEqual(response.status_code, 200)
+        ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
+        self.assertEqual(ranks[:2], ['1', '2'])
+
+    def test_year_tabs_preserve_active_filters(self):
+        player = self.create_player('filtered-player')
+        Season.objects.create(year=2024, player=player, club=player.current_club, rating=Decimal('10.0000'))
+        Season.objects.create(year=2025, player=player, club=player.current_club, rating=Decimal('20.0000'))
+
+        response = self.client.get('/seasons/2025', {
+            'q': 'filtered',
+            'club': player.current_club.short_name,
+            'age': 'SEN',
+            'sex': 'M',
+            'per_page': '25',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            '/seasons/2024?q=filtered&amp;club=FILTERED-PLAYER&amp;age=SEN&amp;sex=M&amp;per_page=25',
+        )
 
 
 class PlayerLicenseListTests(TestCase):

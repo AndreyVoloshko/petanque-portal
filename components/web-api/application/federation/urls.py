@@ -93,6 +93,8 @@ urlpatterns = [
 
     re_path(r'^departments/$', departments, name='departments'),
 
+    re_path(r'^seasons/?$', seasons, name='seasons'),
+    re_path(r'^seasons/(?P<year>\w+)/?$', seasons, name='seasons_year'),
     re_path(r'^season/?$', seasons, name='season'),
     re_path(r'^season/(?P<year>\w+)/?$', seasons, name='season'),
 
