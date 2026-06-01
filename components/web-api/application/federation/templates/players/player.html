@@ -12,6 +12,7 @@
 {% trans "Finished competitions in the current year that count toward the rating." as rating_competitions_help_text %}
 {% trans "International competitions this player played in during the current year." as international_competitions_help_text %}
 {% trans "All competitions this player played in during the current year, including rating, B, and international competitions." as total_competitions_help_text %}
+{% trans "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points." as tournament_power_help_text %}
 {% trans "Team power in this tournament is calculated from the power of the players in this player's team." as tournament_team_power_help_text %}
 {% trans "Rating points earned by this player's team in this tournament." as tournament_points_help_text %}
 <section class="player-page">
@@ -314,13 +315,25 @@
                             </button>
                         </th>
                         <th class="pt-col-team">{% trans "Team" %}</th>
-                        <th class="pt-col-power">
-                            <span class="pt-heading-with-help">
-                                {% trans "Power" %}
-                                <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}">
-                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
-                                    <span class="visually-hidden">{{ tournament_team_power_help_text }}</span>
-                                </button>
+                        <th class="pt-col-strength">
+                            <span class="pt-strength-heading">
+                                <span class="pt-strength-title">{% trans "Power" %}</span>
+                                <span class="pt-strength-subhead">
+                                    <span class="pt-strength-subitem">
+                                        {% trans "Power column team" %}
+                                        <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}">
+                                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                            <span class="visually-hidden">{{ tournament_team_power_help_text }}</span>
+                                        </button>
+                                    </span>
+                                    <span class="pt-strength-subitem">
+                                        {% trans "Power column tournament" %}
+                                        <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_power_help_text }}">
+                                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                            <span class="visually-hidden">{{ tournament_power_help_text }}</span>
+                                        </button>
+                                    </span>
+                                </span>
                             </span>
                         </th>
                         <th class="pt-col-points">
@@ -339,12 +352,13 @@
                 </thead>
                 <tbody>
                     {% for item in player_tournaments %}
-                    {% with place=item|team_min_place_in_tournament:player teams=item|teams_count power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
+                    {% with place=item|team_min_place_in_tournament:player place_max=item|team_max_place_in_tournament:player place_label=item|team_place_range_in_tournament:player teams=item|teams_count tournament_power=item|tournament_power_badge team_power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
                     <tr class="player-tournament-row {{ item|is_tournament_in_player_rating:player|safe }}"
                         data-href="{% url 'tournament' id=item.pk %}"
                         data-sort-index="{{ forloop.counter0 }}"
                         data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
                         data-sort-place="{{ place }}"
+                        data-sort-place-max="{{ place_max }}"
                         data-sort-teams="{{ teams }}"
                         data-sort-points="{{ points|default:'0' }}">
                         <td class="pt-col-date" data-label="{% trans "Date" %}">
@@ -359,7 +373,7 @@
                         <td class="pt-col-name" data-label="{% trans "Name" %}">
                             <a href="{% url 'tournament' id=item.pk %}" class="pt-tournament-link">{{ item|tournament_display_name }}</a>
                             {% if item.place %}
-                                <span class="pt-tournament-location">{% trans "c." %} {{ item.place }}</span>
+                                <span class="pt-tournament-location">{{ item.place }}</span>
                             {% endif %}
                         </td>
                         <td class="pt-col-format" data-label="{% trans "Format" %}">
@@ -375,15 +389,15 @@
                             </div>
                         </td>
                         <td class="pt-col-place" data-label="{% trans "Place" %}">
-                            {% if place == "1" or place == "2" or place == "3" %}
+                            {% if place_max == place and place == "1" or place_max == place and place == "2" or place_max == place and place == "3" %}
                                 <span class="pt-place-chip {% if place == "1" %}pt-place-chip--gold{% elif place == "2" %}pt-place-chip--silver{% elif place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
                                     <i class="bi bi-award" aria-hidden="true"></i>
-                                    <span class="pt-place-value">{{ place }}</span>
+                                    <span class="pt-place-value">{{ place_label }}</span>
                                     <span class="pt-place-sep">/</span>
                                     <span class="pt-place-total">{{ teams }}</span>
                                 </span>
                             {% else %}
-                                <span class="pt-place-value">{{ place }}</span>
+                                <span class="pt-place-value">{{ place_label }}</span>
                                 <span class="pt-place-sep">/</span>
                                 <span class="pt-place-total">{{ teams }}</span>
                             {% endif %}
@@ -391,12 +405,19 @@
                         <td class="pt-col-team" data-label="{% trans "Team" %}">
                             {{ item|team_players_in_tournament:player }}
                         </td>
-                        <td class="pt-col-power" data-label="{% trans "Power" %}">
-                                {% if power %}
-                                    {{ power|team_power_badge|safe }}
+                        <td class="pt-col-strength" data-label="{% trans "Power" %}">
+                            <div class="pt-strength-values">
+                                {% if team_power %}
+                                    {{ team_power|team_power_badge|safe }}
                                 {% else %}
                                     <span class="pt-muted">&mdash;</span>
                                 {% endif %}
+                                {% if tournament_power %}
+                                    {{ tournament_power|safe }}
+                                {% else %}
+                                    <span class="pt-muted">&mdash;</span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td class="pt-col-points" data-label="{% trans "Points" %}">
                                 {% if points %}
@@ -417,12 +438,13 @@
 
         <div class="player-tournaments-mobile-list">
             {% for item in player_tournaments %}
-            {% with place=item|team_min_place_in_tournament:player teams=item|teams_count power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
+            {% with place=item|team_min_place_in_tournament:player place_max=item|team_max_place_in_tournament:player place_label=item|team_place_range_in_tournament:player teams=item|teams_count tournament_power=item|tournament_power_badge team_power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
             <a href="{% url 'tournament' id=item.pk %}"
                class="player-tournament-mobile-card {{ item|is_tournament_in_player_rating:player|safe }}"
                data-sort-index="{{ forloop.counter0 }}"
                data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
                data-sort-place="{{ place }}"
+               data-sort-place-max="{{ place_max }}"
                data-sort-teams="{{ teams }}"
                data-sort-points="{{ points|default:'0' }}">
                 <div class="ptm-top">
@@ -433,7 +455,7 @@
                     <div class="ptm-main">
                         <span class="ptm-title">{{ item|tournament_display_name }}</span>
                         {% if item.place %}
-                            <span class="ptm-location">{% trans "c." %} {{ item.place }}</span>
+                            <span class="ptm-location">{{ item.place }}</span>
                         {% endif %}
                         <div class="ptm-chips">
                             {% with meta=item|tournament_card_metadata %}
@@ -450,14 +472,17 @@
                     <i class="bi bi-chevron-right ptm-chevron"></i>
                 </div>
                 <div class="ptm-bottom">
-                    <span class="pt-place-chip ptm-place-chip {% if place == "1" %}pt-place-chip--gold{% elif place == "2" %}pt-place-chip--silver{% elif place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
+                    <span class="pt-place-chip ptm-place-chip {% if place_max == place and place == "1" %}pt-place-chip--gold{% elif place_max == place and place == "2" %}pt-place-chip--silver{% elif place_max == place and place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
                         <i class="bi bi-award" aria-hidden="true"></i>
-                        <span class="pt-place-value">{{ place }}</span>
+                        <span class="pt-place-value">{{ place_label }}</span>
                         <span class="pt-place-sep">/</span>
                         <span class="pt-place-total">{{ teams }}</span>
                     </span>
-                        {% if power %}
-                            {{ power|team_power_badge|safe }}
+                        {% if tournament_power %}
+                            {{ tournament_power|safe }}
+                        {% endif %}
+                        {% if team_power %}
+                            {{ team_power|team_power_badge|safe }}
                         {% endif %}
                         {% if points %}
                             <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
@@ -524,11 +549,12 @@
 
         if (key === 'place') {
             const place = parseSortNumber(element.dataset.sortPlace);
+            const placeMax = parseSortNumber(element.dataset.sortPlaceMax || element.dataset.sortPlace);
             const teams = parseSortNumber(element.dataset.sortTeams);
             return {
                 isZero: place <= 0,
-                ratio: teams > 0 ? place / teams : Number.POSITIVE_INFINITY,
                 place,
+                placeMax,
                 teams
             };
         }
@@ -548,12 +574,18 @@
             return parseSortNumber(a.dataset.sortIndex) - parseSortNumber(b.dataset.sortIndex);
         }
 
-        if (first.ratio !== second.ratio) {
-            return direction === 'asc' ? first.ratio - second.ratio : second.ratio - first.ratio;
-        }
-
         if (first.place !== second.place) {
             return direction === 'asc' ? first.place - second.place : second.place - first.place;
+        }
+
+        const firstDate = getSortValue(a, 'date');
+        const secondDate = getSortValue(b, 'date');
+        if (firstDate !== secondDate) {
+            return secondDate - firstDate;
+        }
+
+        if (first.placeMax !== second.placeMax) {
+            return direction === 'asc' ? first.placeMax - second.placeMax : second.placeMax - first.placeMax;
         }
 
         if (first.teams !== second.teams) {

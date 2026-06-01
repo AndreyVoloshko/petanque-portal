@@ -14,11 +14,12 @@ from federation.models.email_confirmation import EmailConfirmation
 from federation.models.club import Club
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership, Team
-from federation.models.tournament import Tournament
+from federation.models.tournament import TeamTournamentMembership, Tournament
 from federation.permissions import can_create_tournament
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
     licence_number,
+    team_power_badge,
     tournament_audience_tag_class,
     tournament_field,
     tournament_power_badge,
@@ -278,8 +279,20 @@ class TournamentDisplayNameTests(SimpleTestCase):
 
         self.assertIn('tournament-power-badge tournament-power-10', badge)
         self.assertIn('Tournament power affects how many rating points results are worth.', badge)
+        self.assertIn('Tournament power', badge)
+        self.assertNotIn('tournament-power-label', badge)
         self.assertIn('bi bi-star', badge)
         self.assertTrue('40.00' in badge or '40,00' in badge)
+
+    def test_team_power_badge_uses_team_label_and_purple_class(self):
+        with override('en'):
+            badge = str(team_power_badge('3.2100'))
+
+        self.assertIn('team-power-badge', badge)
+        self.assertIn('Team power', badge)
+        self.assertIn('Team power in this tournament is calculated', badge)
+        self.assertNotIn('tournament-power-label', badge)
+        self.assertIn('bi bi-star', badge)
 
     def test_tournament_field_uses_power_badge_for_power(self):
         tournament = self.create_tournament('Тупіт копит')
@@ -399,6 +412,65 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.count, 55)
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
+
+
+class PlayerTournamentListTests(TestCase):
+    def test_player_tournament_table_shows_place_range_and_tournament_power(self):
+        user = User.objects.create_user(username='range-player')
+        player = Player.objects.create(
+            user=user,
+            name='Range',
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        team = Team.objects.create(name='Range Team')
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        tournament = Tournament.objects.create(
+            name='Playoff Cup',
+            category='open',
+            is_goes_to_rating=True,
+            place='Київ',
+            start_date=timezone.localdate() - timedelta(days=7),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+            power='12.3456',
+            is_processing_finished=True,
+        )
+        TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=5,
+            place_max=8,
+            power='3.2100',
+            rating_points='14.5000',
+        )
+
+        response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('pt-col-strength', content)
+        self.assertNotIn('pt-col-tournament-power', content)
+        self.assertNotIn('pt-col-power', content)
+        self.assertIn('tournament-power-badge', content)
+        self.assertIn('tournament-power-4', content)
+        self.assertIn('team-power-badge', content)
+        self.assertNotIn('tournament-power-label', content)
+        self.assertIn('data-sort-place="5"', content)
+        self.assertIn('data-sort-place-max="8"', content)
+        self.assertIn('>5-8</span>', content)
+        self.assertIn('<span class="pt-tournament-location">Київ</span>', content)
+        self.assertIn('<span class="ptm-location">Київ</span>', content)
+        self.assertNotIn('>c. Київ<', content)
+        self.assertNotIn('>с. Київ<', content)
+
+        table_body = content.split('<tbody>', 1)[1]
+        self.assertLess(
+            table_body.index('class="pt-col-strength"'),
+            table_body.index('class="pt-col-points"'),
+        )
 
 
 class OptionalRegistrationEmailTests(TestCase):
