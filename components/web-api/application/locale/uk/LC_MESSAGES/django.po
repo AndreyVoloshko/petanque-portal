@@ -2132,3 +2132,7 @@ msgstr "Деталі змагання"
 #: federation/templates/tournaments/tournaments.html:57
 msgid "Ranked only"
 msgstr "Лише рейтингові"
+
+#: federation/templates/players/player.html
+msgid "Details"
+msgstr "Деталі"
