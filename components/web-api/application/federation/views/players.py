@@ -1,15 +1,22 @@
 import datetime
+import json
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
+from django.db.models import Count
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from federation.models.player import Player
+from federation.models.tournament import TeamTournamentMembership
 from federation.models.tournament import Tournament
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from federation.helpers.general import get_model
+from federation.utils.rankings import attach_rating_positions
+from federation.utils.tournament_names import get_tournament_card_metadata
+from federation.utils.tournament_names import get_tournament_display_name
 
 
 PLAYERS_PAGE_SIZE_PARAM = 'per_page'
@@ -49,9 +56,15 @@ def players(request, licence_filter=None, rating_filter=None):
 
     paginator = Paginator(players_objects, player_filters['page_size'])
     page_obj = paginator.get_page(request.GET.get('page'))
+    page_players = list(page_obj.object_list)
+    attach_rating_positions(
+        page_players,
+        rating_field,
+        _player_ranking_queryset(licence_filter, rating_field),
+    )
 
     return render(request, 'players/players.html', {
-        'players': page_obj.object_list,
+        'players': page_players,
         'rating_filters': rating_field+","+str(licence_filter),
         'rating_field': rating_field,
         'rating_power_field': rating_power_field,
@@ -130,6 +143,16 @@ def _order_players(players_objects, rating_field):
         )
 
     return players_objects.order_by('-' + rating_field, 'surname', 'name', 'id')
+
+
+def _player_ranking_queryset(licence_filter, rating_field):
+    if licence_filter in ('licence', 'inclusive'):
+        if rating_field == 'current_rating_inclusive':
+            return Player.objects.filter(is_inclusive=True)
+
+        return Player.get_actual_players_list()
+
+    return Player.objects.all()
 
 
 def _get_player_filter_options(queryset):
@@ -239,7 +262,10 @@ def _player_pagination_summary(page_obj):
 
 
 def player(request, id):
-    player = get_object_or_404(Player, pk=id)
+    player = get_object_or_404(
+        Player.objects.select_related('current_club', 'current_club__city'),
+        pk=id,
+    )
 
     all_past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past').distinct()
     past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='except_b').distinct()
@@ -273,6 +299,7 @@ def player(request, id):
 
     from federation.models.national_teams import PlayerNational_teamMembership
     national_team_memberships = PlayerNational_teamMembership.objects.filter(player=player).select_related('team')
+    player_tournament_rows = _build_player_tournament_rows(player, past_tournaments)
 
     return render(request, 'players/player.html', {
         'player': player,
@@ -283,7 +310,107 @@ def player(request, id):
         'past_b_tournaments': past_b_tournaments,
         'past_away_tournaments': past_away_tournaments,
         'player_tournaments': past_tournaments,
+        'player_tournament_rows': player_tournament_rows,
         'national_team_memberships': national_team_memberships,
         'season_rating_field': season_rating_field,
         'player_seasons': player_seasons,
     })
+
+
+def _build_player_tournament_rows(player, tournaments):
+    tournaments = list(tournaments)
+    tournament_ids = [tournament.pk for tournament in tournaments]
+
+    if not tournament_ids:
+        return []
+
+    memberships = (
+        TeamTournamentMembership.objects
+        .filter(tournament_id__in=tournament_ids, team__players=player)
+        .select_related('team', 'tournament')
+        .prefetch_related(
+            Prefetch(
+                'team__players',
+                queryset=Player.objects.order_by('surname', 'name'),
+                to_attr='ordered_players',
+            )
+        )
+        .order_by('id')
+    )
+    memberships_by_tournament_id = {}
+    for membership in memberships:
+        memberships_by_tournament_id.setdefault(membership.tournament_id, membership)
+
+    actual_team_counts = {
+        row['tournament_id']: row['teams_count']
+        for row in (
+            TeamTournamentMembership.objects
+            .filter(tournament_id__in=tournament_ids)
+            .values('tournament_id')
+            .annotate(teams_count=Count('id'))
+        )
+    }
+
+    rating_tournament_ids = _player_rating_tournament_ids(player)
+    rows = []
+    for tournament in tournaments:
+        membership = memberships_by_tournament_id.get(tournament.pk)
+        team = membership.team if membership else None
+        team_players = list(getattr(team, 'ordered_players', [])) if team else []
+
+        if not team_players and team:
+            team_players = list(team.players.all())
+
+        place_min, place_max, place_label = _membership_place_data(membership)
+        rows.append({
+            'tournament': tournament,
+            'title': get_tournament_display_name(tournament),
+            'metadata': get_tournament_card_metadata(tournament),
+            'team': team,
+            'team_players': team_players,
+            'place': place_min,
+            'place_max': place_max,
+            'place_label': place_label,
+            'tournament_power': tournament.power,
+            'team_power': membership.power if membership else None,
+            'team_rating_points': membership.rating_points if membership else None,
+            'teams_count': _resolved_tournament_teams_count(tournament, actual_team_counts),
+            'is_rating_relevant': tournament.pk in rating_tournament_ids,
+        })
+
+    return rows
+
+
+def _membership_place_data(membership):
+    if not membership:
+        return '', '', ''
+
+    place_min = membership.place_min or 0
+    place_max = membership.place_max or 0
+    if place_max > place_min:
+        return str(place_min), str(place_max), '{}-{}'.format(place_min, place_max)
+
+    return str(place_min), str(place_min), str(place_min)
+
+
+def _resolved_tournament_teams_count(tournament, actual_team_counts):
+    if tournament.total_number_of_teams and tournament.total_number_of_teams > 0:
+        return tournament.total_number_of_teams
+
+    return actual_team_counts.get(tournament.pk, 0)
+
+
+def _player_rating_tournament_ids(player):
+    if not player.current_rating_tournaments:
+        return set()
+
+    try:
+        tournaments = json.loads(player.current_rating_tournaments)
+    except (TypeError, ValueError):
+        return set()
+
+    return {
+        tournament.get('tournament')
+        for tournament in tournaments
+        if tournament.get('tournament')
+    }

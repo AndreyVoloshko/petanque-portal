@@ -640,6 +640,13 @@ def players_in_seasons(season, year):
 
 @register.filter(name="teams_count")
 def teams_count(tournament):
+    if tournament.total_number_of_teams and tournament.total_number_of_teams > 0:
+        return tournament.total_number_of_teams
+
+    annotated_count = getattr(tournament, 'actual_teams_count', None)
+    if annotated_count is not None:
+        return annotated_count
+
     return tournament.get_teams_count()
 
 @register.filter(name="tournament_display_name")

@@ -56,8 +56,12 @@ class Team(models.Model):
                 capitan = self.get_capitan()
                 if capitan:
                     name = capitan.get_name()
-                elif self.players.all()[0]:
-                    name = self.players.all()[0].get_name()
+                else:
+                    prefetched_players = getattr(self, '_prefetched_objects_cache', {}).get('players', [])
+                    if prefetched_players:
+                        name = prefetched_players[0].get_name()
+                    elif self.players.all()[0]:
+                        name = self.players.all()[0].get_name()
             except:
                 name = "Помилка, в команді немає гравців"
 
@@ -66,6 +70,12 @@ class Team(models.Model):
         )
 
     def get_capitan(self):
+        captain_memberships = getattr(self, 'captain_memberships', None)
+        if captain_memberships is not None:
+            if captain_memberships:
+                return captain_memberships[0].player
+            return None
+
         return self.players.filter(playerteammembership__is_capitan=True).first()
 
     def set_capitan(self, player_id):
