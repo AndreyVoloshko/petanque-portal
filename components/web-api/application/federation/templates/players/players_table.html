@@ -30,15 +30,17 @@
                             </button>
                         </span>
                     </th>
-                    <th class="players-power-column">
-                        <span class="players-column-heading">
-                            {% trans "Power" %}
-                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ power_help_text }}">
-                                <i class="bi bi-info-circle" aria-hidden="true"></i>
-                                <span class="visually-hidden">{{ power_help_text }}</span>
-                            </button>
-                        </span>
-                    </th>
+                    {% if show_power_column %}
+                        <th class="players-power-column">
+                            <span class="players-column-heading">
+                                {% trans "Power" %}
+                                <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ power_help_text }}">
+                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                    <span class="visually-hidden">{{ power_help_text }}</span>
+                                </button>
+                            </span>
+                        </th>
+                    {% endif %}
                     <th class="players-sex-column filterable no-sort">{% trans "Sex" %}</th>
                     <th class="players-age-column filterable no-sort">{% trans "Age" %}</th>
                     <th class="players-license-column no-sort">
@@ -57,18 +59,19 @@
             </thead>
             <tbody>
                 {% for item in items %}
-                    <tr class="players-row {{ item|is_active_player_class }}" data-href="{% url 'player' id=item.pk %}">
-                        <td class="players-rank-cell" data-label="{% trans "Ranking" %}" data-order="{{ item.rating_position_value }}">
+                    {% with player=item|rating_item_player club=item|rating_item_club rank_value=item|rating_item_position:rating_filters points_value=item|rating_item_points:rating_field power_value=item|rating_item_power:rating_power_field %}
+                    <tr class="players-row {{ player|is_active_player_class }}" data-href="{% url 'player' id=player.pk %}">
+                        <td class="players-rank-cell" data-label="{% trans "Ranking" %}" data-order="{{ rank_value }}">
                             <span class="players-rank-badge">
-                                <span class="players-rank-value">{{ item.rating_position_value }}</span>
+                                <span class="players-rank-value">{{ rank_value|safe }}</span>
                                 <span class="players-rank-label-mobile">{% trans "Place" %}</span>
                             </span>
                         </td>
                         <td class="players-athlete-cell" data-label="{% trans "Athlete" %}">
-                            <a class="players-athlete-link" href="{% url 'player' id=item.pk %}">
+                            <a class="players-athlete-link" href="{% url 'player' id=player.pk %}">
                                 <span class="players-athlete-avatar" aria-hidden="true">
-                                    {% if item.avatar %}
-                                        <img src="{{ item.avatar.url }}" alt="{{ item.get_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                    {% if player.avatar %}
+                                        <img src="{{ player.avatar.url }}" alt="{{ player.get_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
                                         <span class="players-athlete-avatar-placeholder" hidden>
                                             <i class="bi bi-person-fill"></i>
                                         </span>
@@ -80,53 +83,55 @@
                                 </span>
                                 <span class="players-athlete-copy">
                                     <span class="players-athlete-name">
-                                        {{ item.get_name }}
-                                        {% if item.sport_title %}
-                                            <span class="players-athlete-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
+                                        {{ player.get_name }}
+                                        {% if player.sport_title %}
+                                            <span class="players-athlete-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ player.get_sport_title_display }}" aria-label="{{ player.get_sport_title_display }}">
                                                 <i class="bi bi-award-fill" aria-hidden="true"></i>
                                             </span>
                                         {% endif %}
                                     </span>
                                     <span class="players-athlete-meta-mobile">
-                                        {% if item.current_club %}
+                                        {% if club %}
                                             <span class="players-athlete-meta-line">
                                                 <i class="bi bi-people" aria-hidden="true"></i>
-                                                <span>{{ item.current_club.short_name }}</span>
+                                                <span>{{ club.short_name }}</span>
                                             </span>
                                         {% endif %}
                                         <span class="players-athlete-meta-line">
-                                            {% if item.current_club and item.current_club.city %}
-                                                <span>{{ item.current_club.city.name }}</span>
+                                            {% if club and club.city %}
+                                                <span>{{ club.city.name }}</span>
                                             {% endif %}
-                                            {% if item.country %}
-                                                <span class="players-athlete-country">{{ item.country.name }} {{ item.country|country_flag|safe }}</span>
+                                            {% if player.country %}
+                                                <span class="players-athlete-country">{{ player.country.name }} {{ player.country|country_flag|safe }}</span>
                                             {% endif %}
                                         </span>
                                     </span>
                                 </span>
                             </a>
                         </td>
-                        <td class="players-points-cell" data-label="{% trans "Points" %}" data-order="{{ item|rating_points:rating_field }}">
+                        <td class="players-points-cell" data-label="{% trans "Points" %}" data-order="{{ points_value }}">
                             <span class="players-metric-badge players-points-badge">
                                 <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                                 <span class="players-metric-copy">
-                                    <span class="players-metric-value">{{ item|rating_points:rating_field|floatformat:2 }}</span>
+                                    <span class="players-metric-value">{{ points_value|floatformat:2 }}</span>
                                     <span class="players-metric-label">{% trans "Points" %}</span>
                                 </span>
                             </span>
                         </td>
-                        <td class="players-power-cell" data-label="{% trans "Power" %}" data-order="{{ item|rating_power:rating_power_field }}">
-                            <span class="players-metric-badge players-power-badge">
-                                <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
-                                <span class="players-metric-copy">
-                                    <span class="players-metric-value">{{ item|rating_power:rating_power_field|floatformat:2 }}</span>
-                                    <span class="players-metric-label">{% trans "Power" %}</span>
+                        {% if show_power_column %}
+                            <td class="players-power-cell" data-label="{% trans "Power" %}" data-order="{{ power_value }}">
+                                <span class="players-metric-badge players-power-badge">
+                                    <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+                                    <span class="players-metric-copy">
+                                        <span class="players-metric-value">{{ power_value|floatformat:2 }}</span>
+                                        <span class="players-metric-label">{% trans "Power" %}</span>
+                                    </span>
                                 </span>
-                            </span>
-                        </td>
+                            </td>
+                        {% endif %}
                         <td class="players-sex-cell" data-label="{% trans "Sex" %}">
-                            <span class="players-sex-badge players-sex-badge-{{ item.gender|lower }}">
-                                {% if item.gender == "F" %}
+                            <span class="players-sex-badge players-sex-badge-{{ player.gender|lower }}">
+                                {% if player.gender == "F" %}
                                     <i class="bi bi-gender-female" aria-hidden="true"></i>
                                     <span class="players-sex-copy">
                                         <span class="players-sex-value">{% trans "Women" %}</span>
@@ -144,16 +149,20 @@
                         <td class="players-age-cell" data-label="{% trans "Age" %}">
                             <span class="players-age-badge">
                                 <i class="bi bi-people players-age-icon" aria-hidden="true"></i>
-                                {{ item|player_age_category|safe }}
+                                {% if is_season_rating %}
+                                    {{ player|season_player_age_category:year|safe }}
+                                {% else %}
+                                    {{ player|player_age_category|safe }}
+                                {% endif %}
                                 <span class="players-age-label">{% trans "Category" %}</span>
                             </span>
                         </td>
                         <td class="players-license-cell" data-label="{% trans "License" %}">
-                            {% if item.is_licence_active and item.licence_number %}
+                            {% if player.is_licence_active and player.licence_number %}
                                 <span class="players-license-badge">
                                     <i class="bi bi-person-vcard" aria-hidden="true"></i>
                                     <span class="players-license-copy">
-                                        <span class="players-license-number">{{ item.licence_number }}</span>
+                                        <span class="players-license-number">{{ player.licence_number }}</span>
                                         <span class="players-license-label">{% trans "License" %}</span>
                                     </span>
                                 </span>
@@ -164,11 +173,11 @@
                             {% endif %}
                         </td>
                         <td class="players-club-cell" data-label="{% trans "Club" %}">
-                            {% if item.current_club %}
+                            {% if club %}
                                 <span class="players-club-wrap">
-                                    <a class="players-club-link" href="{% url 'club' id=item.current_club.pk %}">{{ item.current_club.short_name }}</a>
-                                    {% if item.current_club.city %}
-                                        <span class="players-club-city">{{ item.current_club.city.name }}</span>
+                                    <a class="players-club-link" href="{% url 'club' id=club.pk %}">{{ club.short_name }}</a>
+                                    {% if club.city %}
+                                        <span class="players-club-city">{{ club.city.name }}</span>
                                     {% endif %}
                                 </span>
                             {% else %}
@@ -176,16 +185,15 @@
                             {% endif %}
                         </td>
                         <td class="players-action-cell" data-label="{% trans "Actions" %}">
-                            <a href="{% url 'player' id=item.pk %}" class="players-row-action" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
+                            <a href="{% url 'player' id=player.pk %}" class="players-row-action" aria-label="{% trans "Show athlete" %}: {{ player.get_name }}">
                                 <i class="bi bi-chevron-right" aria-hidden="true"></i>
                             </a>
                         </td>
                         <td class="players-mobile-card-cell" data-label="{% trans "Athlete" %}">
-                            {% with rank_value=item.rating_position_value points_value=item|rating_points:rating_field power_value=item|rating_power:rating_power_field card_extra_class="players-mobile-rating-card" %}
-                                {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value card_extra_class=card_extra_class %}
-                            {% endwith %}
+                            {% include "players/_player_rating_card.html" with item=player rank_value=rank_value points_value=points_value power_value=power_value rating_club=club show_power=show_power_column age_year=year card_extra_class="players-mobile-rating-card" %}
                         </td>
                     </tr>
+                    {% endwith %}
                 {% endfor %}
             </tbody>
         </table>

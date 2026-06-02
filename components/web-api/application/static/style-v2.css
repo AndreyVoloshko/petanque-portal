@@ -3060,6 +3060,44 @@ Athletes ranking page
   margin: 0.35rem 0 0;
 }
 
+.season-year-tabs {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.season-year-tab {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  color: #46546a;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 750;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.35rem;
+  min-width: 4.25rem;
+  padding: 0 0.78rem;
+  text-decoration: none;
+}
+
+.season-year-tab:hover,
+.season-year-tab:focus-visible {
+  border-color: #8fc7df;
+  color: #0d73a8;
+  text-decoration: none;
+}
+
+.season-year-tab.is-active {
+  background: #102d4e;
+  border-color: #102d4e;
+  color: #ffffff;
+}
+
 .players-page-info {
   color: #6e7d92;
   cursor: pointer;

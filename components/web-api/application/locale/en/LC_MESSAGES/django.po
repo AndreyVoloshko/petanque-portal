@@ -2328,6 +2328,27 @@ msgstr "View all"
 msgid "Competition details"
 msgstr "Competition details"
 
+#: federation/templates/seasons/seasons.html
+#, python-format
+msgid "%(year)s season rating"
+msgstr "%(year)s season rating"
+
+#: federation/templates/seasons/seasons.html
+msgid "Historical athlete ranking"
+msgstr "Historical athlete ranking"
+
+#: federation/templates/seasons/seasons.html
+msgid "Season rating uses tournament results from the selected calendar year: January 1 through December 31."
+msgstr "Season rating uses tournament results from the selected calendar year: January 1 through December 31."
+
+#: federation/templates/seasons/seasons.html
+msgid "Seasons"
+msgstr "Seasons"
+
+#: federation/views/seasons.py
+msgid "Season rating"
+msgstr "Season rating"
+
 #: federation/templates/players/player.html
 msgid "Power column team"
 msgstr "Team"

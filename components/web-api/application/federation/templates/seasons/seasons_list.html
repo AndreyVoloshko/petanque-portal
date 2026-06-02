@@ -2,7 +2,7 @@
 
 <nav class="side-nav nav flex-column nav-pills">
     {% for item in items %}
-        <a href="{% url 'season' year=item %}" 
+        <a href="{% url 'seasons_year' year=item %}"
            class="force-follow-link nav-link {% if item == active_item %}active{% endif %}">
             {{ item }}
         </a>
