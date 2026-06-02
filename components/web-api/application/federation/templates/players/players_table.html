@@ -58,9 +58,9 @@
             <tbody>
                 {% for item in items %}
                     <tr class="players-row {{ item|is_active_player_class }}" data-href="{% url 'player' id=item.pk %}">
-                        <td class="players-rank-cell" data-label="{% trans "Ranking" %}" data-order="{{ item|rating_position:rating_filters }}">
+                        <td class="players-rank-cell" data-label="{% trans "Ranking" %}" data-order="{{ item.rating_position_value }}">
                             <span class="players-rank-badge">
-                                <span class="players-rank-value">{{ item|rating_position:rating_filters|safe }}</span>
+                                <span class="players-rank-value">{{ item.rating_position_value }}</span>
                                 <span class="players-rank-label-mobile">{% trans "Place" %}</span>
                             </span>
                         </td>
@@ -181,7 +181,7 @@
                             </a>
                         </td>
                         <td class="players-mobile-card-cell" data-label="{% trans "Athlete" %}">
-                            {% with rank_value=item|rating_position:rating_filters points_value=item|rating_points:rating_field power_value=item|rating_power:rating_power_field card_extra_class="players-mobile-rating-card" %}
+                            {% with rank_value=item.rating_position_value points_value=item|rating_points:rating_field power_value=item|rating_power:rating_power_field card_extra_class="players-mobile-rating-card" %}
                                 {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value card_extra_class=card_extra_class %}
                             {% endwith %}
                         </td>

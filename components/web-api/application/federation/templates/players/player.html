@@ -276,7 +276,7 @@
             </h2>
         </div>
 
-        {% if player_tournaments %}
+        {% if player_tournament_rows %}
         <div class="player-tournaments-sort-controls" aria-label="{% trans "Sort tournaments" %}">
             <span class="pt-sort-label">{% trans "Sort" %}</span>
             <button class="pt-sort-control" type="button" data-sort-button="date" aria-label="{% trans "Sort by date" %}">
@@ -351,9 +351,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in player_tournaments %}
-                    {% with place=item|team_min_place_in_tournament:player place_max=item|team_max_place_in_tournament:player place_label=item|team_place_range_in_tournament:player teams=item|teams_count tournament_power=item|tournament_power_badge team_power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
-                    <tr class="player-tournament-row {{ item|is_tournament_in_player_rating:player|safe }}"
+                    {% for row in player_tournament_rows %}
+                    {% with item=row.tournament place=row.place place_max=row.place_max place_label=row.place_label teams=row.teams_count tournament_power=row.tournament_power team_power=row.team_power points=row.team_rating_points meta=row.metadata %}
+                    <tr class="player-tournament-row {% if row.is_rating_relevant %}tournament_goes_to_rating{% endif %}"
                         data-href="{% url 'tournament' id=item.pk %}"
                         data-sort-index="{{ forloop.counter0 }}"
                         data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
@@ -371,21 +371,19 @@
                             </div>
                         </td>
                         <td class="pt-col-name" data-label="{% trans "Name" %}">
-                            <a href="{% url 'tournament' id=item.pk %}" class="pt-tournament-link">{{ item|tournament_display_name }}</a>
+                            <a href="{% url 'tournament' id=item.pk %}" class="pt-tournament-link">{{ row.title }}</a>
                             {% if item.place %}
                                 <span class="pt-tournament-location">{{ item.place }}</span>
                             {% endif %}
                         </td>
                         <td class="pt-col-format" data-label="{% trans "Format" %}">
                             <div class="pt-chip-list">
-                                {% with meta=item|tournament_card_metadata %}
-                                    {% for tag in meta.format_tags %}
-                                        <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
-                                    {% endfor %}
-                                    {% for tag in meta.audience_tags %}
-                                        <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
-                                    {% endfor %}
-                                {% endwith %}
+                                {% for tag in meta.format_tags %}
+                                    <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
+                                {% endfor %}
+                                {% for tag in meta.audience_tags %}
+                                    <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
+                                {% endfor %}
                             </div>
                         </td>
                         <td class="pt-col-place" data-label="{% trans "Place" %}">
@@ -403,7 +401,15 @@
                             {% endif %}
                         </td>
                         <td class="pt-col-team" data-label="{% trans "Team" %}">
-                            {{ item|team_players_in_tournament:player }}
+                            {% if row.team_players %}
+                                <span class="pt-team-players">
+                                    {% for team_player in row.team_players %}
+                                        <span class="pt-team-player">{{ team_player.get_name }}</span>
+                                    {% endfor %}
+                                </span>
+                            {% elif row.team %}
+                                {{ row.team.get_short_name }}
+                            {% endif %}
                         </td>
                         <td class="pt-col-strength" data-label="{% trans "Power" %}">
                             <div class="pt-strength-values">
@@ -413,7 +419,7 @@
                                     <span class="pt-muted">&mdash;</span>
                                 {% endif %}
                                 {% if tournament_power %}
-                                    {{ tournament_power|safe }}
+                                    {{ tournament_power|tournament_power_badge|safe }}
                                 {% else %}
                                     <span class="pt-muted">&mdash;</span>
                                 {% endif %}
@@ -437,10 +443,10 @@
         </div>
 
         <div class="player-tournaments-mobile-list">
-            {% for item in player_tournaments %}
-            {% with place=item|team_min_place_in_tournament:player place_max=item|team_max_place_in_tournament:player place_label=item|team_place_range_in_tournament:player teams=item|teams_count tournament_power=item|tournament_power_badge team_power=item|team_power_in_tournament:player points=item|team_rating_points_in_tournament:player %}
+            {% for row in player_tournament_rows %}
+            {% with item=row.tournament place=row.place place_max=row.place_max place_label=row.place_label teams=row.teams_count tournament_power=row.tournament_power team_power=row.team_power points=row.team_rating_points meta=row.metadata %}
             <a href="{% url 'tournament' id=item.pk %}"
-               class="player-tournament-mobile-card {{ item|is_tournament_in_player_rating:player|safe }}"
+               class="player-tournament-mobile-card {% if row.is_rating_relevant %}tournament_goes_to_rating{% endif %}"
                data-sort-index="{{ forloop.counter0 }}"
                data-sort-date="{{ item.start_date|date:'Y-m-d' }}"
                data-sort-place="{{ place }}"
@@ -453,21 +459,29 @@
                         <span>{{ item.start_date|date:"Y" }}</span>
                     </div>
                     <div class="ptm-main">
-                        <span class="ptm-title">{{ item|tournament_display_name }}</span>
+                        <span class="ptm-title">{{ row.title }}</span>
                         {% if item.place %}
                             <span class="ptm-location">{{ item.place }}</span>
                         {% endif %}
                         <div class="ptm-chips">
-                            {% with meta=item|tournament_card_metadata %}
-                                {% for tag in meta.format_tags %}
-                                    <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
-                                {% endfor %}
-                                {% for tag in meta.audience_tags %}
-                                    <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
-                                {% endfor %}
-                            {% endwith %}
+                            {% for tag in meta.format_tags %}
+                                <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
+                            {% endfor %}
+                            {% for tag in meta.audience_tags %}
+                                <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
+                            {% endfor %}
                         </div>
-                        <span class="ptm-team">{{ item|team_players_in_tournament:player }}</span>
+                        <span class="ptm-team">
+                            {% if row.team_players %}
+                                <span class="pt-team-players">
+                                    {% for team_player in row.team_players %}
+                                        <span class="pt-team-player">{{ team_player.get_name }}</span>
+                                    {% endfor %}
+                                </span>
+                            {% elif row.team %}
+                                {{ row.team.get_short_name }}
+                            {% endif %}
+                        </span>
                     </div>
                     <i class="bi bi-chevron-right ptm-chevron"></i>
                 </div>
@@ -479,7 +493,7 @@
                         <span class="pt-place-total">{{ teams }}</span>
                     </span>
                         {% if tournament_power %}
-                            {{ tournament_power|safe }}
+                            {{ tournament_power|tournament_power_badge|safe }}
                         {% endif %}
                         {% if team_power %}
                             {{ team_power|team_power_badge|safe }}

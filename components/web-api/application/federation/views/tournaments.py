@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from federation.models.player import Player
+from federation.models.team import PlayerTeamMembership
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Count
+from django.db.models import Prefetch
 from django.db.models import Q
 import csv
 from transliterate import translit
@@ -258,7 +262,11 @@ def _truthy(value):
 
 
 def _get_tournaments_queryset(filters):
-    queryset = Tournament.objects.select_related('organizer_club').all()
+    queryset = (
+        Tournament.objects
+        .select_related('organizer_club')
+        .annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True))
+    )
     queryset = _apply_rating_filter(queryset, filters['rating_type'])
     queryset = _apply_foreign_filter(queryset, filters['foreign'])
     queryset = _apply_period_filter(queryset, filters['period'])
@@ -340,7 +348,7 @@ def _build_tournament_row(tournament):
         'date_label': _date_full_month_label(tournament.start_date),
         'weekday_label': formats.date_format(tournament.start_date, 'l') if tournament.start_date else '',
         'teams_count_label': _registered_count_label(
-            tournament.get_teams_count(),
+            _resolved_tournament_teams_count(tournament),
             _is_single_player_format(tournament, format_keys),
         ),
         'format_label': format_label,
@@ -396,6 +404,17 @@ def _registered_count_label(count, is_single_player_format=False):
         return ngettext('%(count)d team', '%(count)d teams', count) % {'count': count}
 
     return '{} {}'.format(count, _uk_plural(count, 'команда', 'команди', 'команд'))
+
+
+def _resolved_tournament_teams_count(tournament):
+    if tournament.total_number_of_teams and tournament.total_number_of_teams > 0:
+        return tournament.total_number_of_teams
+
+    annotated_count = getattr(tournament, 'actual_teams_count', None)
+    if annotated_count is not None:
+        return annotated_count
+
+    return tournament.get_teams_count()
 
 
 def _uk_plural(count, singular, few, many):
@@ -847,7 +866,15 @@ def _empty_state(filters):
 def tournament(request, id):
     current_user = request.user
 
-    tournament = get_object_or_404(Tournament, pk=id)
+    tournament = get_object_or_404(
+        Tournament.objects.select_related(
+            'organizer_club',
+            'main_organizer',
+            'main_organizer__user',
+            'federation_delegat',
+        ),
+        pk=id,
+    )
 
     if request.method == "POST":
         if 'meta' in request.POST:
@@ -892,8 +919,23 @@ def tournament(request, id):
                 messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 
-    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
-    teams = TeamTournamentMembership.objects.filter(tournament=tournament)
+    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament).select_related('arbiter')
+    teams = (
+        TeamTournamentMembership.objects
+        .filter(tournament=tournament)
+        .select_related('team', 'tournament', 'tournament__main_organizer', 'tournament__main_organizer__user')
+        .prefetch_related(
+            Prefetch(
+                'team__players',
+                queryset=Player.objects.select_related('current_club', 'user').order_by('surname', 'name'),
+            ),
+            Prefetch(
+                'team__playerteammembership_set',
+                queryset=PlayerTeamMembership.objects.filter(is_capitan=True).select_related('player'),
+                to_attr='captain_memberships',
+            ),
+        )
+    )
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
