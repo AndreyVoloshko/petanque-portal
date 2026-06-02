@@ -10,8 +10,8 @@ from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.models.team import Team
 from federation.models.player import Player
 from federation.models.email_confirmation import EmailConfirmation
-from federation.utils.email import send_confirmation_email
 from federation.utils.autocaptcha import DEFAULT_ACTION as AUTOCAPTCHA_ACTION, get_public_key as get_autocaptcha_public_key
+from federation.utils.email import send_confirmation_email
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
@@ -71,6 +71,7 @@ def register_player(request):
         if player_registration_form.is_valid():
             try:
                 email = player_registration_form.cleaned_data.get('email') or ''
+                password = player_registration_form.cleaned_data.get('password') or None
                 with transaction.atomic():
                     user = User.objects.create_user(
                         username=generate_username(
@@ -78,7 +79,7 @@ def register_player(request):
                             player_registration_form.cleaned_data['surname'],
                         ),
                         email=email,
-                        password=player_registration_form.cleaned_data['password'],
+                        password=password,
                     )
 
                     player = Player(

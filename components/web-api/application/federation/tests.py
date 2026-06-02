@@ -760,6 +760,95 @@ class OptionalRegistrationEmailTests(TestCase):
         self.assertTrue(_needs_email_prompt(user))
 
 
+@override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
+class PlayerRegistrationRedesignTests(TestCase):
+    def registration_data(self, **overrides):
+        data = {
+            'name': 'No',
+            'surname': 'Password',
+            'patronymic': 'Required',
+            'birth_date': '01.01.1990',
+            'country': 'UA',
+            'gender': 'M',
+            'licence_number': '',
+            'autocaptcha_token': '',
+        }
+        data.update(overrides)
+        return data
+
+    def test_page_uses_redesigned_form_custom_date_picker_and_search_panel(self):
+        response = self.client.get('/register/player/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'registration-redesign')
+        self.assertContains(response, 'id="player-existence-search"')
+        self.assertContains(response, 'data-search-url="/api/players_list/list/"')
+        self.assertContains(response, 'data-date-picker')
+        self.assertContains(response, 'data-date-picker-panel')
+        self.assertContains(response, 'id="id_birth_date"')
+        self.assertContains(response, 'inputmode="numeric"')
+        self.assertContains(response, 'id="account-access-field-group"')
+        self.assertContains(response, 'id="id_email"')
+        self.assertContains(response, 'id="id_password"')
+        self.assertContains(response, 'id="id_password_confirm"')
+        self.assertNotContains(response, 'type="date"')
+        self.assertNotContains(response, '$(".dateinput").datepicker')
+
+    def test_registration_form_accepts_redesigned_required_fields_without_password(self):
+        form = RegistrationPlayerForm(data=self.registration_data())
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+
+    def test_registration_form_rejects_future_birth_date(self):
+        future_birth_date = timezone.localdate() + timedelta(days=1)
+        form = RegistrationPlayerForm(data=self.registration_data(
+            birth_date=future_birth_date.strftime('%d.%m.%Y'),
+        ))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('birth_date', form.errors)
+
+    def test_player_registration_creates_user_with_unusable_password(self):
+        response = self.client.post('/register/player/', self.registration_data())
+
+        self.assertEqual(response.status_code, 302)
+        player = Player.objects.get(name='No', surname='Password')
+        self.assertFalse(player.user.has_usable_password())
+
+    def test_non_ukrainian_registration_ignores_optional_account_fields(self):
+        form = RegistrationPlayerForm(data=self.registration_data(
+            country='PL',
+            patronymic='Should clear',
+            email='ignored@example.com',
+            password='StrongPass123!',
+            password_confirm='StrongPass123!',
+        ))
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.cleaned_data['patronymic'], '')
+        self.assertEqual(form.cleaned_data['email'], '')
+        self.assertEqual(form.cleaned_data['password'], '')
+
+    @patch('federation.views.register.send_confirmation_email')
+    def test_player_registration_with_account_credentials_sets_email_password_and_confirmation(self, send_email):
+        response = self.client.post('/register/player/', self.registration_data(
+            name='Cabinet',
+            surname='Access',
+            email='cabinet-access@example.com',
+            password='StrongPass123!',
+            password_confirm='StrongPass123!',
+        ))
+
+        self.assertEqual(response.status_code, 302)
+        player = Player.objects.get(name='Cabinet', surname='Access')
+        self.assertEqual(player.user.email, 'cabinet-access@example.com')
+        self.assertTrue(player.user.has_usable_password())
+        self.assertTrue(player.user.check_password('StrongPass123!'))
+        confirmation = EmailConfirmation.objects.get(user=player.user)
+        self.assertEqual(confirmation.email, 'cabinet-access@example.com')
+        send_email.assert_called_once()
+
+
 @override_settings(
     DEBUG=False,
     RECAPTCHA_PUBLIC_KEY='public-key',

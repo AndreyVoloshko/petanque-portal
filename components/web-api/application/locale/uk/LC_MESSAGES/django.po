@@ -160,6 +160,10 @@ msgstr "Позиція"
 msgid "Date of birth"
 msgstr "Дата народження"
 
+#: federation/forms/registration_player_form.py
+msgid "Date of birth cannot be in the future"
+msgstr "Дата народження не може бути в майбутньому"
+
 #: federation/forms/registration_player_form.py:55
 #: federation/templates/login.html:26
 msgid "Password"
@@ -168,6 +172,10 @@ msgstr "Пароль"
 #: federation/forms/registration_player_form.py:62
 msgid "Confirm password"
 msgstr "Підтвердити пароль"
+
+#: federation/forms/registration_player_form.py
+msgid "Email"
+msgstr "Email"
 
 #: federation/forms/registration_player_form.py:77
 msgid "Additional verification"
@@ -195,6 +203,158 @@ msgstr "Автоматична перевірка відхилила цю реє
 msgid "Register player"
 msgstr "Зареєструвати спортсмена"
 
+#: federation/templates/register/player.html
+msgid "Fill in details to add a new player"
+msgstr "Заповніть дані для додавання нового гравця"
+
+#: federation/templates/register/player.html
+msgid "Required for Ukrainian players and used in protocols."
+msgstr "Обов'язкове для українських гравців — використовується у протоколах."
+
+#: federation/templates/register/player.html
+msgid "Only for players who already have a federation license."
+msgstr "Лише для гравців з ліцензією федерації."
+
+#: federation/templates/register/player.html
+msgid "Access to personal account (optional fields)."
+msgstr "Доступ до особистого кабінету (необов'язкові поля)."
+
+#: federation/templates/register/player.html
+msgid "Email and password allow the player to sign in to the account, register for competitions, and manage their profile."
+msgstr "Email і пароль дають змогу гравцю увійти до кабінету, реєструватися на змагання й керувати профілем."
+
+#: federation/templates/register/player.html
+msgid "Player database check"
+msgstr "Перевірка бази спортсменів"
+
+#: federation/templates/register/player.html
+msgid "First check the database"
+msgstr "Спершу перевірте базу"
+
+#: federation/templates/register/player.html
+msgid "To avoid creating a duplicate, try finding the player. Search in Cyrillic and Latin."
+msgstr "Щоб не створити дублікат — спробуйте знайти спортсмена. Шукайте кирилицею і латиницею."
+
+#: federation/templates/register/player.html
+msgid "First or last name"
+msgstr "Ім'я або прізвище"
+
+#: federation/templates/register/player.html
+msgid "e.g. Kozak / Козак"
+msgstr "напр. Козак / Kozak"
+
+#: federation/templates/register/player.html
+msgid "Not found? Then fill in the form on the left. After verification, the data will appear in the federation database."
+msgstr "Не знайшли? Тоді заповніть форму ліворуч — після перевірки дані з'являться в базі федерації."
+
+#: federation/templates/register/player.html
+msgid "Found in the database"
+msgstr "Знайдено в базі"
+
+#: federation/templates/register/player.html
+msgid "Nothing found. Try another spelling or register a new player."
+msgstr "Нічого не знайдено. Спробуйте інше написання або зареєструйте нового спортсмена."
+
+#: federation/templates/register/player.html
+msgid "Could not check the database. Try again."
+msgstr "Не вдалося перевірити базу. Спробуйте ще раз."
+
+#: federation/templates/register/player.html
+msgid "Open profile"
+msgstr "Відкрити профіль"
+
+#: federation/templates/register/player.html
+msgid "Open calendar"
+msgstr "Відкрити календар"
+
+#: federation/templates/register/player.html
+msgid "Previous month"
+msgstr "Попередній місяць"
+
+#: federation/templates/register/player.html
+msgid "Next month"
+msgstr "Наступний місяць"
+
+#: federation/templates/register/player.html
+msgid "Clear"
+msgstr "Очистити"
+
+#: federation/templates/register/player.html
+msgid "January"
+msgstr "Січень"
+
+#: federation/templates/register/player.html
+msgid "February"
+msgstr "Лютий"
+
+#: federation/templates/register/player.html
+msgid "March"
+msgstr "Березень"
+
+#: federation/templates/register/player.html
+msgid "April"
+msgstr "Квітень"
+
+#: federation/templates/register/player.html
+msgid "May"
+msgstr "Травень"
+
+#: federation/templates/register/player.html
+msgid "June"
+msgstr "Червень"
+
+#: federation/templates/register/player.html
+msgid "July"
+msgstr "Липень"
+
+#: federation/templates/register/player.html
+msgid "August"
+msgstr "Серпень"
+
+#: federation/templates/register/player.html
+msgid "September"
+msgstr "Вересень"
+
+#: federation/templates/register/player.html
+msgid "October"
+msgstr "Жовтень"
+
+#: federation/templates/register/player.html
+msgid "November"
+msgstr "Листопад"
+
+#: federation/templates/register/player.html
+msgid "December"
+msgstr "Грудень"
+
+#: federation/templates/register/player.html
+msgid "Mon"
+msgstr "Пн"
+
+#: federation/templates/register/player.html
+msgid "Tue"
+msgstr "Вт"
+
+#: federation/templates/register/player.html
+msgid "Wed"
+msgstr "Ср"
+
+#: federation/templates/register/player.html
+msgid "Thu"
+msgstr "Чт"
+
+#: federation/templates/register/player.html
+msgid "Fri"
+msgstr "Пт"
+
+#: federation/templates/register/player.html
+msgid "Sat"
+msgstr "Сб"
+
+#: federation/templates/register/player.html
+msgid "Sun"
+msgstr "Нд"
+
 #: federation/forms/registration_player_form.py:136
 #, python-format
 msgid "Player <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> is already registered"
@@ -203,6 +363,18 @@ msgstr "Гравець <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)
 #: federation/forms/registration_player_form.py:146
 msgid "Passwords do not match"
 msgstr "Паролі не збігаються"
+
+#: federation/forms/registration_player_form.py
+msgid "Email is required when password is provided"
+msgstr "Email обов'язковий, якщо вказано пароль"
+
+#: federation/forms/registration_player_form.py
+msgid "Password is required when email is provided"
+msgstr "Пароль обов'язковий, якщо вказано email"
+
+#: federation/forms/registration_player_form.py
+msgid "Confirm password is required when password is provided"
+msgstr "Підтвердження пароля обов'язкове, якщо вказано пароль"
 
 #: federation/forms/registration_player_form.py:157
 msgid "Email is required for players from Ukraine"
