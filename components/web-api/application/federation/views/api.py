@@ -60,7 +60,7 @@ def players_clubs_and_tournaments_list(request):
         players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
         clubs = Club.objects.filter(name__icontains=template)
         tournaments = [
-            tournament for tournament in Tournament.objects.all()
+            tournament for tournament in Tournament.public_queryset()
             if tournament_display_name_matches(tournament, template)
         ]
 

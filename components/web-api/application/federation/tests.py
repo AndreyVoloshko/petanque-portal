@@ -611,6 +611,25 @@ class TournamentListingPageTests(TestCase):
             meta=meta,
         )
 
+    def create_player(self, username='history-player'):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def register_player_for_tournament(self, tournament, player, place_min=0):
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=place_min,
+        )
+
     def test_rating_route_preset_shows_future_rating_rows_and_strength(self):
         self.create_tournament('Rating Cup', is_rating=True, power='22.2800')
         self.create_tournament('Community Cup', is_rating=False, power='18.5000')
@@ -745,6 +764,53 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(past_response.status_code, 200)
         self.assertEqual(past_response.context['sort_state']['date_direction'], 'desc')
         self.assertEqual(past_response.context['rows'][0]['title'], 'Recent Past Cup')
+
+    def test_past_listing_hides_unprocessed_tournament_after_auto_cancel_cutoff(self):
+        stale = self.create_tournament('Stale Unprocessed Cup', start_offset=-31, end_offset=-30)
+        recent = self.create_tournament('Recent Unprocessed Cup', start_offset=-30, end_offset=-29)
+        processed = self.create_tournament(
+            'Processed Old Cup',
+            start_offset=-31,
+            end_offset=-30,
+            processed=True,
+        )
+
+        response = self.client.get('/tournaments/', {'period': 'past'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(stale.is_auto_cancelled())
+        self.assertFalse(recent.is_auto_cancelled())
+        self.assertFalse(processed.is_auto_cancelled())
+        self.assertNotContains(response, 'Stale Unprocessed Cup')
+        self.assertContains(response, 'Recent Unprocessed Cup')
+        self.assertContains(response, 'Processed Old Cup')
+        past_tab = next(tab for tab in response.context['period_tabs'] if tab['key'] == 'past')
+        self.assertEqual(past_tab['count'], 2)
+
+    def test_player_history_hides_auto_cancelled_unprocessed_tournaments(self):
+        player = self.create_player()
+        stale = self.create_tournament('Stale Player Cup', start_offset=-31, end_offset=-30)
+        recent = self.create_tournament('Recent Player Cup', start_offset=-30, end_offset=-29)
+        processed = self.create_tournament(
+            'Processed Player Cup',
+            start_offset=-31,
+            end_offset=-30,
+            processed=True,
+        )
+        self.register_player_for_tournament(stale, player)
+        self.register_player_for_tournament(recent, player, place_min=4)
+        self.register_player_for_tournament(processed, player, place_min=2)
+
+        response = self.client.get('/player/{}'.format(player.pk))
+
+        self.assertEqual(response.status_code, 200)
+        tournament_ids = {tournament.pk for tournament in response.context['player_tournaments']}
+        self.assertNotIn(stale.pk, tournament_ids)
+        self.assertIn(recent.pk, tournament_ids)
+        self.assertIn(processed.pk, tournament_ids)
+        self.assertNotContains(response, 'Stale Player Cup')
+        self.assertContains(response, 'Recent Player Cup')
+        self.assertContains(response, 'Processed Player Cup')
 
     def test_period_counts_respect_secondary_filters(self):
         self.create_tournament('Shooting Cup', tournament_format='tir')
