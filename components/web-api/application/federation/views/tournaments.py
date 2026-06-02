@@ -263,7 +263,7 @@ def _truthy(value):
 
 def _get_tournaments_queryset(filters):
     queryset = (
-        Tournament.objects
+        Tournament.public_queryset()
         .select_related('organizer_club')
         .annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True))
     )
@@ -629,6 +629,9 @@ def _is_finished_by_dates(tournament, today):
 
 
 def _is_cancelled(tournament):
+    if tournament.is_auto_cancelled():
+        return True
+
     if getattr(tournament, 'is_cancelled', False):
         return True
 

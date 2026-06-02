@@ -19,6 +19,8 @@ from federation.utils.tournament_names import get_tournament_display_name
 
 # Tournaments
 class Tournament(models.Model):
+    AUTO_CANCEL_UNPROCESSED_DAYS = 30
+
     TYPE_CHOICES = (
         ('open', _('Open')),
         ('fpu', _('UPF')),
@@ -359,6 +361,38 @@ class Tournament(models.Model):
 
         return True
 
+    def get_finished_date(self):
+        return self.end_date or self.start_date
+
+    @classmethod
+    def get_auto_cancel_cutoff_date(cls, today=None):
+        if today is None:
+            today = timezone.localdate()
+
+        return today - datetime.timedelta(days=cls.AUTO_CANCEL_UNPROCESSED_DAYS)
+
+    def is_auto_cancelled(self, today=None):
+        if self.is_processing_finished:
+            return False
+
+        finished_date = self.get_finished_date()
+        if not finished_date:
+            return False
+
+        return finished_date <= self.get_auto_cancel_cutoff_date(today)
+
+    @classmethod
+    def exclude_auto_cancelled(cls, queryset, today=None):
+        cutoff_date = cls.get_auto_cancel_cutoff_date(today)
+        return queryset.exclude(
+            models.Q(is_processing_finished=False, end_date__lte=cutoff_date) |
+            models.Q(is_processing_finished=False, end_date__isnull=True, start_date__lte=cutoff_date)
+        )
+
+    @classmethod
+    def public_queryset(cls):
+        return cls.exclude_auto_cancelled(cls.objects.all())
+
     def get_teams(self):
         return TeamTournamentMembership.objects.filter(tournament=self).order_by('-power')
 
@@ -366,7 +400,7 @@ class Tournament(models.Model):
     def get_list(self, date_filter=None, type_filter=None, custom_order=None):
         now = datetime.datetime.now()
 
-        tournaments = self.objects.all()
+        tournaments = self.public_queryset()
 
         if date_filter == 'past':
             #tournaments = tournaments.filter(start_date__year=now.year)
@@ -400,7 +434,7 @@ class Tournament(models.Model):
 
     @classmethod
     def get_list_by_dates_range(self, start_date=None, end_date=None):
-        tournaments = self.objects.all()
+        tournaments = self.public_queryset()
 
         if start_date:
             tournaments = tournaments.filter(start_date__gte=start_date)
@@ -414,7 +448,7 @@ class Tournament(models.Model):
     def get_list_by_player(self, player, date_filter=None, type_filter=None):
         now = datetime.datetime.now()
 
-        tournaments = self.objects.all()
+        tournaments = self.public_queryset()
 
         user_teams = Team.get_list_by_player(player=player)
         tournaments = tournaments.filter(teamtournamentmembership__team__in=user_teams)
