@@ -172,6 +172,22 @@ msgstr "Confirm password"
 msgid "Additional verification"
 msgstr "Additional verification"
 
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification is unavailable. Please try again later."
+msgstr "Automatic verification is unavailable. Please try again later."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please reload the page and try again."
+msgstr "Automatic verification failed. Please reload the page and try again."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please try again later."
+msgstr "Automatic verification failed. Please try again later."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification rejected this registration. Please try again later."
+msgstr "Automatic verification rejected this registration. Please try again later."
+
 #: federation/forms/registration_player_form.py:120
 #: federation/templates/register/player.html:24
 #: federation/templates/register/team.html:41

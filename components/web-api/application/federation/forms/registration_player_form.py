@@ -7,14 +7,15 @@ from django.utils.safestring import mark_safe
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div
-from captcha.fields import CaptchaField
 from django.utils.translation import gettext_lazy as _
 from federation.utils.countries import get_ordered_country_choices
+from federation.utils.autocaptcha import validate_autocaptcha
 
 
 class RegistrationPlayerForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
 
         super(RegistrationPlayerForm, self).__init__(*args, **kwargs)
         selected_country = self.data.get('country') if self.data else self.initial.get('country')
@@ -88,9 +89,11 @@ class RegistrationPlayerForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_player')
+        self.helper.form_id = 'player-registration-form'
 
-        self.fields['captcha'] = CaptchaField(
-            label=_("Additional verification")
+        self.fields['autocaptcha_token'] = forms.CharField(
+            widget=forms.HiddenInput(),
+            required=False,
         )
 
         self.helper.layout = Layout(
@@ -139,8 +142,8 @@ class RegistrationPlayerForm(forms.Form):
                 css_class="col-lg-12 mb-3"
             ),
             Div(
-                'captcha',
-                css_class="col-lg-12"
+                'autocaptcha_token',
+                css_class="d-none"
             ),
             Div(
                 Submit('submit', _("Register player"), css_class='btn btn-success'),
@@ -148,6 +151,16 @@ class RegistrationPlayerForm(forms.Form):
             ),
             Div(css_class="clear")
         )
+
+    def _get_remote_ip(self):
+        if not self.request:
+            return None
+
+        forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
+        if forwarded_for:
+            return forwarded_for.split(',')[0].strip()
+
+        return self.request.META.get('REMOTE_ADDR')
 
     def clean(self):
         cleaned_data = super(RegistrationPlayerForm, self).clean()
@@ -182,9 +195,16 @@ class RegistrationPlayerForm(forms.Form):
         if country != 'UA':
             cleaned_data['email'] = ''
             cleaned_data['patronymic'] = ''
-            return cleaned_data
-
-        if email and User.objects.filter(email__iexact=email).exists():
+        elif email and User.objects.filter(email__iexact=email).exists():
             self.add_error('email', _('This email is already in use'))
+
+        if not self.errors:
+            try:
+                validate_autocaptcha(
+                    cleaned_data.get('autocaptcha_token'),
+                    remote_ip=self._get_remote_ip(),
+                )
+            except ValidationError as error:
+                self.add_error(None, error)
 
         return cleaned_data

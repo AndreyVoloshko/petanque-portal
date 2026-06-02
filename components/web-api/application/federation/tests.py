@@ -1,7 +1,10 @@
+import json
 import re
 from datetime import date, timedelta
 from decimal import Decimal
 from types import SimpleNamespace
+from unittest.mock import patch
+from urllib.parse import parse_qs
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -712,6 +715,7 @@ class PlayerTournamentListTests(TestCase):
 
 
 class OptionalRegistrationEmailTests(TestCase):
+    @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
     def test_ukrainian_player_registration_allows_blank_email(self):
         form = RegistrationPlayerForm(data={
             'name': 'Blank',
@@ -754,6 +758,99 @@ class OptionalRegistrationEmailTests(TestCase):
         EmailConfirmation.objects.create(user=user, email=user.email)
 
         self.assertTrue(_needs_email_prompt(user))
+
+
+@override_settings(
+    DEBUG=False,
+    RECAPTCHA_PUBLIC_KEY='public-key',
+    RECAPTCHA_PRIVATE_KEY='private-key',
+    AUTO_CAPTCHA_SCORE_THRESHOLD=0.5,
+)
+class AutoCaptchaRegistrationTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def registration_data(self, **overrides):
+        data = {
+            'name': 'Auto',
+            'surname': 'Human',
+            'birth_date': '1990-01-01',
+            'country': 'UA',
+            'email': '',
+            'password': 'StrongPass123!',
+            'password_confirm': 'StrongPass123!',
+            'gender': 'M',
+            'autocaptcha_token': 'valid-token',
+        }
+        data.update(overrides)
+        return data
+
+    def request(self):
+        return self.factory.post('/register/player/', REMOTE_ADDR='203.0.113.10')
+
+    def mock_response(self, urlopen_mock, **overrides):
+        payload = {
+            'success': True,
+            'score': 0.9,
+            'action': 'player_registration',
+        }
+        payload.update(overrides)
+        response = urlopen_mock.return_value.__enter__.return_value
+        response.read.return_value = json.dumps(payload).encode('utf-8')
+
+    def assert_non_field_error_code(self, form, code):
+        errors = form.non_field_errors().as_data()
+        self.assertTrue(errors)
+        self.assertEqual(errors[0].code, code)
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_accepts_valid_automatic_verification(self, urlopen_mock):
+        self.mock_response(urlopen_mock)
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+
+        verify_request = urlopen_mock.call_args.args[0]
+        verify_payload = parse_qs(verify_request.data.decode('utf-8'))
+        self.assertEqual(verify_payload['secret'], ['private-key'])
+        self.assertEqual(verify_payload['response'], ['valid-token'])
+        self.assertEqual(verify_payload['remoteip'], ['203.0.113.10'])
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_missing_automatic_verification_token(self, urlopen_mock):
+        form = RegistrationPlayerForm(
+            data=self.registration_data(autocaptcha_token=''),
+            request=self.request(),
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_missing')
+        urlopen_mock.assert_not_called()
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_low_automatic_verification_score(self, urlopen_mock):
+        self.mock_response(urlopen_mock, score=0.1)
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_low_score')
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_wrong_automatic_verification_action(self, urlopen_mock):
+        self.mock_response(urlopen_mock, action='login')
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_action')
+
+    @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
+    def test_debug_without_keys_allows_local_form_validation(self):
+        form = RegistrationPlayerForm(
+            data=self.registration_data(autocaptcha_token=''),
+            request=self.request(),
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
 
 
 class InitialLanguageMiddlewareTests(TestCase):

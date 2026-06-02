@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'django_countries',
     'crispy_forms',
     'crispy_bootstrap5',
-    'captcha',
     'federation',
     'dbbackup',
     'storages',
@@ -253,9 +252,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800 # 50Mb
 
 RECAPTCHA_PUBLIC_KEY = get_credential('recaptcha_public_key')
 RECAPTCHA_PRIVATE_KEY = get_credential('recaptcha_private_key')
+AUTO_CAPTCHA_SCORE_THRESHOLD = get_credential('autocaptcha_score_threshold') or 0.5
 
 API_PASSWORD = get_credential('api_password')
-NOCAPTCHA = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 

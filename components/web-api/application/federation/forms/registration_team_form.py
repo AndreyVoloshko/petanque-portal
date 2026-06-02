@@ -3,8 +3,7 @@ from django.urls import reverse
 from federation.models.tournament import Tournament
 from federation.models.player import Player
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Div, HTML, Field
-from captcha.fields import CaptchaField
+from crispy_forms.layout import Layout, Submit, Div
 from django.utils.translation import gettext_lazy as _
 
 
@@ -33,16 +32,8 @@ class RegistrationTeamForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = reverse('register_team', args=[self.tournament.pk])
 
-        #self.fields['captcha'] = CaptchaField(
-        #    label="Додаткова перевірка"
-        #)
-
         self.helper.layout = Layout(
             Div(css_class="clear"),
-        #    Div(
-        #        'captcha',
-        #        css_class="col-lg-12"
-        #    ),
             Div(
                 Submit('submit', _("Register team"), css_class='btn btn-success'),
                 css_class="col-lg-12 text-center mb-3"

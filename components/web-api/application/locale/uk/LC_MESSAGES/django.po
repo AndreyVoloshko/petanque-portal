@@ -173,6 +173,22 @@ msgstr "Підтвердити пароль"
 msgid "Additional verification"
 msgstr "Додаткова перевірка"
 
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification is unavailable. Please try again later."
+msgstr "Автоматична перевірка тимчасово недоступна. Спробуйте ще раз пізніше."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please reload the page and try again."
+msgstr "Автоматична перевірка не пройдена. Оновіть сторінку та спробуйте ще раз."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please try again later."
+msgstr "Автоматична перевірка не вдалася. Спробуйте ще раз пізніше."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification rejected this registration. Please try again later."
+msgstr "Автоматична перевірка відхилила цю реєстрацію. Спробуйте ще раз пізніше."
+
 #: federation/forms/registration_player_form.py:120
 #: federation/templates/register/player.html:24
 #: federation/templates/register/team.html:41

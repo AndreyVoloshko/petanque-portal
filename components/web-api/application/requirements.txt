@@ -10,7 +10,6 @@ django-extensions
 django-crispy-forms
 crispy-bootstrap5
 django-silk
-django-simple-captcha
 
 django-dbbackup
 django-storages[boto3]

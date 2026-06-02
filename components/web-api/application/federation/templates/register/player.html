@@ -66,4 +66,46 @@
             toggleCountryFields();
         });
     </script>
+
+    {% if autocaptcha_public_key %}
+        <script src="https://www.google.com/recaptcha/api.js?render={{ autocaptcha_public_key|urlencode }}"></script>
+        <script>
+            $(document).ready(function() {
+                var form = $("#player-registration-form");
+                var submittingWithToken = false;
+
+                form.on("submit", function(event) {
+                    var formElement = this;
+                    var tokenInput = $("#id_autocaptcha_token");
+
+                    if (submittingWithToken || !tokenInput.length) {
+                        return true;
+                    }
+
+                    event.preventDefault();
+                    form.find("[type='submit']").prop("disabled", true);
+
+                    if (typeof grecaptcha === "undefined") {
+                        submittingWithToken = true;
+                        HTMLFormElement.prototype.submit.call(formElement);
+                        return false;
+                    }
+
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute("{{ autocaptcha_public_key|escapejs }}", {
+                            action: "{{ autocaptcha_action|escapejs }}"
+                        }).then(function(token) {
+                            tokenInput.val(token);
+                            submittingWithToken = true;
+                            HTMLFormElement.prototype.submit.call(formElement);
+                        }).catch(function() {
+                            form.find("[type='submit']").prop("disabled", false);
+                        });
+                    });
+
+                    return false;
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
-from django.urls import re_path, include, path
+from django.urls import re_path, path
 from .views.login import application_login
 from .views.logout import application_logout
 from .views.main_page import main_page
@@ -101,8 +101,6 @@ urlpatterns = [
     re_path(r'^statistics/$', statistics, name='statistics'),
     re_path(r'^statistics/(?P<year>\w+)/?$', statistics, name='statistics'),
     
-    path('captcha/', include('captcha.urls')),
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
