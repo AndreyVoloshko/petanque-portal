@@ -2486,3 +2486,91 @@ msgstr "Звання"
 #: federation/views/title_registry.py
 msgid "Players of the Ukrainian national petanque team"
 msgstr "Гравці національної збірної України з петанку"
+
+#: federation/templates/clubs/club.html
+msgid "Club links"
+msgstr "Посилання клубу"
+
+#: federation/templates/clubs/club.html
+msgid "Website"
+msgstr "Вебсайт"
+
+#: federation/templates/clubs/club.html
+msgid "Club summary"
+msgstr "Коротко про клуб"
+
+#: federation/templates/clubs/club.html
+msgid "Club rating"
+msgstr "Рейтинг клубу"
+
+#: federation/templates/clubs/club.html
+msgid "Club president"
+msgstr "Президент клубу"
+
+#: federation/templates/clubs/club.html
+msgid "President is not specified."
+msgstr "Президента не вказано."
+
+#: federation/templates/clubs/club.html
+msgid "Club indicators"
+msgstr "Показники клубу"
+
+#: federation/templates/clubs/club.html
+msgid "Place in Ukrainian club rating"
+msgstr "Місце у рейтингу клубів України"
+
+#: federation/templates/clubs/club.html
+msgid "Average athlete rating"
+msgstr "Середній рейтинг спортсменів"
+
+#: federation/templates/clubs/club.html
+msgid "Average athlete power"
+msgstr "Середня сила спортсменів"
+
+#: federation/templates/clubs/club.html
+msgid "National team athletes"
+msgstr "Гравці збірної"
+
+#: federation/templates/clubs/club.html
+msgid "Candidates for Master of Sports"
+msgstr "Кандидати у майстри спорту"
+
+#: federation/templates/clubs/club.html
+msgid "Club athletes"
+msgstr "Спортсмени клубу"
+
+#: federation/templates/clubs/club.html
+msgid "athletes in club"
+msgstr "спортсменів у клубі"
+
+#: federation/templates/clubs/club.html
+msgid "Search athlete..."
+msgstr "Пошук спортсмена..."
+
+#: federation/templates/clubs/club.html
+msgid "Search athlete"
+msgstr "Пошук спортсмена"
+
+#: federation/templates/clubs/club.html
+msgid "Sort athletes"
+msgstr "Сортування спортсменів"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: rating place"
+msgstr "Сортування: місце в рейтингу"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: points"
+msgstr "Сортування: бали"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: power"
+msgstr "Сортування: сила"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: name"
+msgstr "Сортування: ім'я"
+
+#: federation/templates/clubs/club.html
+msgid "No athletes match the selected filters."
+msgstr "За вибраними фільтрами спортсменів не знайдено."

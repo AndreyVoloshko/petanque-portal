@@ -1,15 +1,288 @@
 {% extends "common/page_base.html" %}
 {% load app_filters %}
 {% load i18n %}
+{% load static %}
+
+{% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-    <div class="row">
-        {% include "clubs/club_info_panel.html" with item=club %}
-        {% trans "President" as president_title %}
-        {% include "players/player_short_info_panel.html" with item=club.president page_title=president_title %}
-    </div>
-    <div class="clearfix pt-4"></div>
-    {% trans "Athletes" as athletes_title %}
-    {% include "common/table_page.html" with page_title=athletes_title table_template="players/players_cards.html" items=players %}
+{% include "common/landing_icon_sprite.html" %}
 
+<section class="club-detail-page" aria-labelledby="club-detail-title">
+    <nav class="club-breadcrumbs" aria-label="breadcrumb">
+        <a href="/" class="club-breadcrumb-link"><i class="bi bi-house-door-fill" aria-hidden="true"></i></a>
+        <i class="bi bi-chevron-right club-breadcrumb-sep" aria-hidden="true"></i>
+        <a href="{% url 'clubs' %}" class="club-breadcrumb-link">{% trans "Clubs" %}</a>
+        <i class="bi bi-chevron-right club-breadcrumb-sep" aria-hidden="true"></i>
+        <span class="club-breadcrumb-current">{{ club.short_name }}</span>
+    </nav>
+
+    <div class="club-detail-top">
+        <header class="club-hero-card">
+            <div class="club-hero-brand">
+                <div class="club-logo-frame">
+                    {% if club.logo %}
+                        <img src="{{ settings.MEDIA_URL }}{{ club.logo }}" alt="{{ club.short_name }}">
+                    {% else %}
+                        <img src="{% static 'default.png' %}" alt="{{ club.short_name }}">
+                    {% endif %}
+                </div>
+
+                <div class="club-title-block">
+                    <p class="club-eyebrow">{{ club.name }}</p>
+                    <h1 id="club-detail-title" class="club-title">{{ club.short_name|upper }}</h1>
+
+                    {% if club.city %}
+                    <p class="club-location-line">
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        <span>
+                            {{ club.city }}
+                            {% if club.city.country %}, {{ club.city.country.name }} {{ club.city.country|country_flag|safe }}{% endif %}
+                        </span>
+                    </p>
+                    {% endif %}
+
+                    <div class="club-social-list" aria-label="{% trans "Club links" %}">
+                        {% if club.facebook %}
+                        <a class="club-social-link club-social-link-facebook" href="{{ club.facebook|social_url:'facebook' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+                            <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        {% if club.instagram %}
+                        <a class="club-social-link club-social-link-instagram" href="{{ club.instagram|social_url:'instagram' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram" aria-label="Instagram">
+                            <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        {% if club.twitter %}
+                        <a class="club-social-link club-social-link-twitter" href="{{ club.twitter|social_url:'twitter' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
+                            <i class="bi bi-twitter-x" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                        {% if club.website %}
+                        <a class="club-social-link club-social-link-website" href="{{ club.website|social_url:'website' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Website" %}" aria-label="{% trans "Website" %}">
+                            <i class="bi bi-globe2" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="club-hero-metrics" aria-label="{% trans "Club summary" %}">
+                <div class="club-hero-metric">
+                    <span class="club-hero-metric-icon club-hero-metric-athletes"><i class="bi bi-people" aria-hidden="true"></i></span>
+                    <span class="club-hero-metric-copy">
+                        <span class="club-hero-metric-value">{{ club_stats.players_count }}</span>
+                        <span class="club-hero-metric-label">{% trans "Athletes" %}</span>
+                    </span>
+                </div>
+                <div class="club-hero-metric">
+                    <span class="club-hero-metric-icon club-hero-metric-founded"><i class="bi bi-calendar3" aria-hidden="true"></i></span>
+                    <span class="club-hero-metric-copy">
+                        <span class="club-hero-metric-value">{{ club.date_created|date:"F Y" }}</span>
+                        <span class="club-hero-metric-label">{% trans "Founded" %}</span>
+                    </span>
+                </div>
+                <div class="club-hero-metric">
+                    <span class="club-hero-metric-icon club-hero-metric-rank"><i class="bi bi-trophy" aria-hidden="true"></i></span>
+                    <span class="club-hero-metric-copy">
+                        <span class="club-hero-metric-value">#{{ club_stats.club_rank }}</span>
+                        <span class="club-hero-metric-label">{% trans "Club rating" %}</span>
+                    </span>
+                </div>
+            </div>
+
+            <aside class="club-president-panel" aria-labelledby="club-president-title">
+                <div class="club-section-heading">
+                    <h2 id="club-president-title">{% trans "Club president" %}</h2>
+                </div>
+                {% if club.president %}
+                    {% with item=club.president rank_value=club.president|rating_position:rating_filters points_value=club.president.current_rating power_value=club.president.current_power card_extra_class="club-president-card" %}
+                        {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value show_power=1 card_extra_class=card_extra_class %}
+                    {% endwith %}
+                {% else %}
+                    <div class="club-empty-card">
+                        <i class="bi bi-person" aria-hidden="true"></i>
+                        <span>{% trans "President is not specified." %}</span>
+                    </div>
+                {% endif %}
+            </aside>
+        </header>
+    </div>
+
+    <section class="club-stats-panel" aria-labelledby="club-stats-title">
+        <div class="club-section-heading">
+            <h2 id="club-stats-title">{% trans "Club indicators" %}</h2>
+        </div>
+        <div class="club-stats-grid">
+            <div class="club-stat-tile club-stat-rank">
+                <i class="bi bi-trophy" aria-hidden="true"></i>
+                <span class="club-stat-value">#{{ club_stats.club_rank }}</span>
+                <span class="club-stat-label">{% trans "Place in Ukrainian club rating" %}</span>
+            </div>
+            <div class="club-stat-tile club-stat-total-rating">
+                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                <span class="club-stat-value">{{ club_stats.total_rating|floatformat:2 }}</span>
+                <span class="club-stat-label">{% trans "Total rating points" %}</span>
+            </div>
+            <div class="club-stat-tile club-stat-average-rating">
+                <i class="bi bi-bar-chart" aria-hidden="true"></i>
+                <span class="club-stat-value">{{ club_stats.average_rating|floatformat:2 }}</span>
+                <span class="club-stat-label">{% trans "Average athlete rating" %}</span>
+            </div>
+            <div class="club-stat-tile club-stat-average-power">
+                <i class="bi bi-lightning-charge" aria-hidden="true"></i>
+                <span class="club-stat-value">{{ club_stats.average_power|floatformat:2 }}</span>
+                <span class="club-stat-label">{% trans "Average athlete power" %}</span>
+            </div>
+            <div class="club-stat-tile club-stat-national">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span class="club-stat-value">{{ club_stats.national_team_players_count }}</span>
+                <span class="club-stat-label">{% trans "National team athletes" %}</span>
+            </div>
+            <div class="club-stat-tile club-stat-title">
+                <i class="bi bi-star" aria-hidden="true"></i>
+                <span class="club-stat-value">{{ club_stats.candidates_count }}</span>
+                <span class="club-stat-label">{% trans "Candidates for Master of Sports" %}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="club-roster-section container" aria-labelledby="club-roster-title" data-club-roster>
+        <div class="club-roster-header">
+            <div class="club-section-heading">
+                <h2 id="club-roster-title">{% trans "Club athletes" %}</h2>
+                <p>{{ club_stats.players_count }} {% trans "athletes in club" %}</p>
+            </div>
+            <div class="club-roster-controls" aria-label="{% trans "Athlete filters" %}">
+                <label class="club-roster-search">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <input type="search" data-club-player-search placeholder="{% trans "Search athlete..." %}" aria-label="{% trans "Search athlete" %}">
+                </label>
+                <label class="club-roster-select-wrap">
+                    <span class="visually-hidden">{% trans "Sex" %}</span>
+                    <select class="club-roster-select" data-club-gender-filter aria-label="{% trans "Sex" %}">
+                        <option value="">{% trans "Sex" %}</option>
+                        <option value="M">{% trans "Men" %}</option>
+                        <option value="F">{% trans "Women" %}</option>
+                    </select>
+                </label>
+                <label class="club-roster-select-wrap">
+                    <span class="visually-hidden">{% trans "Category" %}</span>
+                    <select class="club-roster-select" data-club-category-filter aria-label="{% trans "Category" %}">
+                        <option value="">{% trans "Category" %}</option>
+                        <option value="JUN">JUN</option>
+                        <option value="ESP">ESP</option>
+                        <option value="SEN">SEN</option>
+                        <option value="VET">VET</option>
+                    </select>
+                </label>
+                <label class="club-roster-select-wrap club-roster-sort-wrap">
+                    <span class="visually-hidden">{% trans "Sort athletes" %}</span>
+                    <select class="club-roster-select" data-club-sort aria-label="{% trans "Sort athletes" %}">
+                        <option value="rank">{% trans "Sort: rating place" %}</option>
+                        <option value="points">{% trans "Sort: points" %}</option>
+                        <option value="power">{% trans "Sort: power" %}</option>
+                        <option value="name">{% trans "Sort: name" %}</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <div class="athlete-card-grid club-athlete-grid" data-club-player-grid>
+            {% for item in players %}
+                {% with rank_value=item|rating_position:rating_filters points_value=item|rating_points:rating_field power_value=item|rating_power:rating_power_field category_value=item|player_age_category|striptags %}
+                <div class="club-athlete-card-shell" data-player-card data-name="{{ item.get_name|lower }}" data-gender="{{ item.gender }}" data-category="{{ category_value }}" data-rank="{{ rank_value }}" data-points="{{ points_value }}" data-power="{{ power_value }}">
+                    {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value show_power=1 %}
+                </div>
+                {% endwith %}
+            {% empty %}
+                <div class="club-empty-card club-empty-card-wide">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                    <span>{% trans "No athletes to show yet." %}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <p class="club-roster-empty-filter" data-club-roster-empty hidden>{% trans "No athletes match the selected filters." %}</p>
+    </section>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var roster = document.querySelector('[data-club-roster]');
+        if (!roster) {
+            return;
+        }
+
+        var grid = roster.querySelector('[data-club-player-grid]');
+        var cards = Array.prototype.slice.call(roster.querySelectorAll('[data-player-card]'));
+        var searchInput = roster.querySelector('[data-club-player-search]');
+        var genderFilter = roster.querySelector('[data-club-gender-filter]');
+        var categoryFilter = roster.querySelector('[data-club-category-filter]');
+        var sortSelect = roster.querySelector('[data-club-sort]');
+        var emptyMessage = roster.querySelector('[data-club-roster-empty]');
+
+        function normalize(value) {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function numberValue(card, key, fallback) {
+            var rawValue = String(card.dataset[key] || '');
+            var normalized = rawValue.replace(',', '.').replace(/[^\d.-]/g, '');
+            var parsed = Number.parseFloat(normalized);
+            return Number.isFinite(parsed) ? parsed : fallback;
+        }
+
+        function compareCards(a, b) {
+            var sortMode = sortSelect ? sortSelect.value : 'rank';
+            if (sortMode === 'points') {
+                return numberValue(b, 'points', 0) - numberValue(a, 'points', 0);
+            }
+            if (sortMode === 'power') {
+                return numberValue(b, 'power', 0) - numberValue(a, 'power', 0);
+            }
+            if (sortMode === 'name') {
+                return normalize(a.dataset.name).localeCompare(normalize(b.dataset.name));
+            }
+            return numberValue(a, 'rank', 999999) - numberValue(b, 'rank', 999999);
+        }
+
+        function applyRosterControls() {
+            var searchTerm = normalize(searchInput ? searchInput.value : '');
+            var gender = genderFilter ? genderFilter.value : '';
+            var category = categoryFilter ? categoryFilter.value : '';
+            var visibleCount = 0;
+
+            cards.sort(compareCards).forEach(function (card) {
+                var matchesSearch = !searchTerm || normalize(card.dataset.name).indexOf(searchTerm) !== -1;
+                var matchesGender = !gender || card.dataset.gender === gender;
+                var matchesCategory = !category || card.dataset.category === category;
+                var isVisible = matchesSearch && matchesGender && matchesCategory;
+
+                card.hidden = !isVisible;
+                if (isVisible) {
+                    visibleCount += 1;
+                }
+                grid.appendChild(card);
+            });
+
+            if (emptyMessage) {
+                emptyMessage.hidden = visibleCount > 0 || cards.length === 0;
+            }
+        }
+
+        [searchInput, genderFilter, categoryFilter, sortSelect].forEach(function (control) {
+            if (control) {
+                control.addEventListener(control === searchInput ? 'input' : 'change', applyRosterControls);
+            }
+        });
+
+        applyRosterControls();
+
+        if (window.bootstrap && window.bootstrap.Tooltip) {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (node) {
+                window.bootstrap.Tooltip.getOrCreateInstance(node);
+            });
+        }
+    });
+</script>
 {% endblock %}
