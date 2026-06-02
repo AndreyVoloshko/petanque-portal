@@ -140,6 +140,9 @@ def calculate_season_rating_values(start_date, end_date):
 
         processed_memberships += 1
         for player in membership.team.players.all():
+            if not player.current_club_id:
+                continue
+
             players_by_id[player.pk] = player
             player_points = points_by_player_id[player.pk]
 

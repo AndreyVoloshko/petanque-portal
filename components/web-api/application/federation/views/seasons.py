@@ -24,11 +24,8 @@ def seasons(request, year=None):
     selected_year = _get_selected_year(year, years)
     rating_field = 'rating'
 
-    season_rows = (
-        Season.objects
-        .filter(year=selected_year, **{rating_field + '__gt': 0})
-        .select_related('player', 'player__current_club', 'club', 'club__city')
-    )
+    season_rows = _season_rating_queryset(selected_year, rating_field)
+    ranking_rows = _order_season_rows(season_rows, rating_field)
 
     player_filters = _get_season_filters(request)
     filter_options = _get_season_filter_options(season_rows)
@@ -37,10 +34,12 @@ def seasons(request, year=None):
 
     paginator = Paginator(season_rows, player_filters['page_size'])
     page_obj = paginator.get_page(request.GET.get('page'))
-    _assign_season_display_ranks(page_obj)
+    page_rows = list(page_obj.object_list)
+    _assign_season_display_ranks(page_rows, ranking_rows)
+    page_obj.object_list = page_rows
 
     return render(request, 'seasons/seasons.html', {
-        'players': page_obj.object_list,
+        'players': page_rows,
         'years': _season_year_urls(player_filters, years),
         'year': str(selected_year),
         'rating_field': rating_field,
@@ -60,6 +59,19 @@ def seasons(request, year=None):
         'player_pagination_urls': _season_pagination_urls(request, player_filters, page_obj),
         'player_reset_url': _season_reset_url(request, player_filters),
     })
+
+
+def _season_rating_queryset(year, rating_field):
+    return (
+        Season.objects
+        .filter(
+            year=year,
+            player__isnull=False,
+            club__isnull=False,
+            **{rating_field + '__gt': 0},
+        )
+        .select_related('player', 'player__current_club', 'club', 'club__city')
+    )
 
 
 def _get_available_years():
@@ -152,11 +164,21 @@ def _order_season_rows(season_rows, rating_field):
     return season_rows.order_by('-' + rating_field, 'player__surname', 'player__name', 'player__id')
 
 
-def _assign_season_display_ranks(page_obj):
-    start_index = page_obj.start_index()
+def _assign_season_display_ranks(items, ranking_rows):
+    rank_by_id = {
+        row_id: rank
+        for rank, row_id in enumerate(_season_row_ids(ranking_rows), start=1)
+    }
 
-    for offset, item in enumerate(page_obj.object_list):
-        item.display_rank = start_index + offset
+    for item in items:
+        item.display_rank = rank_by_id.get(item.pk, '')
+
+
+def _season_row_ids(rows):
+    if isinstance(rows, list):
+        return [row.pk for row in rows]
+
+    return rows.values_list('pk', flat=True)
 
 
 def _season_age_category_key(player, year):

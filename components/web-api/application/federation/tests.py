@@ -374,12 +374,14 @@ class TeamCaptainSelectionTests(TestCase):
 
 
 class SeasonSnapshotGenerationTests(TestCase):
-    def create_player(self, username):
-        club = Club.objects.create(
-            name=f'{username.title()} Club',
-            short_name=username.upper(),
-            address='Kyiv',
-        )
+    def create_player(self, username, gender='M', with_club=True):
+        club = None
+        if with_club:
+            club = Club.objects.create(
+                name=f'{username.title()} Club',
+                short_name=username.upper(),
+                address='Kyiv',
+            )
         user = User.objects.create_user(username=username)
 
         return Player.objects.create(
@@ -387,7 +389,7 @@ class SeasonSnapshotGenerationTests(TestCase):
             name=username.title(),
             surname='Player',
             birth_date=date(1990, 1, 1),
-            gender='M',
+            gender=gender,
             current_club=club,
             is_licence_active=True,
             licence_number=username,
@@ -449,6 +451,16 @@ class SeasonSnapshotGenerationTests(TestCase):
         self.assertEqual(player.current_rating, Decimal('0.0000'))
         self.assertFalse(Season.objects.filter(year=2024, player=inactive_player).exists())
         self.assertFalse(Season.objects.filter(year=2024, player=zero_points_player).exists())
+
+    def test_snapshot_skips_players_without_current_club(self):
+        player = self.create_player('foreign-player', with_club=False)
+        self.create_tournament_membership(player, 2024, Decimal('12.5000'))
+
+        result = generate_season_rating_snapshot(2024)
+
+        self.assertEqual(result.created, 0)
+        self.assertEqual(result.players_considered, 0)
+        self.assertFalse(Season.objects.filter(year=2024, player=player).exists())
 
     def test_rerun_skips_existing_rows_unless_replace_is_requested(self):
         player = self.create_player('rerun-player')
@@ -515,6 +527,40 @@ class SeasonSnapshotGenerationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
         self.assertEqual(ranks[:2], ['1', '2'])
+
+    def test_season_page_preserves_full_ranking_places_when_filtered(self):
+        for index in range(6):
+            player = self.create_player('higher-ranked-{}'.format(index))
+            Season.objects.create(
+                year=2024,
+                player=player,
+                club=player.current_club,
+                rating=Decimal(100 - index),
+            )
+        first_woman = self.create_player('first-woman', gender='F')
+        second_woman = self.create_player('second-woman', gender='F')
+        Season.objects.create(year=2024, player=first_woman, club=first_woman.current_club, rating=Decimal('50.0000'))
+        Season.objects.create(year=2024, player=second_woman, club=second_woman.current_club, rating=Decimal('40.0000'))
+
+        response = self.client.get('/seasons/2024', {'sex': 'F'})
+
+        self.assertEqual(response.status_code, 200)
+        ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
+        self.assertEqual(ranks[:2], ['7', '8'])
+
+    def test_season_page_excludes_players_without_club(self):
+        club_player = self.create_player('club-player')
+        no_club_player = self.create_player('no-club-player', with_club=False)
+        Season.objects.create(year=2024, player=club_player, club=club_player.current_club, rating=Decimal('10.0000'))
+        Season.objects.create(year=2024, player=no_club_player, club=None, rating=Decimal('100.0000'))
+
+        response = self.client.get('/seasons/2024')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, club_player.get_name())
+        self.assertNotContains(response, no_club_player.get_name())
+        ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
+        self.assertEqual(ranks[:1], ['1'])
 
     def test_year_tabs_preserve_active_filters(self):
         player = self.create_player('filtered-player')
