@@ -2348,3 +2348,11 @@ msgstr "Seasons"
 #: federation/views/seasons.py
 msgid "Season rating"
 msgstr "Season rating"
+
+#: federation/templates/players/player.html
+msgid "Power column team"
+msgstr "Team"
+
+#: federation/templates/players/player.html
+msgid "Power column tournament"
+msgstr "Tournament"

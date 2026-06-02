@@ -2231,6 +2231,14 @@ msgid "Rating points earned by this player's team in this tournament."
 msgstr "Рейтингові бали, які команда цього спортсмена набрала у цьому змаганні."
 
 #: federation/templates/players/player.html
+msgid "Power column team"
+msgstr "Команди"
+
+#: federation/templates/players/player.html
+msgid "Power column tournament"
+msgstr "Турніру"
+
+#: federation/templates/players/player.html
 msgid "Sort tournaments"
 msgstr "Сортування змагань"
 

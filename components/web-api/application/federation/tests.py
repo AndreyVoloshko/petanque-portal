@@ -23,6 +23,7 @@ from federation.services.season_snapshots import generate_season_rating_snapshot
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
     licence_number,
+    team_power_badge,
     tournament_audience_tag_class,
     tournament_field,
     tournament_power_badge,
@@ -282,8 +283,20 @@ class TournamentDisplayNameTests(SimpleTestCase):
 
         self.assertIn('tournament-power-badge tournament-power-10', badge)
         self.assertIn('Tournament power affects how many rating points results are worth.', badge)
+        self.assertIn('Tournament power', badge)
+        self.assertNotIn('tournament-power-label', badge)
         self.assertIn('bi bi-star', badge)
         self.assertTrue('40.00' in badge or '40,00' in badge)
+
+    def test_team_power_badge_uses_team_label_and_purple_class(self):
+        with override('en'):
+            badge = str(team_power_badge('3.2100'))
+
+        self.assertIn('team-power-badge', badge)
+        self.assertIn('Team power', badge)
+        self.assertIn('Team power in this tournament is calculated', badge)
+        self.assertNotIn('tournament-power-label', badge)
+        self.assertIn('bi bi-star', badge)
 
     def test_tournament_field_uses_power_badge_for_power(self):
         tournament = self.create_tournament('Тупіт копит')
@@ -568,6 +581,65 @@ class PlayerLicenseListTests(TestCase):
         self.assertNotContains(response, 'players-license-badge-missing')
 
 
+class PlayerTournamentListTests(TestCase):
+    def test_player_tournament_table_shows_place_range_and_tournament_power(self):
+        user = User.objects.create_user(username='range-player')
+        player = Player.objects.create(
+            user=user,
+            name='Range',
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        team = Team.objects.create(name='Range Team')
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        tournament = Tournament.objects.create(
+            name='Playoff Cup',
+            category='open',
+            is_goes_to_rating=True,
+            place='Київ',
+            start_date=timezone.localdate() - timedelta(days=7),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+            power='12.3456',
+            is_processing_finished=True,
+        )
+        TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=5,
+            place_max=8,
+            power='3.2100',
+            rating_points='14.5000',
+        )
+
+        response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('pt-col-strength', content)
+        self.assertNotIn('pt-col-tournament-power', content)
+        self.assertNotIn('pt-col-power', content)
+        self.assertIn('tournament-power-badge', content)
+        self.assertIn('tournament-power-4', content)
+        self.assertIn('team-power-badge', content)
+        self.assertNotIn('tournament-power-label', content)
+        self.assertIn('data-sort-place="5"', content)
+        self.assertIn('data-sort-place-max="8"', content)
+        self.assertIn('>5-8</span>', content)
+        self.assertIn('<span class="pt-tournament-location">Київ</span>', content)
+        self.assertIn('<span class="ptm-location">Київ</span>', content)
+        self.assertNotIn('>c. Київ<', content)
+        self.assertNotIn('>с. Київ<', content)
+
+        table_body = content.split('<tbody>', 1)[1]
+        self.assertLess(
+            table_body.index('class="pt-col-strength"'),
+            table_body.index('class="pt-col-points"'),
+        )
+
+
 class OptionalRegistrationEmailTests(TestCase):
     def test_ukrainian_player_registration_allows_blank_email(self):
         form = RegistrationPlayerForm(data={
@@ -706,6 +778,25 @@ class TournamentListingPageTests(TestCase):
             meta=meta,
         )
 
+    def create_player(self, username='history-player'):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def register_player_for_tournament(self, tournament, player, place_min=0):
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=place_min,
+        )
+
     def test_rating_route_preset_shows_future_rating_rows_and_strength(self):
         self.create_tournament('Rating Cup', is_rating=True, power='22.2800')
         self.create_tournament('Community Cup', is_rating=False, power='18.5000')
@@ -840,6 +931,53 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(past_response.status_code, 200)
         self.assertEqual(past_response.context['sort_state']['date_direction'], 'desc')
         self.assertEqual(past_response.context['rows'][0]['title'], 'Recent Past Cup')
+
+    def test_past_listing_hides_unprocessed_tournament_after_auto_cancel_cutoff(self):
+        stale = self.create_tournament('Stale Unprocessed Cup', start_offset=-31, end_offset=-30)
+        recent = self.create_tournament('Recent Unprocessed Cup', start_offset=-30, end_offset=-29)
+        processed = self.create_tournament(
+            'Processed Old Cup',
+            start_offset=-31,
+            end_offset=-30,
+            processed=True,
+        )
+
+        response = self.client.get('/tournaments/', {'period': 'past'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(stale.is_auto_cancelled())
+        self.assertFalse(recent.is_auto_cancelled())
+        self.assertFalse(processed.is_auto_cancelled())
+        self.assertNotContains(response, 'Stale Unprocessed Cup')
+        self.assertContains(response, 'Recent Unprocessed Cup')
+        self.assertContains(response, 'Processed Old Cup')
+        past_tab = next(tab for tab in response.context['period_tabs'] if tab['key'] == 'past')
+        self.assertEqual(past_tab['count'], 2)
+
+    def test_player_history_hides_auto_cancelled_unprocessed_tournaments(self):
+        player = self.create_player()
+        stale = self.create_tournament('Stale Player Cup', start_offset=-31, end_offset=-30)
+        recent = self.create_tournament('Recent Player Cup', start_offset=-30, end_offset=-29)
+        processed = self.create_tournament(
+            'Processed Player Cup',
+            start_offset=-31,
+            end_offset=-30,
+            processed=True,
+        )
+        self.register_player_for_tournament(stale, player)
+        self.register_player_for_tournament(recent, player, place_min=4)
+        self.register_player_for_tournament(processed, player, place_min=2)
+
+        response = self.client.get('/player/{}'.format(player.pk))
+
+        self.assertEqual(response.status_code, 200)
+        tournament_ids = {tournament.pk for tournament in response.context['player_tournaments']}
+        self.assertNotIn(stale.pk, tournament_ids)
+        self.assertIn(recent.pk, tournament_ids)
+        self.assertIn(processed.pk, tournament_ids)
+        self.assertNotContains(response, 'Stale Player Cup')
+        self.assertContains(response, 'Recent Player Cup')
+        self.assertContains(response, 'Processed Player Cup')
 
     def test_period_counts_respect_secondary_filters(self):
         self.create_tournament('Shooting Cup', tournament_format='tir')

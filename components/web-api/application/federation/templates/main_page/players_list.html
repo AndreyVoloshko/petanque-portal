@@ -3,7 +3,7 @@
 
 <div class="athlete-card-grid">
     {% for item in items %}
-    {% with rank_value=item|rating_position:"current_rating" points_value=item.current_rating power_value=item.current_power %}
+    {% with rank_value=item.rating_position_value points_value=item.current_rating power_value=item.current_power %}
         {% include "players/_player_rating_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value show_power=1 %}
     {% endwith %}
     {% empty %}

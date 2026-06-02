@@ -1213,6 +1213,12 @@ body {
   --tournament-power-text: #0f5f91;
 }
 
+.team-power-badge {
+  --tournament-power-bg: #f4efff;
+  --tournament-power-border: #c7b5f5;
+  --tournament-power-text: #6f35c8;
+}
+
 .tournament-card-action {
   display: flex;
   justify-self: end;
@@ -6013,26 +6019,67 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .pt-col-date {
-  width: 12%;
+  width: 11%;
 }
 .pt-col-name {
-  width: 28%;
+  width: 21%;
 }
 .pt-col-format {
-  width: 18%;
+  width: 16%;
 }
 .pt-col-place {
   width: 8%;
 }
 .pt-col-team {
-  width: 16%;
+  width: 20%;
 }
-.pt-col-power {
-  width: 9%;
+.pt-col-strength {
+  min-width: 12.5rem;
+  width: 15%;
 }
 .pt-col-points {
   min-width: 6.75rem;
-  width: 9%;
+  width: 7%;
+}
+
+.player-tournaments-table .tournament-power-badge,
+.player-tournaments-mobile-list .tournament-power-badge {
+  white-space: nowrap;
+}
+
+.pt-strength-heading {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.pt-strength-title {
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pt-strength-subhead {
+  align-items: center;
+  color: #738196;
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: none;
+}
+
+.pt-strength-subitem {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.18rem;
+}
+
+.pt-strength-values {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.25rem;
 }
 
 .pt-date-wrap {
@@ -6085,6 +6132,10 @@ table.dataTable.players-table thead th.sorting_desc::after {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.player-tournaments-table .pt-col-format .pt-chip-list {
+  flex-wrap: nowrap;
 }
 
 .pt-heading-with-help {
@@ -6222,6 +6273,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   font-size: 13px;
   font-weight: 650;
   line-height: 1.25;
+  white-space: nowrap;
 }
 
 .pt-points-chip {
@@ -6508,11 +6560,20 @@ table.dataTable.players-table thead th.sorting_desc::after {
   }
 
   .pt-col-format {
-    width: 22%;
+    width: 16%;
   }
 
   .pt-col-name {
-    width: 28%;
+    width: 21%;
+  }
+
+  .pt-col-team {
+    width: 20%;
+  }
+
+  .pt-col-strength {
+    min-width: 12.5rem;
+    width: 15%;
   }
 }
 
