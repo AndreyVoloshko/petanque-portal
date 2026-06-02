@@ -463,6 +463,39 @@ def team_min_place_in_tournament(tournament, player=False):
 
     return str(team.place_min)
 
+
+@register.filter(name="team_max_place_in_tournament")
+def team_max_place_in_tournament(tournament, player=False):
+    if player:
+        all_player_teams = Team.objects.filter(players=player)
+        team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+    else:
+        team = tournament
+
+    place_min = team.place_min or 0
+    place_max = team.place_max or 0
+    if place_max > place_min:
+        return str(place_max)
+
+    return str(place_min)
+
+
+@register.filter(name="team_place_range_in_tournament")
+def team_place_range_in_tournament(tournament, player=False):
+    if player:
+        all_player_teams = Team.objects.filter(players=player)
+        team = TeamTournamentMembership.objects.get(tournament=tournament, team__in=all_player_teams)
+    else:
+        team = tournament
+
+    place_min = team.place_min or 0
+    place_max = team.place_max or 0
+    if place_max > place_min:
+        return f"{place_min}-{place_max}"
+
+    return str(place_min)
+
+
 @register.filter(name="team_place_in_tournament")
 def team_place_in_tournament(tournament, player=False):
 
@@ -476,9 +509,7 @@ def team_place_in_tournament(tournament, player=False):
         <span class="badge bg-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="''' + _('Place in competition') + '''">
     '''
 
-    place = str(team.place_min)
-    if team.place_max > 0:
-        place = str(team.place_min)+"-"+str(team.place_max)
+    place = team_place_range_in_tournament(team)
 
     message += place + '''
         </span>
@@ -642,7 +673,11 @@ def tournament_power_class(power):
 @register.filter(name="tournament_power_badge")
 def tournament_power_badge(tournament_or_power):
     power = getattr(tournament_or_power, "power", tournament_or_power)
-    return _power_badge(power)
+    tooltip = _(
+        "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points."
+    )
+
+    return _power_badge(power, tooltip, _("Tournament power"))
 
 
 @register.filter(name="team_power_badge")
@@ -651,10 +686,10 @@ def team_power_badge(power):
         "Team power in this tournament is calculated from the power of the players in this player's team."
     )
 
-    return _power_badge(power, tooltip)
+    return _power_badge(power, tooltip, _("Team power"), "team-power-badge")
 
 
-def _power_badge(power, tooltip=None):
+def _power_badge(power, tooltip=None, label=None, extra_class=""):
     try:
         power_value = Decimal(str(power or 0))
     except (InvalidOperation, TypeError, ValueError):
@@ -663,22 +698,27 @@ def _power_badge(power, tooltip=None):
     if not power_value.is_finite() or power_value <= 0:
         return ""
 
-    tooltip_attrs = {}
+    badge_label = label or _("Power")
+    formatted_power = _format_tournament_power(power)
+    tooltip_attrs = {
+        "aria-label": f"{badge_label} {formatted_power}",
+    }
     if tooltip:
-        tooltip_attrs = {
+        tooltip_attrs.update({
             "data-bs-toggle": "tooltip",
             "data-bs-placement": "top",
             "title": tooltip,
-        }
+        })
+
+    classes = f"badge tournament-power-badge {_tournament_power_class(power)} {extra_class}".strip()
 
     return format_html(
-        '<span class="badge tournament-power-badge {}"{}>'
-        '<i class="bi bi-star"></i> <span class="tournament-power-label">{}</span> {}'
+        '<span class="{}"{}>'
+        '<i class="bi bi-star"></i> {}'
         '</span>',
-        _tournament_power_class(power),
+        classes,
         format_html_join("", ' {}="{}"', tooltip_attrs.items()),
-        _("Power"),
-        _format_tournament_power(power),
+        formatted_power,
     )
 
 
