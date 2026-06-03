@@ -159,6 +159,10 @@ msgstr "Position"
 msgid "Date of birth"
 msgstr "Date of birth"
 
+#: federation/forms/registration_player_form.py
+msgid "Date of birth cannot be in the future"
+msgstr "Date of birth cannot be in the future"
+
 #: federation/forms/registration_player_form.py:55
 #: federation/templates/login.html:26
 msgid "Password"
@@ -168,15 +172,187 @@ msgstr "Password"
 msgid "Confirm password"
 msgstr "Confirm password"
 
+#: federation/forms/registration_player_form.py
+msgid "Email"
+msgstr "Email"
+
 #: federation/forms/registration_player_form.py:77
 msgid "Additional verification"
 msgstr "Additional verification"
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification is unavailable. Please try again later."
+msgstr "Automatic verification is unavailable. Please try again later."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please reload the page and try again."
+msgstr "Automatic verification failed. Please reload the page and try again."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification failed. Please try again later."
+msgstr "Automatic verification failed. Please try again later."
+
+#: federation/utils/autocaptcha.py
+msgid "Automatic verification rejected this registration. Please try again later."
+msgstr "Automatic verification rejected this registration. Please try again later."
 
 #: federation/forms/registration_player_form.py:120
 #: federation/templates/register/player.html:24
 #: federation/templates/register/team.html:41
 msgid "Register player"
 msgstr "Register player"
+
+#: federation/templates/register/player.html
+msgid "Fill in details to add a new player"
+msgstr "Fill in details to add a new player"
+
+#: federation/templates/register/player.html
+msgid "Required for Ukrainian players and used in protocols."
+msgstr "Required for Ukrainian players and used in protocols."
+
+#: federation/templates/register/player.html
+msgid "Only for players who already have a federation license."
+msgstr "Only for players who already have a federation license."
+
+#: federation/templates/register/player.html
+msgid "Access to personal account (optional fields)."
+msgstr "Access to personal account (optional fields)."
+
+#: federation/templates/register/player.html
+msgid "Email and password allow the player to sign in to the account, register for competitions, and manage their profile."
+msgstr "Email and password allow the player to sign in to the account, register for competitions, and manage their profile."
+
+#: federation/templates/register/player.html
+msgid "Player database check"
+msgstr "Player database check"
+
+#: federation/templates/register/player.html
+msgid "First check the database"
+msgstr "First check the database"
+
+#: federation/templates/register/player.html
+msgid "To avoid creating a duplicate, try finding the player. Search in Cyrillic and Latin."
+msgstr "To avoid creating a duplicate, try finding the player. Search in Cyrillic and Latin."
+
+#: federation/templates/register/player.html
+msgid "First or last name"
+msgstr "First or last name"
+
+#: federation/templates/register/player.html
+msgid "e.g. Kozak / Козак"
+msgstr "e.g. Ivan Kozak"
+
+#: federation/templates/register/player.html
+msgid "Not found? Then fill in the form on the left. After verification, the data will appear in the federation database."
+msgstr "Not found? Then fill in the form on the left. After verification, the data will appear in the federation database."
+
+#: federation/templates/register/player.html
+msgid "Found in the database"
+msgstr "Found in the database"
+
+#: federation/templates/register/player.html
+msgid "Nothing found. Try another spelling or register a new player."
+msgstr "Nothing found. Try another spelling or register a new player."
+
+#: federation/templates/register/player.html
+msgid "Could not check the database. Try again."
+msgstr "Could not check the database. Try again."
+
+#: federation/templates/register/player.html
+msgid "Open profile"
+msgstr "Open profile"
+
+#: federation/templates/register/player.html
+msgid "Open calendar"
+msgstr "Open calendar"
+
+#: federation/templates/register/player.html
+msgid "Previous month"
+msgstr "Previous month"
+
+#: federation/templates/register/player.html
+msgid "Next month"
+msgstr "Next month"
+
+#: federation/templates/register/player.html
+msgid "Clear"
+msgstr "Clear"
+
+#: federation/templates/register/player.html
+msgid "January"
+msgstr "January"
+
+#: federation/templates/register/player.html
+msgid "February"
+msgstr "February"
+
+#: federation/templates/register/player.html
+msgid "March"
+msgstr "March"
+
+#: federation/templates/register/player.html
+msgid "April"
+msgstr "April"
+
+#: federation/templates/register/player.html
+msgid "May"
+msgstr "May"
+
+#: federation/templates/register/player.html
+msgid "June"
+msgstr "June"
+
+#: federation/templates/register/player.html
+msgid "July"
+msgstr "July"
+
+#: federation/templates/register/player.html
+msgid "August"
+msgstr "August"
+
+#: federation/templates/register/player.html
+msgid "September"
+msgstr "September"
+
+#: federation/templates/register/player.html
+msgid "October"
+msgstr "October"
+
+#: federation/templates/register/player.html
+msgid "November"
+msgstr "November"
+
+#: federation/templates/register/player.html
+msgid "December"
+msgstr "December"
+
+#: federation/templates/register/player.html
+msgid "Mon"
+msgstr "Mon"
+
+#: federation/templates/register/player.html
+msgid "Tue"
+msgstr "Tue"
+
+#: federation/templates/register/player.html
+msgid "Wed"
+msgstr "Wed"
+
+#: federation/templates/register/player.html
+msgid "Thu"
+msgstr "Thu"
+
+#: federation/templates/register/player.html
+msgid "Fri"
+msgstr "Fri"
+
+#: federation/templates/register/player.html
+msgid "Sat"
+msgstr "Sat"
+
+#: federation/templates/register/player.html
+msgid "Sun"
+msgstr "Sun"
 
 #: federation/forms/registration_player_form.py:136
 #, python-format
@@ -186,6 +362,18 @@ msgstr "Player <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> is
 #: federation/forms/registration_player_form.py:146
 msgid "Passwords do not match"
 msgstr "Passwords do not match"
+
+#: federation/forms/registration_player_form.py
+msgid "Email is required when password is provided"
+msgstr "Email is required when password is provided"
+
+#: federation/forms/registration_player_form.py
+msgid "Password is required when email is provided"
+msgstr "Password is required when email is provided"
+
+#: federation/forms/registration_player_form.py
+msgid "Confirm password is required when password is provided"
+msgstr "Confirm password is required when password is provided"
 
 #: federation/forms/registration_player_form.py:157
 msgid "Email is required for players from Ukraine"

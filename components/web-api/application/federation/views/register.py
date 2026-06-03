@@ -10,6 +10,7 @@ from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.models.team import Team
 from federation.models.player import Player
 from federation.models.email_confirmation import EmailConfirmation
+from federation.utils.autocaptcha import DEFAULT_ACTION as AUTOCAPTCHA_ACTION, get_public_key as get_autocaptcha_public_key
 from federation.utils.email import send_confirmation_email
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -63,13 +64,14 @@ def register_team(request, tournament_id):
 
 
 def register_player(request):
-    player_registration_form = RegistrationPlayerForm()
+    player_registration_form = RegistrationPlayerForm(request=request)
 
     if request.method == "POST":
-        player_registration_form = RegistrationPlayerForm(request.POST)
+        player_registration_form = RegistrationPlayerForm(request.POST, request=request)
         if player_registration_form.is_valid():
             try:
                 email = player_registration_form.cleaned_data.get('email') or ''
+                password = player_registration_form.cleaned_data.get('password') or None
                 with transaction.atomic():
                     user = User.objects.create_user(
                         username=generate_username(
@@ -77,7 +79,7 @@ def register_player(request):
                             player_registration_form.cleaned_data['surname'],
                         ),
                         email=email,
-                        password=player_registration_form.cleaned_data['password'],
+                        password=password,
                     )
 
                     player = Player(
@@ -116,5 +118,7 @@ def register_player(request):
 
     return render(request, 'register/player.html', {
         'player_registration_form': player_registration_form,
+        'autocaptcha_public_key': get_autocaptcha_public_key(),
+        'autocaptcha_action': AUTOCAPTCHA_ACTION,
         'page_title': _("Player registration"),
     })

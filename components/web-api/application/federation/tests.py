@@ -1,7 +1,10 @@
+import json
 import re
 from datetime import date, timedelta
 from decimal import Decimal
 from types import SimpleNamespace
+from unittest.mock import patch
+from urllib.parse import parse_qs
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -712,6 +715,7 @@ class PlayerTournamentListTests(TestCase):
 
 
 class OptionalRegistrationEmailTests(TestCase):
+    @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
     def test_ukrainian_player_registration_allows_blank_email(self):
         form = RegistrationPlayerForm(data={
             'name': 'Blank',
@@ -754,6 +758,188 @@ class OptionalRegistrationEmailTests(TestCase):
         EmailConfirmation.objects.create(user=user, email=user.email)
 
         self.assertTrue(_needs_email_prompt(user))
+
+
+@override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
+class PlayerRegistrationRedesignTests(TestCase):
+    def registration_data(self, **overrides):
+        data = {
+            'name': 'No',
+            'surname': 'Password',
+            'patronymic': 'Required',
+            'birth_date': '01.01.1990',
+            'country': 'UA',
+            'gender': 'M',
+            'licence_number': '',
+            'autocaptcha_token': '',
+        }
+        data.update(overrides)
+        return data
+
+    def test_page_uses_redesigned_form_custom_date_picker_and_search_panel(self):
+        response = self.client.get('/register/player/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'registration-redesign')
+        self.assertContains(response, 'id="player-existence-search"')
+        self.assertContains(response, 'data-search-url="/api/players_list/list/"')
+        self.assertContains(response, 'data-date-picker')
+        self.assertContains(response, 'data-date-picker-panel')
+        self.assertContains(response, 'id="id_birth_date"')
+        self.assertContains(response, 'inputmode="numeric"')
+        self.assertContains(response, 'id="account-access-field-group"')
+        self.assertContains(response, 'id="id_email"')
+        self.assertContains(response, 'id="id_password"')
+        self.assertContains(response, 'id="id_password_confirm"')
+        self.assertNotContains(response, 'type="date"')
+        self.assertNotContains(response, '$(".dateinput").datepicker')
+
+    def test_registration_form_accepts_redesigned_required_fields_without_password(self):
+        form = RegistrationPlayerForm(data=self.registration_data())
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+
+    def test_registration_form_rejects_future_birth_date(self):
+        future_birth_date = timezone.localdate() + timedelta(days=1)
+        form = RegistrationPlayerForm(data=self.registration_data(
+            birth_date=future_birth_date.strftime('%d.%m.%Y'),
+        ))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('birth_date', form.errors)
+
+    def test_player_registration_creates_user_with_unusable_password(self):
+        response = self.client.post('/register/player/', self.registration_data())
+
+        self.assertEqual(response.status_code, 302)
+        player = Player.objects.get(name='No', surname='Password')
+        self.assertFalse(player.user.has_usable_password())
+
+    def test_non_ukrainian_registration_ignores_optional_account_fields(self):
+        form = RegistrationPlayerForm(data=self.registration_data(
+            country='PL',
+            patronymic='Should clear',
+            email='ignored@example.com',
+            password='StrongPass123!',
+            password_confirm='StrongPass123!',
+        ))
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.cleaned_data['patronymic'], '')
+        self.assertEqual(form.cleaned_data['email'], '')
+        self.assertEqual(form.cleaned_data['password'], '')
+
+    @patch('federation.views.register.send_confirmation_email')
+    def test_player_registration_with_account_credentials_sets_email_password_and_confirmation(self, send_email):
+        response = self.client.post('/register/player/', self.registration_data(
+            name='Cabinet',
+            surname='Access',
+            email='cabinet-access@example.com',
+            password='StrongPass123!',
+            password_confirm='StrongPass123!',
+        ))
+
+        self.assertEqual(response.status_code, 302)
+        player = Player.objects.get(name='Cabinet', surname='Access')
+        self.assertEqual(player.user.email, 'cabinet-access@example.com')
+        self.assertTrue(player.user.has_usable_password())
+        self.assertTrue(player.user.check_password('StrongPass123!'))
+        confirmation = EmailConfirmation.objects.get(user=player.user)
+        self.assertEqual(confirmation.email, 'cabinet-access@example.com')
+        send_email.assert_called_once()
+
+
+@override_settings(
+    DEBUG=False,
+    RECAPTCHA_PUBLIC_KEY='public-key',
+    RECAPTCHA_PRIVATE_KEY='private-key',
+    AUTO_CAPTCHA_SCORE_THRESHOLD=0.5,
+)
+class AutoCaptchaRegistrationTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def registration_data(self, **overrides):
+        data = {
+            'name': 'Auto',
+            'surname': 'Human',
+            'birth_date': '1990-01-01',
+            'country': 'UA',
+            'email': '',
+            'password': 'StrongPass123!',
+            'password_confirm': 'StrongPass123!',
+            'gender': 'M',
+            'autocaptcha_token': 'valid-token',
+        }
+        data.update(overrides)
+        return data
+
+    def request(self):
+        return self.factory.post('/register/player/', REMOTE_ADDR='203.0.113.10')
+
+    def mock_response(self, urlopen_mock, **overrides):
+        payload = {
+            'success': True,
+            'score': 0.9,
+            'action': 'player_registration',
+        }
+        payload.update(overrides)
+        response = urlopen_mock.return_value.__enter__.return_value
+        response.read.return_value = json.dumps(payload).encode('utf-8')
+
+    def assert_non_field_error_code(self, form, code):
+        errors = form.non_field_errors().as_data()
+        self.assertTrue(errors)
+        self.assertEqual(errors[0].code, code)
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_accepts_valid_automatic_verification(self, urlopen_mock):
+        self.mock_response(urlopen_mock)
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+
+        verify_request = urlopen_mock.call_args.args[0]
+        verify_payload = parse_qs(verify_request.data.decode('utf-8'))
+        self.assertEqual(verify_payload['secret'], ['private-key'])
+        self.assertEqual(verify_payload['response'], ['valid-token'])
+        self.assertEqual(verify_payload['remoteip'], ['203.0.113.10'])
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_missing_automatic_verification_token(self, urlopen_mock):
+        form = RegistrationPlayerForm(
+            data=self.registration_data(autocaptcha_token=''),
+            request=self.request(),
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_missing')
+        urlopen_mock.assert_not_called()
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_low_automatic_verification_score(self, urlopen_mock):
+        self.mock_response(urlopen_mock, score=0.1)
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_low_score')
+
+    @patch('federation.utils.autocaptcha.urlopen')
+    def test_rejects_wrong_automatic_verification_action(self, urlopen_mock):
+        self.mock_response(urlopen_mock, action='login')
+        form = RegistrationPlayerForm(data=self.registration_data(), request=self.request())
+
+        self.assertFalse(form.is_valid())
+        self.assert_non_field_error_code(form, 'autocaptcha_action')
+
+    @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
+    def test_debug_without_keys_allows_local_form_validation(self):
+        form = RegistrationPlayerForm(
+            data=self.registration_data(autocaptcha_token=''),
+            request=self.request(),
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
 
 
 class InitialLanguageMiddlewareTests(TestCase):

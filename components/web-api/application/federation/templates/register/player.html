@@ -1,69 +1,675 @@
 {% extends "common/page_base.html" %}
-{% load app_filters %}
 {% load i18n %}
-{% load crispy_forms_tags %}
+
+{% block main_classes %}registration-page-container{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-lg-8">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 fw-bold">{% trans "Player registration" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        {% crispy player_registration_form %}
+    <div class="registration-redesign">
+        <section class="registration-card" aria-labelledby="registration-title">
+            <header class="registration-header">
+                <span class="registration-header-icon" aria-hidden="true">
+                    <i class="bi bi-person-plus"></i>
+                </span>
+                <div class="registration-header-copy">
+                    <h1 id="registration-title">{% trans "Player registration" %}</h1>
+                    <p>{% trans "Fill in details to add a new player" %}</p>
+                </div>
+            </header>
+
+            <form
+                id="player-registration-form"
+                class="registration-form"
+                method="post"
+                action="{% url 'register_player' %}"
+                data-autocaptcha-key="{{ autocaptcha_public_key|default_if_none:'' }}"
+                data-autocaptcha-action="{{ autocaptcha_action }}"
+                novalidate
+            >
+                {% csrf_token %}
+
+                {% if player_registration_form.non_field_errors %}
+                    <div class="registration-form-alert" role="alert">
+                        {{ player_registration_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="registration-field-grid">
+                    <div class="registration-field">
+                        <label for="{{ player_registration_form.surname.id_for_label }}">{% trans "Last name" %}<span aria-hidden="true">*</span></label>
+                        {{ player_registration_form.surname }}
+                        {% if player_registration_form.surname.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.surname.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="{{ player_registration_form.name.id_for_label }}">{% trans "First name" %}<span aria-hidden="true">*</span></label>
+                        {{ player_registration_form.name }}
+                        {% if player_registration_form.name.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div id="patronymic-field-group" class="registration-field">
+                        <label for="{{ player_registration_form.patronymic.id_for_label }}">{% trans "Patronymic" %}</label>
+                        {{ player_registration_form.patronymic }}
+                        <p class="registration-help-text">{% trans "Required for Ukrainian players and used in protocols." %}</p>
+                        {% if player_registration_form.patronymic.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.patronymic.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="{{ player_registration_form.birth_date.id_for_label }}">{% trans "Date of birth" %}<span aria-hidden="true">*</span></label>
+                        <div class="registration-date-field" data-date-picker>
+                            {{ player_registration_form.birth_date }}
+                            <button type="button" class="registration-date-button" aria-label="{% trans "Open calendar" %}" data-date-picker-toggle>
+                                <i class="bi bi-calendar" aria-hidden="true"></i>
+                            </button>
+                            <div class="registration-date-picker" data-date-picker-panel hidden>
+                                <div class="registration-date-picker-header">
+                                    <button type="button" data-date-prev-month aria-label="{% trans "Previous month" %}">
+                                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="registration-date-picker-controls">
+                                        <select data-date-month aria-label="{% trans "Month" %}"></select>
+                                        <input data-date-year aria-label="{% trans "Year" %}" type="number" min="1900" max="2100" inputmode="numeric">
+                                    </div>
+                                    <button type="button" data-date-next-month aria-label="{% trans "Next month" %}">
+                                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="registration-date-picker-weekdays" aria-hidden="true"></div>
+                                <div class="registration-date-picker-grid" data-date-grid></div>
+                                <div class="registration-date-picker-footer">
+                                    <button type="button" data-date-clear>{% trans "Clear" %}</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if player_registration_form.birth_date.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.birth_date.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="{{ player_registration_form.country.id_for_label }}">{% trans "Country" %}<span aria-hidden="true">*</span></label>
+                        {{ player_registration_form.country }}
+                        {% if player_registration_form.country.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.country.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="{{ player_registration_form.gender.id_for_label }}">{% trans "Gender" %}<span aria-hidden="true">*</span></label>
+                        {{ player_registration_form.gender }}
+                        {% if player_registration_form.gender.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.gender.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="registration-field registration-field-narrow">
+                        <label for="{{ player_registration_form.licence_number.id_for_label }}">{% trans "License number" %}</label>
+                        {{ player_registration_form.licence_number }}
+                        <p class="registration-help-text">{% trans "Only for players who already have a federation license." %}</p>
+                        {% if player_registration_form.licence_number.errors %}
+                            <div class="registration-field-errors">{{ player_registration_form.licence_number.errors }}</div>
+                        {% endif %}
                     </div>
                 </div>
-            </section>
-        </div>
-        
-        <div class="col-lg-4">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 fw-bold">{% trans "Cannot find a player?" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="fw-bold">{% trans "Register player" %}</h4>
-                        <p class="text-danger fw-bold">
-                            {% trans "Please do not add duplicate or non-existent players. First, try searching for the player using both Cyrillic and Latin spelling." %}
-                        </p>
+
+                <section id="account-access-field-group" class="registration-account-card" hidden>
+                    <div class="registration-account-intro">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        <p>{% trans "Access to personal account (optional fields)." %}</p>
                     </div>
+
+                    <div class="registration-account-grid">
+                        <div class="registration-field registration-account-email">
+                            <label for="{{ player_registration_form.email.id_for_label }}">{{ player_registration_form.email.label }}</label>
+                            {{ player_registration_form.email }}
+                            {% if player_registration_form.email.errors %}
+                                <div class="registration-field-errors">{{ player_registration_form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="registration-field">
+                            <label for="{{ player_registration_form.password.id_for_label }}">{{ player_registration_form.password.label }}</label>
+                            {{ player_registration_form.password }}
+                            {% if player_registration_form.password.errors %}
+                                <div class="registration-field-errors">{{ player_registration_form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="registration-field">
+                            <label for="{{ player_registration_form.password_confirm.id_for_label }}">{{ player_registration_form.password_confirm.label }}</label>
+                            {{ player_registration_form.password_confirm }}
+                            {% if player_registration_form.password_confirm.errors %}
+                                <div class="registration-field-errors">{{ player_registration_form.password_confirm.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <p class="registration-account-help">{% trans "Email and password allow the player to sign in to the account, register for competitions, and manage their profile." %}</p>
+                </section>
+
+                {{ player_registration_form.autocaptcha_token }}
+
+                <div class="registration-actions">
+                    <button type="submit" class="registration-submit-button">
+                        <i class="bi bi-person-plus" aria-hidden="true"></i>
+                        <span>{% trans "Register player" %}</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="registration-sidebar" aria-label="{% trans "Player database check" %}">
+            <section class="registration-warning-card">
+                <span class="registration-warning-icon" aria-hidden="true">
+                    <i class="bi bi-shield-check"></i>
+                </span>
+                <div>
+                    <h2>{% trans "First check the database" %}</h2>
+                    <p>{% trans "To avoid creating a duplicate, try finding the player. Search in Cyrillic and Latin." %}</p>
                 </div>
             </section>
-        </div>
+
+            <section class="registration-search-card">
+                <label for="player-existence-search">{% trans "First or last name" %}</label>
+                <div class="registration-search-input-wrap">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <input
+                        id="player-existence-search"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="{% trans "e.g. Kozak / Козак" %}"
+                        data-search-url="{% url 'api_players_list' %}"
+                    >
+                </div>
+
+                <div id="player-existence-results" class="registration-search-results" role="status" aria-live="polite" hidden></div>
+
+                <div class="registration-info-box">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <p>{% trans "Not found? Then fill in the form on the left. After verification, the data will appear in the federation database." %}</p>
+                </div>
+            </section>
+        </aside>
     </div>
 
-    <!-- jQuery UI Datepicker -->
+    {% if autocaptcha_public_key %}
+        <script src="https://www.google.com/recaptcha/api.js?render={{ autocaptcha_public_key|urlencode }}"></script>
+    {% endif %}
+
     <script>
-        $(document).ready(function() {
-            $(".dateinput").datepicker({
-                dateFormat: "yy-mm-dd"
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            var countrySelect = document.getElementById("id_country");
+            var patronymicGroup = document.getElementById("patronymic-field-group");
+            var patronymicInput = document.getElementById("id_patronymic");
+            var accountAccessGroup = document.getElementById("account-access-field-group");
+            var accountAccessInputs = accountAccessGroup ? accountAccessGroup.querySelectorAll("input") : [];
+            var monthNames = [
+                "{% trans "January" %}",
+                "{% trans "February" %}",
+                "{% trans "March" %}",
+                "{% trans "April" %}",
+                "{% trans "May" %}",
+                "{% trans "June" %}",
+                "{% trans "July" %}",
+                "{% trans "August" %}",
+                "{% trans "September" %}",
+                "{% trans "October" %}",
+                "{% trans "November" %}",
+                "{% trans "December" %}"
+            ];
+            var weekdayNames = [
+                "{% trans "Mon" %}",
+                "{% trans "Tue" %}",
+                "{% trans "Wed" %}",
+                "{% trans "Thu" %}",
+                "{% trans "Fri" %}",
+                "{% trans "Sat" %}",
+                "{% trans "Sun" %}"
+            ];
 
             function toggleCountryFields() {
-                var country = $("#id_country").val();
-                var emailGroup = $("#email-field-group");
-                var emailInput = $("#id_email");
-                var emailLabel = $("label[for='id_email']");
-                var patronymicGroup = $("#patronymic-field-group");
+                if (!countrySelect || !patronymicGroup) {
+                    return;
+                }
 
-                if (country === "UA") {
-                    emailGroup.show();
-                    patronymicGroup.show();
-                    emailInput.prop("required", false);
-                    emailLabel.removeClass("requiredField");
-                    emailLabel.find(".asteriskField").remove();
+                if (!countrySelect.value || countrySelect.value === "UA") {
+                    patronymicGroup.hidden = false;
                 } else {
-                    emailGroup.hide();
-                    patronymicGroup.hide();
-                    emailInput.prop("required", false);
-                    emailInput.val("");
-                    $("#id_patronymic").val("");
-                    emailLabel.removeClass("requiredField");
-                    emailLabel.find(".asteriskField").remove();
+                    patronymicGroup.hidden = true;
+                    if (patronymicInput) {
+                        patronymicInput.value = "";
+                    }
+                }
+
+                if (accountAccessGroup) {
+                    accountAccessGroup.hidden = countrySelect.value !== "UA";
+                    if (countrySelect.value !== "UA") {
+                        accountAccessInputs.forEach(function(input) {
+                            input.value = "";
+                        });
+                    }
                 }
             }
 
-            $("#id_country").on("change", toggleCountryFields);
-            toggleCountryFields();
+            if (countrySelect) {
+                countrySelect.addEventListener("change", toggleCountryFields);
+                toggleCountryFields();
+            }
+
+            function padDatePart(value) {
+                return String(value).padStart(2, "0");
+            }
+
+            function formatDisplayDate(date) {
+                return padDatePart(date.getDate()) + "." + padDatePart(date.getMonth() + 1) + "." + date.getFullYear();
+            }
+
+            function parseDisplayDate(value) {
+                var trimmed = value.trim();
+                var displayMatch = trimmed.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+                var isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                var day;
+                var month;
+                var year;
+
+                if (displayMatch) {
+                    day = Number(displayMatch[1]);
+                    month = Number(displayMatch[2]) - 1;
+                    year = Number(displayMatch[3]);
+                } else if (isoMatch) {
+                    year = Number(isoMatch[1]);
+                    month = Number(isoMatch[2]) - 1;
+                    day = Number(isoMatch[3]);
+                } else {
+                    return null;
+                }
+
+                var date = new Date(year, month, day);
+                if (
+                    date.getFullYear() !== year ||
+                    date.getMonth() !== month ||
+                    date.getDate() !== day
+                ) {
+                    return null;
+                }
+
+                return date;
+            }
+
+            function setupDatePicker() {
+                var root = document.querySelector("[data-date-picker]");
+                if (!root) {
+                    return;
+                }
+
+                var input = root.querySelector("#id_birth_date");
+                var toggle = root.querySelector("[data-date-picker-toggle]");
+                var panel = root.querySelector("[data-date-picker-panel]");
+                var monthSelect = root.querySelector("[data-date-month]");
+                var yearInput = root.querySelector("[data-date-year]");
+                var prevButton = root.querySelector("[data-date-prev-month]");
+                var nextButton = root.querySelector("[data-date-next-month]");
+                var weekdays = root.querySelector(".registration-date-picker-weekdays");
+                var grid = root.querySelector("[data-date-grid]");
+                var clearButton = root.querySelector("[data-date-clear]");
+                var today = new Date();
+                today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                var minYear = 1900;
+                var maxYear = today.getFullYear();
+                var maxViewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                var selectedDate = input.value ? parseDisplayDate(input.value) : null;
+                var viewDate = selectedDate || new Date(Math.min(2000, maxYear), 0, 1);
+
+                monthNames.forEach(function(monthName, index) {
+                    var option = document.createElement("option");
+                    option.value = String(index);
+                    option.textContent = monthName;
+                    monthSelect.appendChild(option);
+                });
+
+                weekdayNames.forEach(function(weekdayName) {
+                    var item = document.createElement("span");
+                    item.textContent = weekdayName;
+                    weekdays.appendChild(item);
+                });
+
+                yearInput.min = String(minYear);
+                yearInput.max = String(maxYear);
+
+                function setPanelOpen(isOpen) {
+                    panel.hidden = !isOpen;
+                    root.classList.toggle("registration-date-field-open", isOpen);
+                }
+
+                function clampYear(year) {
+                    return Math.min(Math.max(year, minYear), maxYear);
+                }
+
+                function isFutureDate(date) {
+                    return date > today;
+                }
+
+                function clampViewDate(date) {
+                    var clamped = new Date(clampYear(date.getFullYear()), date.getMonth(), 1);
+                    if (clamped > maxViewDate) {
+                        return new Date(maxViewDate.getFullYear(), maxViewDate.getMonth(), 1);
+                    }
+                    return clamped;
+                }
+
+                function updateMonthOptions(year) {
+                    Array.prototype.forEach.call(monthSelect.options, function(option) {
+                        option.disabled = year === maxYear && Number(option.value) > today.getMonth();
+                    });
+                }
+
+                function renderCalendar() {
+                    viewDate = clampViewDate(viewDate);
+                    var year = viewDate.getFullYear();
+                    var month = viewDate.getMonth();
+                    var firstDay = new Date(year, month, 1);
+                    var startOffset = (firstDay.getDay() + 6) % 7;
+                    var firstGridDate = new Date(year, month, 1 - startOffset);
+
+                    viewDate = new Date(year, month, 1);
+                    updateMonthOptions(year);
+                    monthSelect.value = String(month);
+                    yearInput.value = String(year);
+                    prevButton.disabled = year === minYear && month === 0;
+                    nextButton.disabled = new Date(year, month + 1, 1) > maxViewDate;
+                    grid.innerHTML = "";
+
+                    for (var index = 0; index < 42; index += 1) {
+                        var date = new Date(firstGridDate.getFullYear(), firstGridDate.getMonth(), firstGridDate.getDate() + index);
+                        var button = document.createElement("button");
+                        var isCurrentMonth = date.getMonth() === month;
+                        var isSelected = selectedDate &&
+                            date.getFullYear() === selectedDate.getFullYear() &&
+                            date.getMonth() === selectedDate.getMonth() &&
+                            date.getDate() === selectedDate.getDate();
+                        var isToday = date.getFullYear() === today.getFullYear() &&
+                            date.getMonth() === today.getMonth() &&
+                            date.getDate() === today.getDate();
+
+                        button.type = "button";
+                        button.textContent = String(date.getDate());
+                        button.className = "registration-date-picker-day";
+                        if (!isCurrentMonth) {
+                            button.classList.add("registration-date-picker-day-muted");
+                        }
+                        if (isToday) {
+                            button.classList.add("registration-date-picker-day-today");
+                        }
+                        if (isSelected) {
+                            button.classList.add("registration-date-picker-day-selected");
+                        }
+                        if (isFutureDate(date) || date.getFullYear() < minYear) {
+                            button.disabled = true;
+                        }
+
+                        button.addEventListener("click", function(clickedDate) {
+                            return function() {
+                                selectedDate = clickedDate;
+                                input.value = formatDisplayDate(clickedDate);
+                                input.dispatchEvent(new Event("change", { bubbles: true }));
+                                setPanelOpen(false);
+                                renderCalendar();
+                            };
+                        }(date));
+
+                        grid.appendChild(button);
+                    }
+                }
+
+                function shiftMonth(delta) {
+                    viewDate = clampViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + delta, 1));
+                    renderCalendar();
+                }
+
+                toggle.addEventListener("click", function() {
+                    var parsed = parseDisplayDate(input.value);
+                    if (parsed && !isFutureDate(parsed)) {
+                        selectedDate = parsed;
+                        viewDate = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+                    }
+                    renderCalendar();
+                    setPanelOpen(panel.hidden);
+                });
+
+                function syncInputDate() {
+                    var parsed = parseDisplayDate(input.value);
+                    if (parsed) {
+                        if (isFutureDate(parsed)) {
+                            selectedDate = null;
+                            input.value = "";
+                            viewDate = new Date(maxViewDate.getFullYear(), maxViewDate.getMonth(), 1);
+                            renderCalendar();
+                            return;
+                        }
+                        selectedDate = parsed;
+                        viewDate = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+                        input.value = formatDisplayDate(parsed);
+                        renderCalendar();
+                    }
+                }
+
+                input.addEventListener("focus", function() {
+                    renderCalendar();
+                    setPanelOpen(true);
+                });
+
+                input.addEventListener("input", syncInputDate);
+                input.addEventListener("change", syncInputDate);
+
+                monthSelect.addEventListener("change", function() {
+                    viewDate = clampViewDate(new Date(viewDate.getFullYear(), Number(monthSelect.value), 1));
+                    renderCalendar();
+                });
+
+                yearInput.addEventListener("change", function() {
+                    var year = clampYear(Number(yearInput.value) || viewDate.getFullYear());
+                    viewDate = clampViewDate(new Date(year, viewDate.getMonth(), 1));
+                    renderCalendar();
+                });
+
+                prevButton.addEventListener("click", function() {
+                    shiftMonth(-1);
+                });
+
+                nextButton.addEventListener("click", function() {
+                    shiftMonth(1);
+                });
+
+                clearButton.addEventListener("click", function() {
+                    selectedDate = null;
+                    input.value = "";
+                    setPanelOpen(false);
+                    renderCalendar();
+                });
+
+                document.addEventListener("click", function(event) {
+                    if (!root.contains(event.target)) {
+                        setPanelOpen(false);
+                    }
+                });
+
+                document.addEventListener("keydown", function(event) {
+                    if (event.key === "Escape") {
+                        setPanelOpen(false);
+                    }
+                });
+
+                renderCalendar();
+            }
+
+            setupDatePicker();
+
+            var searchInput = document.getElementById("player-existence-search");
+            var searchResults = document.getElementById("player-existence-results");
+            var searchController = null;
+            var searchTimer = null;
+            var searchMessages = {
+                found: "{% trans "Found in the database" %}",
+                noResults: "{% trans "Nothing found. Try another spelling or register a new player." %}",
+                searching: "{% trans "Searching..." %}",
+                error: "{% trans "Could not check the database. Try again." %}",
+                openProfile: "{% trans "Open profile" %}"
+            };
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function setSearchResults(content, stateClass) {
+                if (!searchResults) {
+                    return;
+                }
+
+                searchResults.innerHTML = content;
+                searchResults.className = "registration-search-results " + stateClass;
+                searchResults.hidden = false;
+            }
+
+            function hideSearchResults() {
+                if (!searchResults) {
+                    return;
+                }
+
+                searchResults.hidden = true;
+                searchResults.innerHTML = "";
+            }
+
+            function renderPlayerResults(players) {
+                if (!players.length) {
+                    setSearchResults(
+                        "<p>" + escapeHtml(searchMessages.noResults) + "</p>",
+                        "registration-search-results-empty"
+                    );
+                    return;
+                }
+
+                var items = players.slice(0, 6).map(function(player) {
+                    var name = escapeHtml(player.text || "");
+                    var url = "/player/" + encodeURIComponent(player.id);
+                    return (
+                        "<a class=\"registration-search-player\" href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">" +
+                            "<span><i class=\"bi bi-person\" aria-hidden=\"true\"></i>" + name + "</span>" +
+                            "<small>" + escapeHtml(searchMessages.openProfile) + "</small>" +
+                        "</a>"
+                    );
+                }).join("");
+
+                setSearchResults(
+                    "<p class=\"registration-search-results-title\">" + escapeHtml(searchMessages.found) + "</p>" + items,
+                    "registration-search-results-found"
+                );
+            }
+
+            function runPlayerSearch(query) {
+                if (!searchInput || !searchInput.dataset.searchUrl) {
+                    return;
+                }
+
+                if (searchController) {
+                    searchController.abort();
+                }
+
+                searchController = new AbortController();
+                setSearchResults("<p>" + escapeHtml(searchMessages.searching) + "</p>", "registration-search-results-loading");
+
+                fetch(searchInput.dataset.searchUrl + "?q=" + encodeURIComponent(query), {
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    signal: searchController.signal
+                })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error("Search request failed");
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        renderPlayerResults(data.results || []);
+                    })
+                    .catch(function(error) {
+                        if (error.name === "AbortError") {
+                            return;
+                        }
+                        setSearchResults(
+                            "<p>" + escapeHtml(searchMessages.error) + "</p>",
+                            "registration-search-results-empty"
+                        );
+                    });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener("input", function() {
+                    var query = searchInput.value.trim();
+                    window.clearTimeout(searchTimer);
+
+                    if (query.length < 2) {
+                        if (searchController) {
+                            searchController.abort();
+                        }
+                        hideSearchResults();
+                        return;
+                    }
+
+                    searchTimer = window.setTimeout(function() {
+                        runPlayerSearch(query);
+                    }, 250);
+                });
+            }
+
+            var form = document.getElementById("player-registration-form");
+            var tokenInput = document.getElementById("id_autocaptcha_token");
+            var submittingWithToken = false;
+
+            if (form && tokenInput && form.dataset.autocaptchaKey) {
+                form.addEventListener("submit", function(event) {
+                    var submitButton = form.querySelector("[type='submit']");
+
+                    if (submittingWithToken) {
+                        return true;
+                    }
+
+                    event.preventDefault();
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                    }
+
+                    if (typeof grecaptcha === "undefined") {
+                        submittingWithToken = true;
+                        HTMLFormElement.prototype.submit.call(form);
+                        return false;
+                    }
+
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute(form.dataset.autocaptchaKey, {
+                            action: form.dataset.autocaptchaAction
+                        }).then(function(token) {
+                            tokenInput.value = token;
+                            submittingWithToken = true;
+                            HTMLFormElement.prototype.submit.call(form);
+                        }).catch(function() {
+                            if (submitButton) {
+                                submitButton.disabled = false;
+                            }
+                        });
+                    });
+
+                    return false;
+                });
+            }
         });
     </script>
 {% endblock %}
