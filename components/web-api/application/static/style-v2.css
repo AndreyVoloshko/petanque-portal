@@ -2668,6 +2668,7 @@ Player registration
   grid-template-columns: minmax(0, 2fr) minmax(24rem, 1fr);
   margin: 0 0 2.5rem;
   max-width: 1928px;
+  width: 100%;
 }
 
 .registration-card,
@@ -3328,6 +3329,17 @@ select.registration-form-control {
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0;
+}
+
+@media (min-width: 1200px) {
+  @supports (zoom: 1) {
+    .registration-redesign {
+      --registration-desktop-scale: 0.67;
+      max-width: calc(1928px / var(--registration-desktop-scale));
+      width: calc(100% / var(--registration-desktop-scale));
+      zoom: var(--registration-desktop-scale);
+    }
+  }
 }
 
 @media (max-width: 1199.98px) {
