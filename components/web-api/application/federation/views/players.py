@@ -299,7 +299,7 @@ def player(request, id):
     player_seasons = seasons_model.objects.filter(player=player).order_by('-year')
 
     from federation.models.national_teams import PlayerNational_teamMembership
-    national_team_memberships = PlayerNational_teamMembership.objects.filter(player=player).select_related('team')
+    is_national_team_player = PlayerNational_teamMembership.objects.filter(player=player).exists()
     player_tournament_rows = _build_player_tournament_rows(player, past_tournaments)
 
     return render(request, 'players/player.html', {
@@ -312,7 +312,7 @@ def player(request, id):
         'past_away_tournaments': past_away_tournaments,
         'player_tournaments': past_tournaments,
         'player_tournament_rows': player_tournament_rows,
-        'national_team_memberships': national_team_memberships,
+        'is_national_team_player': is_national_team_player,
         'season_rating_field': season_rating_field,
         'player_seasons': player_seasons,
     })

@@ -2278,3 +2278,23 @@ msgstr "Сезони"
 #: federation/views/seasons.py
 msgid "Season rating"
 msgstr "Рейтинг сезону"
+
+#: federation/views/title_registry.py
+msgid "Registry of arbiters of the Petanque Federation of Ukraine"
+msgstr "Реєстр арбітрів Федерації петанку України"
+
+#: federation/views/title_registry.py
+msgid "Registry of coaches and instructors of the Petanque Federation of Ukraine"
+msgstr "Реєстр тренерів та інструкторів Федерації петанку України"
+
+#: federation/views/title_registry.py
+msgid "Players with sports titles"
+msgstr "Гравці зі спортивними званнями"
+
+#: federation/views/title_registry.py
+msgid "Titles"
+msgstr "Звання"
+
+#: federation/views/title_registry.py
+msgid "Players of the Ukrainian national petanque team"
+msgstr "Гравці національної збірної України з петанку"

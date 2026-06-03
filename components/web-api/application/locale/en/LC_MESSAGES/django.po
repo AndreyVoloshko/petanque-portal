@@ -2356,3 +2356,23 @@ msgstr "Team"
 #: federation/templates/players/player.html
 msgid "Power column tournament"
 msgstr "Tournament"
+
+#: federation/views/title_registry.py
+msgid "Registry of arbiters of the Petanque Federation of Ukraine"
+msgstr "Registry of arbiters of the Petanque Federation of Ukraine"
+
+#: federation/views/title_registry.py
+msgid "Registry of coaches and instructors of the Petanque Federation of Ukraine"
+msgstr "Registry of coaches and instructors of the Petanque Federation of Ukraine"
+
+#: federation/views/title_registry.py
+msgid "Players with sports titles"
+msgstr "Players with sports titles"
+
+#: federation/views/title_registry.py
+msgid "Titles"
+msgstr "Titles"
+
+#: federation/views/title_registry.py
+msgid "Players of the Ukrainian national petanque team"
+msgstr "Players of the Ukrainian national petanque team"

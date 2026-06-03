@@ -1,20 +1,12 @@
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from federation.models.national_teams import National_team, PlayerNational_teamMembership
+from federation.views.title_registry import national_team_groups, title_registry_context
 
 
 def national_teams(request, team_id=None):
-    teams = National_team.objects.all()
-
-    current_team = teams[0]
-    current_team_players = PlayerNational_teamMembership.objects.filter(team=current_team)
-    if team_id is not None:
-        current_team = National_team.objects.get(pk=team_id)
-        current_team_players = PlayerNational_teamMembership.objects.filter(team=current_team)
-
     return render(request, 'national_teams/national_teams.html', {
-        'teams': teams,
-        'current_team': current_team,
-        'current_team_players': current_team_players,
-        'page_title': _("National Teams of Ukraine"),
+        **title_registry_context(
+            'national_teams',
+            national_team_groups(),
+            active_group_key=f'team-{team_id}' if team_id is not None else None,
+        ),
     })

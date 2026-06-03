@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.urls import include, path, re_path
 from django.contrib import admin
+from django.conf import settings
+from django.contrib.staticfiles.views import serve as serve_static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
@@ -22,5 +24,11 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     re_path(r'', include('federation.urls'))
 ]
+
+if settings.STATIC_URL == '/static/':
+    urlpatterns.insert(
+        0,
+        re_path(r'^static/(?P<path>.*)$', serve_static, {'insecure': True}),
+    )
 
 urlpatterns += staticfiles_urlpatterns()

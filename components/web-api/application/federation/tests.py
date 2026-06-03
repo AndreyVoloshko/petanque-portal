@@ -14,6 +14,7 @@ from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.club import Club
+from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from federation.models.player import Player
 from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
@@ -628,15 +629,18 @@ class PlayerLicenseListTests(TestCase):
 
 
 class PlayerTournamentListTests(TestCase):
-    def test_player_tournament_table_shows_place_range_and_tournament_power(self):
-        user = User.objects.create_user(username='range-player')
-        player = Player.objects.create(
+    def create_player(self, username='player-page'):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
             user=user,
-            name='Range',
+            name=username.title(),
             surname='Player',
             birth_date=date(1990, 1, 1),
             gender='M',
         )
+
+    def test_player_tournament_table_shows_place_range_and_tournament_power(self):
+        player = self.create_player('range-player')
         team = Team.objects.create(name='Range Team')
         PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
         tournament = Tournament.objects.create(
@@ -684,6 +688,27 @@ class PlayerTournamentListTests(TestCase):
             table_body.index('class="pt-col-strength"'),
             table_body.index('class="pt-col-points"'),
         )
+
+    def test_player_page_shows_single_national_team_chip_for_multiple_memberships(self):
+        player = self.create_player('national-team-player')
+        men_veterans = National_team.objects.create(name='Veterans Men')
+        women_veterans = National_team.objects.create(name='Veterans Women')
+        PlayerNational_teamMembership.objects.create(
+            player=player,
+            team=men_veterans,
+            position='player',
+        )
+        PlayerNational_teamMembership.objects.create(
+            player=player,
+            team=women_veterans,
+            position='player',
+        )
+
+        response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(content.count('player-chip-national-team'), 1)
 
 
 class OptionalRegistrationEmailTests(TestCase):

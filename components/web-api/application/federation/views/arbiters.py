@@ -1,22 +1,21 @@
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
+from federation.views.title_registry import (
+    ARBITER_SHORT_LABELS,
+    ROUTE_CONFIG,
+    player_choice_groups,
+    title_registry_context,
+)
 
 
 def arbiters(request):
-    arbiter_objects = []
-
-    for category in reversed(Player.ARBITER_CATEGORY):
-        players = Player.objects.filter(arbiter_level=category[0])
-
-        if players:
-            arbiter_objects.append({
-                'category_name': category[1],
-                'category_id': category[0],
-                'players': players
-            })
+    groups = player_choice_groups(
+        Player.ARBITER_CATEGORY,
+        'arbiter_level',
+        ARBITER_SHORT_LABELS,
+        ROUTE_CONFIG['arbiters']['icon_class'],
+    )
 
     return render(request, 'arbiters/arbiters.html', {
-        'arbiters': arbiter_objects,
-        'page_title': _("Arbiters")
+        **title_registry_context('arbiters', groups),
     })

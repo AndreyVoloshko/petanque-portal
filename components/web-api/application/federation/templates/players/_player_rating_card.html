@@ -1,7 +1,7 @@
 {% load app_filters %}
 {% load i18n %}
 
-<a class="card athlete-card{% if card_extra_class %} {{ card_extra_class }}{% endif %}" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
+<a class="card athlete-card{% if hide_rating_place %} athlete-card-no-rank{% endif %}{% if title_status_label %} athlete-card-has-title-status{% endif %}{% if card_extra_class %} {{ card_extra_class }}{% endif %}" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
     <div class="card-body athlete-card-body">
         <div class="athlete-card-hero">
             <div class="athlete-card-profile">
@@ -27,7 +27,7 @@
                                 </span>
                                 <span class="athlete-card-given-line">
                                     <span class="athlete-card-name-text">{{ item.name }}</span>
-                                    {% if item.sport_title %}
+                                    {% if item.sport_title and not title_status_label %}
                                     <span class="athlete-card-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ item.get_sport_title_display }}" aria-label="{{ item.get_sport_title_display }}">
                                         <i class="bi bi-award-fill" aria-hidden="true"></i>
                                     </span>
@@ -48,34 +48,48 @@
                 </div>
             </div>
 
-            <div class="athlete-card-rank" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
-                <span class="athlete-card-rank-value">{{ rank_value|safe }}</span>
-                <span class="athlete-card-rank-label">{% trans "Place" %}</span>
-            </div>
-        </div>
-
-        <div class="athlete-card-stats" aria-label="{% trans "Player ranking details" %}">
-            <div class="athlete-stat athlete-stat-points">
-                <span class="athlete-stat-icon" aria-hidden="true">
-                    <i class="bi bi-graph-up-arrow"></i>
-                </span>
-                <span class="athlete-stat-copy">
-                    <span class="athlete-stat-value">{{ points_value|floatformat:2 }}</span>
-                    <span class="athlete-stat-label">{% trans "Points" %}</span>
-                </span>
-            </div>
-            {% if show_power %}
-                <div class="athlete-stat athlete-stat-power">
-                    <span class="athlete-stat-icon" aria-hidden="true">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                    </span>
-                    <span class="athlete-stat-copy">
-                        <span class="athlete-stat-value">{{ power_value|floatformat:2 }}</span>
-                        <span class="athlete-stat-label">{% trans "Power" %}</span>
-                    </span>
+            {% if not hide_rating_place %}
+                <div class="athlete-card-rank" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
+                    <span class="athlete-card-rank-value">{{ rank_value|safe }}</span>
+                    <span class="athlete-card-rank-label">{% trans "Place" %}</span>
                 </div>
             {% endif %}
         </div>
+
+        {% if title_status_label %}
+            <div class="athlete-card-title-status" aria-label="{{ title_status_label }}">
+                <span class="athlete-title-status-icon" aria-hidden="true">
+                    <i class="bi {{ title_status_icon_class|default:"bi-award-fill" }}"></i>
+                </span>
+                <span class="athlete-title-status-copy">
+                    <span class="athlete-title-status-short">{{ title_status_short }}</span>
+                    <span class="athlete-title-status-label">{{ title_status_label }}</span>
+                </span>
+            </div>
+        {% else %}
+            <div class="athlete-card-stats" aria-label="{% trans "Player ranking details" %}">
+                <div class="athlete-stat athlete-stat-points">
+                    <span class="athlete-stat-icon" aria-hidden="true">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+                    <span class="athlete-stat-copy">
+                        <span class="athlete-stat-value">{{ points_value|floatformat:2 }}</span>
+                        <span class="athlete-stat-label">{% trans "Points" %}</span>
+                    </span>
+                </div>
+                {% if show_power %}
+                    <div class="athlete-stat athlete-stat-power">
+                        <span class="athlete-stat-icon" aria-hidden="true">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </span>
+                        <span class="athlete-stat-copy">
+                            <span class="athlete-stat-value">{{ power_value|floatformat:2 }}</span>
+                            <span class="athlete-stat-label">{% trans "Power" %}</span>
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
 
         <div class="athlete-card-meta" aria-label="{% trans "Player ranking details" %}">
             <div class="athlete-chip athlete-chip-license">
