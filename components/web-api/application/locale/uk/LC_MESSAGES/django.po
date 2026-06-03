@@ -244,8 +244,8 @@ msgid "e.g. Kozak / Козак"
 msgstr "напр. Козак / Kozak"
 
 #: federation/templates/register/player.html
-msgid "Not found? Then fill in the form on the left. After verification, the data will appear in the federation database."
-msgstr "Не знайшли? Тоді заповніть форму ліворуч — після перевірки дані з'являться в базі федерації."
+msgid "Not found? Then fill in the registration form. After verification, the data will appear in the federation database."
+msgstr "Не знайшли? Тоді заповніть реєстраційну форму — після перевірки дані з'являться в базі федерації."
 
 #: federation/templates/register/player.html
 msgid "Found in the database"
