@@ -3332,13 +3332,198 @@ select.registration-form-control {
 }
 
 @media (min-width: 1200px) {
-  @supports (zoom: 1) {
-    .registration-redesign {
-      --registration-desktop-scale: 0.67;
-      max-width: calc(1928px / var(--registration-desktop-scale));
-      width: calc(100% / var(--registration-desktop-scale));
-      zoom: var(--registration-desktop-scale);
-    }
+  .registration-page-container {
+    max-width: 1200px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1.25rem;
+  }
+
+  .registration-redesign {
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+    margin: 0 auto 2rem;
+    max-width: 100%;
+  }
+
+  .registration-card {
+    padding: 2rem 2rem 1.75rem;
+  }
+
+  .registration-card,
+  .registration-search-card,
+  .registration-warning-card {
+    border-radius: 16px;
+  }
+
+  .registration-header {
+    gap: 0.9rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .registration-header-icon,
+  .registration-warning-icon {
+    border-radius: 16px;
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .registration-header-icon {
+    font-size: 1.2rem;
+  }
+
+  .registration-header-copy h1 {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  .registration-header-copy p {
+    font-size: 1rem;
+    margin-top: 0.3rem;
+  }
+
+  .registration-field-grid {
+    gap: 1.35rem 1.25rem;
+  }
+
+  .registration-field label {
+    font-size: 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .registration-form-control {
+    border-radius: 12px;
+    font-size: 1rem;
+    min-height: 3rem;
+    padding: 0.65rem 0.9rem;
+  }
+
+  .registration-date-field .registration-form-control {
+    padding-right: 3rem;
+  }
+
+  .registration-date-button {
+    font-size: 1rem;
+    height: 2.5rem;
+    right: 0.25rem;
+    top: 0.25rem;
+    width: 2.5rem;
+  }
+
+  select.registration-form-control {
+    background-position: right 1rem center;
+    background-size: 1rem 1rem;
+    padding-right: 3rem;
+  }
+
+  .registration-help-text {
+    font-size: 0.88rem;
+    margin-top: 0.6rem;
+    max-width: 28rem;
+  }
+
+  .registration-field-narrow {
+    max-width: 26rem;
+  }
+
+  .registration-account-card {
+    border-radius: 16px;
+    margin-top: 1.6rem;
+    padding: 1.25rem 1.35rem;
+  }
+
+  .registration-account-grid {
+    gap: 1.15rem 1.25rem;
+  }
+
+  .registration-account-intro p,
+  .registration-account-help {
+    font-size: 0.9rem;
+  }
+
+  .registration-actions {
+    margin-top: 2rem;
+  }
+
+  .registration-submit-button {
+    border-radius: 10px;
+    font-size: 1rem;
+    gap: 0.55rem;
+    min-height: 3rem;
+    min-width: min(22rem, 100%);
+    padding: 0.7rem 1.15rem;
+  }
+
+  .registration-submit-button i {
+    font-size: 1rem;
+  }
+
+  .registration-sidebar {
+    gap: 1.25rem;
+  }
+
+  .registration-warning-card {
+    gap: 0.9rem;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    padding: 1.25rem 1.35rem;
+  }
+
+  .registration-warning-icon {
+    font-size: 1.1rem;
+  }
+
+  .registration-warning-card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .registration-warning-card p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .registration-search-card {
+    padding: 1.35rem;
+  }
+
+  .registration-search-card > label {
+    font-size: 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .registration-search-input-wrap {
+    border-radius: 12px;
+    gap: 0.65rem;
+    min-height: 3rem;
+    padding: 0 0.85rem;
+  }
+
+  .registration-search-input-wrap i {
+    font-size: 1.05rem;
+  }
+
+  .registration-search-input-wrap input {
+    font-size: 0.95rem;
+    padding: 0.65rem 0;
+  }
+
+  .registration-search-results {
+    border-radius: 12px;
+    font-size: 0.95rem;
+    margin-top: 0.8rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .registration-info-box {
+    border-radius: 12px;
+    gap: 0.65rem;
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .registration-info-box p {
+    font-size: 0.9rem;
   }
 }
 
