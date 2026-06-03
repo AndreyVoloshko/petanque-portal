@@ -1816,7 +1816,7 @@ body {
   gap: 1.45rem;
   margin-left: auto;
   margin-right: auto;
-  max-width: 74rem;
+  max-width: 107rem;
   min-width: 0;
   padding-left: clamp(0.75rem, 2vw, 1.5rem);
   padding-right: clamp(0.75rem, 2vw, 1.5rem);
@@ -2024,15 +2024,16 @@ body {
 
 .title-registry-card-grid {
   display: grid;
-  gap: 0.85rem;
-  grid-template-columns: repeat(3, minmax(0, 260px));
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 420px));
   justify-content: center;
+  max-width: calc(1260px + 2rem);
   min-width: 0;
 }
 
 .title-registry-player-card {
   height: 100%;
-  max-width: 260px;
+  max-width: 420px;
   width: 100%;
 }
 
@@ -2042,34 +2043,6 @@ body {
 
 .title-registry-player-card .athlete-card-title-status {
   min-height: 5rem;
-}
-
-.title-registry-player-card .athlete-card-meta {
-  column-gap: 0.42rem;
-  grid-template-columns: 1fr 1.18fr 0.95fr;
-  padding: 0.58rem 0.5rem 0.66rem;
-}
-
-.title-registry-player-card .athlete-chip {
-  gap: 0.3rem;
-  padding-left: 0.24rem;
-  padding-right: 0.24rem;
-}
-
-.title-registry-player-card .athlete-chip + .athlete-chip::before {
-  left: -0.21rem;
-}
-
-.title-registry-player-card .athlete-chip-icon {
-  font-size: 0.9rem;
-}
-
-.title-registry-player-card .athlete-chip-value {
-  font-size: 0.74rem;
-}
-
-.title-registry-player-card .athlete-chip-label {
-  font-size: 0.58rem;
 }
 
 .title-registry-empty {
@@ -2124,7 +2097,7 @@ body {
   }
 
   .title-registry-card-grid {
-    grid-template-columns: repeat(auto-fit, minmax(0, 260px));
+    grid-template-columns: repeat(auto-fit, minmax(0, min(420px, 100%)));
   }
 }
 
