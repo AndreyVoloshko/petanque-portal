@@ -1,22 +1,21 @@
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
 from federation.models.player import Player
+from federation.views.title_registry import (
+    COACH_SHORT_LABELS,
+    ROUTE_CONFIG,
+    player_choice_groups,
+    title_registry_context,
+)
 
 
 def coaches(request):
-    coaches_objects = []
-
-    for category in reversed(Player.COACH_CATEGORY):
-        players = Player.objects.filter(coach_level=category[0])
-
-        if players:
-            coaches_objects.append({
-                'category_name': category[1],
-                'category_id': category[0],
-                'players': players
-            })
+    groups = player_choice_groups(
+        Player.COACH_CATEGORY,
+        'coach_level',
+        COACH_SHORT_LABELS,
+        ROUTE_CONFIG['coaches']['icon_class'],
+    )
 
     return render(request, 'coaches/coaches.html', {
-        'coaches': coaches_objects,
-        'page_title': _("Coaches")
+        **title_registry_context('coaches', groups),
     })

@@ -1741,9 +1741,430 @@ body {
   cursor: default;
 }
 
+.athlete-card-no-rank .athlete-card-hero {
+  padding-right: 1rem;
+}
+
+.athlete-card-title-status {
+  align-items: center;
+  background: var(--title-bg, #eef5ff);
+  border: 1px solid var(--title-border, #c9dcf8);
+  border-bottom: 0;
+  border-radius: 18px 18px 10px 10px;
+  box-shadow: 0 -6px 18px rgba(15, 45, 75, 0.04);
+  display: grid;
+  gap: 0.72rem;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  margin: -1.05rem 1rem 0;
+  min-height: 4.3rem;
+  overflow: hidden;
+  padding: 0.72rem 0.85rem;
+  position: relative;
+  z-index: 1;
+}
+
+.athlete-title-status-icon {
+  align-items: center;
+  background: var(--title-accent, #2457a6);
+  border-radius: 10px;
+  box-shadow: 0 7px 15px color-mix(in srgb, var(--title-accent, #2457a6) 24%, transparent);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 1.08rem;
+  height: 2.25rem;
+  justify-content: center;
+  line-height: 1;
+  width: 2.25rem;
+}
+
+.athlete-title-status-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.athlete-title-status-short {
+  color: var(--title-text, #0a2e5c);
+  font-size: 0.94rem;
+  font-weight: 850;
+  line-height: 1.08;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.athlete-title-status-label {
+  color: var(--title-muted, #5b6f8a);
+  display: -webkit-box;
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.18;
+  margin-top: 0.18rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.title-registry-page {
+  --title-accent: #2457a6;
+  --title-bg: #eef5ff;
+  --title-border: #c9dcf8;
+  --title-text: #0a2e5c;
+  --title-muted: #5b6f8a;
+  color: var(--color-text);
+  display: grid;
+  gap: 1.45rem;
+  min-width: 0;
+}
+
+.title-registry-page--arbiters {
+  --title-accent: #1f7a3b;
+  --title-bg: #e8f7ed;
+  --title-border: #b8e5c5;
+  --title-text: #1f7a3b;
+  --title-muted: #526b5b;
+}
+
+.title-registry-page--coaches {
+  --title-accent: #1d6fb8;
+  --title-bg: #eaf5ff;
+  --title-border: #b7dcff;
+  --title-text: #155a97;
+  --title-muted: #536b82;
+}
+
+.title-registry-page--sport_titles {
+  --title-accent: #d9a441;
+  --title-bg: #fff7e8;
+  --title-border: #f5dda8;
+  --title-text: #7a4b00;
+  --title-muted: #74624b;
+}
+
+.title-registry-page--national_teams {
+  --title-accent: #5f6fd3;
+  --title-bg: #f0f3ff;
+  --title-border: #cbd3ff;
+  --title-text: #34449e;
+  --title-muted: #626c8c;
+}
+
+.title-registry-header {
+  display: flex;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.title-registry-header-copy {
+  min-width: 0;
+}
+
+.title-registry-header h1 {
+  color: var(--color-text);
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.06;
+  margin: 0;
+}
+
+.title-registry-header p {
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.45;
+  margin: 0.42rem 0 0;
+  max-width: 42rem;
+}
+
+.title-registry-layout {
+  align-items: start;
+  display: grid;
+  gap: 1.45rem;
+  grid-template-columns: minmax(17.5rem, 20rem) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.title-registry-sidebar {
+  align-self: start;
+  min-width: 0;
+  position: sticky;
+  top: 5.25rem;
+}
+
+.title-registry-sidebar-title {
+  color: #6b7c90;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin: 0 0 0.72rem;
+  text-transform: uppercase;
+}
+
+.title-registry-categories {
+  display: grid;
+  gap: 0.52rem;
+}
+
+.title-registry-category {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dceaf2;
+  border-radius: 14px;
+  color: #33445a;
+  display: grid;
+  gap: 0.62rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 3.35rem;
+  padding: 0.68rem 0.72rem;
+  text-align: left;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+  width: 100%;
+}
+
+.title-registry-category:hover,
+.title-registry-category:focus {
+  background: #f8fcff;
+  border-color: var(--title-border);
+  color: var(--title-text);
+}
+
+.title-registry-category.active {
+  background: var(--title-accent);
+  border-color: var(--title-accent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--title-accent) 20%, transparent);
+  color: #ffffff;
+}
+
+.title-registry-category-badge {
+  align-items: center;
+  background: var(--title-bg);
+  border-radius: 8px;
+  color: var(--title-accent);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 850;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2rem;
+  min-width: 3.15rem;
+  padding: 0.32rem 0.52rem;
+  white-space: nowrap;
+}
+
+.title-registry-category.active .title-registry-category-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.title-registry-category-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.18;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title-registry-category-chevron {
+  font-size: 0.88rem;
+  opacity: 0.72;
+}
+
+.title-registry-content {
+  min-width: 0;
+}
+
+.title-registry-group {
+  min-width: 0;
+}
+
+.title-registry-group-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+  min-width: 0;
+}
+
+.title-registry-group-header h2 {
+  color: var(--color-text);
+  font-size: 1.35rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.18;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title-registry-player-count {
+  color: #667085;
+  flex: 0 0 auto;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.title-registry-card-grid {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.title-registry-player-card {
+  height: 100%;
+}
+
+.title-registry-player-card .athlete-card-body {
+  min-height: 0;
+}
+
+.title-registry-player-card .athlete-card-hero {
+  min-height: 7.25rem;
+  padding: 0.85rem 0.85rem 1.38rem;
+}
+
+.title-registry-player-card .athlete-card-profile {
+  gap: 0.68rem;
+}
+
+.title-registry-player-card .athlete-card-avatar {
+  height: 4.2rem;
+  width: 4.2rem;
+}
+
+.title-registry-player-card .athlete-card-avatar-placeholder {
+  font-size: 2.25rem;
+}
+
+.title-registry-player-card .athlete-card-name {
+  font-size: 0.98rem;
+  margin-bottom: 0.32rem;
+}
+
+.title-registry-player-card .athlete-card-club {
+  font-size: 0.76rem;
+}
+
+.title-registry-player-card .athlete-card-title-status {
+  gap: 0.58rem;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+  min-height: 4rem;
+  padding: 0.62rem 0.7rem;
+}
+
+.title-registry-player-card .athlete-title-status-icon {
+  border-radius: 9px;
+  font-size: 0.98rem;
+  height: 2rem;
+  width: 2rem;
+}
+
+.title-registry-player-card .athlete-title-status-short {
+  font-size: 0.86rem;
+}
+
+.title-registry-player-card .athlete-title-status-label {
+  font-size: 0.72rem;
+}
+
+.title-registry-player-card .athlete-card-meta {
+  column-gap: 0.42rem;
+  margin-top: 0.58rem;
+  padding: 0.52rem 0.52rem 0.6rem;
+}
+
+.title-registry-player-card .athlete-chip {
+  gap: 0.28rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  justify-content: start;
+  min-height: 2.75rem;
+  padding: 0.46rem 0.28rem;
+}
+
+.title-registry-player-card .athlete-chip + .athlete-chip::before {
+  left: -0.21rem;
+}
+
+.title-registry-player-card .athlete-chip-icon {
+  font-size: 0.86rem;
+}
+
+.title-registry-player-card .athlete-chip-value {
+  font-size: 0.7rem;
+}
+
+.title-registry-player-card .athlete-chip-label {
+  font-size: 0.54rem;
+}
+
+.title-registry-empty {
+  background: #ffffff;
+  border: 1px solid #dceaf2;
+  border-radius: 16px;
+  color: var(--color-muted);
+  padding: 1rem;
+}
+
+.title-registry-empty p {
+  margin: 0;
+}
+
 @media (max-width: 1399.98px) {
   .landing-carousel-item {
     flex-basis: calc((100% - 1.7rem) / 3);
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .title-registry-layout {
+    gap: 1.2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .title-registry-sidebar {
+    position: static;
+  }
+
+  .title-registry-categories {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.62rem;
+    margin-left: -0.15rem;
+    margin-right: -0.15rem;
+    overflow-x: auto;
+    padding: 0.15rem;
+    scrollbar-width: none;
+  }
+
+  .title-registry-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .title-registry-category {
+    flex: 0 0 min(20rem, 82vw);
+  }
+
+  .title-registry-category-chevron {
+    display: none;
+  }
+
+  .title-registry-card-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1990,6 +2411,11 @@ body {
     margin-right: 0.75rem;
   }
 
+  .athlete-card-title-status {
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+
   .athlete-stat {
     gap: 0.45rem;
     grid-template-columns: 1.7rem minmax(0, 1fr);
@@ -2010,6 +2436,28 @@ body {
   .athlete-chip-icon {
     font-size: 0.9rem;
   }
+
+  .title-registry-page {
+    gap: 1.1rem;
+  }
+
+  .title-registry-header h1 {
+    font-size: 2.05rem;
+  }
+
+  .title-registry-header p {
+    font-size: 0.94rem;
+  }
+
+  .title-registry-group-header {
+    align-items: flex-start;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .title-registry-group-header h2 {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 420px) {
@@ -2025,6 +2473,25 @@ body {
     font-size: 0.7rem;
     padding-left: 0.18rem;
     padding-right: 0.18rem;
+  }
+
+  .athlete-card-title-status {
+    gap: 0.58rem;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    min-height: 4.15rem;
+    padding: 0.68rem;
+  }
+
+  .athlete-title-status-icon {
+    border-radius: 9px;
+    font-size: 1rem;
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .title-registry-category {
+    flex-basis: 86vw;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }
 
@@ -5616,6 +6083,12 @@ table.dataTable.players-table thead th.sorting_desc::after {
   background: #f1eaff;
   border-color: #d7c4ff;
   color: #5b2bbd;
+}
+
+.player-chip-coach {
+  background: #eaf5ff;
+  border-color: #b7dcff;
+  color: #155a97;
 }
 
 .player-chip-arbiter {

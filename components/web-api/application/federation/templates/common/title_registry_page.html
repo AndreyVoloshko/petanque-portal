@@ -1,0 +1,67 @@
+{% load i18n %}
+
+{% include "common/landing_icon_sprite.html" %}
+
+<section class="title-registry-page title-registry-page--{{ title_registry.route_type }}" aria-labelledby="title-registry-page-title">
+    <header class="title-registry-header">
+        <div class="title-registry-header-copy">
+            <h1 id="title-registry-page-title">{{ title_registry.page_title }}</h1>
+            <p>{{ title_registry.page_subtitle }}</p>
+        </div>
+    </header>
+
+    {% if title_registry.groups %}
+        <div class="title-registry-layout">
+            <aside class="title-registry-sidebar" aria-label="{{ title_registry.sidebar_title }}">
+                <p class="title-registry-sidebar-title">{{ title_registry.sidebar_title }}</p>
+                <div class="title-registry-categories nav" id="{{ title_registry.route_type }}RegistryTabs" role="tablist">
+                    {% for group in title_registry.groups %}
+                        <button class="title-registry-category nav-link{% if group.is_active %} active{% endif %}"
+                                id="{{ title_registry.route_type }}-{{ group.key }}-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#{{ title_registry.route_type }}-{{ group.key }}"
+                                type="button"
+                                role="tab"
+                                aria-controls="{{ title_registry.route_type }}-{{ group.key }}"
+                                aria-selected="{% if group.is_active %}true{% else %}false{% endif %}">
+                            <span class="title-registry-category-badge">{{ group.short_label }}</span>
+                            <span class="title-registry-category-name">{{ group.label }}</span>
+                            <i class="bi bi-chevron-right title-registry-category-chevron" aria-hidden="true"></i>
+                        </button>
+                    {% endfor %}
+                </div>
+            </aside>
+
+            <div class="title-registry-content tab-content" id="{{ title_registry.route_type }}RegistryTabsContent">
+                {% for group in title_registry.groups %}
+                    <section class="title-registry-group tab-pane fade{% if group.is_active %} show active{% endif %}"
+                             id="{{ title_registry.route_type }}-{{ group.key }}"
+                             role="tabpanel"
+                             aria-labelledby="{{ title_registry.route_type }}-{{ group.key }}-tab"
+                             tabindex="0">
+                        <div class="title-registry-group-header">
+                            <h2>{{ group.label }}</h2>
+                            <span class="title-registry-player-count">{{ group.players_count_label }}</span>
+                        </div>
+
+                        <div class="title-registry-card-grid">
+                            {% for entry in group.items %}
+                                {% include "players/_player_rating_card.html" with item=entry.player hide_rating_place=1 title_status_short=entry.title_short title_status_label=entry.title_label title_status_icon_class=entry.title_icon_class card_extra_class="title-registry-player-card" %}
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="title-registry-empty">
+            <p>{% trans "No athletes to show yet." %}</p>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+    $(function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>

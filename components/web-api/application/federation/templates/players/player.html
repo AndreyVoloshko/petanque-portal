@@ -54,12 +54,18 @@
                         {{ player.get_sport_title_display }}
                     </span>
                 {% endif %}
-                {% for membership in national_team_memberships %}
+                {% if player.coach_level %}
+                    <span class="player-chip player-chip-coach">
+                        <i class="bi bi-mortarboard"></i>
+                        {{ player.get_coach_level_display }}
+                    </span>
+                {% endif %}
+                {% if is_national_team_player %}
                     <span class="player-chip player-chip-national-team">
                         <i class="bi bi-people-fill"></i>
                         {% trans "National team player" %}
                     </span>
-                {% endfor %}
+                {% endif %}
                 {% if player.arbiter_level %}
                     <span class="player-chip player-chip-arbiter">
                         <i class="bi bi-shield-check"></i>
