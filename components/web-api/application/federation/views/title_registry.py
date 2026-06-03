@@ -1,4 +1,4 @@
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from federation.models.player import Player
@@ -43,27 +43,27 @@ NATIONAL_TEAM_POSITION_SHORT_LABELS = {
 
 ROUTE_CONFIG = {
     'arbiters': {
-        'page_title': 'Арбітри',
-        'page_subtitle': 'Реєстр арбітрів Федерації петанку України',
-        'sidebar_title': 'Арбітри',
+        'page_title': _('Arbiters'),
+        'page_subtitle': _('Registry of arbiters of the Petanque Federation of Ukraine'),
+        'sidebar_title': _('Arbiters'),
         'icon_class': 'bi-patch-check-fill',
     },
     'coaches': {
-        'page_title': 'Тренери',
-        'page_subtitle': 'Реєстр тренерів та інструкторів Федерації петанку України',
-        'sidebar_title': 'Тренери',
+        'page_title': _('Coaches'),
+        'page_subtitle': _('Registry of coaches and instructors of the Petanque Federation of Ukraine'),
+        'sidebar_title': _('Coaches'),
         'icon_class': 'bi-person-badge',
     },
     'sport_titles': {
-        'page_title': 'Спортивні звання',
-        'page_subtitle': 'Гравці зі спортивними званнями',
-        'sidebar_title': 'Звання',
+        'page_title': _('Sports titles'),
+        'page_subtitle': _('Players with sports titles'),
+        'sidebar_title': _('Titles'),
         'icon_class': 'bi-award-fill',
     },
     'national_teams': {
-        'page_title': 'Національна збірна',
-        'page_subtitle': 'Гравці національної збірної України з петанку',
-        'sidebar_title': 'Збірні',
+        'page_title': _('National Teams of Ukraine'),
+        'page_subtitle': _('Players of the Ukrainian national petanque team'),
+        'sidebar_title': _('National teams'),
         'icon_class': 'bi-flag-fill',
     },
 }
