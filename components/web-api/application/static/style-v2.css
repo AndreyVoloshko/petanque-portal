@@ -2646,8 +2646,11 @@ div.table-responsive > div.dataTables_wrapper > div.row {
 Player registration
 */
 .registration-page-container {
-  max-width: 1840px;
+  max-width: none;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   padding-top: 1.5rem;
+  width: 100%;
 }
 
 .registration-redesign {
@@ -2662,9 +2665,9 @@ Player registration
   --registration-warning-border: #ffd968;
   display: grid;
   gap: 2rem;
-  grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.5fr);
-  margin: 0 auto 2.5rem;
-  max-width: 1780px;
+  grid-template-columns: minmax(0, 2fr) minmax(24rem, 1fr);
+  margin: 0 0 2.5rem;
+  max-width: 1928px;
 }
 
 .registration-card,
