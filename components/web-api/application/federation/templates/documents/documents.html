@@ -44,6 +44,24 @@
                 <option value="newest">{% trans "За датою (нові)" %}</option>
                 <option value="oldest">{% trans "За датою (старі)" %}</option>
             </select>
+            <div class="documents-view-switcher" role="group" aria-label="{% trans 'Вигляд документів' %}">
+                <button type="button"
+                        class="documents-view-button is-active"
+                        data-documents-view="card"
+                        aria-label="{% trans 'Картки' %}"
+                        aria-pressed="true"
+                        title="{% trans 'Картки' %}">
+                    <i class="bi bi-grid-3x2-gap" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="documents-view-button"
+                        data-documents-view="line"
+                        aria-label="{% trans 'Рядки' %}"
+                        aria-pressed="false"
+                        title="{% trans 'Рядки' %}">
+                    <i class="bi bi-list-ul" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Year Filters -->
@@ -52,40 +70,40 @@
         </div>
 
         <!-- Document List -->
-        <div class="document-list" id="documentList">
+        <div class="document-list document-list--cards" id="documentList">
             {% for doc_group in documents %}
                 {% for doc in doc_group.documents %}
                     <div class="document-card"
                          data-category="{{ doc_group.category_id }}"
                          data-title="{{ doc.name|lower }}"
                          data-notes="{{ doc.notes|default:''|lower }}"
-                         data-date="{{ doc.effective_date|date:'Y-m-d' }}"
-                         data-year="{{ doc.effective_date|date:'Y' }}"
+                         data-date="{{ doc.display_date|date:'Y-m-d' }}"
+                         data-year="{{ doc.display_date|date:'Y' }}"
                          data-extension="{{ doc.file_extension }}"
                          data-download-url="{% url 'document_download' doc.pk %}"
                          data-file-url="{{ doc.file.url }}">
                         <div class="document-card-icon document-icon-{{ doc.file_extension }}">
-                            <span class="document-icon-label">{{ doc.file_extension|upper }}</span>
+                            <i class="bi bi-filetype-{{ doc.file_extension|default:'txt' }}" aria-hidden="true"></i>
                         </div>
                         <div class="document-card-info">
                             <h3 class="document-card-title">
-                                {{ doc.name }}
-                                {% if doc.effective_date %}
-                                    <span class="document-new-badge" style="display:none;">{% trans "Новий" %}</span>
-                                {% endif %}
+                                <span class="document-card-title-text">{{ doc.name }}</span>
                             </h3>
                             {% if doc.notes %}
                                 <p class="document-card-description">{{ doc.notes }}</p>
                             {% endif %}
                             <div class="document-card-meta">
-                                <span>{{ doc.file_extension|upper }}</span>
-                                <span class="document-meta-separator">·</span>
-                                <span>{{ doc.category.name }}</span>
+                                <span class="document-card-group">{{ doc.category.name }}</span>
                             </div>
                         </div>
-                        <div class="document-card-date">
-                            {{ doc.effective_date|date:"d.m.Y" }}
-                        </div>
+                        {% if doc.display_date %}
+                            <div class="document-card-footer">
+                                <div class="document-card-date">
+                                    <time datetime="{{ doc.display_date|date:'Y-m-d' }}">{{ doc.display_date|date:"j E Y" }}</time>
+                                </div>
+                                <span class="document-new-badge" style="display:none;">{% trans "Новий" %}</span>
+                            </div>
+                        {% endif %}
                         <a href="{% url 'document_download' doc.pk %}" class="document-download-button" title="{% trans 'Завантажити' %}" target="_blank">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -128,7 +146,7 @@
             {% for doc in popular_documents %}
                 <div class="latest-document-item">
                     <div class="latest-document-icon document-icon-{{ doc.file_extension }}">
-                        <span class="document-icon-label-sm">{{ doc.file_extension|upper }}</span>
+                        <i class="bi bi-filetype-{{ doc.file_extension|default:'txt' }}" aria-hidden="true"></i>
                     </div>
                     <div class="latest-document-info">
                         <span class="latest-document-name">{{ doc.name }}</span>
@@ -150,11 +168,7 @@
         <!-- Contact Widget -->
         <div class="documents-contact-widget">
             <div class="documents-contact-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
             </div>
             <h4 class="documents-contact-title">{% trans "Не знайшли потрібний документ?" %}</h4>
             <p class="documents-contact-text">{% trans "Зверніться до нас, і ми допоможемо знайти потрібну інформацію." %}</p>
@@ -172,11 +186,14 @@
 <script>
 (function() {
     const ITEMS_PER_PAGE = 12;
+    const VIEW_STORAGE_KEY = 'petanque.documents.view';
+    const VALID_VIEWS = ['card', 'line'];
     let visibleCount = ITEMS_PER_PAGE;
     let activeCategory = 'all';
     let searchQuery = '';
     let selectedYear = 'all';
     let sortDirection = 'newest';
+    let currentView = getStoredView();
 
     const cards = Array.from(document.querySelectorAll('.document-card'));
     const listEl = document.getElementById('documentList');
@@ -187,6 +204,36 @@
     const sortSelect = document.getElementById('documentsSort');
     const yearFiltersEl = document.getElementById('documentsYearFilters');
     const categoryButtons = document.querySelectorAll('.document-category-button');
+    const viewButtons = document.querySelectorAll('[data-documents-view]');
+
+    function getStoredView() {
+        try {
+            const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY);
+            if (VALID_VIEWS.includes(storedView)) return storedView;
+        } catch (error) {
+            return 'card';
+        }
+        return 'card';
+    }
+
+    function setDocumentView(view, shouldPersist) {
+        const nextView = VALID_VIEWS.includes(view) ? view : 'card';
+        currentView = nextView;
+        listEl.classList.toggle('document-list--cards', nextView === 'card');
+        listEl.classList.toggle('document-list--lines', nextView === 'line');
+        viewButtons.forEach(button => {
+            const isActive = button.dataset.documentsView === nextView;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        if (shouldPersist) {
+            try {
+                window.localStorage.setItem(VIEW_STORAGE_KEY, nextView);
+            } catch (error) {
+                return;
+            }
+        }
+    }
 
     // Mark new documents (less than 7 days)
     const now = new Date();
@@ -254,6 +301,13 @@
         applyFilters();
     });
 
+    // View mode
+    viewButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setDocumentView(button.dataset.documentsView, true);
+        });
+    });
+
     // Show more
     showMoreBtn.addEventListener('click', () => {
         visibleCount += ITEMS_PER_PAGE;
@@ -277,6 +331,8 @@
     });
 
     function applyFilters() {
+        listEl.classList.toggle('document-list--group-hidden', activeCategory !== 'all');
+
         let filtered = cards.filter(card => {
             if (activeCategory !== 'all' && card.dataset.category !== activeCategory) return false;
             if (selectedYear !== 'all' && card.dataset.year !== selectedYear) return false;
@@ -317,6 +373,7 @@
         showMoreWrapper.style.display = filtered.length > visibleCount ? '' : 'none';
     }
 
+    setDocumentView(currentView, false);
     applyFilters();
 })();
 </script>

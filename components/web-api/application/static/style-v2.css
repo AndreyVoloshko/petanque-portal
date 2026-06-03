@@ -8336,50 +8336,31 @@ table.dataTable.players-table thead th.sorting_desc::after {
 /* ===== Documents Page ===== */
 
 .documents-hero {
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(245, 251, 255, 0.99) 0%,
-      rgba(245, 251, 255, 0.96) 39%,
-      rgba(245, 251, 255, 0.7) 56%,
-      rgba(245, 251, 255, 0.45) 66%,
-      rgba(245, 251, 255, 0.78) 84%,
-      rgba(245, 251, 255, 0.98) 100%
-    ),
-    url("brand/landing-hero-petanque.png");
-  background-position:
-    center,
-    67% 58%;
-  background-repeat: no-repeat;
-  background-size:
-    auto,
-    max(76vw, 64rem) auto;
-  border-radius: 18px;
-  margin-bottom: 2rem;
-  min-height: 10rem;
-  overflow: hidden;
-  padding: 2.5rem max(2rem, calc((100vw - 1320px) / 2 + 0.75rem));
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.45rem;
+  min-width: 0;
 }
 
 .documents-hero-content {
-  max-width: 560px;
+  min-width: 0;
 }
 
 .documents-hero-title {
   color: var(--color-text);
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem;
-  line-height: 1.2;
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.06;
+  margin: 0;
 }
 
 .documents-hero-subtitle {
   color: var(--color-muted);
   font-size: 1rem;
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.45;
+  margin: 0.42rem 0 0;
+  max-width: 42rem;
 }
 
 .documents-page-content {
@@ -8530,6 +8511,44 @@ table.dataTable.players-table thead th.sorting_desc::after {
   border-color: var(--link-action);
 }
 
+.documents-view-switcher {
+  align-items: center;
+  background: #f3f8fb;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  display: inline-flex;
+  gap: 2px;
+  height: 44px;
+  padding: 3px;
+}
+
+.documents-view-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: #5b6b78;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1rem;
+  height: 36px;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  width: 38px;
+}
+
+.documents-view-button:hover,
+.documents-view-button:focus {
+  color: var(--link-action);
+  outline: none;
+}
+
+.documents-view-button.is-active {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 63, 95, 0.12);
+  color: var(--link-action);
+}
+
 /* Year Filters */
 .documents-year-filters {
   display: flex;
@@ -8566,22 +8585,50 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 /* Document List */
 .document-list {
+  align-items: stretch;
+  display: grid;
+  gap: 12px;
+}
+
+.document-list--cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.document-list--lines {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .document-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 18px;
+  background: #ffffff;
   border: 1px solid #dbe7ee;
   border-radius: 16px;
-  background: #ffffff;
   box-shadow: 0 4px 16px rgba(15, 63, 95, 0.04);
+  display: grid;
+  min-width: 0;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.document-list--cards .document-card {
+  align-content: start;
+  align-items: start;
+  gap: 10px 10px;
+  grid-template-areas:
+    "icon download"
+    "info info"
+    "footer footer";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 166px;
+  padding: 12px;
+}
+
+.document-list--lines .document-card {
+  align-items: center;
+  gap: 16px;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  padding: 16px 18px;
 }
 
 .document-card:hover {
@@ -8593,28 +8640,57 @@ table.dataTable.players-table thead th.sorting_desc::after {
 /* File Format Icons */
 .document-card-icon,
 .latest-document-icon {
-  width: 44px;
-  height: 52px;
-  border-radius: 8px;
-  display: flex;
+  --document-icon-bg: linear-gradient(135deg, #718096 0%, #475569 100%);
   align-items: center;
+  background: var(--document-icon-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 8px 18px rgba(15, 32, 48, 0.13);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
   flex-shrink: 0;
-  background: #64748b;
 }
 
-.document-icon-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+.document-card-icon {
+  border-radius: 12px;
+  height: 52px;
+  width: 44px;
 }
 
-.document-icon-label-sm {
-  font-size: 9px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+.document-list--cards .document-card-icon {
+  border-radius: 12px;
+  grid-area: icon;
+  height: 46px;
+  width: 40px;
+}
+
+.document-card-icon::after,
+.latest-document-icon::after {
+  border-left: 14px solid rgba(255, 255, 255, 0.18);
+  border-top: 14px solid rgba(255, 255, 255, 0.58);
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.document-card-icon i,
+.latest-document-icon i {
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.document-card-icon i {
+  font-size: 1.72rem;
+}
+
+.document-list--cards .document-card-icon i {
+  font-size: 1.55rem;
 }
 
 .latest-document-icon {
@@ -8623,22 +8699,35 @@ table.dataTable.players-table thead th.sorting_desc::after {
   border-radius: 6px;
 }
 
-.document-icon-pdf { background: #ef4444; }
+.latest-document-icon i {
+  font-size: 1.22rem;
+}
+
+.document-icon-pdf { --document-icon-bg: linear-gradient(135deg, #ff6b6b 0%, #dc2626 100%); }
 .document-icon-doc,
-.document-icon-docx { background: #2563eb; }
+.document-icon-docx { --document-icon-bg: linear-gradient(135deg, #4f8df7 0%, #1d4ed8 100%); }
 .document-icon-xls,
-.document-icon-xlsx { background: #16a34a; }
+.document-icon-xlsx,
+.document-icon-csv { --document-icon-bg: linear-gradient(135deg, #34d399 0%, #15803d 100%); }
 .document-icon-ppt,
-.document-icon-pptx { background: #f97316; }
+.document-icon-pptx { --document-icon-bg: linear-gradient(135deg, #fb923c 0%, #c2410c 100%); }
 .document-icon-zip,
-.document-icon-rar { background: #7c3aed; }
+.document-icon-rar { --document-icon-bg: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%); }
 .document-icon-jpg,
 .document-icon-jpeg,
-.document-icon-png { background: #06b6d4; }
+.document-icon-png,
+.document-icon-svg { --document-icon-bg: linear-gradient(135deg, #22d3ee 0%, #0284c7 100%); }
+.document-icon-ai { --document-icon-bg: linear-gradient(135deg, #ffb86c 0%, #4b5563 100%); }
+.document-icon-txt,
+.document-icon-md { --document-icon-bg: linear-gradient(135deg, #94a3b8 0%, #475569 100%); }
 
 /* Card Info */
 .document-card-info {
   min-width: 0;
+}
+
+.document-list--cards .document-card-info {
+  grid-area: info;
 }
 
 .document-card-title {
@@ -8647,10 +8736,15 @@ table.dataTable.players-table thead th.sorting_desc::after {
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.3;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+}
+
+.document-list--cards .document-card-title {
+  font-size: 0.9rem;
+  line-height: 1.22;
+}
+
+.document-card-title-text {
+  min-width: 0;
 }
 
 .document-card-description {
@@ -8664,6 +8758,11 @@ table.dataTable.players-table thead th.sorting_desc::after {
   overflow: hidden;
 }
 
+.document-list--cards .document-card-description {
+  -webkit-line-clamp: 1;
+  margin-top: 0.42rem;
+}
+
 .document-card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -8673,8 +8772,29 @@ table.dataTable.players-table thead th.sorting_desc::after {
   font-size: 0.8rem;
 }
 
+.document-list--cards .document-card-meta {
+  margin-top: 0.5rem;
+}
+
+.document-list--group-hidden .document-card-meta {
+  display: none;
+}
+
 .document-meta-separator {
   margin: 0 2px;
+}
+
+.document-card-footer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.document-list--cards .document-card-footer {
+  align-self: end;
+  grid-area: footer;
+  justify-self: start;
 }
 
 .document-card-date {
@@ -8682,6 +8802,17 @@ table.dataTable.players-table thead th.sorting_desc::after {
   font-size: 0.85rem;
   white-space: nowrap;
   font-weight: 500;
+}
+
+.document-list--cards .document-card-date {
+  align-self: end;
+  background: #f4f9fc;
+  border: 1px solid #e3edf3;
+  border-radius: 999px;
+  color: #536679;
+  font-size: 0.74rem;
+  margin-top: 0;
+  padding: 3px 8px;
 }
 
 .document-new-badge {
@@ -8694,6 +8825,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   color: #0b5ed7;
   font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* Download Button */
@@ -8709,6 +8841,19 @@ table.dataTable.players-table thead th.sorting_desc::after {
   color: #0b5ed7;
   cursor: pointer;
   transition: all 150ms ease;
+}
+
+.document-list--cards .document-download-button {
+  border-radius: 10px;
+  grid-area: download;
+  height: 34px;
+  justify-self: end;
+  width: 34px;
+}
+
+.document-list--cards .document-download-button svg {
+  height: 17px;
+  width: 17px;
 }
 
 .document-download-button:hover {
@@ -8878,6 +9023,11 @@ table.dataTable.players-table thead th.sorting_desc::after {
   color: var(--link-action);
 }
 
+.documents-contact-icon i {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
 .documents-contact-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -8960,38 +9110,104 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 @media (max-width: 768px) {
-  .documents-hero {
-    padding: 1.5rem 1rem;
-    min-height: auto;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-  }
-
-  .documents-hero-title {
-    font-size: 1.6rem;
-  }
-
   .documents-controls {
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .documents-search-wrapper {
+    grid-column: 1 / -1;
   }
 
   .documents-sort-select {
+    height: 38px;
+    min-width: 0;
     width: 100%;
   }
 
-  .document-card {
+  .documents-view-switcher {
+    height: 38px;
+    justify-self: end;
+    width: auto;
+  }
+
+  .documents-view-button {
+    flex: 0 0 auto;
+    height: 30px;
+    width: 34px;
+  }
+
+  .document-list--cards {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .document-list--cards .document-card {
+    gap: 8px;
+    min-height: 132px;
+    padding: 10px;
+  }
+
+  .document-list--cards .document-card-icon {
+    border-radius: 10px;
+    height: 40px;
+    width: 36px;
+  }
+
+  .document-list--cards .document-card-icon i {
+    font-size: 1.35rem;
+  }
+
+  .document-list--cards .document-download-button {
+    border-radius: 9px;
+    height: 32px;
+    width: 32px;
+  }
+
+  .document-list--cards .document-card-description {
+    display: none;
+  }
+
+  .document-list--cards .document-card-meta {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    margin-top: 0.35rem;
+  }
+
+  .document-list--cards .document-card-footer {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .document-list--cards .document-card-date {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .document-list--cards .document-new-badge {
+    font-size: 10px;
+    height: 18px;
+    padding: 0 6px;
+  }
+
+  .document-list--cards .document-card-title {
+    font-size: 0.82rem;
+    line-height: 1.18;
+  }
+
+  .document-list--lines .document-card {
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 12px;
     padding: 14px;
   }
 
-  .document-card-date {
+  .document-list--lines .document-card-footer {
     display: none;
   }
 
   .document-card-title {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 }
 

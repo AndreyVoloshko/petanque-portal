@@ -45,6 +45,10 @@ class Document(models.Model):
 
     @property
     def effective_date(self):
+        return self.display_date
+
+    @property
+    def display_date(self):
         return self.document_date or (self.created_at.date() if self.created_at else None)
 
     class Meta:
