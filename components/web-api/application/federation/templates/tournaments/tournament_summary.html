@@ -1,84 +1,218 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="{% if full_width == "true" %}col-12{% else %}col-lg-7{% endif %}">
-    <section class="p-3 rounded shadow">
-        <h5 class="pb-2 border-bottom">
-            {% blocktrans with name=tournament|tournament_display_name %}Competition: {{ name }}{% endblocktrans %}
-        </h5>
-        <div class="">
+<header class="tournament-detail-hero-card">
+    <div class="tournament-detail-hero-main">
+        <div class="tournament-chip-list tournament-detail-hero-chips" aria-label="{% trans "Competition categories" %}">
+            {% for format_label in row.format_labels %}
+                <span class="tournament-chip tournament-chip-format">{{ format_label }}</span>
+            {% endfor %}
+            {% for tag in row.audience_tags %}
+                <span class="tournament-chip tournament-chip-audience">{{ tag }}</span>
+            {% endfor %}
+            <span class="tournament-chip tournament-chip-{{ row.openness_key }}">{{ row.openness_label }}</span>
+            {% if tournament.is_goes_to_rating %}
+                <span class="tournament-chip tournament-detail-chip-rating">
+                    <i class="bi bi-award" aria-hidden="true"></i>
+                    {% trans "Rating tournament" %}
+                </span>
+            {% endif %}
+            {% if tournament.is_b_tournament %}
+                <span class="tournament-chip tournament-detail-chip-secondary">{% trans "B tournament" %}</span>
+            {% endif %}
+            {% if tournament.is_ukrainian_league %}
+                <span class="tournament-chip tournament-detail-chip-league">{% trans "Ukrainian league" %}</span>
+            {% endif %}
+            {% if tournament.is_inclusive %}
+                <span class="tournament-chip tournament-detail-chip-inclusive">{% trans "Inclusive" %}</span>
+            {% endif %}
+        </div>
 
-            <div class="row">
-                <dl class="row tournament_summary">
-                    {{ tournament|tournament_field:"category"|safe }}
-                    {{ tournament|tournament_field:"place"|safe }}
+        <h1 id="tournament-detail-title" class="tournament-detail-title">{{ row.title }}</h1>
+        {% if row.full_title and row.full_title != row.title %}
+            <p class="tournament-detail-subtitle">{{ row.full_title }}</p>
+        {% endif %}
 
-                    {% if tournament.organizer_club %}
-                    <dt class="col-sm-5 fw-bold">{% trans "Organizer club" %}</dt>
-                    <dd class="col-sm-7">
-                        <a href="{% url 'club' id=tournament.organizer_club.pk %}">{{ tournament.organizer_club.short_name }}</a>
-                    </dd>
-                    {% endif %}
+    </div>
 
-                    <dt class="col-sm-5 fw-bold">{% trans "Type" %}</dt>
-                    <dd class="col-sm-7">
-                        {% if tournament.number_of_players_in_team_min == tournament.number_of_players_in_team_max %}
-                            {% if tournament.number_of_players_in_team_min <= 3 %}
-                                {% for i in "x"|rjust:tournament.number_of_players_in_team_min %}
-                                    <i class="bi bi-person"></i>
-                                {% endfor %}
-                            {% else %}
-                                {{ tournament.number_of_players_in_team_min }} <i class="bi bi-person"></i>
-                            {% endif %}
-                        {% else %}
-                            {{ tournament.number_of_players_in_team_min }}-{{ tournament.number_of_players_in_team_max }} <i class="bi bi-person"></i>
-                        {% endif %}
-                    </dd>
+    <div class="tournament-start-widget tournament-detail-hero-start" role="group" aria-label="{% trans "Competition start" %}">
+        <div class="tournament-start-datebox" aria-hidden="true">
+            <span class="tournament-start-day">{{ tournament.start_date|date:"d" }}</span>
+            <span class="tournament-start-month">{{ tournament.start_date|date:"M" }}</span>
+            {% if tournament_detail.start_time_label %}
+            <span class="tournament-start-timebox">{{ tournament_detail.start_time_label }}</span>
+            {% endif %}
+        </div>
+        <div class="tournament-start-copy">
+            <span class="tournament-start-label">{% trans "Start date" %}</span>
+            <time datetime="{{ tournament.start_date|date:'Y-m-d' }}" class="tournament-start-date">{{ row.date_label }}</time>
+        </div>
+    </div>
+</header>
 
-                    {{ tournament|tournament_field:"start_date"|safe }}
-                    {{ tournament|tournament_field:"start_time"|safe }}
-                    {{ tournament|tournament_field:"date_registration_stop"|safe }}
-                    <dt class="col-sm-5 fw-bold">{% trans "Additional actions" %}</dt>
-                    <dd class="col-sm-7">
-                        <div class="btn-group" role="group">
-                            {{ tournament|tournament_registration_button|safe }}
-                            {% if tournament.is_processing_finished %}
-                                <a class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Final protocol" %}" href="{% url 'tournament_protocol' id=tournament.pk %}">
-                                    <i class="bi bi-file-earmark-text"></i> {% trans "Final protocol" %}
-                                </a>
-                            {% endif %}
-                            <div class="btn-group dropdown" role="group">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="exportMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="bi bi-download"></i> {% trans "Export" %}
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="exportMenu">
-                                    <p class="dropdown-header">{% trans "For printing" %}</p>
-                                    <a class="dropdown-item" target="_blank" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html">
-                                        <i class="bi bi-printer"></i> {% trans "Teams" %}
-                                    </a>
-                                    <p><hr class="dropdown-divider"></p>
-                                    <p class="dropdown-header">API</p>
-                                    <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">
-                                        <i class="bi bi-file-earmark-spreadsheet"></i> {% trans "Teams (csv)" %}
-                                    </a>
-                                    <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=json">
-                                        <i class="bi bi-file-earmark-code"></i> {% trans "Teams (json)" %}
-                                    </a>
-                                </div>
-                            </div>    
-                        </div>
-                    </dd>
-                    {{ tournament|tournament_field:"format"|safe }}
-                    {{ tournament|tournament_field:"terms"|safe }}
-                    {{ tournament|tournament_field:"teams_limit"|safe }}
-                    {{ tournament|tournament_field:"fee"|safe }}
-                    {{ tournament|tournament_field:"notes"|safe }}
-                    {{ tournament|tournament_field:"total_number_of_teams"|safe }}
-                    {{ tournament|tournament_field:"power"|safe }}
-                    {{ tournament|tournament_field:"rating_coefficient"|safe }}
-                </dl>
+<section class="tournament-detail-metrics" aria-label="{% trans "Competition summary" %}">
+    <div class="tournament-detail-metric tournament-detail-metric-venue{% if row.organizer_url %} tournament-detail-metric-venue-wide{% endif %}">
+        {% if row.is_foreign %}
+            <i class="bi bi-globe2" aria-hidden="true"></i>
+        {% else %}
+            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        {% endif %}
+        <span class="tournament-detail-metric-copy tournament-detail-venue-copy">
+            <span class="tournament-detail-metric-value tournament-detail-metric-value-inline">
+                {% if tournament.place %}
+                    <a target="_blank" rel="noopener" href="https://maps.google.com?q={{ tournament.place|urlencode }}">{{ row.place_label }}</a>
+                {% else %}
+                    <span>{{ row.place_label }}</span>
+                {% endif %}
+                {% if row.country_code %}
+                    <span class="tournament-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>
+                {% endif %}
+            </span>
+            {% if row.organizer_url %}
+                <span class="tournament-detail-venue-organizer">
+                    <i class="bi bi-building" aria-hidden="true"></i>
+                    <a href="{{ row.organizer_url }}">{{ row.organizer_label }}</a>
+                </span>
+            {% endif %}
+            {% if not row.organizer_url %}
+                <span class="tournament-detail-metric-label">{% trans "Place" %}</span>
+            {% endif %}
+        </span>
+    </div>
+    <div class="tournament-detail-metric tournament-detail-metric-teams">
+        <i class="bi bi-people" aria-hidden="true"></i>
+        <span class="tournament-detail-metric-copy">
+            <span class="tournament-detail-metric-value">{{ row.teams_count_label }}</span>
+            <span class="tournament-detail-metric-label">{% trans "Registered" %}</span>
+        </span>
+    </div>
+    <div class="tournament-detail-metric tournament-detail-metric-power">
+        <i class="bi bi-star" aria-hidden="true"></i>
+        <span class="tournament-detail-metric-copy">
+            <span class="tournament-detail-metric-value">
+                {% if tournament.power %}{{ tournament.power|floatformat:2 }}{% else %}&mdash;{% endif %}
+            </span>
+            <span class="tournament-detail-metric-label">{% trans "Competition power" %}</span>
+        </span>
+    </div>
+    <div class="tournament-detail-metric tournament-detail-metric-coefficient">
+        <i class="bi bi-percent" aria-hidden="true"></i>
+        <span class="tournament-detail-metric-copy">
+            <span class="tournament-detail-metric-value">{{ tournament.rating_coefficient|floatformat:2 }}</span>
+            <span class="tournament-detail-metric-label">{% trans "Rating coefficient" %}</span>
+        </span>
+    </div>
+</section>
+
+<section class="tournament-detail-info-grid tournament-detail-info-grid-compact" aria-label="{% trans "Competition information" %}">
+    <article class="tournament-detail-info-card">
+        <div class="tournament-detail-section-heading">
+            <h2>{% trans "Participation" %}</h2>
+        </div>
+        <div class="tournament-detail-list">
+            <div class="tournament-detail-row">
+                <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                <span class="tournament-detail-row-label">{% trans "Format" %}</span>
+                <span class="tournament-detail-row-value">{{ tournament.get_format_display }}</span>
+            </div>
+            <div class="tournament-detail-row">
+                <i class="bi bi-tag" aria-hidden="true"></i>
+                <span class="tournament-detail-row-label">{% trans "Category" %}</span>
+                <span class="tournament-detail-row-value">{{ tournament.get_category_display }}</span>
+            </div>
+            <div class="tournament-detail-row">
+                <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                <span class="tournament-detail-row-label">{% trans "Team size" %}</span>
+                <span class="tournament-detail-row-value">{{ tournament_detail.team_size_label }}</span>
+            </div>
+            <div class="tournament-detail-row">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span class="tournament-detail-row-label">{% trans "Team limit" %}</span>
+                <span class="tournament-detail-row-value">{{ tournament.teams_limit }}</span>
+            </div>
+            {% if tournament.fee %}
+            <div class="tournament-detail-row tournament-detail-row-block">
+                <i class="bi bi-cash-coin" aria-hidden="true"></i>
+                <span class="tournament-detail-row-label">{% trans "Fees" %}</span>
+                <span class="tournament-detail-row-value">{{ tournament.fee|linebreaksbr }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </article>
+
+    <article class="tournament-detail-info-card tournament-detail-notes-card">
+        <div class="tournament-detail-section-heading">
+            <h2>{% trans "Additional information" %}</h2>
+        </div>
+        <div class="tournament-detail-list">
+            <div class="tournament-detail-status-block tournament-detail-additional-status">
+                <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                {% if row.status.note %}
+                    <span class="tournament-status-note">{{ row.status.note }}</span>
+                {% endif %}
             </div>
 
+            <div class="tournament-detail-actions tournament-detail-additional-actions">
+                {% if row.status.key == "registration_open" %}
+                    <a class="tournament-detail-action tournament-detail-action-primary" href="{{ row.registration_url }}">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        <span>{% trans "Register" %}</span>
+                    </a>
+                {% endif %}
+                {% if row.show_results_action %}
+                    <a class="tournament-detail-action tournament-detail-action-results" href="{{ row.protocol_url }}">
+                        <i class="bi bi-trophy" aria-hidden="true"></i>
+                        <span>{% trans "Results" %}</span>
+                    </a>
+                {% endif %}
+                {% if tournament.terms %}
+                    <a class="tournament-detail-action" target="_blank" rel="noopener" href="{{ tournament.terms.url }}">
+                        <i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i>
+                        <span>{% trans "Regulations" %}</span>
+                    </a>
+                {% endif %}
+                <div class="dropdown tournament-detail-export">
+                    <button class="tournament-detail-action dropdown-toggle" type="button" id="tournament-detail-export-{{ tournament.pk }}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download" aria-hidden="true"></i>
+                        <span>{% trans "Export" %}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="tournament-detail-export-{{ tournament.pk }}">
+                        <li><h6 class="dropdown-header">{% trans "For printing" %}</h6></li>
+                        <li>
+                            <a class="dropdown-item" target="_blank" rel="noopener" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=html">
+                                <i class="bi bi-printer" aria-hidden="true"></i>
+                                {% trans "Teams" %}
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">API</h6></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=csv">
+                                <i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i>
+                                {% trans "Teams (csv)" %}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'tournament_teams_export' id=tournament.pk %}?format=json">
+                                <i class="bi bi-file-earmark-code" aria-hidden="true"></i>
+                                {% trans "Teams (json)" %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {% if tournament.notes %}
+            <div class="tournament-detail-note">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <div>{{ tournament.notes|linebreaksbr }}</div>
+            </div>
+            {% else %}
+            <div class="tournament-detail-empty-inline">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <span>{% trans "No additional notes." %}</span>
+            </div>
+            {% endif %}
         </div>
-    </section>
-</div>
+    </article>
+</section>

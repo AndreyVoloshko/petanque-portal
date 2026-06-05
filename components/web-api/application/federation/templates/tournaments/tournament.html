@@ -2,84 +2,92 @@
 {% load app_filters %}
 {% load i18n %}
 
+{% block main_classes %}portal-page-content-wide{% endblock %}
+
 {% block content %}
-    <div class="row">
-        {% include "tournaments/tournament_summary.html" with tournament=tournament %}
-        {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
-    </div>
-    
-    <div class="clearfix pt-4"></div>
+{% with row=tournament_detail.row can_manage=tournament|is_user_has_admin_access_to_tournament:current_user %}
+<section class="tournament-detail-page" aria-labelledby="tournament-detail-title">
+    <nav class="tournament-detail-breadcrumbs" aria-label="breadcrumb">
+        <a href="/" class="tournament-detail-breadcrumb-link"><i class="bi bi-house-door-fill" aria-hidden="true"></i></a>
+        <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+        <a href="{% url 'tournaments' %}" class="tournament-detail-breadcrumb-link">{% trans "Competitions" %}</a>
+        <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+        <span class="tournament-detail-breadcrumb-current">{{ row.title }}</span>
+    </nav>
 
-    <div class="row">
-        <div class="col-12">
-            <section class="p-3 rounded shadow">
-                <ul class="nav nav-pills mb-3" id="tournamentTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active"
-                           id="tournament-teams-tab"
-                           data-bs-toggle="pill"
-                           href="#tournament_teams"
-                           role="tab"
-                           aria-controls="tournament_teams"
-                           aria-selected="true">
-                            <i class="bi bi-star"></i> {% trans "Teams" %}
-                        </a>
-                    </li>
+    {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row %}
+    {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
 
-                    {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link"
-                           id="tournament-notes-tab"
-                           data-bs-toggle="pill"
-                           href="#tournament_notes"
-                           role="tab"
-                           aria-controls="tournament_notes"
-                           aria-selected="false">
-                            <i class="bi bi-pencil"></i> {% trans "Notes" %}
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-
-                <div class="tab-content p-3 rounded">
-                    <div class="tab-pane fade show active"
-                         id="tournament_teams"
-                         role="tabpanel"
-                         aria-labelledby="tournament-teams-tab">
-                        {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
-                    </div>
-
-                    {% if tournament|is_user_has_admin_access_to_tournament:current_user %}
-                    <div class="tab-pane fade"
-                         id="tournament_notes"
-                         role="tabpanel"
-                         aria-labelledby="tournament-notes-tab">
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <textarea id="tournament_notes_content"
-                                          name="tournament_notes_content"
-                                          class="form-control"
-                                          rows="10"
-                                          placeholder="{% trans "Notes for the final protocol" %}">{{ tournament.final_notes|trim }}</textarea>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-secondary">{% trans "Save" %}</button>
-                            </div>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
-            </section>
+    <section class="tournament-detail-main-card" aria-labelledby="tournament-teams-title">
+        <div class="tournament-detail-section-heading tournament-detail-section-heading-row">
+            <div>
+                <h2 id="tournament-teams-title">{% trans "Teams" %}</h2>
+                <p>{{ row.teams_count_label }}</p>
+            </div>
         </div>
-    </div>
 
-<script>
-    $(document).ready(function() {
-        $('#tournamentTabs a').click(function(e) {
-            e.preventDefault();
-            $(this).tab('show');
-        });
-    });
-</script>
+        {% if can_manage %}
+        <ul class="nav tournament-detail-tabs" id="tournamentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="tournament-detail-tab active"
+                        id="tournament-teams-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#tournament_teams"
+                        type="button"
+                        role="tab"
+                        aria-controls="tournament_teams"
+                        aria-selected="true">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                    <span>{% trans "Teams" %}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="tournament-detail-tab"
+                        id="tournament-notes-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#tournament_notes"
+                        type="button"
+                        role="tab"
+                        aria-controls="tournament_notes"
+                        aria-selected="false">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                    <span>{% trans "Notes" %}</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content tournament-detail-tab-content">
+            <div class="tab-pane fade show active"
+                 id="tournament_teams"
+                 role="tabpanel"
+                 aria-labelledby="tournament-teams-tab">
+                {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
+            </div>
+            <div class="tab-pane fade"
+                 id="tournament_notes"
+                 role="tabpanel"
+                 aria-labelledby="tournament-notes-tab">
+                <form class="tournament-notes-form" method="post" action="">
+                    {% csrf_token %}
+                    <label class="visually-hidden" for="tournament_notes_content">{% trans "Notes for the final protocol" %}</label>
+                    <textarea id="tournament_notes_content"
+                              name="tournament_notes_content"
+                              class="tournament-notes-textarea"
+                              rows="10"
+                              placeholder="{% trans "Notes for the final protocol" %}">{{ tournament.final_notes|trim }}</textarea>
+                    <div class="tournament-notes-actions">
+                        <button type="submit" class="tournament-detail-action tournament-detail-action-primary">
+                            <i class="bi bi-check2" aria-hidden="true"></i>
+                            <span>{% trans "Save" %}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+            {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
+        {% endif %}
+    </section>
+</section>
+{% endwith %}
 {% endblock %}

@@ -387,6 +387,57 @@ def _date_full_month_label(value):
     return formats.date_format(value, 'j F Y')
 
 
+def _date_time_full_label(value):
+    if not value:
+        return ''
+
+    local_value = timezone.localtime(value) if timezone.is_aware(value) else value
+    return '{} {}'.format(
+        _date_full_month_label(local_value.date()),
+        formats.time_format(local_value, 'H:i'),
+    )
+
+
+def _team_size_label(tournament):
+    try:
+        players_min = int(tournament.number_of_players_in_team_min or 0)
+        players_max = int(tournament.number_of_players_in_team_max or players_min)
+    except (TypeError, ValueError):
+        return ''
+
+    if players_min <= 0 and players_max <= 0:
+        return ''
+
+    if players_min == players_max:
+        return _player_count_label(players_min)
+
+    if _current_language() == 'en':
+        return _('%(min)d-%(max)d players') % {'min': players_min, 'max': players_max}
+
+    return '{}-{} {}'.format(players_min, players_max, _uk_plural(players_max, 'гравець', 'гравці', 'гравців'))
+
+
+def _player_count_label(count):
+    count = int(count or 0)
+    if _current_language() == 'en':
+        return ngettext('%(count)d player', '%(count)d players', count) % {'count': count}
+
+    return '{} {}'.format(count, _uk_plural(count, 'гравець', 'гравці', 'гравців'))
+
+
+def _build_tournament_detail(tournament):
+    row = _build_tournament_row(tournament)
+
+    return {
+        'row': row,
+        'is_single_player_format': _is_single_player_format(tournament, row.get('format_keys', [])),
+        'team_size_label': _team_size_label(tournament),
+        'start_time_label': formats.time_format(tournament.start_time, 'H:i') if tournament.start_time else '',
+        'end_date_label': _date_full_month_label(tournament.end_date) if tournament.end_date else '',
+        'registration_deadline_label': _date_time_full_label(tournament.date_registration_stop),
+    }
+
+
 def _display_format_label(format_label):
     if format_label in ('Супер-меле', 'Super melee'):
         return _('Супермеле') if format_label == 'Супер-меле' else format_label
@@ -426,7 +477,10 @@ def _uk_plural(count, singular, few, many):
 
 
 def _is_single_player_format(tournament, format_keys):
-    if 'tete' in format_keys:
+    if 'tete' in format_keys or 'shooting' in format_keys:
+        return True
+
+    if getattr(tournament, 'tournament_format', '') == 'tir':
         return True
 
     try:
@@ -875,7 +929,7 @@ def tournament(request, id):
             'main_organizer',
             'main_organizer__user',
             'federation_delegat',
-        ),
+        ).annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True)),
         pk=id,
     )
 
@@ -938,10 +992,12 @@ def tournament(request, id):
                 to_attr='captain_memberships',
             ),
         )
+        .order_by('place_min', 'place_max', 'date_registration', 'pk')
     )
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
+        'tournament_detail': _build_tournament_detail(tournament),
         'arbiters': arbiters,
         'teams': teams,
         'page_title': _("Competitions"),

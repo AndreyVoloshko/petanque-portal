@@ -1,55 +1,37 @@
-{% load app_filters %}
 {% load i18n %}
 
-<div class="col-md-5">
-    <section class="p-3 rounded shadow">
-        <h5 class="pb-2 border-bottom">
-            {% trans "Organizers, delegates, and arbiters" %}
-        </h5>
-        <div class="delegats_container">
-            <div class="row g-3">
-                {% if tournament.main_organizer %}
-                    <div class="col-md-4 delegat text-center">
-                        {{ tournament.main_organizer|user_avatar:"big"|safe }}
-                        <div class="sentence-line-break mt-2">
-                            <span class="badge bg-secondary fw-bold">{% trans "Main organizer" %}</span>
-                            <p class="font-weight-normal">
-                                {{ tournament.main_organizer|user_profile_link|safe }}
-                            </p>
-                        </div>
-                    </div>
-                {% endif %}
+{% trans "Main organizer" as main_organizer_label %}
+{% trans "UPF delegate" as federation_delegate_label %}
+{% trans "Head arbiter" as head_arbiter_label %}
+{% trans "Arbiter" as arbiter_label %}
 
-                {% if tournament.federation_delegat %}
-                    <div class="col-md-4 delegat text-center">
-                        {{ tournament.federation_delegat|user_avatar:"big"|safe }}
-                        <div class="sentence-line-break mt-2">
-                            <span class="badge bg-secondary fw-bold">{% trans "UPF delegate" %}</span>
-                            <p class="font-weight-normal">
-                                {{ tournament.federation_delegat|user_profile_link|safe }}
-                            </p>
-                        </div>
-                    </div>
-                {% endif %}
+<section class="tournament-detail-people-card" aria-labelledby="tournament-people-title">
+    <div class="tournament-detail-section-heading">
+        <h2 id="tournament-people-title">{% trans "Organizers and arbiters" %}</h2>
+    </div>
 
-                {% for arbiter in arbiters %}
-                    <div class="col-md-4 delegat text-center">
-                        {{ arbiter.arbiter|user_avatar:"big"|safe }}
-                        <div class="sentence-line-break mt-2">
-                            <span class="badge bg-secondary fw-bold">
-                                {% if arbiter.is_main_arbiter %}
-                                    {% trans "Head arbiter" %}
-                                {% else %}
-                                    {% trans "Arbiter" %}
-                                {% endif %}
-                            </span>
-                            <p class="font-weight-normal">
-                                {{ arbiter.arbiter|user_profile_link|safe }}
-                            </p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-</div>
+    {% if tournament.main_organizer or tournament.federation_delegat or arbiters %}
+    <div class="tournament-person-grid">
+        {% if tournament.main_organizer %}
+            {% include "tournaments/_tournament_person_card.html" with person=tournament.main_organizer role_label=main_organizer_label role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
+        {% endif %}
+
+        {% if tournament.federation_delegat %}
+            {% include "tournaments/_tournament_person_card.html" with person=tournament.federation_delegat role_label=federation_delegate_label role_icon="bi-shield-check" card_class="tournament-person-card-delegate" %}
+        {% endif %}
+
+        {% for arbiter in arbiters %}
+            {% if arbiter.is_main_arbiter %}
+                {% include "tournaments/_tournament_person_card.html" with person=arbiter.arbiter role_label=head_arbiter_label role_icon="bi-patch-check" card_class="tournament-person-card-arbiter" %}
+            {% else %}
+                {% include "tournaments/_tournament_person_card.html" with person=arbiter.arbiter role_label=arbiter_label role_icon="bi-flag" card_class="tournament-person-card-arbiter" %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="tournament-detail-empty-card">
+        <i class="bi bi-person-badge" aria-hidden="true"></i>
+        <span>{% trans "No organizers or arbiters are specified." %}</span>
+    </div>
+    {% endif %}
+</section>

@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 from federation.helpers.general import get_model
 from federation.utils.tournament_names import get_tournament_card_metadata, get_tournament_display_name
 import json
+from urllib.parse import urlparse
 
 register = template.Library()
 
@@ -175,7 +176,74 @@ def social_field (item, field):
     elif icon_class_name == 'twitter':
         icon_class_name = 'twitter-x'
 
-    return '<a target="_blank" href="' + value + '"  data-bs-toggle="tooltip"  data-bs-placement="top" title="' + field.title() + '"><i class="bi bi-'+ icon_class_name +'"></i></a>'
+    return format_html(
+        '<a target="_blank" href="{}" data-bs-toggle="tooltip" data-bs-placement="top" title="{}"><i class="bi bi-{}"></i></a>',
+        social_url(value, field),
+        field.title(),
+        icon_class_name,
+    )
+
+
+def _social_handle(value):
+    return str(value or '').strip().strip('/').lstrip('@')
+
+
+def _social_profile_url(value, canonical_host, accepted_hosts):
+    clean_value = str(value or '').strip()
+    if not clean_value:
+        return ''
+
+    parsed_url = urlparse(clean_value)
+    if parsed_url.scheme and parsed_url.netloc:
+        username = parsed_url.path.strip('/').split('/')[0]
+        return f'https://{canonical_host}/{username}' if username else clean_value
+
+    handle = _social_handle(clean_value)
+    lowered_handle = handle.lower()
+    for host in accepted_hosts:
+        if lowered_handle.startswith(host):
+            handle = handle[len(host):].strip('/').split('/')[0]
+            break
+
+    return f'https://{canonical_host}/{handle}' if handle else ''
+
+
+def _instagram_url(value):
+    return _social_profile_url(
+        value,
+        'www.instagram.com',
+        ('www.instagram.com/', 'instagram.com/'),
+    )
+
+
+@register.filter(name="social_url")
+def social_url(value, field='website'):
+    clean_value = str(value or '').strip()
+    if not clean_value:
+        return ''
+
+    normalized_field = str(field or '').lower()
+    lowered_value = clean_value.lower()
+    if normalized_field == 'instagram':
+        return _instagram_url(clean_value)
+    if lowered_value.startswith(('http://', 'https://', 'mailto:', 'tel:')):
+        return clean_value
+    if lowered_value.startswith('//'):
+        return 'https:' + clean_value
+
+    if normalized_field == 'facebook':
+        return _social_profile_url(
+            clean_value,
+            'www.facebook.com',
+            ('www.facebook.com/', 'facebook.com/'),
+        )
+    if normalized_field == 'twitter':
+        return _social_profile_url(
+            clean_value,
+            'x.com',
+            ('www.x.com/', 'x.com/', 'www.twitter.com/', 'twitter.com/'),
+        )
+    return f'https://{clean_value}'
 
 
 @register.filter(name="player_age_category")
@@ -741,6 +809,15 @@ def team_power_badge(power):
     )
 
     return _power_badge(power, tooltip, _("Team power"), "team-power-badge")
+
+
+@register.filter(name="participant_power_badge")
+def participant_power_badge(power):
+    tooltip = _(
+        "Participant power in this tournament is calculated from the participant's current power."
+    )
+
+    return _power_badge(power, tooltip, _("Participant power"), "participant-power-badge")
 
 
 def _power_badge(power, tooltip=None, label=None, extra_class=""):

@@ -2564,3 +2564,91 @@ msgstr "Titles"
 #: federation/views/title_registry.py
 msgid "Players of the Ukrainian national petanque team"
 msgstr "Players of the Ukrainian national petanque team"
+
+#: federation/templates/clubs/club.html
+msgid "Club links"
+msgstr "Club links"
+
+#: federation/templates/clubs/club.html
+msgid "Website"
+msgstr "Website"
+
+#: federation/templates/clubs/club.html
+msgid "Club summary"
+msgstr "Club summary"
+
+#: federation/templates/clubs/club.html
+msgid "Club rating"
+msgstr "Club rating"
+
+#: federation/templates/clubs/club.html
+msgid "Club president"
+msgstr "Club president"
+
+#: federation/templates/clubs/club.html
+msgid "President is not specified."
+msgstr "President is not specified."
+
+#: federation/templates/clubs/club.html
+msgid "Club indicators"
+msgstr "Club indicators"
+
+#: federation/templates/clubs/club.html
+msgid "Place in Ukrainian club rating"
+msgstr "Place in Ukrainian club rating"
+
+#: federation/templates/clubs/club.html
+msgid "Average athlete rating"
+msgstr "Average athlete rating"
+
+#: federation/templates/clubs/club.html
+msgid "Average athlete power"
+msgstr "Average athlete power"
+
+#: federation/templates/clubs/club.html
+msgid "National team athletes"
+msgstr "National team athletes"
+
+#: federation/templates/clubs/club.html
+msgid "Candidates for Master of Sports"
+msgstr "Candidates for Master of Sports"
+
+#: federation/templates/clubs/club.html
+msgid "Club athletes"
+msgstr "Club athletes"
+
+#: federation/templates/clubs/club.html
+msgid "athletes in club"
+msgstr "athletes in club"
+
+#: federation/templates/clubs/club.html
+msgid "Search athlete..."
+msgstr "Search athlete..."
+
+#: federation/templates/clubs/club.html
+msgid "Search athlete"
+msgstr "Search athlete"
+
+#: federation/templates/clubs/club.html
+msgid "Sort athletes"
+msgstr "Sort athletes"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: rating place"
+msgstr "Sort: rating place"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: points"
+msgstr "Sort: points"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: power"
+msgstr "Sort: power"
+
+#: federation/templates/clubs/club.html
+msgid "Sort: name"
+msgstr "Sort: name"
+
+#: federation/templates/clubs/club.html
+msgid "No athletes match the selected filters."
+msgstr "No athletes match the selected filters."

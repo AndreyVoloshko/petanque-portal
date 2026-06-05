@@ -1,98 +1,403 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="table-responsive">
-    <table class="table table-hover table-striped table-sm" id="players">
-        <thead>
-            <tr>
-                <th class="text-center"></th>
-                <th class="text-start">{% trans "Points" %}</th>
-                <th class="text-start">{% trans "Average" %}</th>
-                <th class="text-start">{% trans "Name" %}</th>
-                <th class="text-start">{% trans "City" %}</th>
-                <th class="text-start">{% trans "Year founded" %}</th>
-                <th class="text-start">{% trans "President" %}</th>
-                <th class="text-start">{% trans "Athlete count" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
+{% trans "Club points are the sum of current rating points from active athletes in the club." as points_help_text %}
+{% trans "Average points are calculated across active athletes in the club." as average_help_text %}
+{% trans "Athlete count includes active athletes currently assigned to the club." as athletes_help_text %}
+
+<div class="players-results-surface clubs-results-surface">
+    <div class="players-table-responsive">
+        <table class="players-table clubs-table" id="clubs">
+            <thead>
                 <tr>
-                    <td class="text-center">
-                        {{ item|club_logo:""|safe }}
-                    </td>
-                    <td class="text-start">
-                        <span class="badge bg-success" data-bs-toggle="tooltip" title="{% trans "Total rating points in the club" %}">
-                            <i class="bi bi-trophy"></i> {{ item|get_club_rating_points }}
+                    <th class="clubs-rank-column">{% trans "Rating" %}</th>
+                    <th class="clubs-club-column">{% trans "Club" %}</th>
+                    <th class="clubs-points-column">
+                        <span class="players-column-heading">
+                            {% trans "Points" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ points_help_text }}</span>
+                            </button>
                         </span>
-                    </td>
-                    <td class="text-start">
-                        <span class="badge bg-primary" data-bs-toggle="tooltip" title="{% trans "Average points per athlete" %}">
-                            <i class="bi bi-graph-up"></i> {{ item|get_club_avg_rating_points }}
+                    </th>
+                    <th class="clubs-average-column">
+                        <span class="players-column-heading">
+                            {% trans "Average" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ average_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ average_help_text }}</span>
+                            </button>
                         </span>
-                    </td>
-                    <td class="text-start">
-                        <a href="{% url 'club' id=item.pk %}">{{ item.short_name }}</a>
-                    </td>
-                    <td class="text-start">
-                        <a target="_blank" href="https://maps.google.com?q={{ item.address }}">
-                            <i class="bi bi-geo-alt"></i>
-                        </a> 
-                        {{ item.city }} {{ item.city.country|country_flag|safe }}
-                    </td>
-                    <td class="text-start">
-                        <span class="badge bg-warning" data-bs-toggle="tooltip" title="{% trans "Year founded" %}">
-                            <i class="bi bi-calendar"></i> {{ item.date_created|get_year }} {% trans "yr." %}
+                    </th>
+                    <th class="clubs-city-column">{% trans "City" %}</th>
+                    <th class="clubs-founded-column">{% trans "Founded" %}</th>
+                    <th class="clubs-president-column">{% trans "President" %}</th>
+                    <th class="clubs-athletes-column">
+                        <span class="players-column-heading">
+                            {% trans "Athletes" %}
+                            <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ athletes_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                <span class="visually-hidden">{{ athletes_help_text }}</span>
+                            </button>
                         </span>
-                    </td>
-                    <td class="text-start">
-                        {{ item.president|user_profile_link|safe }}
-                    </td>
-                    <td class="text-center">
-                        <a href="{% url 'club' id=item.pk %}">
-                            <span class="badge bg-info" data-bs-toggle="tooltip" title="{% trans "Number of athletes" %}">
-                                <i class="bi bi-people"></i> {{ item|get_number_of_players }}
-                            </span>
-                        </a>
-                    </td>
+                    </th>
+                    <th class="clubs-action-column no-sort" aria-label="{% trans "Actions" %}"></th>
+                    <th class="players-mobile-card-column clubs-mobile-card-column no-sort" aria-hidden="true"></th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    {% with rank_value=page_obj.start_index|add:forloop.counter0 %}
+                    <tr class="players-row clubs-row" data-href="{% url 'club' id=item.pk %}">
+                        <td class="clubs-rank-cell" data-label="{% trans "Rating" %}">
+                            <span class="players-rank-badge clubs-rank-badge">
+                                <span class="players-rank-value">{{ rank_value }}</span>
+                                <span class="players-rank-label-mobile">{% trans "Place" %}</span>
+                            </span>
+                        </td>
+                        <td class="clubs-club-cell" data-label="{% trans "Club" %}">
+                            <a class="clubs-club-link" href="{% url 'club' id=item.pk %}">
+                                <span class="clubs-logo-frame" aria-hidden="true">
+                                    {% if item.logo %}
+                                        <img src="{{ item.logo.url }}" alt="{{ item.short_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                        <span class="clubs-logo-placeholder" hidden>
+                                            <i class="bi bi-buildings-fill"></i>
+                                        </span>
+                                    {% else %}
+                                        <span class="clubs-logo-placeholder">
+                                            <i class="bi bi-buildings-fill"></i>
+                                        </span>
+                                    {% endif %}
+                                </span>
+                                <span class="clubs-club-copy">
+                                    <span class="clubs-club-name">{{ item.short_name }}</span>
+                                    <span class="clubs-club-full-name">{{ item.name }}</span>
+                                </span>
+                            </a>
+                        </td>
+                        <td class="clubs-points-cell" data-label="{% trans "Points" %}">
+                            <span class="players-metric-badge clubs-points-badge">
+                                <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+                                <span class="players-metric-copy">
+                                    <span class="players-metric-value">{{ item.total_rating|floatformat:2 }}</span>
+                                    <span class="players-metric-label">{% trans "Points" %}</span>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="clubs-average-cell" data-label="{% trans "Average" %}">
+                            <span class="players-metric-badge clubs-average-badge">
+                                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                <span class="players-metric-copy">
+                                    <span class="players-metric-value">{{ item.average_rating|floatformat:2 }}</span>
+                                    <span class="players-metric-label">{% trans "Average" %}</span>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="clubs-city-cell" data-label="{% trans "City" %}">
+                            {% if item.city %}
+                                <span class="clubs-city-wrap">
+                                    {% if item.address %}
+                                        <a class="clubs-city-map" target="_blank" rel="noopener" href="https://maps.google.com?q={{ item.address }}" aria-label="{% trans "Open club address on map" %}">
+                                            <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                        </a>
+                                    {% else %}
+                                        <i class="bi bi-geo-alt clubs-city-icon" aria-hidden="true"></i>
+                                    {% endif %}
+                                    <span class="clubs-city-copy">
+                                        <span class="clubs-city-name">{{ item.city.name }}</span>
+                                        {% if item.city.country %}
+                                            <span class="clubs-country-line">{{ item.city.country.name }} {{ item.city.country|country_flag|safe }}</span>
+                                        {% endif %}
+                                    </span>
+                                </span>
+                            {% else %}
+                                <span class="clubs-muted-badge">{% trans "No city" %}</span>
+                            {% endif %}
+                        </td>
+                        <td class="clubs-founded-cell" data-label="{% trans "Founded" %}">
+                            <span class="clubs-founded-date">
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <span>{{ item.date_created|date:"E Y" }}</span>
+                            </span>
+                        </td>
+                        <td class="clubs-president-cell" data-label="{% trans "President" %}">
+                            {% if item.president %}
+                                <span class="clubs-president-wrap">
+                                    <span class="clubs-president-avatar" aria-hidden="true">
+                                        {% if item.president.avatar %}
+                                            <img src="{{ item.president.avatar.url }}" alt="{{ item.president.get_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                            <span class="clubs-president-avatar-placeholder" hidden>
+                                                <i class="bi bi-person-fill"></i>
+                                            </span>
+                                        {% else %}
+                                            <span class="clubs-president-avatar-placeholder">
+                                                <i class="bi bi-person-fill"></i>
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="clubs-president-name">{{ item.president|user_profile_link|safe }}</span>
+                                </span>
+                            {% else %}
+                                <span class="clubs-muted-badge">{% trans "No president" %}</span>
+                            {% endif %}
+                        </td>
+                        <td class="clubs-athletes-cell" data-label="{% trans "Athletes" %}">
+                            <span class="clubs-athletes-badge">
+                                <i class="bi bi-people-fill" aria-hidden="true"></i>
+                                <span>{{ item.active_players_count }}</span>
+                            </span>
+                        </td>
+                        <td class="players-action-cell clubs-action-cell" data-label="{% trans "Actions" %}">
+                            <a href="{% url 'club' id=item.pk %}" class="players-row-action" aria-label="{% trans "Show club" %}: {{ item.short_name }}">
+                                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td class="players-mobile-card-cell clubs-mobile-card-cell" data-label="{% trans "Club" %}">
+                            <article class="club-list-card">
+                                <a class="club-list-card-main" href="{% url 'club' id=item.pk %}">
+                                    <span class="clubs-logo-frame club-list-card-logo" aria-hidden="true">
+                                        {% if item.logo %}
+                                            <img src="{{ item.logo.url }}" alt="{{ item.short_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                            <span class="clubs-logo-placeholder" hidden>
+                                                <i class="bi bi-buildings-fill"></i>
+                                            </span>
+                                        {% else %}
+                                            <span class="clubs-logo-placeholder">
+                                                <i class="bi bi-buildings-fill"></i>
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="club-list-card-copy">
+                                        <span class="club-list-card-name">{{ item.short_name }}</span>
+                                        <span class="club-list-card-full-name">{{ item.name }}</span>
+                                        {% if item.city %}
+                                            <span class="club-list-card-location">
+                                                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                                                {{ item.city.name }} {{ item.city.country|country_flag|safe }}
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="players-rank-badge clubs-rank-badge club-list-card-rank">
+                                        <span class="players-rank-value">{{ rank_value }}</span>
+                                        <span class="players-rank-label-mobile">{% trans "Place" %}</span>
+                                    </span>
+                                </a>
+                                <div class="club-list-card-metrics" aria-label="{% trans "Club metrics" %}">
+                                    <span class="players-metric-badge clubs-points-badge">
+                                        <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+                                        <span class="players-metric-copy">
+                                            <span class="players-metric-value">{{ item.total_rating|floatformat:2 }}</span>
+                                            <span class="players-metric-label">{% trans "Points" %}</span>
+                                        </span>
+                                    </span>
+                                    <span class="players-metric-badge clubs-average-badge">
+                                        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                        <span class="players-metric-copy">
+                                            <span class="players-metric-value">{{ item.average_rating|floatformat:2 }}</span>
+                                            <span class="players-metric-label">{% trans "Average" %}</span>
+                                        </span>
+                                    </span>
+                                    <span class="clubs-athletes-badge">
+                                        <i class="bi bi-people-fill" aria-hidden="true"></i>
+                                        <span class="clubs-athletes-copy">
+                                            <span class="clubs-athletes-value">{{ item.active_players_count }}</span>
+                                            <span class="clubs-athletes-label">{% trans "Athletes" %}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </article>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                {% empty %}
+                    <tr class="clubs-empty-row">
+                        <td class="clubs-empty-cell" colspan="10">
+                            <span class="clubs-empty-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
+                            <span class="clubs-empty-title">{% trans "No clubs found" %}</span>
+                            <span class="clubs-empty-copy">{% trans "Try changing the filters or search query." %}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="players-table-footer" aria-label="{% trans "Club pagination" %}">
+        <p class="players-pagination-summary">{{ club_pagination_summary }}</p>
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="players-page-links" aria-label="{% trans "Pages" %}">
+                <ul class="pagination">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        <a class="page-link clubs-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ club_pagination_urls.first }}{% else %}#{% endif %}" aria-label="{% trans "First page" %}">
+                            <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        <a class="page-link clubs-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ club_pagination_urls.previous }}{% else %}#{% endif %}" aria-label="{% trans "Previous page" %}">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    {% for page in club_pagination_pages %}
+                        {% if page == "ellipsis" %}
+                            <li class="page-item disabled"><span class="page-link players-page-ellipsis">...</span></li>
+                        {% else %}
+                            <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                                <a class="page-link clubs-page-link" href="{{ club_pagination_urls.pages|get_item:page }}">{{ page }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link clubs-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ club_pagination_urls.next }}{% else %}#{% endif %}" aria-label="{% trans "Next page" %}">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link clubs-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ club_pagination_urls.last }}{% else %}#{% endif %}" aria-label="{% trans "Last page" %}">
+                            <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+        <div class="players-footer-length-mount">
+            <form class="players-page-size-form clubs-page-size-form" method="get" action="{{ request.path }}">
+                {% for name,value in club_active_params.items %}
+                    {% if name != "per_page" %}
+                        <input type="hidden" name="{{ name }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                <label>
+                    <span>{% trans "Clubs per page" %}</span>
+                    <select name="per_page" aria-label="{% trans "Clubs per page" %}">
+                        {% for option in page_size_options %}
+                            <option value="{{ option }}" {% if page_size == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#players').DataTable({
-            columns: [
-                { width: "5%", searchable: false, orderable: true }, // logo
-                { width: "10%", searchable: true, orderable: true }, // points
-                { width: "10%", searchable: true, orderable: true }, // avg points
-                { width: "20%", searchable: true, orderable: true }, // name
-                { width: "20%", searchable: true, orderable: true }, // city
-                { width: "10%", searchable: true, orderable: true }, // year
-                { width: "20%", searchable: true, orderable: true }, // president name
-                { width: "5%", searchable: true, orderable: false }  // number of players
-            ],
-            autoWidth: false,
-            order: [[1, "desc"]],
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
-            language: {
-                lengthMenu: "{% trans "Show _MENU_ clubs per page" %}",
-                zeroRecords: "{% trans "No clubs found" %}",
-                info: "{% trans "Showing _START_ to _END_ of _TOTAL_ clubs" %}",
-                infoEmpty: "{% trans "Showing 0 of 0 clubs" %}",
-                infoFiltered: "{% trans "(filtered from _MAX_ clubs)" %}",
-                search: "{% trans "Search" %}",
-                paginate: {
-                    first: "{% trans "First" %}",
-                    last: "{% trans "Last" %}",
-                    next: "{% trans "Next" %}",
-                    previous: "{% trans "Previous" %}"
-                }
+(function() {
+    function initTooltips() {
+        setTimeout(function () {
+            var $tooltips = $('[data-bs-toggle="tooltip"]');
+            $tooltips.attr('data-bs-offset', '0,2');
+            if (window.bootstrap && window.bootstrap.Tooltip) {
+                $tooltips.each(function() {
+                    var instance = window.bootstrap.Tooltip.getInstance(this);
+                    if (instance) {
+                        instance.dispose();
+                    }
+                    new window.bootstrap.Tooltip(this, {
+                        offset: [0, 2]
+                    });
+                });
+            } else if ($.fn.tooltip) {
+                $tooltips.tooltip('dispose').tooltip({
+                    offset: [0, 2]
+                });
             }
+        }, 100);
+    }
+
+    function initFilters() {
+        const form = document.querySelector('.clubs-filter-form');
+        if (!form) {
+            return;
+        }
+
+        form.querySelectorAll('select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
         });
-        
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    });
+
+        const searchInput = form.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    form.submit();
+                }
+            });
+            searchInput.addEventListener('search', function() {
+                form.submit();
+            });
+        }
+    }
+
+    function initPageSize() {
+        const form = document.querySelector('.clubs-page-size-form');
+        if (!form) {
+            return;
+        }
+
+        const select = form.querySelector('select[name="per_page"]');
+        if (select) {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+    }
+
+    function initTableScroll() {
+        const scrollKey = 'clubs-table-scroll';
+        document.querySelectorAll('.clubs-page-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (!link.classList.contains('is-disabled') && link.getAttribute('href') !== '#') {
+                    window.sessionStorage.setItem(scrollKey, '1');
+                }
+            });
+        });
+
+        if (window.sessionStorage.getItem(scrollKey) === '1') {
+            window.sessionStorage.removeItem(scrollKey);
+            const table = document.querySelector('.clubs-results-surface');
+            if (table) {
+                table.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    }
+
+    function initRowClicks() {
+        document.querySelectorAll('.clubs-row').forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('a, button, input, select')) {
+                    return;
+                }
+
+                const href = row.dataset.href;
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    }
+
+    function initClubsTable() {
+        initFilters();
+        initPageSize();
+        initTooltips();
+        initTableScroll();
+        initRowClicks();
+
+        $(document).on('click', '.players-column-help', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initClubsTable);
+    } else {
+        initClubsTable();
+    }
+})();
 </script>

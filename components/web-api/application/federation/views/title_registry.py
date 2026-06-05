@@ -66,6 +66,12 @@ ROUTE_CONFIG = {
         'sidebar_title': _('National teams'),
         'icon_class': 'bi-flag-fill',
     },
+    'departments': {
+        'page_title': _('Structure'),
+        'page_subtitle': _('Ukrainian Petanque Federation'),
+        'sidebar_title': _('Structure'),
+        'icon_class': 'bi-briefcase-fill',
+    },
 }
 
 

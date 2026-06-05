@@ -1,0 +1,24 @@
+<article class="tournament-person-card {{ card_class }}">
+    <a class="tournament-person-avatar" href="{% url 'player' id=person.pk %}" aria-label="{{ person.get_name }}">
+        {% if person.avatar %}
+            <img src="{{ person.avatar.url }}" alt="{{ person.get_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <span class="athlete-card-avatar-placeholder" aria-hidden="true" hidden>
+                <i class="bi bi-person-fill"></i>
+            </span>
+        {% else %}
+            <span class="athlete-card-avatar-placeholder" aria-hidden="true">
+                <i class="bi bi-person-fill"></i>
+            </span>
+        {% endif %}
+    </a>
+    <div class="tournament-person-copy">
+        <span class="tournament-person-role">
+            <i class="bi {{ role_icon }}" aria-hidden="true"></i>
+            {{ role_label }}
+        </span>
+        <a class="tournament-person-name" href="{% url 'player' id=person.pk %}">{{ person.get_name }}</a>
+        {% if person.current_club %}
+            <a class="tournament-person-club" href="{% url 'club' id=person.current_club.pk %}">{{ person.current_club.short_name }}</a>
+        {% endif %}
+    </div>
+</article>
