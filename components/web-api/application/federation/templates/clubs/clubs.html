@@ -3,33 +3,68 @@
 {% load i18n %}
 
 {% block content %}
-<section class="p-3 rounded shadow mb-3">
-    <div class="row">
-        <div class="col-12">
-            <h5 class="pb-2 border-bottom fw-bold">{{ page_title }}</h5>
-
-            <ul class="nav nav-pills mb-3" id="clubsTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="table-view-tab" data-bs-toggle="pill" href="#table-view" role="tab" aria-controls="table-view" aria-selected="true">
-                        <i class="bi bi-table"></i>
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="cards-view-tab" data-bs-toggle="pill" href="#cards-view" role="tab" aria-controls="cards-view" aria-selected="false">
-                        <i class="bi bi-grid"></i>
-                    </a>
-                </li>
-            </ul>
+<section class="players-page clubs-page" aria-labelledby="clubs-page-title">
+    <div class="players-titlebar">
+        <div class="players-title-copy">
+            <h1 id="clubs-page-title">
+                {{ page_title }}
+                <span class="players-title-icon" aria-hidden="true">
+                    <i class="bi bi-buildings"></i>
+                </span>
+            </h1>
+            <p>
+                {% trans "Club rating by active athletes, points, and average results" %}
+                <span class="players-page-info" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Club points are calculated from active licensed athletes. The table can be searched by club, city, or president and sorted by the most useful club indicators." %}">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                </span>
+            </p>
         </div>
     </div>
 
-    <div class="tab-content" id="clubsTabsContent">
-        <div class="tab-pane fade show active" id="table-view" role="tabpanel" aria-labelledby="table-view-tab">
-            {% include "clubs/clubs_table.html" with items=clubs %}
+    <form class="players-control-panel clubs-filter-form" method="get" action="{{ request.path }}">
+        {% if page_size != 25 %}
+            <input type="hidden" name="per_page" value="{{ page_size }}">
+        {% endif %}
+
+        <div class="players-search-mount" aria-label="{% trans "Search clubs" %}">
+            <label class="players-search-label">
+                <i class="bi bi-search players-search-icon" aria-hidden="true"></i>
+                <input class="players-search-input" type="search" name="q" value="{{ club_filters.search }}" placeholder="{% trans "Search by club, city, or president..." %}" aria-label="{% trans "Search by club, city, or president..." %}">
+            </label>
         </div>
-        <div class="tab-pane fade" id="cards-view" role="tabpanel" aria-labelledby="cards-view-tab">
-            {% include "clubs/clubs_cards.html" with items=clubs %}
+
+        <div class="players-filter-controls" aria-label="{% trans "Club filters" %}">
+            <label class="players-filter-field">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                <select class="players-filter-select" name="city" aria-label="{% trans "City" %}">
+                    <option value="">{% trans "All cities" %}</option>
+                    {% for city in club_filter_options.cities %}
+                        <option value="{{ city }}" {% if club_filters.city == city %}selected{% endif %}>{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                <select class="players-filter-select" name="year" aria-label="{% trans "Year founded" %}">
+                    <option value="">{% trans "All founding years" %}</option>
+                    {% for year in club_filter_options.years %}
+                        <option value="{{ year }}" {% if club_filters.year == year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="players-filter-field">
+                <i class="bi bi-sort-down" aria-hidden="true"></i>
+                <select class="players-filter-select" name="sort" aria-label="{% trans "Sort clubs" %}">
+                    {% for value,label in club_sort_options %}
+                        <option value="{{ value }}" {% if club_filters.sort == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
         </div>
-    </div>
+    </form>
+
+    {% include "clubs/clubs_table.html" with items=clubs %}
 </section>
 {% endblock %}

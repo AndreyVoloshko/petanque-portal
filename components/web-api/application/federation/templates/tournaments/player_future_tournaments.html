@@ -1,8 +1,12 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="table-responsive">
-    <table class="table table-hover table-sm" id="{{ table_id }}">
+{% trans "Competitions per page" as competitions_per_page_label %}
+{% trans "Competition pagination" as competition_pagination_label %}
+
+<div class="portal-datatable-section">
+<div class="players-table-responsive">
+    <table class="players-table table table-hover table-sm" id="{{ table_id }}">
         <thead>
             <tr>
                 <th style="width: 10%;" class="text-start">{% trans "Date" %}</th>
@@ -37,10 +41,19 @@
         </tbody>
     </table>
 </div>
+{% include "common/datatable_players_footer.html" with pagination_label=competition_pagination_label %}
+</div>
 
 <script>
 $(document).ready(function() {
-    $('#{{ table_id }}').DataTable({
+    var tableElement = $('#{{ table_id }}');
+    var section = tableElement.closest('.portal-datatable-section');
+
+    window.PetanquePortal.dataTableFooter.init(tableElement, {
+        portalFooter: {
+            allLabel: "{% trans "All" %}",
+            lengthLabel: "{{ competitions_per_page_label }}"
+        },
         columns: [
             { width: "10%", searchable: true, orderable: true },  // Дата
             { width: "50%", searchable: true, orderable: true },  // Назва
@@ -49,22 +62,14 @@ $(document).ready(function() {
         ],
         autoWidth: false,
         order: [[0, '{{ initial_order }}']],
-        lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
         language: {
-            lengthMenu: "{% trans "Show _MENU_ competitions per page" %}",
             zeroRecords: "{% trans "No competitions found" %}",
             info: "{% trans "Showing _START_ to _END_ of _TOTAL_ competitions" %}",
             infoEmpty: "{% trans "Showing 0 of 0 competitions" %}",
             infoFiltered: "{% trans "(filtered from _MAX_ competitions)" %}",
-            search: "{% trans "Search" %}",
-            paginate: {
-                first: "{% trans "First" %}",
-                last: "{% trans "Last" %}",
-                next: "{% trans "Next" %}",
-                previous: "{% trans "Previous" %}"
-            }
+            search: "{% trans "Search" %}"
         }
-    });
+    }, section.find('.portal-datatable-footer'));
 
     $('[data-bs-toggle="tooltip"]').tooltip();
 });

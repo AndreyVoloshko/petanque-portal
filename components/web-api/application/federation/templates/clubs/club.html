@@ -86,7 +86,7 @@
                     <span class="club-hero-metric-icon club-hero-metric-rank"><i class="bi bi-trophy" aria-hidden="true"></i></span>
                     <span class="club-hero-metric-copy">
                         <span class="club-hero-metric-value">#{{ club_stats.club_rank }}</span>
-                        <span class="club-hero-metric-label">{% trans "Club rating" %}</span>
+                        <span class="club-hero-metric-label">{% trans "Place in Ukrainian club rating" %}</span>
                     </span>
                 </div>
             </div>
@@ -114,11 +114,6 @@
             <h2 id="club-stats-title">{% trans "Club indicators" %}</h2>
         </div>
         <div class="club-stats-grid">
-            <div class="club-stat-tile club-stat-rank">
-                <i class="bi bi-trophy" aria-hidden="true"></i>
-                <span class="club-stat-value">#{{ club_stats.club_rank }}</span>
-                <span class="club-stat-label">{% trans "Place in Ukrainian club rating" %}</span>
-            </div>
             <div class="club-stat-tile club-stat-total-rating">
                 <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
                 <span class="club-stat-value">{{ club_stats.total_rating|floatformat:2 }}</span>

@@ -811,6 +811,15 @@ def team_power_badge(power):
     return _power_badge(power, tooltip, _("Team power"), "team-power-badge")
 
 
+@register.filter(name="participant_power_badge")
+def participant_power_badge(power):
+    tooltip = _(
+        "Participant power in this tournament is calculated from the participant's current power."
+    )
+
+    return _power_badge(power, tooltip, _("Participant power"), "participant-power-badge")
+
+
 def _power_badge(power, tooltip=None, label=None, extra_class=""):
     try:
         power_value = Decimal(str(power or 0))

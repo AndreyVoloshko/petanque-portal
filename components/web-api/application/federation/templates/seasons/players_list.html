@@ -1,12 +1,16 @@
 {% load app_filters %}
 {% load i18n %}
 
+{% trans "Athletes per page" as athletes_per_page_label %}
+{% trans "Athlete pagination" as athlete_pagination_label %}
+
 <section class="p-3 rounded shadow">
     <h5 class="pb-2 border-bottom">
         {% blocktrans %}Year: {{ year }}{% endblocktrans %}
     </h5>
-    <div class="table-responsive">
-        <table class="table table-hover table-striped" id="players">
+    <div class="portal-datatable-section">
+    <div class="players-table-responsive">
+        <table class="players-table table table-hover table-striped" id="players">
             <thead class="table-dark">
                 <tr>
                     <th class="text-start">{% trans "Ranking" %}</th>
@@ -59,32 +63,32 @@
             </tbody>
         </table>
     </div>
+    {% include "common/datatable_players_footer.html" with pagination_label=athlete_pagination_label %}
+    </div>
 </section>
 
 <script>
     $(document).ready(function() {
-        var table = $('#players').DataTable({
+        var tableElement = $('#players');
+        var section = tableElement.closest('.portal-datatable-section');
+        var table = window.PetanquePortal.dataTableFooter.init(tableElement, {
+            portalFooter: {
+                allLabel: "{% trans "All" %}",
+                lengthLabel: "{{ athletes_per_page_label }}"
+            },
             responsive: true, 
             paging: true,
-            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "{% trans "All" %}"]],
             language: {
-                lengthMenu: "{% trans "Show _MENU_ athletes per page" %}",
                 zeroRecords: "{% trans "No athletes found" %}",
                 info: "{% trans "Showing _START_ to _END_ of _TOTAL_ athletes" %}",
                 infoEmpty: "{% trans "Showing 0 of 0 athletes" %}",
                 infoFiltered: "{% trans "(filtered from _MAX_ athletes)" %}",
-                search: "{% trans "Search:" %}",
-                paginate: {
-                    first: "{% trans "First" %}",
-                    last: "{% trans "Last" %}",
-                    next: "{% trans "Next" %}",
-                    previous: "{% trans "Previous" %}"
-                }
+                search: "{% trans "Search:" %}"
             },
             columnDefs: [
                 { targets: 'no-sort', orderable: false },
             ]
-        });
+        }, section.find('.portal-datatable-footer'), initTooltips);
 
         $('#players tfoot select').on('change', function() {
             let columnIndex = $(this).parent().index();
@@ -116,9 +120,5 @@
         }
 
         initTooltips();
-
-        table.on('draw.dt', function () {
-            initTooltips();
-        });        
     });
 </script>

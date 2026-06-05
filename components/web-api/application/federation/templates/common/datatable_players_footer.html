@@ -1,0 +1,7 @@
+{% load i18n %}
+
+<div class="players-table-footer portal-datatable-footer {{ footer_class|default:'' }}" aria-label="{{ pagination_label }}">
+    <div class="players-pagination-summary js-datatable-info-mount"></div>
+    <nav class="players-page-links js-datatable-pagination-mount" aria-label="{% trans "Pages" %}"></nav>
+    <div class="players-footer-length-mount js-datatable-length-mount"></div>
+</div>

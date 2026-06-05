@@ -15,6 +15,9 @@
 {% trans "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points." as tournament_power_help_text %}
 {% trans "Team power in this tournament is calculated from the power of the players in this player's team." as tournament_team_power_help_text %}
 {% trans "Rating points earned by this player's team in this tournament." as tournament_points_help_text %}
+{% trans "Competitions per page" as competitions_per_page_label %}
+{% trans "Competition pagination" as competition_pagination_label %}
+{% trans "All" as all_page_size_label %}
 <section class="player-page">
     <nav class="player-breadcrumbs" aria-label="breadcrumb">
         <a href="/" class="player-breadcrumb-link"><i class="bi bi-house-door-fill"></i></a>
@@ -303,7 +306,7 @@
         </div>
 
         <div class="player-tournaments-table-wrap">
-            <table class="player-tournaments-table" data-player-tournaments-table>
+            <table class="players-table player-tournaments-table" data-player-tournaments-table>
                 <thead>
                     <tr>
                         <th class="pt-col-date" aria-sort="descending">
@@ -516,6 +519,8 @@
             {% endfor %}
         </div>
 
+        {% include "common/datatable_players_footer.html" with pagination_label=competition_pagination_label footer_class="player-tournaments-footer" %}
+
         {% else %}
         <div class="player-tournaments-empty">
             <i class="bi bi-trophy"></i>
@@ -554,6 +559,193 @@
         place: 'asc',
         points: 'desc'
     };
+    const paginationState = {
+        page: 1,
+        pageSize: window.PetanquePortal && window.PetanquePortal.dataTableFooter
+            ? window.PetanquePortal.dataTableFooter.defaultPageLength()
+            : 50
+    };
+    const paginationOptions = [25, 50, 100, -1];
+    const paginationMessages = {
+        all: "{{ all_page_size_label|escapejs }}",
+        first: "{% trans "First page" %}",
+        previous: "{% trans "Previous page" %}",
+        next: "{% trans "Next page" %}",
+        last: "{% trans "Last page" %}",
+        info: "{% trans "Showing _START_ to _END_ of _TOTAL_ competitions" %}",
+        infoEmpty: "{% trans "Showing 0 of 0 competitions" %}",
+        lengthLabel: "{{ competitions_per_page_label|escapejs }}"
+    };
+
+    function tournamentItems(selector) {
+        return Array.from(tournamentSection.querySelectorAll(selector));
+    }
+
+    function tournamentCount() {
+        return tournamentItems('.player-tournament-row').length;
+    }
+
+    function pageCount() {
+        if (paginationState.pageSize === -1) {
+            return 1;
+        }
+
+        return Math.max(1, Math.ceil(tournamentCount() / paginationState.pageSize));
+    }
+
+    function clampPage(page) {
+        return Math.min(Math.max(1, page), pageCount());
+    }
+
+    function paginationPages(current, total) {
+        const pages = [];
+        for (let page = 1; page <= total; page += 1) {
+            if (page === 1 || page === total || Math.abs(page - current) <= 1) {
+                pages.push(page);
+            } else if (pages[pages.length - 1] !== 'ellipsis') {
+                pages.push('ellipsis');
+            }
+        }
+        return pages;
+    }
+
+    function formatPaginationInfo(start, end, total) {
+        if (!total) {
+            return paginationMessages.infoEmpty;
+        }
+
+        return paginationMessages.info
+            .replace('_START_', String(start))
+            .replace('_END_', String(end))
+            .replace('_TOTAL_', String(total));
+    }
+
+    function setPaginatedVisibility(selector, startIndex, endIndex) {
+        tournamentItems(selector).forEach(function(item, index) {
+            item.hidden = !(index >= startIndex && index < endIndex);
+        });
+    }
+
+    function buildPaginationButton(label, page, iconClass, isDisabled, isActive) {
+        const item = document.createElement('li');
+        item.className = 'page-item';
+        item.classList.toggle('disabled', isDisabled);
+        item.classList.toggle('active', isActive);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'page-link players-page-link';
+        button.disabled = isDisabled;
+        button.setAttribute('aria-label', label);
+
+        if (iconClass) {
+            const icon = document.createElement('i');
+            icon.className = 'bi ' + iconClass;
+            icon.setAttribute('aria-hidden', 'true');
+            button.appendChild(icon);
+        } else {
+            button.textContent = String(page);
+        }
+
+        if (!isDisabled && !isActive) {
+            button.addEventListener('click', function() {
+                renderTournamentPage(page);
+            });
+        }
+
+        item.appendChild(button);
+        return item;
+    }
+
+    function ensurePageSizeControl(footer) {
+        const mount = footer.querySelector('.js-datatable-length-mount');
+        if (!mount || mount.querySelector('select')) {
+            return;
+        }
+
+        const form = document.createElement('div');
+        form.className = 'players-page-size-form';
+        const label = document.createElement('label');
+        const labelText = document.createElement('span');
+        labelText.textContent = paginationMessages.lengthLabel;
+        const select = document.createElement('select');
+
+        paginationOptions.forEach(function(option) {
+            const selectOption = document.createElement('option');
+            selectOption.value = String(option);
+            selectOption.textContent = option === -1 ? paginationMessages.all : String(option);
+            selectOption.selected = option === paginationState.pageSize;
+            select.appendChild(selectOption);
+        });
+
+        select.addEventListener('change', function() {
+            paginationState.pageSize = Number.parseInt(select.value, 10);
+            renderTournamentPage(1);
+        });
+
+        label.appendChild(labelText);
+        label.appendChild(select);
+        form.appendChild(label);
+        mount.appendChild(form);
+    }
+
+    function renderTournamentPage(targetPage) {
+        const footer = tournamentSection.querySelector('.player-tournaments-footer');
+        if (!footer) {
+            return;
+        }
+
+        const total = tournamentCount();
+        const totalPages = pageCount();
+        paginationState.page = clampPage(targetPage || paginationState.page);
+
+        const startIndex = paginationState.pageSize === -1 ? 0 : (paginationState.page - 1) * paginationState.pageSize;
+        const endIndex = paginationState.pageSize === -1 ? total : Math.min(total, startIndex + paginationState.pageSize);
+
+        setPaginatedVisibility('.player-tournament-row', startIndex, endIndex);
+        setPaginatedVisibility('.player-tournament-mobile-card', startIndex, endIndex);
+
+        const infoMount = footer.querySelector('.js-datatable-info-mount');
+        if (infoMount) {
+            infoMount.classList.add('dataTables_info');
+            infoMount.textContent = formatPaginationInfo(total ? startIndex + 1 : 0, endIndex, total);
+        }
+
+        const paginationMount = footer.querySelector('.js-datatable-pagination-mount');
+        if (paginationMount) {
+            paginationMount.innerHTML = '';
+            const nav = document.createElement('div');
+            nav.className = 'dataTables_paginate paging_full_numbers';
+            const list = document.createElement('ul');
+            list.className = 'pagination';
+
+            list.appendChild(buildPaginationButton(paginationMessages.first, 1, 'bi-chevron-double-left', paginationState.page === 1, false));
+            list.appendChild(buildPaginationButton(paginationMessages.previous, Math.max(1, paginationState.page - 1), 'bi-chevron-left', paginationState.page === 1, false));
+
+            paginationPages(paginationState.page, totalPages).forEach(function(page) {
+                if (page === 'ellipsis') {
+                    const item = document.createElement('li');
+                    item.className = 'page-item disabled';
+                    const span = document.createElement('span');
+                    span.className = 'page-link players-page-ellipsis';
+                    span.textContent = '...';
+                    item.appendChild(span);
+                    list.appendChild(item);
+                    return;
+                }
+
+                list.appendChild(buildPaginationButton(String(page), page, '', false, page === paginationState.page));
+            });
+
+            list.appendChild(buildPaginationButton(paginationMessages.next, Math.min(totalPages, paginationState.page + 1), 'bi-chevron-right', paginationState.page === totalPages, false));
+            list.appendChild(buildPaginationButton(paginationMessages.last, totalPages, 'bi-chevron-double-right', paginationState.page === totalPages, false));
+
+            nav.appendChild(list);
+            paginationMount.appendChild(nav);
+        }
+
+        ensurePageSizeControl(footer);
+    }
 
     function parseSortNumber(value) {
         const normalized = String(value || '0').replace(',', '.');
@@ -663,7 +855,8 @@
 
         const activeHeader = tournamentSection.querySelector('.player-tournaments-table th .pt-sort-button[data-sort-button="' + key + '"]');
         if (activeHeader) {
-            activeHeader.closest('th').setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+            const header = activeHeader.closest('th');
+            header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
         }
     }
 
@@ -673,6 +866,7 @@
         reorderItems('.player-tournament-row', '.player-tournaments-table tbody', key, direction);
         reorderItems('.player-tournament-mobile-card', '.player-tournaments-mobile-list', key, direction);
         updateSortButtons(key, direction);
+        renderTournamentPage(1);
     }
 
     tournamentSection.querySelectorAll('[data-sort-button]').forEach(function(button) {
