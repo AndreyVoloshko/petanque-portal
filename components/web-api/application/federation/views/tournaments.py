@@ -22,6 +22,7 @@ from urllib.parse import urlencode
 import logging, json, re
 from django.views.decorators.csrf import csrf_exempt
 from federation.permissions import can_create_tournament
+from federation.utils.rankings import rating_rank_map
 from federation.utils.tournament_names import get_tournament_card_metadata
 
 
@@ -1013,7 +1014,18 @@ def tournament_teams_export(request, id):
         output_format = 'html'
 
     tournament = get_object_or_404(Tournament, pk=id)
-    teams = TeamTournamentMembership.objects.filter(tournament=tournament).order_by('place_min')
+    teams = (
+        TeamTournamentMembership.objects
+        .filter(tournament=tournament)
+        .select_related('team')
+        .prefetch_related(
+            Prefetch(
+                'team__players',
+                queryset=Player.objects.select_related('current_club'),
+            ),
+        )
+        .order_by('place_min')
+    )
 
     if output_format == 'csv':
 
@@ -1086,7 +1098,14 @@ def tournament_teams_export(request, id):
                 'name': player.name,
                 'surname': player.surname,
                 'second_name': player.second_name,
+                'avatar_url': _media_file_url(request, player.avatar),
             }
+
+        player_rating_field = _export_player_rating_field(tournament)
+        player_rating_places = rating_rank_map(
+            _export_player_ranking_queryset(player_rating_field),
+            player_rating_field,
+        )
 
         result = {
             'tournament': {
@@ -1096,6 +1115,7 @@ def tournament_teams_export(request, id):
                 'meta': tournament.meta,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time,
+                'player_rating_field': player_rating_field,
                 'organizer_club': {'id': tournament.organizer_club.pk, 'name': tournament.organizer_club.name} if tournament.organizer_club else None,
                 'main_organizer': _player_brief(tournament.main_organizer) if tournament.main_organizer else None,
                 'federation_delegat': _player_brief(tournament.federation_delegat) if tournament.federation_delegat else None,
@@ -1108,34 +1128,53 @@ def tournament_teams_export(request, id):
         }
 
         for team in teams:
+            players = list(team.team.players.all())
+            team_club = _get_team_single_club(players)
+            team_power = team.power
             current_team = {
                 'id': team.team.pk,
-                'power': team.power,
+                'power': team_power,
+                'team_power': team_power,
                 'place_min': team.place_min,
                 'place_max': team.place_max,
                 'date_registration': team.date_registration,
                 'rating_points': team.rating_points,
                 'rating_power': team.rating_power,
-                'power': team.power,
                 'name': team.team.get_short_name(),
+                'club': _club_export(team_club, request) if team_club else None,
+                'club_logo_url': _media_file_url(request, team_club.logo) if team_club else None,
                 'players': []
             }
 
-            for player in team.team.players.all():
+            for player in players:
                 club_name = ""
                 club_id = None
+                club_short_name = None
+                club_logo_url = None
                 if player.current_club is not None:
                     club_name = player.current_club.name
                     club_id = player.current_club.pk
+                    club_short_name = player.current_club.short_name
+                    club_logo_url = _media_file_url(request, player.current_club.logo)
+
+                rating_place = None
+                if _player_has_export_rating_place(player, player_rating_field):
+                    rating_place = player_rating_places.get(getattr(player, player_rating_field))
 
                 current_team['players'].append({
                     'id': player.pk,
                     'name': player.name,
                     'surname': player.surname,
                     'second_name': player.second_name,
+                    'avatar_url': _media_file_url(request, player.avatar),
                     'club': club_name,
                     'club_id': club_id,
+                    'club_short_name': club_short_name,
+                    'club_logo_url': club_logo_url,
                     'sport_title': player.sport_title,
+                    'rating': getattr(player, player_rating_field),
+                    'rating_field': player_rating_field,
+                    'rating_place': rating_place,
                 })
 
 
@@ -1151,6 +1190,72 @@ def tournament_teams_export(request, id):
 
 def tournaments_calendar (request):
     return render(request, 'tournaments/calendar.html')
+
+
+def _media_file_url(request, file_field):
+    if not file_field:
+        return None
+
+    url = '{}{}'.format(settings.MEDIA_URL, file_field.name)
+    if url.startswith('//'):
+        scheme = 'https' if request.is_secure() else 'http'
+        return '{}:{}'.format(scheme, url)
+
+    if url.startswith('/'):
+        return request.build_absolute_uri(url)
+
+    return url
+
+
+def _club_export(club, request):
+    return {
+        'id': club.pk,
+        'name': club.name,
+        'short_name': club.short_name,
+        'logo_url': _media_file_url(request, club.logo),
+    }
+
+
+def _get_team_single_club(players):
+    if not players:
+        return None
+
+    clubs = [player.current_club for player in players if player.current_club_id]
+    if len(clubs) != len(players):
+        return None
+
+    club_ids = {club.pk for club in clubs}
+    if len(club_ids) != 1:
+        return None
+
+    return clubs[0]
+
+
+def _export_player_rating_field(tournament):
+    if tournament.is_b_tournament:
+        return 'current_rating_b'
+
+    if tournament.is_ukrainian_league:
+        return 'current_rating_liga'
+
+    if tournament.is_inclusive:
+        return 'current_rating_inclusive'
+
+    return 'current_rating'
+
+
+def _export_player_ranking_queryset(player_rating_field):
+    if player_rating_field == 'current_rating_inclusive':
+        return Player.objects.filter(is_inclusive=True)
+
+    return Player.get_actual_players_list()
+
+
+def _player_has_export_rating_place(player, player_rating_field):
+    if player_rating_field == 'current_rating_inclusive':
+        return player.is_inclusive
+
+    return player.is_licence_active and player.licence_number
 
 
 def tournament_protocol(request, id):
