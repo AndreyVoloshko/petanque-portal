@@ -714,6 +714,117 @@ class PlayerTournamentListTests(TestCase):
         self.assertEqual(content.count('player-chip-national-team'), 1)
 
 
+@override_settings(MEDIA_URL='/media/')
+class TournamentTeamExportJsonTests(TestCase):
+    def create_club(self, name, short_name, logo):
+        return Club.objects.create(
+            name=name,
+            short_name=short_name,
+            address='Kyiv',
+            logo=logo,
+        )
+
+    def create_player(
+        self,
+        username,
+        club=None,
+        rating='0.0000',
+        avatar='',
+        is_licence_active=True,
+        licence_number=None,
+    ):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            current_club=club,
+            current_rating=Decimal(rating),
+            is_licence_active=is_licence_active,
+            licence_number=licence_number if licence_number is not None else username,
+            avatar=avatar,
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Export Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+
+    def create_team_membership(self, tournament, players, name, place_min, power='0.0000'):
+        team = Team.objects.create(name=name)
+        for index, player in enumerate(players):
+            PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
+
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=place_min,
+            power=Decimal(power),
+        )
+
+    def test_json_export_includes_images_shared_club_power_and_player_rating_places(self):
+        club = self.create_club('Kyiv Petanque Club', 'KPC', 'clubs/kpc.png')
+        other_club = self.create_club('Lviv Petanque Club', 'LPC', 'clubs/lpc.png')
+        self.create_player('ranking-leader', club=other_club, rating='200.0000')
+        first = self.create_player('first', club=club, rating='100.0000', avatar='avatars/first.png')
+        second = self.create_player('second', club=club, rating='50.0000', avatar='avatars/second.png')
+        mixed = self.create_player('mixed', club=other_club, rating='25.0000')
+        tournament = self.create_tournament()
+        same_club_membership = self.create_team_membership(
+            tournament,
+            [first, second],
+            'Kyiv Pair',
+            place_min=1,
+            power='12.3400',
+        )
+        self.create_team_membership(
+            tournament,
+            [first, mixed],
+            'Mixed Pair',
+            place_min=2,
+            power='8.0000',
+        )
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['tournament']['player_rating_field'], 'current_rating')
+        same_club_team = data['teams'][0]
+        self.assertEqual(same_club_team['id'], same_club_membership.team.pk)
+        self.assertEqual(same_club_team['team_power'], '12.3400')
+        self.assertEqual(same_club_team['power'], '12.3400')
+        self.assertEqual(same_club_team['club'], {
+            'id': club.pk,
+            'name': 'Kyiv Petanque Club',
+            'short_name': 'KPC',
+            'logo_url': 'http://testserver/media/clubs/kpc.png',
+        })
+        self.assertEqual(same_club_team['club_logo_url'], 'http://testserver/media/clubs/kpc.png')
+
+        players_by_id = {player['id']: player for player in same_club_team['players']}
+        self.assertEqual(players_by_id[first.pk]['avatar_url'], 'http://testserver/media/avatars/first.png')
+        self.assertEqual(players_by_id[first.pk]['club_short_name'], 'KPC')
+        self.assertEqual(players_by_id[first.pk]['club_logo_url'], 'http://testserver/media/clubs/kpc.png')
+        self.assertEqual(players_by_id[first.pk]['rating'], '100.0000')
+        self.assertEqual(players_by_id[first.pk]['rating_field'], 'current_rating')
+        self.assertEqual(players_by_id[first.pk]['rating_place'], 2)
+        self.assertEqual(players_by_id[second.pk]['avatar_url'], 'http://testserver/media/avatars/second.png')
+        self.assertEqual(players_by_id[second.pk]['rating_place'], 3)
+
+        mixed_team = data['teams'][1]
+        self.assertIsNone(mixed_team['club'])
+        self.assertIsNone(mixed_team['club_logo_url'])
+
+
 class OptionalRegistrationEmailTests(TestCase):
     @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
     def test_ukrainian_player_registration_allows_blank_email(self):

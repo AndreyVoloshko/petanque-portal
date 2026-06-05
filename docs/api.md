@@ -105,11 +105,12 @@ Returns tournament data with registered teams and players.
     "meta": "...",
     "start_date": "2024-06-01",
     "start_time": "10:00:00",
+    "player_rating_field": "current_rating",
     "organizer_club": { "id": 3, "name": "Club Name" },
-    "main_organizer": { "id": 10, "name": "Ivan", "surname": "Petrenko", "second_name": "" },
-    "federation_delegat": { "id": 11, "name": "Olena", "surname": "Kovalenko", "second_name": "" },
+    "main_organizer": { "id": 10, "name": "Ivan", "surname": "Petrenko", "second_name": "", "avatar_url": "https://example.com/media/player.jpg" },
+    "federation_delegat": { "id": 11, "name": "Olena", "surname": "Kovalenko", "second_name": "", "avatar_url": null },
     "arbiters": [
-      { "id": 12, "name": "Mykola", "surname": "Sydorenko", "second_name": "", "is_main_arbiter": true }
+      { "id": 12, "name": "Mykola", "surname": "Sydorenko", "second_name": "", "avatar_url": null, "is_main_arbiter": true }
     ]
   },
   "teams": [
@@ -117,6 +118,9 @@ Returns tournament data with registered teams and players.
       "id": 7,
       "name": "Team Name",
       "power": 1500,
+      "team_power": 1500,
+      "club": { "id": 3, "name": "Club Name", "short_name": "CN", "logo_url": "https://example.com/media/club.png" },
+      "club_logo_url": "https://example.com/media/club.png",
       "place_min": 1,
       "place_max": 2,
       "date_registration": "2024-05-01T12:00:00Z",
@@ -128,15 +132,23 @@ Returns tournament data with registered teams and players.
           "name": "John",
           "surname": "Doe",
           "second_name": "",
+          "avatar_url": "https://example.com/media/player.jpg",
           "club": "Club Name",
           "club_id": 3,
-          "sport_title": ""
+          "club_short_name": "CN",
+          "club_logo_url": "https://example.com/media/club.png",
+          "sport_title": "",
+          "rating": 320,
+          "rating_field": "current_rating",
+          "rating_place": 5
         }
       ]
     }
   ]
 }
 ```
+
+`teams[].club` and `teams[].club_logo_url` are populated only when every player in the exported team has the same current club; otherwise both values are `null`. `players[].rating` uses the tournament-specific rating field: regular, B, League, or inclusive.
 
 **Response (CSV)**
 
