@@ -194,8 +194,6 @@
                                     {% with power=item|tournament_power_badge %}
                                         {% if power %}
                                             {{ power|safe }}
-                                        {% else %}
-                                            <span class="tournaments-muted">—</span>
                                         {% endif %}
                                     {% endwith %}
                                 </div>
@@ -249,7 +247,7 @@
                             <span class="tournament-chip tournament-chip-{{ row.openness_key }}">{{ row.openness_label }}</span>
                         </div>
 
-                        <a class="tournament-mobile-title" href="{{ row.detail_url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.full_title }}">{{ row.title }}</a>
+                        <a class="tournament-mobile-title" href="{{ row.detail_url }}">{{ row.title }}</a>
 
                         <div class="tournament-mobile-details">
                             <div class="tournament-mobile-info">

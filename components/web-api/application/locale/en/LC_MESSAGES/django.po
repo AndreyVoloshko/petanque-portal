@@ -2225,6 +2225,10 @@ msgstr "Competition"
 msgid "Score"
 msgstr "Score"
 
+#: federation/templates/tournaments/tournament_teams.html
+msgid "Rating earned"
+msgstr "Rating earned"
+
 #: federation/templates/tournaments/tournament_delegations.html:7
 msgid "Organizers, delegates, and arbiters"
 msgstr "Organizers, delegates, and arbiters"

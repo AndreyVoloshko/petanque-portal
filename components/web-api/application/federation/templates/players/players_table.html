@@ -175,10 +175,26 @@
                         <td class="players-club-cell" data-label="{% trans "Club" %}">
                             {% if club %}
                                 <span class="players-club-wrap">
-                                    <a class="players-club-link" href="{% url 'club' id=club.pk %}">{{ club.short_name }}</a>
-                                    {% if club.city %}
-                                        <span class="players-club-city">{{ club.city.name }}</span>
-                                    {% endif %}
+                                    <a class="players-club-link" href="{% url 'club' id=club.pk %}">
+                                        <span class="players-club-logo" aria-hidden="true">
+                                            {% if club.logo %}
+                                                <img src="{{ club.logo.url }}" alt="{{ club.short_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                                <span class="players-club-logo-placeholder" hidden>
+                                                    <i class="bi bi-buildings"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="players-club-logo-placeholder">
+                                                    <i class="bi bi-buildings"></i>
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="players-club-copy">
+                                            <span class="players-club-name">{{ club.short_name }}</span>
+                                            {% if club.city %}
+                                                <span class="players-club-city">{{ club.city.name }}</span>
+                                            {% endif %}
+                                        </span>
+                                    </a>
                                 </span>
                             {% else %}
                                 <span class="players-no-club">{% trans "No club" %}</span>

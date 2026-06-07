@@ -62,6 +62,11 @@
                     {% endfor %}
                 </select>
             </label>
+
+            <a class="tournament-reset-button clubs-reset-button" href="{{ club_reset_url }}">
+                <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                <span>{% trans "Скинути фільтри" %}</span>
+            </a>
         </div>
     </form>
 

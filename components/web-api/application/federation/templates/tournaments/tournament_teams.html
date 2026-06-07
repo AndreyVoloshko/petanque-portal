@@ -33,7 +33,7 @@
                     {% endif %}
                     <th class="tournament-team-score-col">
                         <span class="pt-heading-with-help">
-                            {% trans "Score" %}
+                            {% trans "Rating earned" %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}" aria-label="{{ points_help_text }}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -60,8 +60,9 @@
             </thead>
             <tbody>
                 {% for team in teams %}
-                <tr class="tournament-detail-team-row">
-                    <td class="tournament-team-place-cell" data-order="{{ team.place_min }}">
+                {% with can_remove_team=team|is_user_has_admin_access_to_team:current_user %}
+                <tr class="tournament-detail-team-row{% if not can_remove_team %} no-actions{% endif %}">
+                    <td class="tournament-team-place-cell" data-order="{{ team.place_min }}" data-label="{% trans "Place" %}">
                         {% if can_manage_tournament %}
                             {{ team|team_place_in_tournament_for_admin|safe }}
                         {% else %}
@@ -71,7 +72,7 @@
                             </span>
                         {% endif %}
                     </td>
-                    <td class="tournament-team-name-cell">
+                    <td class="tournament-team-name-cell" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Participant" %}{% else %}{% trans "Captain" %}{% endif %}">
                         {% if tournament_detail.is_single_player_format %}
                             <div class="tournament-team-athletes tournament-team-participant">
                                 {% for player in team.team.players.all %}
@@ -102,9 +103,23 @@
                         {% else %}
                             {% with captain=team.team.get_capitan %}
                                 {% if captain %}
-                                    <a class="tournament-captain-link" href="{% url 'player' id=captain.pk %}">
-                                        {{ captain.get_name }}
-                                        {{ captain.country|country_flag|safe }}
+                                    <a class="tournament-team-player tournament-captain-link" href="{% url 'player' id=captain.pk %}">
+                                        <span class="tournament-team-player-avatar" aria-hidden="true">
+                                            {% if captain.avatar %}
+                                                <img src="{{ captain.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                                <span class="players-athlete-avatar-placeholder" hidden>
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="players-athlete-avatar-placeholder">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="tournament-team-player-name">
+                                            {{ captain.get_name }}
+                                            {{ captain.country|country_flag|safe }}
+                                        </span>
                                     </a>
                                 {% else %}
                                     <span class="tournament-team-name">{{ team.team|team_short_name|safe }}</span>
@@ -113,40 +128,48 @@
                         {% endif %}
                     </td>
                     {% if not tournament_detail.is_single_player_format %}
-                    <td class="tournament-team-athletes-cell">
+                    <td class="tournament-team-athletes-cell" data-label="{% trans "Athletes" %}">
                         <div class="tournament-team-athletes">
-                            {% for player in team.team.players.all %}
-                                <a class="tournament-team-player" href="{% url 'player' id=player.pk %}">
-                                    <span class="tournament-team-player-avatar" aria-hidden="true">
-                                        {% if player.avatar %}
-                                            <img src="{{ player.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
-                                            <span class="players-athlete-avatar-placeholder" hidden>
-                                                <i class="bi bi-person-fill"></i>
-                                            </span>
-                                        {% else %}
-                                            <span class="players-athlete-avatar-placeholder">
-                                                <i class="bi bi-person-fill"></i>
-                                            </span>
-                                        {% endif %}
-                                    </span>
-                                    <span class="tournament-team-player-name">
-                                        {{ player.get_name }}
-                                        {{ player.country|country_flag|safe }}
-                                    </span>
-                                </a>
-                            {% empty %}
-                                <span class="tournament-team-muted">{% trans "No athletes" %}</span>
-                            {% endfor %}
+                            {% with captain=team.team.get_capitan %}
+                                {% for player in team.team.players.all %}
+                                    {% if player.pk != captain.pk %}
+                                    <a class="tournament-team-player" href="{% url 'player' id=player.pk %}">
+                                        <span class="tournament-team-player-avatar" aria-hidden="true">
+                                            {% if player.avatar %}
+                                                <img src="{{ player.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                                <span class="players-athlete-avatar-placeholder" hidden>
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="players-athlete-avatar-placeholder">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="tournament-team-player-name">
+                                            {{ player.get_name }}
+                                            {{ player.country|country_flag|safe }}
+                                        </span>
+                                    </a>
+                                    {% endif %}
+                                {% empty %}
+                                    <span class="tournament-team-muted">{% trans "No teammates" %}</span>
+                                {% endfor %}
+                            {% endwith %}
                         </div>
                     </td>
                     {% endif %}
-                    <td class="tournament-team-score-cell" data-order="{{ team.rating_points }}">
-                        <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
-                            <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
-                            <span>{{ team.rating_points|floatformat:2 }}</span>
-                        </span>
+                    <td class="tournament-team-score-cell" data-order="{{ team.rating_points }}" data-label="{% trans "Rating earned" %}">
+                        {% if team.rating_points %}
+                            <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
+                                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                <span>{{ team.rating_points|floatformat:2 }}</span>
+                            </span>
+                        {% else %}
+                            <span class="tournament-team-muted">&mdash;</span>
+                        {% endif %}
                     </td>
-                    <td class="tournament-team-power-cell" data-order="{{ team.power }}">
+                    <td class="tournament-team-power-cell" data-order="{{ team.power }}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}">
                         {% if tournament_detail.is_single_player_format %}
                             {% with power=team.power|participant_power_badge %}
                                 {% if power %}
@@ -165,14 +188,14 @@
                             {% endwith %}
                         {% endif %}
                     </td>
-                    <td class="tournament-team-date-cell" data-order="{{ team.date_registration|date:'Ymd' }}">
+                    <td class="tournament-team-date-cell" data-order="{{ team.date_registration|date:'Ymd' }}" data-label="{% trans "Registration date" %}">
                         <span class="tournament-team-date" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
                             <i class="bi bi-calendar3" aria-hidden="true"></i>
                             <time datetime="{{ team.date_registration|date:'Y-m-d' }}">{{ team.date_registration|date:"Y-m-d" }}</time>
                         </span>
                     </td>
-                    <td class="tournament-team-actions-cell">
-                        {% if team|is_user_has_admin_access_to_team:current_user %}
+                    <td class="tournament-team-actions-cell{% if not can_remove_team %} is-empty{% endif %}"{% if can_remove_team %} data-label="{% trans "Actions" %}"{% endif %}>
+                        {% if can_remove_team %}
                         <form class="tournament-team-delete-form" method="post" action="" onsubmit="return confirm('{% if tournament_detail.is_single_player_format %}{% trans "Are you sure you want to remove this participant from the competition?" %}{% else %}{% trans "Are you sure you want to remove this team from the competition?" %}{% endif %}');">
                             {% csrf_token %}
                             <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
@@ -184,6 +207,7 @@
                         {% endif %}
                     </td>
                 </tr>
+                {% endwith %}
                 {% endfor %}
             </tbody>
         </table>

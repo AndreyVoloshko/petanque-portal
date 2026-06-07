@@ -164,7 +164,7 @@
             return 25;
         }
 
-        if (window.matchMedia('(max-width: 1199.98px)').matches) {
+        if (window.matchMedia('(max-width: 1400px)').matches) {
             return 30;
         }
 
@@ -226,6 +226,30 @@
             root.querySelectorAll(tooltipSelector).forEach(prepareTooltip);
         }
 
+        function disableTooltips(root) {
+            root.querySelectorAll(tooltipSelector).forEach(function(element) {
+                if (window.bootstrap && window.bootstrap.Tooltip) {
+                    const tooltip = window.bootstrap.Tooltip.getInstance(element);
+                    if (tooltip && tooltip.dispose) {
+                        tooltip.dispose();
+                    }
+                } else if (window.jQuery && window.jQuery.fn.tooltip) {
+                    const $element = window.jQuery(element);
+                    if ($element.data('bs.tooltip')) {
+                        $element.tooltip('dispose');
+                    }
+                }
+
+                element.removeAttribute('data-bs-toggle');
+                element.removeAttribute('data-bs-placement');
+                element.removeAttribute('data-bs-container');
+                element.removeAttribute('data-bs-offset');
+                element.removeAttribute('data-bs-original-title');
+                element.removeAttribute('aria-describedby');
+                element.removeAttribute('title');
+            });
+        }
+
         function initTooltip(element, showImmediately) {
             prepareTooltip(element);
 
@@ -262,7 +286,7 @@
         const responsiveMount = document.querySelector('[data-tournaments-responsive-list]');
         const tabletTemplate = document.getElementById('tournaments-tablet-template');
         const mobileTemplate = document.getElementById('tournaments-mobile-template');
-        const tabletMedia = window.matchMedia ? window.matchMedia('(min-width: 768px) and (max-width: 1199.98px)') : null;
+        const tabletMedia = window.matchMedia ? window.matchMedia('(min-width: 768px) and (max-width: 1400px)') : null;
         const mobileMedia = window.matchMedia ? window.matchMedia('(max-width: 767.98px)') : null;
 
         function getResponsiveLayout() {
@@ -299,7 +323,11 @@
             const template = layout === 'mobile' ? mobileTemplate : tabletTemplate;
             if (template) {
                 responsiveMount.appendChild(template.content.cloneNode(true));
-                prepareTooltips(responsiveMount);
+                if (layout === 'mobile') {
+                    disableTooltips(responsiveMount);
+                } else {
+                    prepareTooltips(responsiveMount);
+                }
             }
         }
 

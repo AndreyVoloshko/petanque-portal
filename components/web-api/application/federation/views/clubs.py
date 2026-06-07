@@ -52,6 +52,7 @@ def clubs(request):
         'club_pagination_pages': _pagination_pages(page_obj),
         'club_pagination_summary': _club_pagination_summary(page_obj),
         'club_pagination_urls': _club_pagination_urls(request, club_filters, page_obj),
+        'club_reset_url': _club_reset_url(request, club_filters),
     })
 
 
@@ -202,6 +203,16 @@ def _club_pagination_urls(request, club_filters, page_obj):
             if page != 'ellipsis'
         },
     }
+
+
+def _club_reset_url(request, club_filters):
+    if club_filters['page_size'] == DEFAULT_CLUBS_PAGE_SIZE:
+        return request.path
+
+    return '{}?{}'.format(
+        request.path,
+        urlencode({CLUBS_PAGE_SIZE_PARAM: club_filters['page_size']}),
+    )
 
 
 def _pagination_pages(page_obj):

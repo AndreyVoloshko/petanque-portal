@@ -576,6 +576,20 @@ class SeasonSnapshotGenerationTests(TestCase):
         ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
         self.assertEqual(ranks[:1], ['1'])
 
+    def test_season_page_shows_club_logo_in_table(self):
+        player = self.create_player('season-logo-player')
+        player.current_club.logo = 'clubs/season-kpc.png'
+        player.current_club.short_name = 'KPC'
+        player.current_club.save()
+        Season.objects.create(year=2024, player=player, club=player.current_club, rating=Decimal('10.0000'))
+
+        response = self.client.get('/seasons/2024')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/season-kpc.png')
+        self.assertContains(response, 'alt="KPC"')
+
     def test_year_tabs_preserve_active_filters(self):
         player = self.create_player('filtered-player')
         Season.objects.create(year=2024, player=player, club=player.current_club, rating=Decimal('10.0000'))
@@ -608,7 +622,7 @@ class PlayerProfileFormTests(TestCase):
 
 
 class PlayerLicenseListTests(TestCase):
-    def create_player(self, username, is_licence_active=True, licence_number_value=None):
+    def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
         user = User.objects.create_user(username=username)
 
         return Player.objects.create(
@@ -619,6 +633,7 @@ class PlayerLicenseListTests(TestCase):
             gender='M',
             is_licence_active=is_licence_active,
             licence_number=licence_number_value,
+            current_club=current_club,
         )
 
     def test_actual_players_list_requires_active_license_number(self):
@@ -695,6 +710,38 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.count, 55)
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
+
+    def test_licensed_players_page_shows_club_logo_in_table(self):
+        club = Club.objects.create(
+            name='Kyiv Petanque Club',
+            short_name='KPC',
+            address='Kyiv',
+            logo='clubs/kpc.png',
+        )
+        self.create_player('club-player', licence_number_value='00001', current_club=club)
+
+        response = self.client.get('/players/licence')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/kpc.png')
+        self.assertContains(response, 'alt="KPC"')
+
+
+class ClubListingPageTests(TestCase):
+    def test_filter_form_has_reset_button_that_clears_query_params(self):
+        response = self.client.get('/clubs/', {
+            'q': 'Kyiv',
+            'city': 'Kyiv',
+            'year': '2024',
+            'sort': 'name',
+            'per_page': '50',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="tournament-reset-button clubs-reset-button"')
+        self.assertContains(response, 'href="/clubs/?per_page=50"')
+        self.assertContains(response, 'Скинути фільтри')
 
 
 class ClubDetailPageTests(TestCase):

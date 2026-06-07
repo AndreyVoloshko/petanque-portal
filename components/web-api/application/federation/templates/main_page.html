@@ -198,9 +198,81 @@
             }
 
             let pageCount = 1;
+            let pageOffsets = [0];
+            let animationFrame;
+            let activePageIndex = 0;
+
+            function closestPageIndex() {
+                let closestIndex = 0;
+                let closestDistance = Number.POSITIVE_INFINITY;
+
+                pageOffsets.forEach(function (offset, index) {
+                    const distance = Math.abs(track.scrollLeft - offset);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = index;
+                    }
+                });
+
+                return closestIndex;
+            }
+
+            function calculatePageOffsets() {
+                const pageSize = carouselPageSize();
+                const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+                const firstItemLeft = items[0].offsetLeft;
+
+                pageOffsets = [];
+
+                for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
+                    const itemIndex = Math.min(pageIndex * pageSize, items.length - 1);
+                    const itemLeft = items[itemIndex].offsetLeft;
+                    const targetLeft = Math.round(Math.min(maxScroll, Math.max(0, itemLeft - firstItemLeft)));
+                    pageOffsets.push(targetLeft);
+                }
+            }
+
+            function scrollToPage(index) {
+                const targetPage = Math.min(Math.max(index, 0), pageCount - 1);
+                const targetLeft = pageOffsets[targetPage];
+                const startLeft = track.scrollLeft;
+                const distance = targetLeft - startLeft;
+                const duration = 260;
+                const startTime = window.performance.now();
+
+                window.cancelAnimationFrame(animationFrame);
+                activePageIndex = targetPage;
+                track.style.scrollSnapType = 'none';
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(distance) < 1) {
+                    track.scrollLeft = targetLeft;
+                    track.style.scrollSnapType = '';
+                    updateState();
+                    return;
+                }
+
+                function animate(now) {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+                    track.scrollLeft = startLeft + (distance * easedProgress);
+
+                    if (progress < 1) {
+                        animationFrame = window.requestAnimationFrame(animate);
+                        return;
+                    }
+
+                    track.scrollLeft = targetLeft;
+                    track.style.scrollSnapType = '';
+                    updateState();
+                }
+
+                animationFrame = window.requestAnimationFrame(animate);
+            }
 
             function rebuildDots() {
                 pageCount = Math.max(1, Math.ceil(items.length / carouselPageSize()));
+                calculatePageOffsets();
                 dots.innerHTML = '';
                 carousel.classList.toggle('is-single-page', pageCount <= 1);
 
@@ -210,10 +282,7 @@
                     button.className = 'landing-carousel-dot';
                     button.setAttribute('aria-label', '{{ go_to_slide_label|escapejs }} ' + (index + 1));
                     button.addEventListener('click', function () {
-                        track.scrollTo({
-                            left: index * track.clientWidth,
-                            behavior: 'smooth'
-                        });
+                        scrollToPage(index);
                     });
                     dots.appendChild(button);
                 }
@@ -223,7 +292,8 @@
 
             function updateState() {
                 const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
-                const currentPage = track.clientWidth ? Math.round(track.scrollLeft / track.clientWidth) : 0;
+                const currentPage = track.style.scrollSnapType === 'none' ? activePageIndex : closestPageIndex();
+                activePageIndex = currentPage;
 
                 previous.disabled = track.scrollLeft <= 4;
                 next.disabled = track.scrollLeft >= maxScroll - 4;
@@ -234,11 +304,11 @@
             }
 
             previous.addEventListener('click', function () {
-                track.scrollBy({left: -track.clientWidth, behavior: 'smooth'});
+                scrollToPage(activePageIndex - 1);
             });
 
             next.addEventListener('click', function () {
-                track.scrollBy({left: track.clientWidth, behavior: 'smooth'});
+                scrollToPage(activePageIndex + 1);
             });
 
             track.addEventListener('scroll', updateState, {passive: true});
