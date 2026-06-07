@@ -5334,14 +5334,17 @@ Tournaments classes
 }
 
 .tournament-status {
+  align-items: center;
   border-radius: 999px;
   display: inline-flex;
   font-size: 0.78rem;
   font-weight: 800;
+  justify-content: center;
   line-height: 1.15;
   min-height: 1.45rem;
   max-width: 100%;
   padding: 0.35rem 0.58rem;
+  text-align: center;
   white-space: normal;
 }
 
@@ -6521,10 +6524,42 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 @media (max-width: 767.98px) {
   .tournament-toggle-group {
+    gap: 0.45rem;
     flex-wrap: wrap;
     justify-content: flex-start;
     justify-self: start;
     white-space: normal;
+  }
+
+  .tournament-toggle {
+    border-radius: 10px;
+    gap: 0.42rem;
+    min-height: 38px;
+    padding: 0 0.52rem 0 0.62rem;
+  }
+
+  .tournament-toggle-label {
+    font-size: 0.8rem;
+    gap: 0.32rem;
+  }
+
+  .tournament-toggle-label .bi {
+    font-size: 0.95rem;
+  }
+
+  .tournament-toggle-switch {
+    height: 1.05rem;
+    padding: 0.12rem;
+    width: 1.86rem;
+  }
+
+  .tournament-toggle-switch::before {
+    height: 0.81rem;
+    width: 0.81rem;
+  }
+
+  .tournament-toggle input:checked ~ .tournament-toggle-switch::before {
+    transform: translateX(0.81rem);
   }
 }
 
