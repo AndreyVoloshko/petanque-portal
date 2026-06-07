@@ -21,7 +21,7 @@
     <section class="tournament-detail-main-card" aria-labelledby="tournament-teams-title">
         <div class="tournament-detail-section-heading tournament-detail-section-heading-row">
             <div>
-                <h2 id="tournament-teams-title">{% trans "Teams" %}</h2>
+                <h2 id="tournament-teams-title">{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}</h2>
                 <p>{{ row.teams_count_label }}</p>
             </div>
         </div>
@@ -38,7 +38,7 @@
                         aria-controls="tournament_teams"
                         aria-selected="true">
                     <i class="bi bi-people" aria-hidden="true"></i>
-                    <span>{% trans "Teams" %}</span>
+                    <span>{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}</span>
                 </button>
             </li>
             <li class="nav-item" role="presentation">

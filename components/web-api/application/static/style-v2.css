@@ -9499,6 +9499,41 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table.is-single-player-format .tournament-team-actions-cell {
     grid-column: span 1;
   }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-detail-team-row {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-name-cell {
+    grid-column: 1 / 8;
+    grid-row: 1;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-place-cell {
+    grid-column: 8 / 11;
+    grid-row: 1;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-actions-cell {
+    grid-column: 11 / -1;
+    grid-row: 1;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-score-cell,
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-power-cell,
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-date-cell {
+    grid-column: span 4;
+    grid-row: 2;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-detail-team-row.no-actions .tournament-team-name-cell {
+    grid-column: 1 / 9;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-detail-team-row.no-actions .tournament-team-place-cell {
+    border-right: 0;
+    grid-column: 9 / -1;
+  }
 }
 
 @media (max-width: 991.98px) {

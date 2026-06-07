@@ -2406,6 +2406,10 @@ msgstr "%(min)d-%(max)d гравців"
 msgid "Participant"
 msgstr "Учасник"
 
+#: federation/templates/tournaments/tournament.html
+msgid "Participants"
+msgstr "Учасники"
+
 #: federation/templates/tournaments/tournament_teams.html
 msgid "Participant power"
 msgstr "Сила учасника"
