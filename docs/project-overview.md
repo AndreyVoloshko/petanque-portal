@@ -294,6 +294,13 @@ components/web-api/application/federation/tests.py
 
 No meaningful automated tests are present in this clone.
 
+## Comprehensive Developer References
+
+- [Documentation entry point](README.md)
+- [Complete route index](route-index.md)
+- [Database schema and live drift](database-schema.md)
+- [Operations and workflows](operations-and-workflows.md)
+
 ## Notes For Future Development
 
 - The project is a classic server-rendered Django app, so new UI features should usually be implemented with Django views, templates, forms, and static CSS/JS unless a frontend migration is planned.
@@ -302,4 +309,5 @@ No meaningful automated tests are present in this clone.
 - The checked-in settings include a hardcoded `SECRET_KEY`; production should rely on environment-managed secrets.
 - `CORS_ORIGIN_ALLOW_ALL = True` and `CORS_ALLOW_METHODS = ['GET']` are globally configured. Verify this matches the real security requirements.
 - `DEBUG`, `ALLOWED_HOSTS`, database, S3, and CAPTCHA settings all depend on valid `APP_CREDENTIALS`.
-- There is no local `AGENTS.md` or `RTK.md` file in this clone at the time this document was created.
+- Project-specific operating instructions are provided in the repository-level
+  `AGENTS.md`; follow them before using generic setup/deployment instructions.

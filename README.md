@@ -29,7 +29,9 @@ Open:
 
 ## Docs
 
+* [Developer documentation entry point](docs/README.md)
+* [Route index](docs/route-index.md)
+* [Database schema](docs/database-schema.md)
 * [Local development](docs/local-development.md)
 * [Project overview](docs/project-overview.md)
 * [Audit](docs/audit/README.md)
-

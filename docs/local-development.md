@@ -2,6 +2,15 @@
 
 This project is designed to run through Docker Compose. The main application is a Django service under `components/web-api/application/`.
 
+> **Current workspace rule:** use the existing `petanque-portal` Compose project,
+> containers, and volumes. The existing `petanque_portal_db` service and
+> `petanque_db` volume contain production-derived data and are the local source
+> of truth. Do not initialize, reset, reseed, replace, or remove that database
+> unless explicitly asked.
+
+See [the developer documentation entry point](README.md) and
+[database schema reference](database-schema.md) before making high-risk changes.
+
 ## Prerequisites
 
 - Docker
@@ -9,7 +18,26 @@ This project is designed to run through Docker Compose. The main application is 
 - Bash
 - Python 3 (used by `deploy/local_run.sh` to read database settings from `APP_CREDENTIALS`)
 
-## First-Time Setup
+## Existing Local Stack
+
+Inspect the current stack with the explicit project name:
+
+```bash
+docker compose -p petanque-portal ps
+```
+
+Expected primary services:
+
+- `petanque_portal_web_api`: app at `http://localhost:60102/`
+- `petanque_portal_db`: production-derived local PostgreSQL source of truth
+- `petanque_portal_adminer`: Adminer at `http://localhost:60103/`
+
+Nginx may be stopped and is not the primary local entry point.
+
+## Fresh Environment Setup Only
+
+The following is for a genuinely new environment with no provided Compose stack
+or database volume. Do not use it to replace the current workspace database.
 
 Create a local environment file:
 
@@ -46,26 +74,19 @@ Run from the repository root:
 ./deploy/local_run.sh
 ```
 
-## Start The App
+## Start Or Rebuild The Existing App
 
-Recommended local command:
+For normal development, start/rebuild only the existing web service and its
+dependencies:
 
 ```bash
-./deploy/local_run.sh
+docker compose -p petanque-portal up -d --build petanque_portal_web_api
 ```
 
-This starts the full stack (web API, Postgres, Adminer, Nginx, Certbot). To run only the app, database, and Adminer without Nginx:
+When a rebuild is not needed:
 
 ```bash
-docker compose -p petanque-portal up --build petanque_portal_db petanque_portal_web_api petanque_portal_adminer
-```
-
-When using the manual command, export Postgres variables yourself (or use the same values as in `APP_CREDENTIALS`):
-
-```bash
-export POSTGRES_DB=petanque_portal
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD=petanque_portal_db_password
+docker compose -p petanque-portal restart petanque_portal_web_api
 ```
 
 Then open:
@@ -86,9 +107,11 @@ For initial TLS certificates on a server with Nginx running, use:
 ./deploy/init-letsencrypt.sh
 ```
 
-## Database Setup
+## Database Setup In A Fresh Environment Only
 
-After containers are running, apply migrations:
+Do not run setup or fixture-loading commands against the provided
+production-derived local database unless explicitly requested. In a genuinely
+fresh environment, apply migrations with:
 
 ```bash
 docker compose -p petanque-portal exec petanque_portal_web_api python manage.py migrate
@@ -100,9 +123,11 @@ Create an admin user:
 docker compose -p petanque-portal exec petanque_portal_web_api python manage.py createsuperuser
 ```
 
-Optional: load the checked-in JSON data if it is intended for local use:
+The checked-in `db.json` is not the source of truth for this workspace. Loading
+it can overwrite or conflict with existing data.
 
 ```bash
+# Fresh/disposable environment only:
 docker compose -p petanque-portal exec petanque_portal_web_api python manage.py loaddata db.json
 ```
 
@@ -138,12 +163,6 @@ Stop containers:
 docker compose -p petanque-portal down
 ```
 
-Stop containers and remove volumes:
-
-```bash
-docker compose -p petanque-portal down -v
-```
-
 On a remote host, prefer the deploy scripts:
 
 ```bash
@@ -157,3 +176,5 @@ On a remote host, prefer the deploy scripts:
 - The weekly cron job runs `python manage.py recalculate_ratings` from `/application`.
 - Local media files are stored in the `petanque_uploaded_files` Docker volume.
 - Production S3 storage is used only when all S3 credentials are present in `APP_CREDENTIALS`.
+- Never use `docker compose down -v` in the provided workspace; it removes the
+  source-of-truth database volume.
