@@ -16,17 +16,38 @@ class RegistrationTeamForm(forms.Form):
         super(RegistrationTeamForm, self).__init__(*args, **kwargs)
 
         for i in range(self.tournament.get_max_players_per_team(), 0, -1):
+            field_name = 'players[%d]' % i
             label = _("Player %(number)s") % {'number': i}
             if i == 1:
                 label = _("%(player)s (Captain)") % {'player': label}
             elif i > self.tournament.number_of_players_in_team_min:
                 label = _("%(player)s (Reserve)") % {'player': label}
 
-            self.fields['players[%d]' % i] = forms.CharField(
-                widget=forms.Select(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
+            field = forms.CharField(
+                widget=forms.Select(
+                    attrs={
+                        'class': 'player-autocomplete',
+                        'data-player_index': i,
+                        'data-placeholder': "Пошук спортсмена за ім'ям або прізвищем",
+                    },
+                ),
                 label=label,
                 required=(i <= self.tournament.number_of_players_in_team_min),
             )
+            selected_player_id = None
+            if self.is_bound:
+                selected_player_id = self.data.get(field_name)
+            elif self.initial.get(field_name):
+                selected_player_id = self.initial.get(field_name)
+
+            if selected_player_id:
+                try:
+                    selected_player = Player.objects.get(pk=selected_player_id)
+                    field.widget.choices = [(selected_player.pk, selected_player.get_name())]
+                except Player.DoesNotExist:
+                    field.widget.choices = [(selected_player_id, selected_player_id)]
+
+            self.fields[field_name] = field
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'

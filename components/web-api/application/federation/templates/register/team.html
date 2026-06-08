@@ -1,87 +1,168 @@
 {% extends "common/page_base.html" %}
-{% load app_filters %}
 {% load i18n %}
-{% load crispy_forms_tags %}
+
+{% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-lg-7">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">{% trans "Team registration" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <b>{% trans "Competitions" %}</b>:
-                            <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament|tournament_display_name }}</a>
-                        </div>
+{% with row=tournament_detail.row %}
+    <section class="tournament-detail-page tournament-registration-page" aria-labelledby="team-registration-title">
+        <nav class="tournament-detail-breadcrumbs" aria-label="breadcrumb">
+            <a href="/" class="tournament-detail-breadcrumb-link"><i class="bi bi-house-door-fill" aria-hidden="true"></i></a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <a href="{% url 'tournaments' %}" class="tournament-detail-breadcrumb-link">{% trans "Competitions" %}</a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-breadcrumb-link">{{ row.title }}</a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <span class="tournament-detail-breadcrumb-current">Реєстрація команди</span>
+        </nav>
 
-                        {% if is_registration_opened %}
-                            {% crispy team_registration_form %}
-                        {% else %}
-                            <div class="text-center">
-                                <p class="text-danger fw-bold">{% trans "Registration for this competition is closed." %}</p>
+        {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row hide_action_panel=True %}
+
+        <div class="registration-redesign tournament-registration-layout">
+            <section class="registration-card team-registration-card" aria-labelledby="team-registration-title">
+                <header class="registration-header">
+                    <span class="registration-header-icon" aria-hidden="true">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+                    <div class="registration-header-copy">
+                        <h1 id="team-registration-title">Реєстрація команди</h1>
+                        <p>Оберіть склад для цього змагання. Формат команди: {{ tournament_detail.team_size_label }}.</p>
+                    </div>
+                </header>
+
+                {% if is_registration_opened %}
+                    <form class="registration-form registration-team-form" method="post" action="{% url 'register_team' tournament.pk %}" novalidate>
+                        {% csrf_token %}
+
+                        {% if team_registration_form.non_field_errors %}
+                            <div class="registration-form-alert" role="alert">
+                                {{ team_registration_form.non_field_errors }}
                             </div>
                         {% endif %}
+
+                        <div class="registration-info-box registration-team-intro-box">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <p>
+                                {% if tournament.number_of_players_in_team_max > tournament.number_of_players_in_team_min %}
+                                    Спочатку оберіть капітана. Поля для запасних гравців можна залишити порожніми.
+                                {% else %}
+                                    Шукайте спортсмена за ім'ям або прізвищем у базі федерації.
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="registration-field-grid registration-team-field-grid">
+                            {% for field in team_registration_form %}
+                                <div class="registration-field registration-team-field">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true">*</span>{% endif %}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="registration-field-errors">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="registration-actions">
+                            <button type="submit" class="registration-submit-button">
+                                <i class="bi bi-person-check" aria-hidden="true"></i>
+                                <span>{% trans "Register team" %}</span>
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="registration-form-alert" role="alert">
+                        {% trans "Registration for this competition is closed." %}
                     </div>
-                </div>
+                    <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-action">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        <span>Повернутися до змагання</span>
+                    </a>
+                {% endif %}
             </section>
-        </div>
 
-        <div class="col-lg-5">
-            {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">{% trans "Cannot find a player?" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="fw-bold">{% trans "Register player" %}</h4>
-                        <p>{% url 'register_player' as register_player_url %}{% blocktrans %}Not all athletes may appear in search results. If you cannot find an athlete, <a target="_blank" href="{{ register_player_url }}" class="btn btn-sm btn-success">add them to the portal</a>.{% endblocktrans %}</p>
-                        <p class="text-danger fw-bold">
-                            {% trans "Please do not add duplicate or non-existent players. First, try searching for the player using both Cyrillic and Latin spelling." %}
-                        </p>
+            <aside class="registration-sidebar tournament-registration-sidebar" aria-label="Підказки для реєстрації">
+                <section class="registration-warning-card">
+                    <span class="registration-warning-icon" aria-hidden="true">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <div>
+                        <h2>Спочатку перевірте спортсмена в базі</h2>
+                        <p>Перш ніж створювати нового спортсмена, спробуйте пошук і кирилицею, і латиницею.</p>
                     </div>
-                </div>
-            </section>
-        </div>
-    </div>
+                </section>
 
-    <!-- Подключение select2 -->
+                <section class="registration-search-card tournament-registration-help-card" aria-labelledby="register-player-title">
+                    <div class="tournament-detail-section-heading">
+                        <h2 id="register-player-title">Зареєструвати спортсмена</h2>
+                        <p>Використовуйте цей блок лише тоді, коли спортсмена немає в результатах пошуку.</p>
+                    </div>
+
+                    <a
+                        href="{% url 'register_player' %}"
+                        target="_blank"
+                        rel="noopener"
+                        class="tournament-detail-action tournament-detail-action-primary tournament-registration-add-player-link"
+                    >
+                        <i class="bi bi-person-plus" aria-hidden="true"></i>
+                        <span>Зареєструвати спортсмена</span>
+                    </a>
+
+                    <div class="registration-info-box tournament-registration-note-box">
+                        <i class="bi bi-shield-check" aria-hidden="true"></i>
+                        <p>Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового спортсмена лише після уважної перевірки бази.</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </section>
+
+    {% if is_registration_opened %}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
     <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
       const select2LettersOne = "{% trans "character" %}";
       const select2LettersFew = "{% trans "characters" %}";
       const select2LettersMany = "{% trans "characters" %}";
 
-      $('.player-autocomplete').select2({
-        ajax: {
+      $('.player-autocomplete').each(function() {
+        if (!this.querySelector('option[value=""]')) {
+          this.insertAdjacentHTML('afterbegin', '<option value=""></option>');
+        }
+
+        $(this).select2({
+          ajax: {
             url: '{% url 'api_players_list' %}',
             dataType: 'json'
-        },
-        language: {
-          inputTooShort: function (args) {
-            var remainingChars = args.minimum - args.input.length;
-            return "{% trans "Please enter" %} " + remainingChars + " {% trans "or more characters" %}";
           },
-          inputTooLong: function (args) {
-            var overChars = args.input.length - args.maximum;
-            return "{% trans "Please delete" %} " + overChars + ' ' +
-            ending(args.maximum, select2LettersOne, select2LettersFew, select2LettersMany);
-          },
-          noResults: function () {
-            return "{% trans "No athletes found. Enter a first or last name." %}";
-          },
-          searching: function () {
-            return "{% trans "Searching..." %}";
+          allowClear: true,
+          dropdownParent: $(this).closest('.team-registration-card'),
+          minimumInputLength: 2,
+          placeholder: this.dataset.placeholder || "Пошук спортсмена за ім'ям або прізвищем",
+          width: '100%',
+          language: {
+            inputTooShort: function (args) {
+              var remainingChars = args.minimum - args.input.length;
+              return "{% trans "Please enter" %} " + remainingChars + " {% trans "or more characters" %}";
+            },
+            inputTooLong: function (args) {
+              var overChars = args.input.length - args.maximum;
+              return "{% trans "Please delete" %} " + overChars + ' ' +
+              ending(args.maximum, select2LettersOne, select2LettersFew, select2LettersMany);
+            },
+            noResults: function () {
+              return "{% trans "No athletes found. Enter a first or last name." %}";
+            },
+            searching: function () {
+              return "{% trans "Searching..." %}";
+            }
           }
-        }
+        });
       });
     });
     </script>
+    {% endif %}
+{% endwith %}
 {% endblock %}

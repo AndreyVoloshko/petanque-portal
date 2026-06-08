@@ -1,7 +1,7 @@
 {% load app_filters %}
 {% load i18n %}
 
-{% if editable %}
+{% if editable and team.tournament.is_ready_for_processing %}
     {% trans "Place in competition" as place_title %}
     {% trans "Place in competition (max). Leave 0 if not needed" as place_max_title %}
     <div class="tournament-ranking-place tournament-place-field{% if team.place_min and team.place_max %} has-complete-range{% endif %}">

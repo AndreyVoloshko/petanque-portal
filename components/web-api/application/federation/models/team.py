@@ -75,7 +75,7 @@ class Team(models.Model):
             name
         )
 
-    def get_capitan(self):
+    def _get_explicit_capitan(self):
         captain_memberships = getattr(self, 'captain_memberships', None)
         if captain_memberships is not None:
             if captain_memberships:
@@ -83,6 +83,21 @@ class Team(models.Model):
             return None
 
         return self.players.filter(playerteammembership__is_capitan=True).first()
+
+    def get_capitan(self):
+        explicit_capitan = self._get_explicit_capitan()
+        if explicit_capitan:
+            return explicit_capitan
+
+        first_membership = (
+            PlayerTeamMembership.objects
+            .filter(team=self)
+            .select_related('player')
+            .order_by('pk')
+            .first()
+        )
+
+        return first_membership.player if first_membership else None
 
     def set_capitan(self, player_id):
         PlayerTeamMembership.objects.filter(team=self).update(is_capitan=False)
@@ -112,7 +127,7 @@ class Team(models.Model):
                 return team_with_capitan
 
             for existing_team in team:
-                if not existing_team.get_capitan():
+                if not existing_team._get_explicit_capitan():
                     existing_team.set_capitan(capitan_id)
                     return existing_team
         else:
