@@ -1539,6 +1539,41 @@ class TournamentListingPageTests(TestCase):
             place_min=place_min,
         )
 
+    def test_tournament_detail_hides_rating_points_until_processing_is_finished(self):
+        tournament = self.create_tournament('Unprocessed rating cup', is_rating=True)
+        player = self.create_player('unprocessed-player')
+        membership = self.register_player_for_tournament(tournament, player, place_min=1)
+        membership.rating_points = '14.5000'
+        membership.save(update_fields=['rating_points'])
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-team-score-col')
+        self.assertNotContains(response, 'tournament-team-score-cell')
+        self.assertNotContains(response, 'has-rating-points')
+
+    def test_tournament_detail_shows_rating_points_after_processing_is_finished(self):
+        tournament = self.create_tournament(
+            'Processed rating cup',
+            is_rating=True,
+            processed=True,
+        )
+        player = self.create_player('processed-player')
+        membership = self.register_player_for_tournament(tournament, player, place_min=1)
+        membership.rating_points = '14.5000'
+        membership.save(update_fields=['rating_points'])
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-score-col')
+        self.assertContains(response, 'tournament-team-score-cell')
+        self.assertContains(response, 'has-rating-points')
+        self.assertContains(response, '14,50')
+        self.assertContains(response, 'tournament-team-mobile-card')
+        self.assertContains(response, 'tournament-team-mobile-details-toggle')
+
     def test_rating_route_preset_shows_future_rating_rows_and_strength(self):
         self.create_tournament('Rating Cup', is_rating=True, power='22.2800')
         self.create_tournament('Community Cup', is_rating=False, power='18.5000')

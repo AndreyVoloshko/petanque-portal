@@ -2229,6 +2229,10 @@ msgstr "Score"
 msgid "Rating earned"
 msgstr "Rating earned"
 
+#: federation/templates/tournaments/tournament_teams.html
+msgid "More details"
+msgstr "More details"
+
 #: federation/templates/tournaments/tournament.html
 msgid "Participants"
 msgstr "Participants"

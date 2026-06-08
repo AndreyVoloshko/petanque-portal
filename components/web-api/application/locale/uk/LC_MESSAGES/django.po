@@ -2104,7 +2104,11 @@ msgstr "Пункти"
 
 #: federation/templates/tournaments/tournament_teams.html
 msgid "Rating earned"
-msgstr "Отримані рейтингові бали"
+msgstr "Рейтингові бали"
+
+#: federation/templates/tournaments/tournament_teams.html
+msgid "More details"
+msgstr "Детальніше"
 
 #: federation/templates/tournaments/tournament_delegations.html:7
 msgid "Organizers, delegates, and arbiters"

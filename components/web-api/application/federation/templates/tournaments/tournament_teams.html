@@ -17,7 +17,7 @@
 {% with can_manage_tournament=tournament|is_user_has_admin_access_to_tournament:current_user %}
 <div class="tournament-teams-section">
     <div class="players-table-responsive tournament-teams-table-wrap">
-        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %}" id="{{ table_id }}">
+        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished %}has-rating-points{% endif %}" id="{{ table_id }}">
             <thead>
                 <tr>
                     <th class="tournament-team-place-col">{% trans "Place" %}</th>
@@ -31,6 +31,7 @@
                     {% if not tournament_detail.is_single_player_format %}
                     <th class="tournament-team-athletes-col">{% trans "Athletes" %}</th>
                     {% endif %}
+                    {% if tournament.is_processing_finished %}
                     <th class="tournament-team-score-col">
                         <span class="pt-heading-with-help">
                             {% trans "Rating earned" %}
@@ -39,6 +40,7 @@
                             </button>
                         </span>
                     </th>
+                    {% endif %}
                     <th class="tournament-team-power-col">
                         <span class="pt-heading-with-help">
                             {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
@@ -61,16 +63,9 @@
             <tbody>
                 {% for team in teams %}
                 {% with can_remove_team=team|is_user_has_admin_access_to_team:current_user %}
-                <tr class="tournament-detail-team-row{% if not can_remove_team %} no-actions{% endif %}">
+                <tr class="tournament-detail-team-row{% if not can_remove_team %} no-actions{% endif %}" data-team-membership-id="{{ team.pk }}">
                     <td class="tournament-team-place-cell" data-order="{{ team.place_min }}" data-label="{% trans "Place" %}">
-                        {% if can_manage_tournament %}
-                            {{ team|team_place_in_tournament_for_admin|safe }}
-                        {% else %}
-                            <span class="pt-place-chip {% if team.place_min == 1 %}pt-place-chip--gold{% elif team.place_min == 2 %}pt-place-chip--silver{% elif team.place_min == 3 %}pt-place-chip--bronze{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Place in competition" %}">
-                                <i class="bi bi-trophy" aria-hidden="true"></i>
-                                <span class="pt-place-value">{{ team|team_place_range_in_tournament }}</span>
-                            </span>
-                        {% endif %}
+                        {% include "tournaments/_ranking_place.html" with team=team editable=can_manage_tournament %}
                     </td>
                     <td class="tournament-team-name-cell" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Participant" %}{% else %}{% trans "Captain" %}{% endif %}">
                         {% if tournament_detail.is_single_player_format %}
@@ -159,6 +154,7 @@
                         </div>
                     </td>
                     {% endif %}
+                    {% if tournament.is_processing_finished %}
                     <td class="tournament-team-score-cell" data-order="{{ team.rating_points }}" data-label="{% trans "Rating earned" %}">
                         {% if team.rating_points %}
                             <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
@@ -169,6 +165,7 @@
                             <span class="tournament-team-muted">&mdash;</span>
                         {% endif %}
                     </td>
+                    {% endif %}
                     <td class="tournament-team-power-cell" data-order="{{ team.power }}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}">
                         {% if tournament_detail.is_single_player_format %}
                             {% with power=team.power|participant_power_badge %}
@@ -213,6 +210,159 @@
         </table>
     </div>
 
+    <div class="tournament-team-mobile-list {% if tournament.is_processing_finished %}has-rating-points{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}">
+        {% for team in teams %}
+        {% with can_remove_team=team|is_user_has_admin_access_to_team:current_user %}
+        <article class="tournament-team-mobile-card" data-team-membership-id="{{ team.pk }}">
+            <div class="tournament-team-mobile-header">
+                <div class="tournament-team-mobile-place">
+                    {% include "tournaments/_ranking_place.html" with team=team editable=can_manage_tournament %}
+                </div>
+
+                {% if can_remove_team %}
+                <form class="tournament-team-delete-form" method="post" action="" onsubmit="return confirm('{% if tournament_detail.is_single_player_format %}{% trans "Are you sure you want to remove this participant from the competition?" %}{% else %}{% trans "Are you sure you want to remove this team from the competition?" %}{% endif %}');">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_team_id" value="{{ team.pk }}" />
+                    <button type="submit" class="tournament-team-delete-button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{% trans "Remove participant" %}{% else %}{% trans "Remove team" %}{% endif %}">
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        <span class="visually-hidden">{% if tournament_detail.is_single_player_format %}{% trans "Remove participant" %}{% else %}{% trans "Remove team" %}{% endif %}</span>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            <div class="collapse show tournament-team-mobile-content" id="{{ table_id }}_mobile_details_{{ team.pk }}">
+                <section class="tournament-team-mobile-people">
+                    <h3>{% if tournament_detail.is_single_player_format %}{% trans "Participant" %}{% else %}{% trans "Captain" %}{% endif %}</h3>
+                    {% if tournament_detail.is_single_player_format %}
+                        <div class="tournament-team-athletes tournament-team-participant">
+                            {% for player in team.team.players.all %}
+                                {% if forloop.first %}
+                                <a class="tournament-team-player" href="{% url 'player' id=player.pk %}">
+                                    <span class="tournament-team-player-avatar" aria-hidden="true">
+                                        {% if player.avatar %}
+                                            <img src="{{ player.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                            <span class="players-athlete-avatar-placeholder" hidden><i class="bi bi-person-fill"></i></span>
+                                        {% else %}
+                                            <span class="players-athlete-avatar-placeholder"><i class="bi bi-person-fill"></i></span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="tournament-team-player-name">{{ player.get_name }} {{ player.country|country_flag|safe }}</span>
+                                </a>
+                                {% endif %}
+                            {% empty %}
+                                <span class="tournament-team-name">{{ team.team|team_short_name|safe }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% with captain=team.team.get_capitan %}
+                            {% if captain %}
+                            <a class="tournament-team-player tournament-captain-link" href="{% url 'player' id=captain.pk %}">
+                                <span class="tournament-team-player-avatar" aria-hidden="true">
+                                    {% if captain.avatar %}
+                                        <img src="{{ captain.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                        <span class="players-athlete-avatar-placeholder" hidden><i class="bi bi-person-fill"></i></span>
+                                    {% else %}
+                                        <span class="players-athlete-avatar-placeholder"><i class="bi bi-person-fill"></i></span>
+                                    {% endif %}
+                                </span>
+                                <span class="tournament-team-player-name">{{ captain.get_name }} {{ captain.country|country_flag|safe }}</span>
+                            </a>
+                            {% else %}
+                                <span class="tournament-team-name">{{ team.team|team_short_name|safe }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </section>
+
+                {% if not tournament_detail.is_single_player_format %}
+                <section class="tournament-team-mobile-people">
+                    <h3>{% trans "Athletes" %}</h3>
+                    <div class="tournament-team-athletes">
+                        {% with captain=team.team.get_capitan %}
+                            {% for player in team.team.players.all %}
+                                {% if player.pk != captain.pk %}
+                                <a class="tournament-team-player" href="{% url 'player' id=player.pk %}">
+                                    <span class="tournament-team-player-avatar" aria-hidden="true">
+                                        {% if player.avatar %}
+                                            <img src="{{ player.avatar.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                            <span class="players-athlete-avatar-placeholder" hidden><i class="bi bi-person-fill"></i></span>
+                                        {% else %}
+                                            <span class="players-athlete-avatar-placeholder"><i class="bi bi-person-fill"></i></span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="tournament-team-player-name">{{ player.get_name }} {{ player.country|country_flag|safe }}</span>
+                                </a>
+                                {% endif %}
+                            {% empty %}
+                                <span class="tournament-team-muted">{% trans "No teammates" %}</span>
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <div class="tournament-team-mobile-stats">
+                    {% if tournament.is_processing_finished %}
+                    <section class="tournament-team-mobile-stat">
+                        <h3>
+                            {% trans "Rating earned" %}
+                            <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}" aria-label="{{ points_help_text }}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            </button>
+                        </h3>
+                        {% if team.rating_points %}
+                            <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
+                                <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                <span>{{ team.rating_points|floatformat:2 }}</span>
+                            </span>
+                        {% else %}
+                            <span class="tournament-team-muted">&mdash;</span>
+                        {% endif %}
+                    </section>
+                    {% endif %}
+
+                    <section class="tournament-team-mobile-stat">
+                        <h3>
+                            {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
+                            <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            </button>
+                        </h3>
+                        {% if tournament_detail.is_single_player_format %}
+                            {% with power=team.power|participant_power_badge %}
+                                {% if power %}{{ power|safe }}{% else %}<span class="tournament-team-muted">&mdash;</span>{% endif %}
+                            {% endwith %}
+                        {% else %}
+                            {% with power=team.power|team_power_badge %}
+                                {% if power %}{{ power|safe }}{% else %}<span class="tournament-team-muted">&mdash;</span>{% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </section>
+
+                    <section class="tournament-team-mobile-stat tournament-team-mobile-date-stat">
+                        <h3>
+                            {% trans "Registration date" %}
+                            <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
+                                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            </button>
+                        </h3>
+                        <span class="tournament-team-date">
+                            <i class="bi bi-calendar3" aria-hidden="true"></i>
+                            <time datetime="{{ team.date_registration|date:'Y-m-d' }}">{{ team.date_registration|date:"Y-m-d" }}</time>
+                        </span>
+                    </section>
+                </div>
+            </div>
+
+            <button class="tournament-team-mobile-details-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#{{ table_id }}_mobile_details_{{ team.pk }}" aria-expanded="true" aria-controls="{{ table_id }}_mobile_details_{{ team.pk }}">
+                {% trans "More details" %}
+            </button>
+        </article>
+        {% endwith %}
+        {% endfor %}
+    </div>
+
     {% include "common/datatable_players_footer.html" with pagination_label=tournament_table_pagination_label footer_class="tournament-teams-footer" %}
 
     {% if can_manage_tournament %}
@@ -231,6 +381,19 @@ $(document).ready(function() {
     var tableElement = $('#{{ table_id }}');
     var section = tableElement.closest('.tournament-teams-section');
     var footer = section.find('.tournament-teams-footer');
+    var mobileCards = section.find('.tournament-team-mobile-card');
+
+    function syncMobileCards() {
+        var visibleIds = {};
+
+        tableElement.find('tbody .tournament-detail-team-row').each(function () {
+            visibleIds[String($(this).data('team-membership-id'))] = true;
+        });
+
+        mobileCards.each(function () {
+            $(this).toggle(Boolean(visibleIds[String($(this).data('team-membership-id'))]));
+        });
+    }
 
     function initTooltips() {
         setTimeout(function () {
@@ -244,6 +407,25 @@ $(document).ready(function() {
         }, 150);
     }
 
+    function afterTableDraw() {
+        syncMobileCards();
+        initTooltips();
+    }
+
+    function activePlaceInputScope() {
+        var mobileList = section.find('.tournament-team-mobile-list');
+        return mobileList.is(':visible') ? mobileList : tableElement;
+    }
+
+    function updateRankingPlaceState() {
+        section.find('.tournament-ranking-place').each(function () {
+            var field = $(this);
+            var minValue = $.trim(field.find('.tournament-place-field-min').val());
+            var maxValue = $.trim(field.find('.tournament-place-field-max').val());
+            field.toggleClass('has-complete-range', Boolean(minValue && maxValue));
+        });
+    }
+
     if ($.fn.DataTable) {
         var table = window.PetanquePortal.dataTableFooter.init(tableElement, {
             portalFooter: {
@@ -252,17 +434,21 @@ $(document).ready(function() {
             },
             columns: [
                 {% if tournament_detail.is_single_player_format %}
-                { width: "10%", searchable: true, orderable: true, type: "num" },
-                { width: "34%", searchable: true, orderable: true },
+                { width: "14%", searchable: true, orderable: true, type: "num" },
+                { width: "30%", searchable: true, orderable: true },
+                {% if tournament.is_processing_finished %}
                 { width: "14%", searchable: true, orderable: true },
+                {% endif %}
                 { width: "16%", searchable: true, orderable: true },
                 { width: "20%", searchable: true, orderable: true },
                 { width: "6%", searchable: false, orderable: false }
                 {% else %}
-                { width: "8%", searchable: true, orderable: true, type: "num" },
+                { width: "12%", searchable: true, orderable: true, type: "num" },
                 { width: "16%", searchable: true, orderable: true },
-                { width: "38%", searchable: true, orderable: false },
+                { width: "34%", searchable: true, orderable: false },
+                {% if tournament.is_processing_finished %}
                 { width: "10%", searchable: true, orderable: true },
+                {% endif %}
                 { width: "10%", searchable: true, orderable: true },
                 { width: "12%", searchable: true, orderable: true },
                 { width: "6%", searchable: false, orderable: false }
@@ -277,10 +463,20 @@ $(document).ready(function() {
                 infoFiltered: "{% if tournament_detail.is_single_player_format %}{% trans "(filtered from _MAX_ participants)" %}{% else %}{% trans "(filtered from _MAX_ teams)" %}{% endif %}",
                 search: "{% trans "Search" %}"
             }
-        }, footer, initTooltips);
+        }, footer, afterTableDraw);
     }
 
+    syncMobileCards();
     initTooltips();
+    updateRankingPlaceState();
+
+    section.on('input', '.tournament-ranking-place-input', function () {
+        var input = this;
+        section.find('.tournament-ranking-place-input').filter(function () {
+            return this.name === input.name;
+        }).not(input).val(input.value);
+        updateRankingPlaceState();
+    });
 
     section.find('.save-places').click(function () {
         if(!confirm("{% if tournament_detail.is_single_player_format %}{% trans "Are you sure you want to overwrite the participants' final places?" %}{% else %}{% trans "Are you sure you want to overwrite the teams' final places?" %}{% endif %}")) {
@@ -291,7 +487,7 @@ $(document).ready(function() {
             method: "POST",
             url: "",
             data: {
-                "teams": JSON.stringify(section.find('.tournament-place-field :input').serializeArray()),
+                "teams": JSON.stringify(activePlaceInputScope().find('.tournament-place-field :input').serializeArray()),
                 "csrfmiddlewaretoken": section.find('.csrf-token :input').val()
             }
         }).done(function() {

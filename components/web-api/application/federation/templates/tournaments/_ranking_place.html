@@ -1,0 +1,43 @@
+{% load app_filters %}
+{% load i18n %}
+
+{% if editable %}
+    {% trans "Place in competition" as place_title %}
+    {% trans "Place in competition (max). Leave 0 if not needed" as place_max_title %}
+    <div class="tournament-ranking-place tournament-place-field{% if team.place_min and team.place_max %} has-complete-range{% endif %}">
+        <span class="tournament-ranking-place-icon" aria-hidden="true">
+            <i class="bi bi-trophy"></i>
+        </span>
+        <span class="tournament-ranking-place-divider" aria-hidden="true"></span>
+        <input type="text"
+               class="tournament-ranking-place-input tournament-place-field-min"
+               name="{{ team.pk }}-min"
+               value="{% if team.place_min %}{{ team.place_min }}{% endif %}"
+               placeholder="-"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               autocomplete="off"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="{{ place_title }}"
+               aria-label="{{ place_title }}" />
+        <span class="tournament-ranking-place-separator" aria-hidden="true">-</span>
+        <input type="text"
+               class="tournament-ranking-place-input tournament-place-field-max"
+               name="{{ team.pk }}-max"
+               value="{% if team.place_max %}{{ team.place_max }}{% endif %}"
+               placeholder="-"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               autocomplete="off"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="{{ place_max_title }}"
+               aria-label="{{ place_max_title }}" />
+    </div>
+{% else %}
+    <span class="pt-place-chip {% if team.place_min == 1 %}pt-place-chip--gold{% elif team.place_min == 2 %}pt-place-chip--silver{% elif team.place_min == 3 %}pt-place-chip--bronze{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Place in competition" %}">
+        <i class="bi bi-trophy" aria-hidden="true"></i>
+        <span class="pt-place-value">{{ team|team_place_range_in_tournament }}</span>
+    </span>
+{% endif %}
