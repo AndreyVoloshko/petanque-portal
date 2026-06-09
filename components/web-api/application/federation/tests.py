@@ -387,17 +387,18 @@ class TeamCaptainSelectionTests(TestCase):
         self.assertEqual(team.pk, legacy_team.pk)
         self.assert_team_capitan(team, second_player)
 
-    def test_team_without_explicit_capitan_uses_first_registered_player(self):
+    def test_team_without_explicit_capitan_has_display_fallback_to_first_registered_player(self):
         first_player = self.create_player('first')
         second_player = self.create_player('second')
         team = Team.objects.create()
         PlayerTeamMembership.objects.create(team=team, player=first_player)
         PlayerTeamMembership.objects.create(team=team, player=second_player)
 
-        self.assertEqual(team.get_capitan(), first_player)
+        self.assertIsNone(team.get_capitan())
+        self.assertEqual(team.get_display_capitan(), first_player)
         self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
 
-    def test_prefetched_team_without_explicit_capitan_uses_first_registered_player(self):
+    def test_prefetched_team_without_explicit_capitan_has_display_fallback_to_first_registered_player(self):
         first_player = self.create_player('first')
         second_player = self.create_player('second')
         team = Team.objects.create()
@@ -412,7 +413,8 @@ class TeamCaptainSelectionTests(TestCase):
             )
         ).get(pk=team.pk)
 
-        self.assertEqual(prefetched_team.get_capitan(), first_player)
+        self.assertIsNone(prefetched_team.get_capitan())
+        self.assertEqual(prefetched_team.get_display_capitan(), first_player)
         self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
 
 

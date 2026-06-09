@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div
 from django.utils.translation import gettext_lazy as _
 
+PLAYER_SEARCH_MINIMUM_INPUT_LENGTH = 2
+
 
 class RegistrationTeamForm(forms.Form):
 
@@ -28,7 +30,8 @@ class RegistrationTeamForm(forms.Form):
                     attrs={
                         'class': 'player-autocomplete',
                         'data-player_index': i,
-                        'data-placeholder': "Пошук спортсмена за ім'ям або прізвищем",
+                        'data-minimum-input-length': PLAYER_SEARCH_MINIMUM_INPUT_LENGTH,
+                        'data-placeholder': _("Search athlete by first or last name"),
                     },
                 ),
                 label=label,

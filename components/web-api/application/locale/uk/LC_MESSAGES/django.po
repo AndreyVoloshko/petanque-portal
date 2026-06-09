@@ -2900,3 +2900,45 @@ msgstr "Зміну скасовано."
 #: federation/player_change_log_admin.py
 msgid "Open revert log entry"
 msgstr "Відкрити запис про скасування"
+
+#: federation/forms/registration_team_form.py
+#: federation/templates/register/team.html
+msgid "Search athlete by first or last name"
+msgstr "Пошук спортсмена за ім'ям або прізвищем"
+
+#: federation/templates/register/team.html
+#, python-format
+msgid "Choose the roster for this competition. Team format: %(team_size)s."
+msgstr "Оберіть склад для цього змагання. Формат команди: %(team_size)s."
+
+#: federation/templates/register/team.html
+msgid "Choose the captain first. Reserve player fields can be left empty."
+msgstr "Спочатку оберіть капітана. Поля для запасних гравців можна залишити порожніми."
+
+#: federation/templates/register/team.html
+msgid "Search for an athlete by first or last name in the federation database."
+msgstr "Шукайте спортсмена за ім'ям або прізвищем у базі федерації."
+
+#: federation/templates/register/team.html
+msgid "Back to competition"
+msgstr "Повернутися до змагання"
+
+#: federation/templates/register/team.html
+msgid "Registration tips"
+msgstr "Підказки для реєстрації"
+
+#: federation/templates/register/team.html
+msgid "Check the athlete in the database first"
+msgstr "Спочатку перевірте спортсмена в базі"
+
+#: federation/templates/register/team.html
+msgid "Before creating a new athlete, try searching in both Cyrillic and Latin spelling."
+msgstr "Перш ніж створювати нового спортсмена, спробуйте пошук і кирилицею, і латиницею."
+
+#: federation/templates/register/team.html
+msgid "Use this block only when the athlete is missing from search results."
+msgstr "Використовуйте цей блок лише тоді, коли спортсмена немає в результатах пошуку."
+
+#: federation/templates/register/team.html
+msgid "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
+msgstr "Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового спортсмена лише після уважної перевірки бази."

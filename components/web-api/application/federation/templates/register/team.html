@@ -4,6 +4,7 @@
 {% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
+{% trans "Search athlete by first or last name" as athlete_search_placeholder %}
 {% with row=tournament_detail.row %}
     <section class="tournament-detail-page tournament-registration-page" aria-labelledby="team-registration-title">
         <nav class="tournament-detail-breadcrumbs" aria-label="breadcrumb">
@@ -13,7 +14,7 @@
             <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
             <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-breadcrumb-link">{{ row.title }}</a>
             <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
-            <span class="tournament-detail-breadcrumb-current">Реєстрація команди</span>
+            <span class="tournament-detail-breadcrumb-current">{% trans "Team registration" %}</span>
         </nav>
 
         {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row hide_action_panel=True %}
@@ -25,8 +26,8 @@
                         <i class="bi bi-people-fill"></i>
                     </span>
                     <div class="registration-header-copy">
-                        <h1 id="team-registration-title">Реєстрація команди</h1>
-                        <p>Оберіть склад для цього змагання. Формат команди: {{ tournament_detail.team_size_label }}.</p>
+                        <h1 id="team-registration-title">{% trans "Team registration" %}</h1>
+                        <p>{% blocktrans with team_size=tournament_detail.team_size_label %}Choose the roster for this competition. Team format: {{ team_size }}.{% endblocktrans %}</p>
                     </div>
                 </header>
 
@@ -44,9 +45,9 @@
                             <i class="bi bi-info-circle" aria-hidden="true"></i>
                             <p>
                                 {% if tournament.number_of_players_in_team_max > tournament.number_of_players_in_team_min %}
-                                    Спочатку оберіть капітана. Поля для запасних гравців можна залишити порожніми.
+                                    {% trans "Choose the captain first. Reserve player fields can be left empty." %}
                                 {% else %}
-                                    Шукайте спортсмена за ім'ям або прізвищем у базі федерації.
+                                    {% trans "Search for an athlete by first or last name in the federation database." %}
                                 {% endif %}
                             </p>
                         </div>
@@ -76,26 +77,26 @@
                     </div>
                     <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-action">
                         <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                        <span>Повернутися до змагання</span>
+                        <span>{% trans "Back to competition" %}</span>
                     </a>
                 {% endif %}
             </section>
 
-            <aside class="registration-sidebar tournament-registration-sidebar" aria-label="Підказки для реєстрації">
+            <aside class="registration-sidebar tournament-registration-sidebar" aria-label="{% trans "Registration tips" %}">
                 <section class="registration-warning-card">
                     <span class="registration-warning-icon" aria-hidden="true">
                         <i class="bi bi-search"></i>
                     </span>
                     <div>
-                        <h2>Спочатку перевірте спортсмена в базі</h2>
-                        <p>Перш ніж створювати нового спортсмена, спробуйте пошук і кирилицею, і латиницею.</p>
+                        <h2>{% trans "Check the athlete in the database first" %}</h2>
+                        <p>{% trans "Before creating a new athlete, try searching in both Cyrillic and Latin spelling." %}</p>
                     </div>
                 </section>
 
                 <section class="registration-search-card tournament-registration-help-card" aria-labelledby="register-player-title">
                     <div class="tournament-detail-section-heading">
-                        <h2 id="register-player-title">Зареєструвати спортсмена</h2>
-                        <p>Використовуйте цей блок лише тоді, коли спортсмена немає в результатах пошуку.</p>
+                        <h2 id="register-player-title">{% trans "Register player" %}</h2>
+                        <p>{% trans "Use this block only when the athlete is missing from search results." %}</p>
                     </div>
 
                     <a
@@ -105,12 +106,12 @@
                         class="tournament-detail-action tournament-detail-action-primary tournament-registration-add-player-link"
                     >
                         <i class="bi bi-person-plus" aria-hidden="true"></i>
-                        <span>Зареєструвати спортсмена</span>
+                        <span>{% trans "Register player" %}</span>
                     </a>
 
                     <div class="registration-info-box tournament-registration-note-box">
                         <i class="bi bi-shield-check" aria-hidden="true"></i>
-                        <p>Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового спортсмена лише після уважної перевірки бази.</p>
+                        <p>{% trans "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database." %}</p>
                     </div>
                 </section>
             </aside>
@@ -122,25 +123,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const select2LettersOne = "{% trans "character" %}";
-      const select2LettersFew = "{% trans "characters" %}";
-      const select2LettersMany = "{% trans "characters" %}";
+    $(function() {
+      var select2LettersOne = "{% trans "character" %}";
+      var select2LettersFew = "{% trans "characters" %}";
+      var select2LettersMany = "{% trans "characters" %}";
 
       $('.player-autocomplete').each(function() {
-        if (!this.querySelector('option[value=""]')) {
-          this.insertAdjacentHTML('afterbegin', '<option value=""></option>');
+        var $field = $(this);
+        var minimumInputLength = Number($field.data('minimumInputLength'));
+
+        if (!$field.find('option[value=""]').length) {
+          $field.prepend('<option value=""></option>');
         }
 
-        $(this).select2({
+        $field.select2({
           ajax: {
             url: '{% url 'api_players_list' %}',
             dataType: 'json'
           },
           allowClear: true,
-          dropdownParent: $(this).closest('.team-registration-card'),
-          minimumInputLength: 2,
-          placeholder: this.dataset.placeholder || "Пошук спортсмена за ім'ям або прізвищем",
+          dropdownParent: $field.closest('.team-registration-card'),
+          minimumInputLength: isNaN(minimumInputLength) ? undefined : minimumInputLength,
+          placeholder: $field.data('placeholder') || "{{ athlete_search_placeholder|escapejs }}",
           width: '100%',
           language: {
             inputTooShort: function (args) {

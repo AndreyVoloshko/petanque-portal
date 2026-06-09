@@ -121,7 +121,14 @@
             </tbody>
         </table>
 
-        <div class="tournaments-responsive-list" data-tournaments-responsive-list></div>
+        <div
+            class="tournaments-responsive-list"
+            data-responsive-template-mount
+            data-tablet-template="tournaments-tablet-template"
+            data-mobile-template="tournaments-mobile-template"
+            data-layout-class="has-responsive-tournament-layout"
+            data-disable-mobile-tooltips="true"
+        ></div>
 
         <template id="tournaments-tablet-template">
             <div class="tournaments-tablet-list" aria-label="{% trans "Список турнірів" %}">

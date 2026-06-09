@@ -86,6 +86,7 @@ def tournaments(request, date_filter=None, type_filter=None):
         'show_strength': True,
         'page_obj': page_obj,
         'page_size': filters['page_size'],
+        'default_page_size': DEFAULT_TOURNAMENTS_PAGE_SIZE,
         'pagination_pages': _pagination_pages(page_obj),
         'pagination_summary': _pagination_summary(page_obj),
         'pagination_urls': _pagination_urls(filters, page_obj),

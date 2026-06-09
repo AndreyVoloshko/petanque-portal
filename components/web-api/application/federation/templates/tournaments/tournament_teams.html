@@ -17,27 +17,27 @@
 {% with can_manage_tournament=tournament|is_user_has_admin_access_to_tournament:current_user %}
 <div class="tournament-teams-section">
     <div class="players-table-responsive tournament-teams-table-wrap">
-        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" id="{{ table_id }}">
+        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished %}is-processing-finished{% endif %} {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" id="{{ table_id }}">
             <colgroup>
-                <col class="tournament-team-place-col" style="width: {% if tournament.is_processing_finished %}10.5rem{% else %}11rem{% endif %};">
-                <col class="tournament-team-name-col" style="width: {% if tournament_detail.is_single_player_format %}18rem{% elif tournament.is_processing_finished %}11.5rem{% else %}12rem{% endif %};">
+                <col class="tournament-team-place-col">
+                <col class="tournament-team-name-col">
                 {% if tournament_detail.is_single_player_format %}
-                <col class="tournament-team-club-col" style="width: 10rem;">
+                <col class="tournament-team-club-col">
                 {% endif %}
                 {% if not tournament_detail.is_single_player_format %}
                 <col class="tournament-team-athletes-col">
                 {% endif %}
                 {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
-                <col class="tournament-team-score-col" style="width: 8rem;">
+                <col class="tournament-team-score-col">
                 {% endif %}
-                <col class="tournament-team-power-col" style="width: {% if tournament.is_processing_finished %}8rem{% else %}8.75rem{% endif %};">
-                <col class="tournament-team-date-col" style="width: {% if tournament.is_processing_finished %}8.75rem{% else %}9rem{% endif %};">
-                <col class="tournament-team-actions-col" style="width: {% if tournament.is_processing_finished %}3.75rem{% else %}4rem{% endif %};">
+                <col class="tournament-team-power-col">
+                <col class="tournament-team-date-col">
+                <col class="tournament-team-actions-col">
             </colgroup>
             <thead>
                 <tr>
-                    <th class="tournament-team-place-col" style="width: {% if tournament.is_processing_finished %}10.5rem{% else %}11rem{% endif %};">{% trans "Place" %}</th>
-                    <th class="tournament-team-name-col" style="width: {% if tournament_detail.is_single_player_format %}18rem{% elif tournament.is_processing_finished %}11.5rem{% else %}12rem{% endif %};">
+                    <th class="tournament-team-place-col">{% trans "Place" %}</th>
+                    <th class="tournament-team-name-col">
                         {% if tournament_detail.is_single_player_format %}
                             {% trans "Participant" %}
                         {% else %}
@@ -45,13 +45,13 @@
                         {% endif %}
                     </th>
                     {% if tournament_detail.is_single_player_format %}
-                    <th class="tournament-team-club-col" style="width: 10rem;">{% trans "Club" %}</th>
+                    <th class="tournament-team-club-col">{% trans "Club" %}</th>
                     {% endif %}
                     {% if not tournament_detail.is_single_player_format %}
                     <th class="tournament-team-athletes-col">{% trans "Athletes" %}</th>
                     {% endif %}
                     {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
-                    <th class="tournament-team-score-col" style="width: 8rem;">
+                    <th class="tournament-team-score-col">
                         <span class="pt-heading-with-help">
                             {% trans "Rating earned" %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}" aria-label="{{ points_help_text }}">
@@ -60,7 +60,7 @@
                         </span>
                     </th>
                     {% endif %}
-                    <th class="tournament-team-power-col" style="width: {% if tournament.is_processing_finished %}8rem{% else %}8.75rem{% endif %};">
+                    <th class="tournament-team-power-col">
                         <span class="pt-heading-with-help">
                             {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}">
@@ -68,7 +68,7 @@
                             </button>
                         </span>
                     </th>
-                    <th class="tournament-team-date-col" style="width: {% if tournament.is_processing_finished %}8.75rem{% else %}9rem{% endif %};">
+                    <th class="tournament-team-date-col">
                         <span class="pt-heading-with-help">
                             {% trans "Registration date" %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
@@ -76,7 +76,7 @@
                             </button>
                         </span>
                     </th>
-                    <th class="tournament-team-actions-col" style="width: {% if tournament.is_processing_finished %}3.75rem{% else %}4rem{% endif %};"><span class="visually-hidden">{% trans "Actions" %}</span></th>
+                    <th class="tournament-team-actions-col"><span class="visually-hidden">{% trans "Actions" %}</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -115,7 +115,7 @@
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {% with captain=team.team.get_capitan %}
+                            {% with captain=team.team.get_display_capitan %}
                                 {% if captain %}
                                     <a class="tournament-team-captain-name" href="{% url 'player' id=captain.pk %}">{{ captain.get_name }}</a>
                                 {% else %}
@@ -282,7 +282,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {% with captain=team.team.get_capitan %}
+                        {% with captain=team.team.get_display_capitan %}
                             {% if captain %}
                             <a class="tournament-team-captain-name" href="{% url 'player' id=captain.pk %}">{{ captain.get_name }}</a>
                             {% else %}
@@ -406,15 +406,9 @@ $(document).ready(function() {
     }
 
     function initTooltips() {
-        setTimeout(function () {
-            if (!window.bootstrap || !window.bootstrap.Tooltip) {
-                return;
-            }
-
-            section.find('[data-bs-toggle="tooltip"]').each(function () {
-                window.bootstrap.Tooltip.getOrCreateInstance(this).update();
-            });
-        }, 150);
+        if (window.PetanquePortal && window.PetanquePortal.tooltips) {
+            window.PetanquePortal.tooltips.refresh(section);
+        }
     }
 
     function afterTableDraw() {
@@ -444,25 +438,25 @@ $(document).ready(function() {
             },
             columns: [
                 {% if tournament_detail.is_single_player_format %}
-                { width: "{% if tournament.is_processing_finished %}10.5rem{% else %}11rem{% endif %}", searchable: true, orderable: true, type: "num" },
-                { width: "18rem", searchable: true, orderable: true },
-                { width: "10rem", searchable: true, orderable: true },
+                { searchable: true, orderable: true, type: "num" },
+                { searchable: true, orderable: true },
+                { searchable: true, orderable: true },
                 {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
-                { width: "8rem", searchable: true, orderable: true },
+                { searchable: true, orderable: true },
                 {% endif %}
-                { width: "{% if tournament.is_processing_finished %}8rem{% else %}8.75rem{% endif %}", searchable: true, orderable: true },
-                { width: "{% if tournament.is_processing_finished %}8.75rem{% else %}9rem{% endif %}", searchable: true, orderable: true },
-                { width: "{% if tournament.is_processing_finished %}3.75rem{% else %}4rem{% endif %}", searchable: false, orderable: false }
+                { searchable: true, orderable: true },
+                { searchable: true, orderable: true },
+                { searchable: false, orderable: false }
                 {% else %}
-                { width: "{% if tournament.is_processing_finished %}10.5rem{% else %}11rem{% endif %}", searchable: true, orderable: true, type: "num" },
-                { width: "{% if tournament.is_processing_finished %}11.5rem{% else %}12rem{% endif %}", searchable: true, orderable: true },
+                { searchable: true, orderable: true, type: "num" },
+                { searchable: true, orderable: true },
                 { searchable: true, orderable: false },
                 {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
-                { width: "8rem", searchable: true, orderable: true },
+                { searchable: true, orderable: true },
                 {% endif %}
-                { width: "{% if tournament.is_processing_finished %}8rem{% else %}8.75rem{% endif %}", searchable: true, orderable: true },
-                { width: "{% if tournament.is_processing_finished %}8.75rem{% else %}9rem{% endif %}", searchable: true, orderable: true },
-                { width: "{% if tournament.is_processing_finished %}3.75rem{% else %}4rem{% endif %}", searchable: false, orderable: false }
+                { searchable: true, orderable: true },
+                { searchable: true, orderable: true },
+                { searchable: false, orderable: false }
                 {% endif %}
             ],
             autoWidth: false,

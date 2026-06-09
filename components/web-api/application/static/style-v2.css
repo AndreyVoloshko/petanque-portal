@@ -9482,7 +9482,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-team-place-col {
-  width: 7.25rem !important;
+  width: 11rem !important;
 }
 
 .tournament-team-name-col {
@@ -9513,27 +9513,23 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   width: 4rem;
 }
 
-.tournament-detail-teams-table.has-rating-points .tournament-team-place-col {
-  width: 6.5rem !important;
+.tournament-detail-teams-table.is-processing-finished .tournament-team-place-col {
+  width: 10.5rem !important;
 }
 
-.tournament-detail-teams-table.has-rating-points .tournament-team-name-col {
+.tournament-detail-teams-table.is-processing-finished .tournament-team-name-col {
   width: 11.5rem;
 }
 
-.tournament-detail-teams-table.has-rating-points .tournament-team-score-col {
-  width: 10.25rem !important;
+.tournament-detail-teams-table.is-processing-finished .tournament-team-power-col {
+  width: 8rem !important;
 }
 
-.tournament-detail-teams-table.has-rating-points .tournament-team-power-col {
-  width: 9.5rem !important;
+.tournament-detail-teams-table.is-processing-finished .tournament-team-date-col {
+  width: 8.75rem !important;
 }
 
-.tournament-detail-teams-table.has-rating-points .tournament-team-date-col {
-  width: 9.5rem !important;
-}
-
-.tournament-detail-teams-table.has-rating-points .tournament-team-actions-col {
+.tournament-detail-teams-table.is-processing-finished .tournament-team-actions-col {
   width: 3.75rem;
 }
 
