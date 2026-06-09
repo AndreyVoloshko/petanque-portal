@@ -1387,12 +1387,37 @@ class TeamRegistrationRedesignTests(TestCase):
         self.assertContains(response, 'tournament-detail-breadcrumbs')
         self.assertContains(response, 'tournament-detail-title')
         self.assertContains(response, 'registration-team-form')
-        self.assertContains(response, 'dropdownParent: $(this).closest(')
+        self.assertContains(response, 'dropdownParent: $field.closest(')
         self.assertContains(response, 'tournament-registration-add-player-link')
         self.assertContains(response, '1 гравець')
         self.assertContains(response, 'Польща')
         self.assertContains(response, 'name="players[1]"')
         self.assertNotContains(response, 'tournament-detail-export')
+
+    def test_team_registration_fields_render_capitan_first(self):
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=date(2026, 6, 11),
+            start_time=timezone.datetime(2026, 6, 11, 10, 0).time(),
+            date_registration_stop=timezone.make_aware(timezone.datetime(2026, 6, 11, 9, 0)),
+            number_of_players_in_team_min=3,
+            number_of_players_in_team_max=4,
+            teams_limit=100,
+            format='swiko',
+        )
+
+        response = self.client.get(f'/register/team/{tournament.pk}')
+
+        content = response.content.decode()
+        player_field_positions = [
+            content.index('name="players[1]"'),
+            content.index('name="players[2]"'),
+            content.index('name="players[3]"'),
+            content.index('name="players[4]"'),
+        ]
+        self.assertEqual(player_field_positions, sorted(player_field_positions))
 
 
 @override_settings(

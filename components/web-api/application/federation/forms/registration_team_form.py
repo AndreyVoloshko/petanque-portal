@@ -17,7 +17,7 @@ class RegistrationTeamForm(forms.Form):
 
         super(RegistrationTeamForm, self).__init__(*args, **kwargs)
 
-        for i in range(self.tournament.get_max_players_per_team(), 0, -1):
+        for i in range(1, self.tournament.get_max_players_per_team() + 1):
             field_name = 'players[%d]' % i
             label = _("Player %(number)s") % {'number': i}
             if i == 1:
@@ -81,7 +81,7 @@ class RegistrationTeamForm(forms.Form):
 
         # get player ids as list
         player_ids = []
-        for i in range(self.tournament.get_max_players_per_team(), 0, -1):
+        for i in range(1, self.tournament.get_max_players_per_team() + 1):
             if self.cleaned_data['players[%d]' % i]:
                 player_ids.append(self.cleaned_data['players[%d]' % i])
 
