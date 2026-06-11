@@ -113,13 +113,11 @@ class PlayerForm(forms.ModelForm):
                   'birth_date',
                   'current_club',
                   'country',
-                  'licence_number',
                   'gender',
                   'facebook',
                   'twitter',
                   'instagram',
-                  'website',
-                  'prefred_position')
+                  'website')
         labels = {
             "email": _("Email address"),
             "avatar": _("Avatar"),
@@ -129,13 +127,11 @@ class PlayerForm(forms.ModelForm):
             "birth_date": _("Date of birth (dd.mm.yyyy)"),
             "current_club": _("Club"),
             "country": _("Country"),
-            "licence_number": _("License number"),
             "gender": _("Gender"),
             "facebook": _("Facebook page"),
             "twitter": _("Twitter page"),
             "instagram": _("Instagram page"),
             "website": _("Personal website"),
-            "prefred_position": _("Position")
         }
         widgets = {
             'avatar': ImageThumbnailFileInput,
