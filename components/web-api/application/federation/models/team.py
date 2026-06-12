@@ -3,6 +3,12 @@ from django.db.models import Count
 from django.utils import timezone
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from federation.audit import (
+    capture_player_change_values,
+    normalize_player_change_fields,
+    replace_changed_fields_in_message,
+)
+from federation.audit_admin import RevertibleAuditAdminMixin
 from federation.models.player import Player
 from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence
 
@@ -151,13 +157,35 @@ class MembershipInline(admin.TabularInline):
         verbose_name = 'Належнiсть до команд'
         verbose_name_plural = 'Належнiсть до команд'
 
-class PlayerAdmin(admin.ModelAdmin):
+class PlayerAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'surname', 'licence_number', 'is_licence_active', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_inclusive', 'arbiter_level', 'coach_level')
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     # inlines = (MembershipInline,)
     actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
     autocomplete_fields = ['current_club', 'user']
+
+    def get_audit_before_instance(self, obj):
+        return self.model.objects.select_related('user').get(pk=obj.pk)
+
+    def get_audit_changed_fields(self, form):
+        return normalize_player_change_fields(getattr(form, 'changed_data', []))
+
+    def capture_audit_field_values(self, before_instance, after_instance, changed_fields):
+        return capture_player_change_values(before_instance, after_instance, changed_fields)
+
+    def construct_change_message(self, request, form, formsets, add=False):
+        """Use stable player fields while preserving Django inline messages."""
+        change_message = admin.ModelAdmin.construct_change_message(self, request, form, formsets, add)
+        if add or not isinstance(change_message, list):
+            return change_message
+
+        return replace_changed_fields_in_message(
+            change_message,
+            self.get_audit_changed_fields(form),
+            field_values=getattr(request, self.audit_request_attr, None),
+            field_normalizer=normalize_player_change_fields,
+        )
 
 class TeamAdmin(admin.ModelAdmin):
     def team_get_full_name(self, obj):

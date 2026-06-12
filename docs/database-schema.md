@@ -104,6 +104,12 @@ Related framework tables:
 Application references: registration/login/profile/password-reset views and
 forms; `Player.user`; `EmailConfirmation.user`.
 
+`django_admin_log` is also used as the administrative audit journal for
+players, documents, and tournaments. New supported change entries store stable
+field names and old/new snapshots inside `change_message`; no additional audit
+table is introduced. See
+[Audit log and reverting changes](features/audit-log.md).
+
 ### `federation_player`
 
 Model: `models/player.py:Player`

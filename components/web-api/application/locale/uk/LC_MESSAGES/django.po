@@ -2798,3 +2798,93 @@ msgstr "Сортування: ім'я"
 #: federation/templates/clubs/club.html
 msgid "No athletes match the selected filters."
 msgstr "За вибраними фільтрами спортсменів не знайдено."
+
+#: federation/player_change_log_admin.py
+msgid "changed field"
+msgstr "зміненим полем"
+
+#: federation/player_change_log_admin.py
+msgid "changed by"
+msgstr "ким змінено"
+
+#: federation/player_change_log_admin.py
+msgid "Changed by"
+msgstr "Змінено користувачем"
+
+#: federation/player_change_log_admin.py
+msgid "Changed fields"
+msgstr "Змінені поля"
+
+#: federation/audit.py federation/player_change_log_admin.py
+msgid "Team places"
+msgstr "Місця команд"
+
+#: federation/player_change_log_admin.py
+msgid "content type"
+msgstr "типом вмісту"
+
+#: federation/player_change_log_admin.py
+msgid "journal action"
+msgstr "дією"
+
+#: federation/player_change_log_admin.py
+msgid "journal action time"
+msgstr "часом дії"
+
+msgid "Show counts"
+msgstr "Показати кількість"
+
+msgid "Hide counts"
+msgstr "Сховати кількість"
+
+#: federation/player_change_log_admin.py
+msgid "Content type"
+msgstr "Тип вмісту"
+
+#: federation/player_change_log_admin.py
+msgid "Object"
+msgstr "Об'єкт"
+
+#: federation/player_change_log_admin.py
+msgid "Reverted"
+msgstr "Скасовано"
+
+#: federation/player_change_log_admin.py
+msgid "Reverted \"%(object)s\" - %(changes)s"
+msgstr "Скасовано зміну для \"%(object)s\" - %(changes)s"
+
+#: federation/player_change_log_admin.py federation/templates/admin/audit_log/change_form.html
+msgid "Revert change"
+msgstr "Скасувати зміну"
+
+#: federation/player_change_log_admin.py
+msgid "You do not have permission to revert this change."
+msgstr "У вас немає прав, щоб скасувати цю зміну."
+
+#: federation/audit.py
+msgid "This action is available only for change entries."
+msgstr "Ця дія доступна лише для записів про зміни."
+
+#: federation/audit.py
+msgid "This change cannot be reverted from the log."
+msgstr "Цю зміну не можна скасувати з журналу."
+
+#: federation/audit.py
+msgid "This log entry does not contain enough data to revert the change."
+msgstr "У цьому записі журналу недостатньо даних, щоб скасувати зміну."
+
+#: federation/audit.py
+msgid "The object no longer exists."
+msgstr "Об'єкт більше не існує."
+
+#: federation/audit.py
+msgid "The object has changed since this log entry was created. Revert the latest related change first."
+msgstr "Об'єкт було змінено після створення цього запису журналу. Спочатку скасуйте найновішу пов'язану зміну."
+
+#: federation/player_change_log_admin.py
+msgid "Change reverted."
+msgstr "Зміну скасовано."
+
+#: federation/player_change_log_admin.py
+msgid "Open revert log entry"
+msgstr "Відкрити запис про скасування"

@@ -165,10 +165,16 @@ admin classes are located beside their models.
 | National teams/departments | Inline player membership and roles |
 | Seasons | Save current ratings legacy action |
 | Documents | Category/filter/search, download count read-only |
+| Administrative journal | Filtered player/document/tournament history and supported change reverts |
 
 Tournament creation permission is stricter than normal superuser status:
 `permissions.py:can_create_tournament` requires an active authenticated
 superuser whose `(id, username)` is in a hardcoded allowlist.
+
+The journal is available at `/admin/admin/logentry/`. It uses Django's built-in
+`admin.LogEntry` records, enriched with old/new values for supported changes.
+Reverting preserves the original entry and creates a new revert entry. See
+[Audit log and reverting changes](features/audit-log.md).
 
 ## Storage, Email, And External Services
 

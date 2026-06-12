@@ -21,6 +21,12 @@ from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import logging, json, re
 from django.views.decorators.csrf import csrf_exempt
+from federation.audit import (
+    TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
+    build_tournament_team_places_field_values,
+    capture_model_change_values,
+    log_model_change,
+)
 from federation.permissions import can_create_tournament
 from federation.utils.rankings import rating_rank_map
 from federation.utils.tournament_names import get_tournament_card_metadata
@@ -936,14 +942,22 @@ def tournament(request, id):
 
     if request.method == "POST":
         if 'meta' in request.POST:
+            tournament_before = Tournament.objects.get(pk=tournament.pk)
             tournament.meta = request.POST['meta']
             tournament.save()
+            field_values = capture_model_change_values(tournament_before, tournament, ['meta'])
+            if field_values:
+                log_model_change(current_user, tournament, ['meta'], field_values=field_values)
             return JsonResponse({'status': 'ok'}, safe=False)
 
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):
+                tournament_before = Tournament.objects.get(pk=tournament.pk)
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
+                field_values = capture_model_change_values(tournament_before, tournament, ['final_notes'])
+                if field_values:
+                    log_model_change(current_user, tournament, ['final_notes'], field_values=field_values)
                 messages.success(request, _('Notes saved.'))
                 return HttpResponseRedirect(request.path_info)
 
@@ -958,10 +972,19 @@ def tournament(request, id):
             if tournament.is_user_has_admin_access_to_tournament(current_user):
 
                 teams = json.loads(request.POST['teams'])
+                # Place edits affect membership rows, but they are recorded as
+                # one tournament action so the submitted result set reverts
+                # together.
+                membership_ids = []
+                before_memberships = []
 
                 for team in teams:
                     name_pieces = team['name'].split('-')
                     db_team = TeamTournamentMembership.objects.get(pk=name_pieces[0])
+                    membership_ids.append(db_team.pk)
+                    before_memberships.append(
+                        TeamTournamentMembership.objects.get(pk=db_team.pk)
+                    )
 
                     if db_team:
 
@@ -974,6 +997,15 @@ def tournament(request, id):
                             db_team.place_max = team['value']
                         db_team.save()
 
+                after_memberships = list(TeamTournamentMembership.objects.filter(pk__in=membership_ids))
+                field_values = build_tournament_team_places_field_values(before_memberships, after_memberships)
+                if field_values:
+                    log_model_change(
+                        current_user,
+                        tournament,
+                        [TOURNAMENT_CHANGE_FIELD_TEAM_PLACES],
+                        field_values=field_values,
+                    )
                 messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 

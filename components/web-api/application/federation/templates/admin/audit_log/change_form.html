@@ -1,0 +1,24 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ audit_breadcrumb_title|default:original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+{{ block.super }}
+{% if change and not is_popup %}
+<div class="submit-row">
+    {% if can_revert_change %}
+        <button type="submit" class="button" formaction="{{ revert_url }}" formmethod="post" name="_revert_change">{% translate "Revert change" %}</button>
+    {% elif revert_reason %}
+        <p class="help" style="margin: 0;">{{ revert_reason }}</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

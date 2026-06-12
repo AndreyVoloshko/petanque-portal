@@ -199,6 +199,18 @@ The password is configured via `APP_CREDENTIALS.api_password` in `.env`.
 { "updated_teams": [7, 8, 9] }
 ```
 
+**Audit behavior**
+
+A successful request that changes at least one submitted team's place creates a
+`Tournament` change entry in the Django admin journal at
+`/admin/admin/logentry/`. The entry is attributed to the disabled system user
+`system.tournament.results` and stores the affected membership-place values
+before and after the request. An authorized admin can revert the result change
+from the journal while those memberships still match the recorded new values.
+
+Requests that leave every submitted place unchanged do not create an audit
+entry. See [Audit log and reverting changes](features/audit-log.md).
+
 **Error responses**
 
 | Status | Meaning |

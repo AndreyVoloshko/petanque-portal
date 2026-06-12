@@ -1,11 +1,21 @@
 import json
+from copy import copy
+
 from django.conf import settings
+from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
 from django.db.models import Q
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from federation.audit import (
+    SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
+    TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
+    build_tournament_team_places_field_values,
+    get_or_create_system_audit_user,
+    log_model_change,
+)
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.models.player import Player
 from federation.models.club import Club
@@ -116,6 +126,7 @@ def _validate_team_entry(team, index):
 @csrf_exempt
 @require_POST
 def submit_tournament_results(request):
+    """Update submitted team places and record one revertable tournament change."""
     if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
@@ -137,22 +148,46 @@ def submit_tournament_results(request):
         if error:
             return _bad_request(error)
 
-    try:
-        tournament = Tournament.objects.get(pk=tournament_id)
-    except Tournament.DoesNotExist:
-        return JsonResponse({'error': 'Tournament not found'}, status=404)
-
-    updated = []
-    for i, team in enumerate(teams):
+    with transaction.atomic():
         try:
-            membership = TeamTournamentMembership.objects.get(tournament=tournament, team_id=team['team_id'])
-        except TeamTournamentMembership.DoesNotExist:
-            return _bad_request(f'teams[{i}]: team {team["team_id"]} is not registered in this tournament')
+            tournament = Tournament.objects.select_for_update().get(pk=tournament_id)
+        except Tournament.DoesNotExist:
+            return JsonResponse({'error': 'Tournament not found'}, status=404)
 
-        membership.place_min = team['place_min']
-        membership.place_max = team.get('place_max') or 0
-        membership.save()
-        updated.append(team['team_id'])
+        # Validate and lock the complete submission before applying any result
+        # so a rejected request cannot leave unaudited partial updates.
+        team_ids = [team['team_id'] for team in teams]
+        locked_memberships = list(
+            TeamTournamentMembership.objects.select_for_update().filter(
+                tournament=tournament,
+                team_id__in=team_ids,
+            )
+        )
+        memberships = {
+            membership.team_id: membership
+            for membership in locked_memberships
+        }
+        for i, team in enumerate(teams):
+            if team['team_id'] not in memberships:
+                return _bad_request(f'teams[{i}]: team {team["team_id"]} is not registered in this tournament')
+
+        before_memberships = [copy(membership) for membership in locked_memberships]
+        updated = []
+        for team in teams:
+            membership = memberships[team['team_id']]
+            membership.place_min = team['place_min']
+            membership.place_max = team.get('place_max') or 0
+            membership.save()
+            updated.append(team['team_id'])
+
+        field_values = build_tournament_team_places_field_values(before_memberships, locked_memberships)
+        if field_values:
+            log_model_change(
+                get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME),
+                tournament,
+                [TOURNAMENT_CHANGE_FIELD_TEAM_PLACES],
+                field_values=field_values,
+            )
 
     return JsonResponse({'updated_teams': updated})
 

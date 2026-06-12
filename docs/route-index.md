@@ -101,6 +101,7 @@ Detailed request/response examples are in [API reference](api.md).
 | Route | Purpose | References |
 | --- | --- | --- |
 | `/admin/` | Django admin for all registered domain models and actions | `api/urls.py`; `federation/admin.py`; model admin classes; `admin_actions/` |
+| `/admin/admin/logentry/` | Filtered player/document/tournament journal and supported change reverts | `federation/player_change_log_admin.py`; `federation/audit/`; `docs/features/audit-log.md` |
 | `/i18n/setlang/` | Django language switch endpoint | `api/urls.py`; `templates/common/menu.html` |
 | `/static/<path>` | Local debug static serving when `STATIC_URL == '/static/'` | `api/urls.py`; `api/settings.py` |
 | `/media/<path>` | Local media route appended by `federation/urls.py` | `federation/urls.py`; `api/settings.py` |

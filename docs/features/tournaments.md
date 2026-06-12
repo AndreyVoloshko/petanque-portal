@@ -80,6 +80,13 @@ Authorization rules live in
 `meta` mutation is a known security-sensitive behavior; see
 `docs/audit/security.md`.
 
+Authenticated changes to tournament `meta`, final notes, and team places are
+recorded in the administrative journal with old/new values. Anonymous `meta`
+changes are not logged. Team places submitted through
+`POST /api/tournament/results/` are recorded under the system user
+`system.tournament.results`. Supported entries can be reverted from the journal;
+see [Audit log and reverting changes](audit-log.md).
+
 ## Team Registration
 
 **Route:** `GET/POST /register/team/<tournament_id>/`
