@@ -13,6 +13,7 @@ from django.test import RequestFactory, SimpleTestCase, TestCase, override_setti
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
 
+from federation.forms.player_form import PlayerForm
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
@@ -586,6 +587,17 @@ class SeasonSnapshotGenerationTests(TestCase):
         )
 
 
+class PlayerProfileFormTests(TestCase):
+    def test_profile_form_layout_renders_every_bound_field(self):
+        form = PlayerForm()
+        layout_fields = {
+            pointer.name
+            for pointer in form.helper.layout.get_field_names()
+        }
+
+        self.assertEqual(set(form.fields), layout_fields)
+
+
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None):
         user = User.objects.create_user(username=username)
@@ -616,6 +628,36 @@ class PlayerLicenseListTests(TestCase):
 
         self.assertIn('No license', badge)
         self.assertIn('bg-danger', badge)
+
+    def test_profile_form_save_preserves_non_profile_fields(self):
+        player = self.create_player('licensed-profile', licence_number_value='00001')
+        player.prefred_position = 'point'
+        player.save()
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'licensed-profile@example.com',
+        }, instance=player)
+
+        self.assertNotIn('licence_number', form.fields)
+        self.assertNotIn('prefred_position', form.fields)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        form.save()
+        player.refresh_from_db()
+
+        self.assertEqual(player.licence_number, '00001')
+        self.assertTrue(player.is_licence_active)
+        self.assertEqual(player.prefred_position, 'point')
 
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
