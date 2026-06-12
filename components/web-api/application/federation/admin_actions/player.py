@@ -1,11 +1,7 @@
 from django.contrib import messages
 from django.template.response import TemplateResponse
 from django.contrib.admin import helpers
-from federation.audit import (
-    PLAYER_CHANGE_LICENCE_NUMBER_FIELDS,
-    PLAYER_CHANGE_LICENCE_STATUS_FIELDS,
-    record_player_change,
-)
+from federation.audit import record_player_change
 
 
 def recalculate_ratings(modeladmin, request, queryset):
@@ -50,11 +46,11 @@ def erase_ratings(modeladmin, request, queryset):
 erase_ratings.short_description = "Обнулити рейтингові бали"
 
 
-def _run_audited_player_action(request, player, changed_fields, action):
+def _run_audited_player_action(request, player, action):
     """Run a saving player action while retaining values needed for revert."""
     player_before = player.__class__.objects.select_related('user').get(pk=player.pk)
     action()
-    record_player_change(request.user, player_before, player, changed_fields)
+    record_player_change(request.user, player_before, player)
 
 
 def activate_licence(modeladmin, request, queryset):
@@ -64,7 +60,6 @@ def activate_licence(modeladmin, request, queryset):
                 _run_audited_player_action(
                     request,
                     player,
-                    PLAYER_CHANGE_LICENCE_STATUS_FIELDS,
                     player.activate_licence,
                 )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' активовано")
@@ -90,7 +85,6 @@ def deactivate_licence(modeladmin, request, queryset):
                 _run_audited_player_action(
                     request,
                     player,
-                    PLAYER_CHANGE_LICENCE_STATUS_FIELDS,
                     player.deactivate_licence,
                 )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' деактивовано")
@@ -116,7 +110,6 @@ def erase_licence_number(modeladmin, request, queryset):
                 _run_audited_player_action(
                     request,
                     player,
-                    PLAYER_CHANGE_LICENCE_NUMBER_FIELDS,
                     player.erase_licence_number,
                 )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' обнулено")

@@ -11,11 +11,11 @@ class RevertibleAuditAdminMixin:
         return self.model.objects.get(pk=obj.pk)
 
     def get_audit_changed_fields(self, form):
-        """Return form fields that should be included in the audit snapshot."""
+        """Return candidate fields changed by the Django admin form."""
         return getattr(form, 'changed_data', [])
 
     def capture_audit_field_values(self, before_instance, after_instance, changed_fields):
-        """Capture old/new values for the fields changed by the admin form."""
+        """Capture auditable values for candidate fields changed by the form."""
         return capture_model_change_values(before_instance, after_instance, changed_fields)
 
     def save_model(self, request, obj, form, change):

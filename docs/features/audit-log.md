@@ -145,13 +145,15 @@ Mutations outside Django admin must explicitly:
 
 1. load the object state before mutation
 2. apply and save the mutation
-3. call `record_model_change()` or `record_player_change()` with the before and
-   after states
+3. call `record_model_change()` or `record_player_change()` with the acting
+   user, before state, and after state
 
-Use player-specific helpers for player changes because player email belongs to
-the related Django user and derived rating fields must be excluded. Tournament
-team-place updates use `record_tournament_team_places_change()` because they
-compare membership collections rather than two model instances.
+The recording helper owns field selection. Generic model audits compare
+concrete editable fields. Player audits use a dedicated allowlist because
+player email belongs to the related Django user, password values must never be
+stored, and derived rating/power fields must be excluded. Tournament team-place
+updates use `record_tournament_team_places_change()` because they compare
+membership collections rather than two model instances.
 
 The lower-level `log_model_change()` and `log_player_change()` helpers are
 reserved for event-only entries, such as password changes, and audit internals,

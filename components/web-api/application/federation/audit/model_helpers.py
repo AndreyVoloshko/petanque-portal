@@ -15,6 +15,7 @@ from .players import (
     get_player_change_filter_lookup_terms,
     normalize_player_change_fields,
 )
+from .values import get_model_auditable_fields
 
 
 def _configured_language_codes():
@@ -27,11 +28,7 @@ def get_model_change_filter_fields(model):
     if model == get_player_model():
         return PLAYER_CHANGE_FIELDS
 
-    filter_fields = tuple(
-        field.name
-        for field in model._meta.fields
-        if not field.auto_created and not field.primary_key and getattr(field, 'editable', True)
-    )
+    filter_fields = get_model_auditable_fields(model)
     if model == get_tournament_model():
         return filter_fields + (TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,)
 

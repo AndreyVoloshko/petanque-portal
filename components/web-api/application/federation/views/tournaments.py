@@ -943,7 +943,7 @@ def tournament(request, id):
             tournament_before = Tournament.objects.get(pk=tournament.pk)
             tournament.meta = request.POST['meta']
             tournament.save()
-            record_model_change(current_user, tournament_before, tournament, ['meta'])
+            record_model_change(current_user, tournament_before, tournament)
             return JsonResponse({'status': 'ok'}, safe=False)
 
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated:
@@ -951,7 +951,7 @@ def tournament(request, id):
                 tournament_before = Tournament.objects.get(pk=tournament.pk)
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
-                record_model_change(current_user, tournament_before, tournament, ['final_notes'])
+                record_model_change(current_user, tournament_before, tournament)
                 messages.success(request, _('Notes saved.'))
                 return HttpResponseRedirect(request.path_info)
 

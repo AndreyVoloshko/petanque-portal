@@ -15,6 +15,15 @@ from .constants import (
 from .messages import deduplicate_fields
 
 
+def get_model_auditable_fields(model):
+    """Return concrete editable fields owned by a generic model audit."""
+    return tuple(
+        field.name
+        for field in model._meta.concrete_fields
+        if not field.auto_created and not field.primary_key and getattr(field, 'editable', True)
+    )
+
+
 def _serialize_scalar_value(value):
     if isinstance(value, Country):
         return value.code
@@ -71,8 +80,11 @@ def apply_model_field_value(instance, field_name, value):
     setattr(instance, target_name, converted_value)
 
 
-def capture_model_change_values(before_instance, after_instance, changed_fields):
-    """Capture old/new values for generic model fields."""
+def capture_model_change_values(before_instance, after_instance, changed_fields=None):
+    """Capture old/new values for candidate fields, or all auditable fields."""
+    if changed_fields is None:
+        changed_fields = get_model_auditable_fields(after_instance.__class__)
+
     field_values = {}
     for field_name in deduplicate_fields(changed_fields):
         old_value = serialize_model_field_value(before_instance, field_name)

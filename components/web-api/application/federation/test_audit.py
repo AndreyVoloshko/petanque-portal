@@ -398,11 +398,11 @@ class PlayerProfileAuditLogTests(TestCase):
         document.name = 'Updated document'
         document.save()
 
-        log_entry = record_model_change(admin_user, before_document, document, ['name'])
+        log_entry = record_model_change(admin_user, before_document, document)
 
         values = extract_changed_field_values(log_entry.change_message)
         self.assertEqual(values['name'], {'old': 'Original document', 'new': 'Updated document'})
-        self.assertIsNone(record_model_change(admin_user, document, document, ['name']))
+        self.assertIsNone(record_model_change(admin_user, document, document))
         self.assertEqual(LogEntry.objects.count(), 1)
 
     def test_no_op_tournament_meta_and_notes_are_not_logged(self):

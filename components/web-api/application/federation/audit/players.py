@@ -143,8 +143,11 @@ def get_player_change_filter_lookup_terms(filter_key):
     return tuple(json.dumps(str(value)) for value in lookup_values)
 
 
-def capture_player_change_values(before_player, after_player, changed_fields):
-    """Capture revertable player values, including email from the auth user."""
+def capture_player_change_values(before_player, after_player, changed_fields=None):
+    """Apply player audit policy and capture revertable old/new values."""
+    if changed_fields is None:
+        changed_fields = PLAYER_CHANGE_FIELDS
+
     field_values = {}
     for field_name in normalize_player_change_fields(changed_fields):
         # Password events are auditable, but password values must never enter

@@ -28,14 +28,13 @@ def profile(request):
             if profile_form.is_valid():
                 with transaction.atomic():
                     player_before = Player.objects.select_related('user').select_for_update().get(pk=player.pk)
-                    changed_fields = profile_form.changed_data
                     if profile_form.cleaned_data.get('avatar') is False:
                         player.avatar = None
                     else:
                         player.avatar = profile_form.cleaned_data['avatar']
                     player = profile_form.save(commit=False)
                     player.save()
-                    record_player_change(request.user, player_before, player, changed_fields)
+                    record_player_change(request.user, player_before, player)
                 profile_form = PlayerForm(request.POST, request.FILES, instance=player)
                 messages.success(request, _('Profile updated.'))
 

@@ -68,15 +68,15 @@ def log_player_change(user, player, changed_fields, *, field_values=None, revert
     )
 
 
-def record_model_change(user, before_instance, after_instance, changed_fields):
-    """Capture and log actual changes between two generic model states."""
-    field_values = capture_model_change_values(before_instance, after_instance, changed_fields)
+def record_model_change(user, before_instance, after_instance):
+    """Audit all changed fields owned by a generic model."""
+    field_values = capture_model_change_values(before_instance, after_instance)
     return log_model_change(user, after_instance, field_values, field_values=field_values)
 
 
-def record_player_change(user, before_player, after_player, changed_fields):
-    """Capture and log actual player changes using player-specific rules."""
-    field_values = capture_player_change_values(before_player, after_player, changed_fields)
+def record_player_change(user, before_player, after_player):
+    """Audit all changed fields allowed by the player audit policy."""
+    field_values = capture_player_change_values(before_player, after_player)
     return log_player_change(user, after_player, field_values, field_values=field_values)
 
 
