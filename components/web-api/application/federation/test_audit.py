@@ -24,7 +24,6 @@ from federation.audit import (
     PLAYER_CHANGE_MESSAGE_FIELDS_KEY,
     SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
     TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
-    capture_model_change_values,
     capture_player_change_values,
     extract_changed_field_values,
     format_player_change_fields,
@@ -32,6 +31,7 @@ from federation.audit import (
     get_revert_source_log_entry_id,
     log_model_change,
     log_player_change,
+    record_model_change,
 )
 from federation.admin_actions import player as player_admin_actions
 from federation.models.club import Club
@@ -381,18 +381,29 @@ class PlayerProfileAuditLogTests(TestCase):
 
         self.assertFalse(LogEntry.objects.exists())
 
-    def test_generic_change_capture_omits_unchanged_fields(self):
+    def test_record_model_change_captures_values_and_skips_no_op(self):
+        admin_user = User.objects.create_superuser(
+            username='generic-record-audit-admin',
+            email='generic-record-audit-admin@example.com',
+            password='AdminPass123!',
+        )
         category = DocumentCategory.objects.create(code='no-op-document-category', name='No-op documents')
         document = Document.objects.create(
-            name='Unchanged document',
+            name='Original document',
             file='documents/test.pdf',
             category=category,
             is_active=True,
         )
         before_document = Document.objects.get(pk=document.pk)
-        after_document = Document.objects.get(pk=document.pk)
+        document.name = 'Updated document'
+        document.save()
 
-        self.assertEqual(capture_model_change_values(before_document, after_document, ['name']), {})
+        log_entry = record_model_change(admin_user, before_document, document, ['name'])
+
+        values = extract_changed_field_values(log_entry.change_message)
+        self.assertEqual(values['name'], {'old': 'Original document', 'new': 'Updated document'})
+        self.assertIsNone(record_model_change(admin_user, document, document, ['name']))
+        self.assertEqual(LogEntry.objects.count(), 1)
 
     def test_no_op_tournament_meta_and_notes_are_not_logged(self):
         admin_user = User.objects.create_superuser(

@@ -145,11 +145,21 @@ Mutations outside Django admin must explicitly:
 
 1. load the object state before mutation
 2. apply and save the mutation
-3. capture old/new values
-4. call `log_model_change()` or `log_player_change()`
+3. call `record_model_change()` or `record_player_change()` with the before and
+   after states
 
 Use player-specific helpers for player changes because player email belongs to
-the related Django user and derived rating fields must be excluded.
+the related Django user and derived rating fields must be excluded. Tournament
+team-place updates use `record_tournament_team_places_change()` because they
+compare membership collections rather than two model instances.
+
+The lower-level `log_model_change()` and `log_player_change()` helpers are
+reserved for event-only entries, such as password changes, and audit internals,
+such as recording a revert.
+
+Recording helpers intentionally do not load the before state or open a
+transaction. The calling use case owns locking and transaction boundaries so
+the business mutation and its audit entry can commit or roll back together.
 
 When adding a new revertable model, update the audited-model allowlist in
 `player_change_log_admin.py` and the supported-model checks and application

@@ -19,13 +19,11 @@ from django.utils.html import escape
 from django.http import HttpResponseRedirect
 from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
-import logging, json, re
+import json, re
 from django.views.decorators.csrf import csrf_exempt
 from federation.audit import (
-    TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
-    build_tournament_team_places_field_values,
-    capture_model_change_values,
-    log_model_change,
+    record_model_change,
+    record_tournament_team_places_change,
 )
 from federation.permissions import can_create_tournament
 from federation.utils.rankings import rating_rank_map
@@ -945,9 +943,7 @@ def tournament(request, id):
             tournament_before = Tournament.objects.get(pk=tournament.pk)
             tournament.meta = request.POST['meta']
             tournament.save()
-            field_values = capture_model_change_values(tournament_before, tournament, ['meta'])
-            if field_values:
-                log_model_change(current_user, tournament, ['meta'], field_values=field_values)
+            record_model_change(current_user, tournament_before, tournament, ['meta'])
             return JsonResponse({'status': 'ok'}, safe=False)
 
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated:
@@ -955,9 +951,7 @@ def tournament(request, id):
                 tournament_before = Tournament.objects.get(pk=tournament.pk)
                 tournament.final_notes = escape(request.POST['tournament_notes_content'])
                 tournament.save()
-                field_values = capture_model_change_values(tournament_before, tournament, ['final_notes'])
-                if field_values:
-                    log_model_change(current_user, tournament, ['final_notes'], field_values=field_values)
+                record_model_change(current_user, tournament_before, tournament, ['final_notes'])
                 messages.success(request, _('Notes saved.'))
                 return HttpResponseRedirect(request.path_info)
 
@@ -998,14 +992,12 @@ def tournament(request, id):
                         db_team.save()
 
                 after_memberships = list(TeamTournamentMembership.objects.filter(pk__in=membership_ids))
-                field_values = build_tournament_team_places_field_values(before_memberships, after_memberships)
-                if field_values:
-                    log_model_change(
-                        current_user,
-                        tournament,
-                        [TOURNAMENT_CHANGE_FIELD_TEAM_PLACES],
-                        field_values=field_values,
-                    )
+                record_tournament_team_places_change(
+                    current_user,
+                    tournament,
+                    before_memberships,
+                    after_memberships,
+                )
                 messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 

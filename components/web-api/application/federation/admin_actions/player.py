@@ -4,8 +4,7 @@ from django.contrib.admin import helpers
 from federation.audit import (
     PLAYER_CHANGE_LICENCE_NUMBER_FIELDS,
     PLAYER_CHANGE_LICENCE_STATUS_FIELDS,
-    capture_player_change_values,
-    log_player_change,
+    record_player_change,
 )
 
 
@@ -55,8 +54,7 @@ def _run_audited_player_action(request, player, changed_fields, action):
     """Run a saving player action while retaining values needed for revert."""
     player_before = player.__class__.objects.select_related('user').get(pk=player.pk)
     action()
-    field_values = capture_player_change_values(player_before, player, changed_fields)
-    log_player_change(request.user, player, field_values, field_values=field_values)
+    record_player_change(request.user, player_before, player, changed_fields)
 
 
 def activate_licence(modeladmin, request, queryset):

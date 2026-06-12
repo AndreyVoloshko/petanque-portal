@@ -4,7 +4,8 @@ from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.auth import get_user_model
 
 from .messages import build_change_message
-from .players import normalize_player_change_fields
+from .players import capture_player_change_values, normalize_player_change_fields
+from .values import build_tournament_team_places_field_values, capture_model_change_values
 
 
 def get_or_create_system_audit_user(username):
@@ -65,3 +66,21 @@ def log_player_change(user, player, changed_fields, *, field_values=None, revert
             revert_source_log_entry_id=revert_source_log_entry_id,
         ),
     )
+
+
+def record_model_change(user, before_instance, after_instance, changed_fields):
+    """Capture and log actual changes between two generic model states."""
+    field_values = capture_model_change_values(before_instance, after_instance, changed_fields)
+    return log_model_change(user, after_instance, field_values, field_values=field_values)
+
+
+def record_player_change(user, before_player, after_player, changed_fields):
+    """Capture and log actual player changes using player-specific rules."""
+    field_values = capture_player_change_values(before_player, after_player, changed_fields)
+    return log_player_change(user, after_player, field_values, field_values=field_values)
+
+
+def record_tournament_team_places_change(user, tournament, before_memberships, after_memberships):
+    """Capture and log changed places across a tournament membership set."""
+    field_values = build_tournament_team_places_field_values(before_memberships, after_memberships)
+    return log_model_change(user, tournament, field_values, field_values=field_values)

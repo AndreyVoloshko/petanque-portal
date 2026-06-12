@@ -11,8 +11,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.utils.translation import gettext_lazy as _
 from federation.audit import (
     PLAYER_CHANGE_FIELD_PASSWORD,
-    capture_player_change_values,
     log_player_change,
+    record_player_change,
 )
 
 @login_required(login_url='/login/')
@@ -35,8 +35,7 @@ def profile(request):
                         player.avatar = profile_form.cleaned_data['avatar']
                     player = profile_form.save(commit=False)
                     player.save()
-                    field_values = capture_player_change_values(player_before, player, changed_fields)
-                    log_player_change(request.user, player, field_values, field_values=field_values)
+                    record_player_change(request.user, player_before, player, changed_fields)
                 profile_form = PlayerForm(request.POST, request.FILES, instance=player)
                 messages.success(request, _('Profile updated.'))
 

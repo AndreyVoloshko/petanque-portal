@@ -11,12 +11,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from federation.audit import (
     SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
-    TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
-    build_tournament_team_places_field_values,
     get_or_create_system_audit_user,
-    log_model_change,
+    record_tournament_team_places_change,
 )
-from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
+from federation.models.tournament import Tournament, TeamTournamentMembership
 from federation.models.player import Player
 from federation.models.club import Club
 from federation.utils.tournament_names import tournament_display_name_matches
@@ -180,14 +178,12 @@ def submit_tournament_results(request):
             membership.save()
             updated.append(team['team_id'])
 
-        field_values = build_tournament_team_places_field_values(before_memberships, locked_memberships)
-        if field_values:
-            log_model_change(
-                get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME),
-                tournament,
-                [TOURNAMENT_CHANGE_FIELD_TEAM_PLACES],
-                field_values=field_values,
-            )
+        record_tournament_team_places_change(
+            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME),
+            tournament,
+            before_memberships,
+            locked_memberships,
+        )
 
     return JsonResponse({'updated_teams': updated})
 

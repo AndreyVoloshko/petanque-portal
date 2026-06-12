@@ -18,7 +18,14 @@ from .constants import (
     SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
     TOURNAMENT_CHANGE_FIELD_TEAM_PLACES,
 )
-from .log_entries import get_or_create_system_audit_user, log_model_change, log_player_change
+from .log_entries import (
+    get_or_create_system_audit_user,
+    log_model_change,
+    log_player_change,
+    record_model_change,
+    record_player_change,
+    record_tournament_team_places_change,
+)
 from .messages import (
     extract_changed_field_values,
     extract_changed_fields,
@@ -78,6 +85,9 @@ __all__ = [
     'log_model_change',
     'log_player_change',
     'normalize_player_change_fields',
+    'record_model_change',
+    'record_player_change',
+    'record_tournament_team_places_change',
     'replace_changed_fields_in_message',
     'revert_log_entry',
 ]
