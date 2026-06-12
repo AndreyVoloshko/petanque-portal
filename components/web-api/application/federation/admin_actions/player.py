@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.template.response import TemplateResponse
 from django.contrib.admin import helpers
+from federation.audit import record_player_change
+
 
 def recalculate_ratings(modeladmin, request, queryset):
     if request.POST.get('post'):
@@ -44,11 +46,22 @@ def erase_ratings(modeladmin, request, queryset):
 erase_ratings.short_description = "Обнулити рейтингові бали"
 
 
+def _run_audited_player_action(request, player, action):
+    """Run a saving player action while retaining values needed for revert."""
+    player_before = player.__class__.objects.select_related('user').get(pk=player.pk)
+    action()
+    record_player_change(request.user, player_before, player)
+
+
 def activate_licence(modeladmin, request, queryset):
     if request.POST.get('post'):
         for player in queryset:
             try:
-                player.activate_licence()
+                _run_audited_player_action(
+                    request,
+                    player,
+                    player.activate_licence,
+                )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' активовано")
             except Exception as e:
                 messages.error(request, "Помилка під час активації ліцензії гравця '" + str(player.name) + "': " + str(e))
@@ -69,7 +82,11 @@ def deactivate_licence(modeladmin, request, queryset):
     if request.POST.get('post'):
         for player in queryset:
             try:
-                player.deactivate_licence()
+                _run_audited_player_action(
+                    request,
+                    player,
+                    player.deactivate_licence,
+                )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' деактивовано")
             except Exception as e:
                 messages.error(request, "Помилка під час деактивації ліцензії гравця '" + str(player.name) + "': " + str(e))
@@ -90,7 +107,11 @@ def erase_licence_number(modeladmin, request, queryset):
     if request.POST.get('post'):
         for player in queryset:
             try:
-                player.erase_licence_number()
+                _run_audited_player_action(
+                    request,
+                    player,
+                    player.erase_licence_number,
+                )
                 messages.success(request, "Ліцензію гравця '" + str(player.name) + "' обнулено")
             except Exception as e:
                 messages.error(request, "Помилка під час обнулення ліцензії гравця '" + str(player.name) + "': " + str(e))

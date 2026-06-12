@@ -98,6 +98,10 @@ The download route:
   publication date, creation time, download count.
 - Admin configuration is in `federation/admin.py`.
 - File URL/storage behavior is in `federation/storage.py` and `api/settings.py`.
+- Document admin changes are recorded in the administrative journal and can be
+  reverted when the document still matches the recorded new values. File
+  reverts restore the stored file name reference, not deleted storage content.
+  See [Audit log and reverting changes](audit-log.md).
 
 ## Related Data Tables
 

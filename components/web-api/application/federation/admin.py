@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin.models import LogEntry
+
 from .models.city import City
 from .models.club import Club, ClubAdmin, CityAdmin
 from .models.player import Player
@@ -10,6 +12,8 @@ from .models.document import Document, DocumentCategory
 from .models.season import Season, SeasonAdmin
 from .models.department import Department, DepartmentAdmin
 from .models.email_confirmation import EmailConfirmation
+from .player_change_log_admin import AuditLogAdmin
+from .audit_admin import RevertibleAuditAdminMixin
 
 
 class DocumentCategoryAdmin(admin.ModelAdmin):
@@ -20,7 +24,7 @@ class DocumentCategoryAdmin(admin.ModelAdmin):
     ordering = ('order', 'name')
 
 
-class DocumentAdmin(admin.ModelAdmin):
+class DocumentAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'category', 'document_date', 'download_count', 'is_active')
     list_filter = ('category', 'is_active')
     search_fields = ('name', 'notes')
@@ -41,3 +45,4 @@ admin.site.register(Document, DocumentAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Department, DepartmentAdmin)
 admin.site.register(EmailConfirmation)
+admin.site.register(LogEntry, AuditLogAdmin)

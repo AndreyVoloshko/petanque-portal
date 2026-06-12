@@ -38,6 +38,7 @@ federation/urls.py
 | Tournament list, detail, registration, exports, protocol, calendar | [Tournaments](features/tournaments.md) |
 | Club list/detail, federation structure, title registries, records | [Clubs and federation registries](features/clubs-and-federation.md) |
 | Seasons, statistics, and documents | [Seasons, statistics, and documents](features/seasons-statistics-documents.md) |
+| Administrative journal and reverting changes | [Audit log and reverting changes](features/audit-log.md) |
 
 ## Existing Specialist References
 

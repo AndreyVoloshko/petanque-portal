@@ -158,6 +158,13 @@ POST dispatch is inferred from submitted field names:
 not create or reset an `EmailConfirmation` row, so email-confirmation semantics
 after profile email changes should be reviewed before changing that flow.
 
+Successful profile and password changes create player entries in the
+administrative journal. Profile changes store old/new values for supported
+fields and can be reverted when the player still matches the recorded new
+state. Password changes record only that a password changed; password values
+are never stored and cannot be reverted. See
+[Audit log and reverting changes](audit-log.md).
+
 ## Public Player Profile Versus Editable Profile
 
 Do not confuse:
