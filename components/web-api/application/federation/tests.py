@@ -629,6 +629,21 @@ class PlayerLicenseListTests(TestCase):
         self.assertIn('No license', badge)
         self.assertIn('bg-danger', badge)
 
+    def test_players_page_shows_no_license_for_inactive_player_with_old_number(self):
+        player = self.create_player(
+            'inactive-license-player',
+            is_licence_active=False,
+            licence_number_value='LEGACY-0002',
+        )
+
+        with override('uk'):
+            response = self.client.get('/players/', {'q': player.surname})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, player.get_name())
+        self.assertContains(response, 'Без ліцензії')
+        self.assertNotContains(response, 'LEGACY-0002')
+
     def test_profile_form_save_preserves_non_profile_fields(self):
         player = self.create_player('licensed-profile', licence_number_value='00001')
         player.prefred_position = 'point'
@@ -671,6 +686,117 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.count, 55)
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
+
+
+class ClubDetailPageTests(TestCase):
+    def create_club(self, name='Kyiv Petanque Club', short_name='KPC'):
+        return Club.objects.create(
+            name=name,
+            short_name=short_name,
+            address='Kyiv',
+        )
+
+    def create_player(
+        self,
+        username,
+        club,
+        rating='0.0000',
+        is_licence_active=True,
+        licence_number=None,
+    ):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            current_club=club,
+            current_rating=Decimal(rating),
+            current_power=Decimal('1.0000'),
+            is_licence_active=is_licence_active,
+            licence_number=licence_number if licence_number is not None else username,
+        )
+
+    def test_club_page_shows_all_members_but_rates_only_ranked_players(self):
+        club = self.create_club()
+        other_club = self.create_club(name='Lviv Petanque Club', short_name='LPC')
+        active_player = self.create_player('active-player', club=club, rating='10.0000', licence_number='00001')
+        inactive_player = self.create_player(
+            'inactive-former-player',
+            club=club,
+            rating='50.0000',
+            is_licence_active=False,
+            licence_number='00002',
+        )
+        active_without_license = self.create_player(
+            'active-without-license',
+            club=club,
+            rating='40.0000',
+            licence_number='',
+        )
+        other_club_player = self.create_player(
+            'other-club-player',
+            club=other_club,
+            rating='25.0000',
+            licence_number='00003',
+        )
+
+        response = self.client.get(f'/club/{club.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['players'].count(), 3)
+        self.assertEqual(
+            set(response.context['players'].values_list('pk', flat=True)),
+            {active_player.pk, inactive_player.pk, active_without_license.pk},
+        )
+        self.assertEqual(response.context['club_stats']['players_count'], 3)
+        self.assertEqual(response.context['club_stats']['total_rating'], Decimal('10.0000'))
+        self.assertEqual(response.context['club_stats']['average_rating'], Decimal('10.0000'))
+        self.assertContains(response, active_player.get_name())
+        self.assertContains(response, inactive_player.get_name())
+        self.assertContains(response, active_without_license.get_name())
+        self.assertNotContains(response, other_club_player.get_name())
+
+        active_card = re.search(
+            rf'<a class="card athlete-card[^"]*" href="/player/{active_player.pk}".*?</a>',
+            content,
+            re.S,
+        )
+        inactive_card = re.search(
+            rf'<a class="card athlete-card[^"]*" href="/player/{inactive_player.pk}".*?</a>',
+            content,
+            re.S,
+        )
+        unlicensed_card = re.search(
+            rf'<a class="card athlete-card[^"]*" href="/player/{active_without_license.pk}".*?</a>',
+            content,
+            re.S,
+        )
+
+        self.assertIsNotNone(active_card)
+        self.assertIsNotNone(inactive_card)
+        self.assertIsNotNone(unlicensed_card)
+        self.assertIn('athlete-card-rank', active_card.group(0))
+        self.assertNotIn('athlete-card-rank', inactive_card.group(0))
+        self.assertNotIn('athlete-card-rank', unlicensed_card.group(0))
+        self.assertIn('<span class="athlete-chip-value">00001</span>', active_card.group(0))
+        self.assertIn('<span class="athlete-chip-value">---</span>', inactive_card.group(0))
+        self.assertIn('<span class="athlete-chip-value">---</span>', unlicensed_card.group(0))
+
+    def test_clubs_page_counts_all_members_but_rates_only_ranked_players(self):
+        club = self.create_club()
+        self.create_player('active-player', club=club, rating='10.0000', licence_number='00001')
+        self.create_player('inactive-former-player', club=club, rating='50.0000', is_licence_active=False, licence_number='00002')
+        self.create_player('active-without-license', club=club, rating='40.0000', licence_number='')
+
+        response = self.client.get('/clubs/')
+
+        self.assertEqual(response.status_code, 200)
+        club_row = next(item for item in response.context['clubs'] if item.pk == club.pk)
+        self.assertEqual(club_row.players_count, 3)
+        self.assertEqual(club_row.total_rating, Decimal('10.0000'))
 
 
 class PlayerTournamentListTests(TestCase):

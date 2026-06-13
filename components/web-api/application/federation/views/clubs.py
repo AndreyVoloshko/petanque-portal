@@ -15,6 +15,11 @@ from federation.models.player import Player
 CLUBS_PAGE_SIZE_PARAM = 'per_page'
 DEFAULT_CLUBS_PAGE_SIZE = 25
 CLUBS_PAGE_SIZE_OPTIONS = (25, 50, 100)
+RATED_CLUB_PLAYER_FILTER = (
+    Q(player__is_licence_active=True)
+    & ~Q(player__licence_number__isnull=True)
+    & ~Q(player__licence_number='')
+)
 CLUB_SORT_OPTIONS = (
     ('rating', _('Rating first')),
     ('athletes', _('Most athletes')),
@@ -51,7 +56,6 @@ def clubs(request):
 
 
 def _clubs_queryset():
-    active_player_filter = Q(player__is_licence_active=True)
     rating_output = DecimalField(max_digits=19, decimal_places=4)
 
     return (
@@ -59,16 +63,16 @@ def _clubs_queryset():
         .select_related('city', 'president')
         .annotate(
             total_rating=Coalesce(
-                Sum('player__current_rating', filter=active_player_filter),
+                Sum('player__current_rating', filter=RATED_CLUB_PLAYER_FILTER),
                 Value(Decimal('0.0000')),
                 output_field=rating_output,
             ),
             average_rating=Coalesce(
-                Avg('player__current_rating', filter=active_player_filter),
+                Avg('player__current_rating', filter=RATED_CLUB_PLAYER_FILTER),
                 Value(Decimal('0.0000')),
                 output_field=rating_output,
             ),
-            active_players_count=Count('player', filter=active_player_filter, distinct=True),
+            players_count=Count('player', distinct=True),
         )
     )
 
@@ -147,7 +151,7 @@ def _apply_club_filters(queryset, club_filters):
 
 def _order_clubs(queryset, sort):
     if sort == 'athletes':
-        return queryset.order_by('-active_players_count', '-total_rating', 'short_name', 'id')
+        return queryset.order_by('-players_count', '-total_rating', 'short_name', 'id')
     if sort == 'average':
         return queryset.order_by('-average_rating', '-total_rating', 'short_name', 'id')
     if sort == 'name':
@@ -155,7 +159,7 @@ def _order_clubs(queryset, sort):
     if sort == 'founded':
         return queryset.order_by('-date_created', 'short_name', 'id')
 
-    return queryset.order_by('-total_rating', '-active_players_count', 'short_name', 'id')
+    return queryset.order_by('-total_rating', '-players_count', 'short_name', 'id')
 
 
 def _active_club_filter_params(club_filters):
@@ -234,7 +238,7 @@ def club(request, id):
         .select_related('current_club')
         .order_by('-current_rating', 'surname', 'name')
     )
-    licensed_players = (
+    rated_players = (
         players
         .filter(is_licence_active=True)
         .exclude(licence_number__isnull=True)
@@ -245,21 +249,16 @@ def club(request, id):
     rating_power_field = 'current_power'
     licence_filter = 'licence'
 
-    rating_stats = licensed_players.aggregate(
+    rating_stats = rated_players.aggregate(
         total_rating=Sum('current_rating'),
         average_rating=Avg('current_rating'),
         average_power=Avg('current_power'),
         candidates_count=Count('id', filter=Q(sport_title='candidate')),
     )
     total_rating = rating_stats['total_rating'] or 0
-    licensed_club_player_filter = (
-        Q(player__is_licence_active=True)
-        & ~Q(player__licence_number__isnull=True)
-        & ~Q(player__licence_number='')
-    )
     club_rank = (
         Club.objects
-        .annotate(total_rating=Sum('player__current_rating', filter=licensed_club_player_filter))
+        .annotate(total_rating=Sum('player__current_rating', filter=RATED_CLUB_PLAYER_FILTER))
         .filter(total_rating__gt=total_rating)
         .count()
         + 1
@@ -273,7 +272,6 @@ def club(request, id):
     )
     club_stats = {
         'players_count': players.count(),
-        'licensed_players_count': licensed_players.count(),
         'total_rating': total_rating,
         'average_rating': rating_stats['average_rating'] or 0,
         'average_power': rating_stats['average_power'] or 0,
