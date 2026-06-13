@@ -1,7 +1,7 @@
 {% load app_filters %}
 {% load i18n %}
 
-<a class="card athlete-card{% if hide_rating_place %} athlete-card-no-rank{% endif %}{% if title_status_label %} athlete-card-has-title-status{% endif %}{% if card_extra_class %} {{ card_extra_class }}{% endif %}" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
+<a class="card athlete-card{% if hide_rating_place or not item.is_licence_active or not item.licence_number %} athlete-card-no-rank{% endif %}{% if title_status_label %} athlete-card-has-title-status{% endif %}{% if card_extra_class %} {{ card_extra_class }}{% endif %}" href="{% url 'player' id=item.pk %}" aria-label="{% trans "Show athlete" %}: {{ item.get_name }}">
     <div class="card-body athlete-card-body">
         <div class="athlete-card-hero">
             <div class="athlete-card-profile">
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            {% if not hide_rating_place %}
+            {% if not hide_rating_place and item.is_licence_active and item.licence_number %}
                 <div class="athlete-card-rank" data-bs-toggle="tooltip" title="{% trans "Current ranking" %}">
                     <span class="athlete-card-rank-value">{{ rank_value|safe }}</span>
                     <span class="athlete-card-rank-label">{% trans "Place" %}</span>
@@ -95,7 +95,7 @@
             <div class="athlete-chip athlete-chip-license">
                 <span class="athlete-chip-icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></span>
                 <span class="athlete-chip-copy">
-                    <span class="athlete-chip-value">{% if item.is_licence_active and item.licence_number %}{{ item.licence_number }}{% else %}{% trans "No license" %}{% endif %}</span>
+                    <span class="athlete-chip-value">{% if item.is_licence_active and item.licence_number %}{{ item.licence_number }}{% else %}---{% endif %}</span>
                     <span class="athlete-chip-label">{% trans "License" %}</span>
                 </span>
             </div>

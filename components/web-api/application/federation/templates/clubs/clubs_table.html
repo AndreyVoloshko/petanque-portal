@@ -1,9 +1,9 @@
 {% load app_filters %}
 {% load i18n %}
 
-{% trans "Club points are the sum of current rating points from active athletes in the club." as points_help_text %}
-{% trans "Average points are calculated across active athletes in the club." as average_help_text %}
-{% trans "Athlete count includes active athletes currently assigned to the club." as athletes_help_text %}
+{% trans "Club points are the sum of current rating points from active licensed athletes in the club." as points_help_text %}
+{% trans "Average points are calculated across active licensed athletes in the club." as average_help_text %}
+{% trans "Athlete count includes all athletes currently assigned to the club." as athletes_help_text %}
 
 <div class="players-results-surface clubs-results-surface">
     <div class="players-table-responsive">
@@ -145,7 +145,7 @@
                         <td class="clubs-athletes-cell" data-label="{% trans "Athletes" %}">
                             <span class="clubs-athletes-badge">
                                 <i class="bi bi-people-fill" aria-hidden="true"></i>
-                                <span>{{ item.active_players_count }}</span>
+                                <span>{{ item.players_count }}</span>
                             </span>
                         </td>
                         <td class="players-action-cell clubs-action-cell" data-label="{% trans "Actions" %}">
@@ -201,7 +201,7 @@
                                     <span class="clubs-athletes-badge">
                                         <i class="bi bi-people-fill" aria-hidden="true"></i>
                                         <span class="clubs-athletes-copy">
-                                            <span class="clubs-athletes-value">{{ item.active_players_count }}</span>
+                                            <span class="clubs-athletes-value">{{ item.players_count }}</span>
                                             <span class="clubs-athletes-label">{% trans "Athletes" %}</span>
                                         </span>
                                     </span>
