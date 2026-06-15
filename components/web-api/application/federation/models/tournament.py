@@ -179,6 +179,14 @@ class Tournament(models.Model):
         # save new power
         self.power = power
         self.save()
+        return True
+
+    def recalculate_power_for_current_state(self):
+        if self.is_ready_for_processing:
+            self.recalculate_power()
+            return True
+
+        return self.recalculate_power_on_registration()
 
     '''
         Close tournament for processing and trigger player's rating recalculation
@@ -638,6 +646,18 @@ class ArbiterTeamTournamentAdminInline(RevertibleAuditAdminMixin, admin.ModelAdm
                mark_as_ready_for_processing,
                full_power_and_rating_processing,
                erase_registration_dates]
+
+    def save_formset(self, request, form, formset, change):
+        team_memberships_changed = (
+            formset.model is TeamTournamentMembership and
+            any(inline_form.has_changed() for inline_form in formset.forms)
+        )
+
+        super().save_formset(request, form, formset, change)
+
+        tournament = form.instance
+        if team_memberships_changed and not tournament.is_processing_closed():
+            tournament.recalculate_power_for_current_state()
 
     def has_add_permission(self, request):
         return can_create_tournament(request.user)

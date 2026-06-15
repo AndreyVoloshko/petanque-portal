@@ -1,12 +1,15 @@
+import datetime
 import json
 import re
+from contextlib import nullcontext
 from datetime import date, timedelta
 from decimal import Decimal
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from urllib.parse import parse_qs
 
 from django.contrib.auth.models import User
+from django.contrib.admin.sites import AdminSite
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
@@ -15,6 +18,7 @@ from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.player_form import PlayerForm
 from federation.forms.registration_player_form import RegistrationPlayerForm
+from federation.admin_actions.tournament import recalculate_power
 from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
 from federation.models.club import Club
@@ -22,7 +26,11 @@ from federation.models.national_teams import National_team, PlayerNational_teamM
 from federation.models.player import Player
 from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
-from federation.models.tournament import TeamTournamentMembership, Tournament
+from federation.models.tournament import (
+    ArbiterTeamTournamentAdminInline,
+    TeamTournamentMembership,
+    Tournament,
+)
 from federation.permissions import can_create_tournament
 from federation.services.season_snapshots import generate_season_rating_snapshot
 from federation.storage import StaticStorage
@@ -43,6 +51,7 @@ from federation.utils.tournament_names import (
     tournament_display_name_matches,
 )
 from federation.views.login import _needs_email_prompt
+from federation.views.tournaments import _tournament_status_key
 
 
 class TournamentDisplayNameTests(SimpleTestCase):
@@ -880,6 +889,156 @@ class PlayerTournamentListTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content.count('player-chip-national-team'), 1)
+
+
+class TournamentRegistrationLifecycleTests(TestCase):
+    def setUp(self):
+        self.now = timezone.make_aware(datetime.datetime(2026, 6, 15, 9, 0))
+
+    def create_tournament(self, deadline):
+        return Tournament.objects.create(
+            name='Registration Lifecycle Cup',
+            category='open',
+            place='Київ',
+            start_date=self.now.date(),
+            start_time=datetime.time(12, 0),
+            end_date=self.now.date(),
+            date_registration_stop=deadline,
+            number_of_players_in_team_min=1,
+            number_of_players_in_team_max=1,
+            format='ko',
+        )
+
+    def create_player(self):
+        user = User.objects.create_user(username='registration-player')
+        return Player.objects.create(
+            user=user,
+            name='Registration',
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def test_extending_closed_deadline_reopens_same_day_registration(self):
+        tournament = self.create_tournament(self.now - timedelta(minutes=1))
+
+        with patch('django.utils.timezone.now', return_value=self.now):
+            self.assertFalse(tournament.is_registration_opened())
+            self.assertNotEqual(_tournament_status_key(tournament), 'registration_open')
+
+            tournament.date_registration_stop = self.now + timedelta(hours=1)
+            tournament.save(update_fields=['date_registration_stop'])
+
+            self.assertTrue(tournament.is_registration_opened())
+            self.assertEqual(_tournament_status_key(tournament), 'registration_open')
+
+    def test_registration_post_is_blocked_when_closed_and_allowed_after_reopening(self):
+        tournament = self.create_tournament(self.now - timedelta(minutes=1))
+        player = self.create_player()
+        registration_url = f'/register/team/{tournament.pk}/'
+        registration_data = {'players[1]': str(player.pk)}
+
+        with patch('django.utils.timezone.now', return_value=self.now):
+            closed_response = self.client.post(registration_url, registration_data)
+
+            self.assertEqual(closed_response.status_code, 200)
+            self.assertFalse(closed_response.context['is_registration_opened'])
+            self.assertFalse(
+                TeamTournamentMembership.objects.filter(tournament=tournament).exists()
+            )
+
+            tournament.date_registration_stop = self.now + timedelta(hours=1)
+            tournament.save(update_fields=['date_registration_stop'])
+
+            reopened_response = self.client.post(registration_url, registration_data)
+
+            self.assertEqual(reopened_response.status_code, 302)
+            self.assertTrue(
+                TeamTournamentMembership.objects.filter(tournament=tournament).exists()
+            )
+
+
+class TournamentPowerAdminActionTests(SimpleTestCase):
+    def run_action(self, tournament):
+        request = SimpleNamespace(POST={'post': 'yes'})
+        with (
+            patch('federation.admin_actions.tournament.messages.success') as success,
+            patch('federation.admin_actions.tournament.messages.error') as error,
+            patch('federation.admin_actions.tournament.transaction.atomic', return_value=nullcontext()),
+        ):
+            recalculate_power(None, request, [tournament])
+        return success, error
+
+    def test_recalculates_provisional_power_before_processing_is_ready(self):
+        tournament = SimpleNamespace(
+            name='Registration Cup',
+            recalculate_power_for_current_state=Mock(return_value=True),
+        )
+
+        success, error = self.run_action(tournament)
+
+        tournament.recalculate_power_for_current_state.assert_called_once_with()
+        success.assert_called_once()
+        error.assert_not_called()
+
+    def test_provisional_power_recalculation_reports_success(self):
+        memberships = [
+            SimpleNamespace(power=Decimal('31.0000'), recalculate_power=Mock()),
+            SimpleNamespace(power=Decimal('8.3125'), recalculate_power=Mock()),
+        ]
+        tournament = Tournament(
+            name='Registration Cup',
+            category='open',
+            number_of_players_in_team_min=2,
+        )
+        tournament.get_teams_count = Mock(return_value=len(memberships))
+        tournament.get_teams = Mock(side_effect=[memberships, memberships])
+        tournament.save = Mock()
+
+        result = tournament.recalculate_power_on_registration()
+
+        self.assertTrue(result)
+        self.assertEqual(tournament.power, Decimal('2.45703125'))
+        tournament.save.assert_called_once_with()
+
+    def test_power_recalculation_uses_provisional_calculation_before_processing_is_ready(self):
+        tournament = Tournament(is_ready_for_processing=False)
+        tournament.recalculate_power = Mock()
+        tournament.recalculate_power_on_registration = Mock(return_value=True)
+
+        result = tournament.recalculate_power_for_current_state()
+
+        self.assertTrue(result)
+        tournament.recalculate_power_on_registration.assert_called_once_with()
+        tournament.recalculate_power.assert_not_called()
+
+    def test_power_recalculation_uses_final_calculation_after_processing_is_ready(self):
+        tournament = Tournament(is_ready_for_processing=True)
+        tournament.recalculate_power = Mock()
+        tournament.recalculate_power_on_registration = Mock()
+
+        result = tournament.recalculate_power_for_current_state()
+
+        self.assertTrue(result)
+        tournament.recalculate_power.assert_called_once_with()
+        tournament.recalculate_power_on_registration.assert_not_called()
+
+    def test_admin_inline_team_change_refreshes_power_for_current_state(self):
+        tournament = SimpleNamespace(
+            is_processing_closed=Mock(return_value=False),
+            recalculate_power_for_current_state=Mock(return_value=True),
+        )
+        form = SimpleNamespace(instance=tournament)
+        formset = SimpleNamespace(
+            model=TeamTournamentMembership,
+            forms=[SimpleNamespace(has_changed=Mock(return_value=True))],
+        )
+        tournament_admin = ArbiterTeamTournamentAdminInline(Tournament, AdminSite())
+
+        with patch('django.contrib.admin.options.ModelAdmin.save_formset'):
+            tournament_admin.save_formset(None, form, formset, True)
+
+        tournament.recalculate_power_for_current_state.assert_called_once_with()
 
 
 @override_settings(MEDIA_URL='/media/')
