@@ -69,7 +69,7 @@ mark ready
 | Step | Domain methods | Admin action |
 | --- | --- | --- |
 | Mark ready | `Tournament.mark_as_ready_for_processing` | `admin_actions/tournament.py:mark_as_ready_for_processing` |
-| Recalculate power | `Tournament.recalculate_power`; `TeamTournamentMembership.recalculate_power` | `recalculate_power` |
+| Recalculate power | `Tournament.recalculate_power_for_current_state`; `Tournament.recalculate_power`; `Tournament.recalculate_power_on_registration`; `TeamTournamentMembership.recalculate_power` | `recalculate_power` uses provisional registration power until the tournament is marked ready, then final processing power |
 | Calculate result points | `Tournament.recalculate_ratings`; `calculate_basic_points`; `calculate_raw_team_rating_points` | `recalculate_ratings` |
 | Close and propagate | `Tournament.close_for_processing`; `TeamTournamentMembership.recalculate_ratings_for_players` | `finish_processing` |
 | Full sequence | all methods above | `full_power_and_rating_processing` |

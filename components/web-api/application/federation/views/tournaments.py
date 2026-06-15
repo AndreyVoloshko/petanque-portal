@@ -664,18 +664,19 @@ def _tournament_status_key(tournament):
     start_date = tournament.start_date
     end_date = tournament.end_date
 
+    if tournament.is_processing_closed() or _is_finished_by_dates(tournament, today):
+        return 'finished'
+
+    if tournament.is_registration_opened():
+        return 'registration_open'
+
     if start_date and start_date <= today:
         if end_date and end_date >= today:
             return 'ongoing'
         if not end_date and start_date == today:
             return 'ongoing'
 
-    if tournament.is_processing_closed() or _is_finished_by_dates(tournament, today):
-        return 'finished'
-
     if tournament.date_registration_stop:
-        if tournament.date_registration_stop >= timezone.now():
-            return 'registration_open'
         return 'registration_closed'
 
     return 'registration_unavailable'
