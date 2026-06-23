@@ -470,6 +470,35 @@
         }
     }
 
+    function initTournamentNotesCards() {
+        $('[data-tournament-notes-card]').each(function() {
+            var $card = $(this);
+            var $editButton = $card.find('[data-tournament-notes-edit]');
+            var $display = $card.find('[data-tournament-notes-display]');
+            var $form = $card.find('[data-tournament-notes-form]');
+            var $textarea = $form.find('textarea');
+
+            if ($card.data('notesInitialized') || !$editButton.length || !$display.length || !$form.length || !$textarea.length) {
+                return;
+            }
+
+            $card.data('notesInitialized', true);
+            $editButton.on('click', function() {
+                var isEditing = !$form.prop('hidden');
+                var textarea = $textarea[0];
+
+                $form.prop('hidden', isEditing);
+                $display.prop('hidden', !isEditing);
+                $editButton.attr('aria-expanded', isEditing ? 'false' : 'true');
+
+                if (!isEditing) {
+                    textarea.focus();
+                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
+            });
+        });
+    }
+
     function initPortalUi() {
         if ($('[data-responsive-page-size]').length && enforceResponsivePageSize()) {
             return;
@@ -480,6 +509,7 @@
         refreshTooltips(document);
         initAutoSubmitControls();
         initRowClicks();
+        initTournamentNotesCards();
         initScrollMemory('.tournaments-page-link', '.tournaments-results-surface', 'tournaments-table-scroll');
         initScrollMemory('.players-page-link', '.players-results-surface', 'players-table-scroll');
 

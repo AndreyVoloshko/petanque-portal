@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="registration-field-grid registration-team-field-grid">
-                            {% for field in team_registration_form %}
+                            {% for field in team_registration_form.ordered_player_fields %}
                                 <div class="registration-field registration-team-field">
                                     <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true">*</span>{% endif %}</label>
                                     {{ field }}

@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.player_form import PlayerForm
+from federation.forms.registration_team_form import RegistrationTeamForm
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.admin_actions.tournament import recalculate_power
 from federation.middleware import InitialLanguageMiddleware
@@ -1368,13 +1369,14 @@ class PlayerRegistrationRedesignTests(TestCase):
 @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
 class TeamRegistrationRedesignTests(TestCase):
     def test_page_uses_tournament_detail_summary_and_hides_export_actions(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
         tournament = Tournament.objects.create(
             name='International Cup',
             category='away',
             place='Польща',
-            start_date=date(2026, 6, 11),
-            start_time=timezone.datetime(2026, 6, 11, 10, 0).time(),
-            date_registration_stop=timezone.make_aware(timezone.datetime(2026, 6, 11, 9, 0)),
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
             number_of_players_in_team_min=1,
             number_of_players_in_team_max=1,
             teams_limit=100,
@@ -1382,6 +1384,7 @@ class TeamRegistrationRedesignTests(TestCase):
         )
 
         response = self.client.get(f'/register/team/{tournament.pk}')
+        content = response.content.decode()
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'tournament-detail-breadcrumbs')
@@ -1393,15 +1396,19 @@ class TeamRegistrationRedesignTests(TestCase):
         self.assertContains(response, 'Польща')
         self.assertContains(response, 'name="players[1]"')
         self.assertNotContains(response, 'tournament-detail-export')
+        self.assertRegex(content, r'style-v2\.css\?v=[0-9a-f]{12}')
+        self.assertRegex(content, r'portal-ui\.js\?v=[0-9a-f]{12}')
+        self.assertNotIn('20260609-review-hardcode-cleanup-v1', content)
 
     def test_team_registration_fields_render_capitan_first(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
         tournament = Tournament.objects.create(
             name='International Cup',
             category='away',
             place='Польща',
-            start_date=date(2026, 6, 11),
-            start_time=timezone.datetime(2026, 6, 11, 10, 0).time(),
-            date_registration_stop=timezone.make_aware(timezone.datetime(2026, 6, 11, 9, 0)),
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
             number_of_players_in_team_min=3,
             number_of_players_in_team_max=4,
             teams_limit=100,
@@ -1418,6 +1425,50 @@ class TeamRegistrationRedesignTests(TestCase):
             content.index('name="players[4]"'),
         ]
         self.assertEqual(player_field_positions, sorted(player_field_positions))
+
+    def test_team_registration_form_keeps_capitan_first_team_creation_order(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+        capitan = Player.objects.create(
+            user=User.objects.create_user(username='team-capitan'),
+            name='Team',
+            surname='Capitan',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        teammate = Player.objects.create(
+            user=User.objects.create_user(username='team-player'),
+            name='Team',
+            surname='Player',
+            birth_date=date(1991, 1, 1),
+            gender='M',
+        )
+
+        form = RegistrationTeamForm(
+            data={
+                'players[1]': str(capitan.pk),
+                'players[2]': str(teammate.pk),
+            },
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_player_ids, [teammate.pk, capitan.pk])
+
+        team = Team.get_or_create_for_players(list(reversed(form.verified_player_ids)))
+
+        self.assertEqual(team.get_capitan(), capitan)
 
 
 @override_settings(

@@ -53,10 +53,10 @@
         <!-- FullCalendar CSS -->
         <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
         <!-- Custom Styles -->
-        <link rel="stylesheet" href="{% static 'style-v2.css' %}?v=20260609-review-hardcode-cleanup-v1" />
+        <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
         <!-- FullCalendar JS -->
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-        <script src="{% static 'portal-ui.js' %}?v=20260609-review-hardcode-cleanup-v1"></script>
+        <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
     </head>
     <body class="d-flex flex-column min-vh-100" style="min-height: 100vh; display: flex; flex-direction: column;">

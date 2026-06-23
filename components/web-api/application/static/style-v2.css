@@ -60,6 +60,71 @@ body {
   --tournament-power-bg: #eef7ff;
   --tournament-power-border: #b9d9f0;
   --tournament-power-text: #0f5f91;
+  --portal-blue-700: #0b55c6;
+  --portal-blue-tint: #eff8ff;
+  --portal-bluegray-100: #d8e4eb;
+  --portal-bluegray-150: #d1e1ea;
+  --portal-bluegray-250: #bdd0df;
+  --portal-bluegray-500: #718198;
+  --portal-border-card: #dfe7ef;
+  --portal-border-control: #dbe5ef;
+  --portal-border-light-blue: #e7edf3;
+  --portal-border-muted-blue: #e3ebf3;
+  --portal-border-row: #edf2f7;
+  --portal-border-soft-blue: #e1eaf3;
+  --portal-border-subtle-blue: #dfe8f1;
+  --portal-border-table-head: #e8eef4;
+  --portal-control-surface: #f8fbfd;
+  --portal-green-50: #e1f8e7;
+  --portal-green-300: #9ad7b3;
+  --portal-green-550: #18a54d;
+  --portal-green-600: #159447;
+  --portal-green-ring: rgba(24, 165, 77, 0.16);
+  --portal-green-ring-soft: rgba(32, 166, 91, 0.12);
+  --portal-ink-950: #071422;
+  --portal-navy-900: #12213f;
+  --portal-navy-a08: rgba(15, 45, 75, 0.08);
+  --portal-shadow-blue-05: rgba(24, 52, 78, 0.05);
+  --portal-shadow-blue-06: rgba(24, 52, 78, 0.06);
+  --portal-shadow-ink-04: rgba(18, 33, 63, 0.04);
+  --portal-shadow-navy-04: rgba(23, 32, 51, 0.04);
+  --portal-shadow-navy-07: rgba(23, 32, 51, 0.07);
+  --portal-shadow-strong: rgba(15, 34, 46, 0.18);
+  --portal-sky-50: #eef6fb;
+  --portal-sky-100: #dff1ff;
+  --portal-sky-300: #93c5fd;
+  --portal-sky-350: #95c7e3;
+  --portal-sky-900: #075985;
+  --portal-sky-950: #0c4a6e;
+  --portal-slate-50: #f0f4f8;
+  --portal-slate-200: #d6deea;
+  --portal-slate-250: #ccd6e3;
+  --portal-slate-300: #9aaaba;
+  --portal-slate-350: #93a0aa;
+  --portal-slate-400: #94a3b8;
+  --portal-slate-425: #7d8b96;
+  --portal-slate-450: #7a8798;
+  --portal-slate-500: #68778e;
+  --portal-slate-500-alt: #718096;
+  --portal-slate-850: #23304a;
+  --portal-table-row-alt: #f7f9fb;
+  --portal-teal-50: #eef7f8;
+  --portal-teal-500: #2a9cab;
+  --portal-white-a62: rgba(255, 255, 255, 0.62);
+  --document-icon-ai-bg: linear-gradient(135deg, #ffb86c 0%, #4b5563 100%);
+  --document-icon-archive-bg: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%);
+  --document-icon-document-bg: linear-gradient(135deg, #4f8df7 0%, #1d4ed8 100%);
+  --document-icon-image-bg: linear-gradient(135deg, #22d3ee 0%, #0284c7 100%);
+  --document-icon-pdf-bg: linear-gradient(135deg, #ff6b6b 0%, #dc2626 100%);
+  --document-icon-presentation-bg: linear-gradient(135deg, #fb923c 0%, #c2410c 100%);
+  --document-icon-spreadsheet-bg: linear-gradient(135deg, #34d399 0%, #15803d 100%);
+  --document-icon-text-bg: linear-gradient(135deg, #94a3b8 0%, #475569 100%);
+  --portal-placeholder-gradient: linear-gradient(145deg, #f3f7f9, #dde8ee);
+  --title-registry-federation-bg: linear-gradient(115deg, #dfe9ff 0%, #f7faff 46%, #fff8df 100%);
+  --title-registry-federation-glow: rgba(250, 238, 211, 0.42);
+  --title-registry-neutral-bg: linear-gradient(135deg, #fffefa 0%, #fffaf4 52%, #fcf5e8 100%);
+  --title-registry-purple-glow: rgba(216, 180, 254, 0.78);
+  --club-hero-cyan-glow: rgba(14, 165, 233, 0.11);
 }
 
 .portal-footer {
@@ -3395,7 +3460,7 @@ select.registration-form-control {
 }
 
 .registration-team-intro-box {
-  background: #f8fbfd;
+  background: var(--portal-control-surface);
   border-style: solid;
 }
 
@@ -3435,8 +3500,8 @@ select.registration-form-control {
 
 .registration-team-form .select2-container--default .select2-selection--single {
   align-items: center;
-  background: #f8fbfd;
-  border: 1px solid #d8e4eb;
+  background: var(--portal-control-surface);
+  border: 1px solid var(--portal-bluegray-100);
   border-radius: 14px;
   display: flex;
   min-height: 3.6rem;
@@ -3462,14 +3527,14 @@ select.registration-form-control {
   .select2-container--default
   .select2-selection--single
   .select2-selection__placeholder {
-  color: #93a0aa;
+  color: var(--portal-slate-350);
 }
 
 .registration-team-form
   .select2-container--default
   .select2-selection--single
   .select2-selection__clear {
-  color: #7d8b96;
+  color: var(--portal-slate-425);
   font-size: 1rem;
   margin: 0 0.55rem;
 }
@@ -3489,7 +3554,7 @@ select.registration-form-control {
   .select2-selection--single
   .select2-selection__arrow
   b {
-  border-color: #071422 transparent transparent transparent;
+  border-color: var(--portal-ink-950) transparent transparent transparent;
   border-width: 6px 5px 0;
   margin-left: -5px;
   margin-top: -2px;
@@ -3501,17 +3566,17 @@ select.registration-form-control {
 .registration-team-form
   .select2-container--default.select2-container--open
   .select2-selection--single {
-  background-color: #ffffff;
-  border-color: #2a9cab;
+  background-color: var(--color-surface);
+  border-color: var(--portal-teal-500);
   box-shadow:
     0 0 0 3px var(--registration-teal-ring),
-    inset 0 0 0 1px #2a9cab;
+    inset 0 0 0 1px var(--portal-teal-500);
 }
 
 .team-registration-card .select2-dropdown {
-  border: 1px solid #d1e1ea;
+  border: 1px solid var(--portal-bluegray-150);
   border-radius: 16px;
-  box-shadow: 0 18px 36px rgba(15, 34, 46, 0.18);
+  box-shadow: 0 18px 36px var(--portal-shadow-strong);
   overflow: hidden;
 }
 
@@ -3520,8 +3585,8 @@ select.registration-form-control {
 }
 
 .team-registration-card .select2-search__field {
-  background: #f8fbfd;
-  border: 1px solid #d8e4eb;
+  background: var(--portal-control-surface);
+  border: 1px solid var(--portal-bluegray-100);
   border-radius: 12px;
   color: var(--registration-dark);
   font-size: 0.95rem;
@@ -3536,8 +3601,8 @@ select.registration-form-control {
 }
 
 .team-registration-card .select2-search__field:focus {
-  background-color: #ffffff;
-  border-color: #2a9cab;
+  background-color: var(--color-surface);
+  border-color: var(--portal-teal-500);
   box-shadow: 0 0 0 3px var(--registration-teal-ring);
 }
 
@@ -3555,13 +3620,13 @@ select.registration-form-control {
 }
 
 .team-registration-card .select2-results__option[aria-selected="true"] {
-  background: #eef7f8;
+  background: var(--portal-teal-50);
   color: var(--registration-teal-dark);
 }
 
 .team-registration-card .select2-results__option--highlighted[aria-selected] {
   background: var(--registration-teal) !important;
-  color: #ffffff;
+  color: var(--color-surface);
 }
 
 @media (min-width: 1200px) {
@@ -3826,7 +3891,7 @@ Club detail page
   background:
     radial-gradient(
       circle at 12% 10%,
-      rgba(14, 165, 233, 0.11),
+      var(--club-hero-cyan-glow),
       transparent 36%
     ),
     radial-gradient(circle at 92% 86%, rgba(17, 155, 89, 0.1), transparent 34%),
@@ -4164,7 +4229,7 @@ Club detail page
   background:
     radial-gradient(
       circle at 15% 15%,
-      rgba(216, 180, 254, 0.78),
+      var(--title-registry-purple-glow),
       transparent 42%
     ),
     linear-gradient(135deg, #f1e8ff 0%, #faf5ff 52%, #eefbf3 100%);
@@ -6518,7 +6583,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   border: 1px solid rgba(15, 45, 75, 0.08);
   border-radius: 999px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
-  color: #9aaaba;
+  color: var(--portal-slate-300);
   display: inline-flex;
   flex: 0 0 auto;
   height: 2.72rem;
@@ -6596,11 +6661,11 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 .players-club-logo {
   align-items: center;
-  background: linear-gradient(145deg, #f3f7f9, #dde8ee);
-  border: 1px solid rgba(15, 45, 75, 0.08);
+  background: var(--portal-placeholder-gradient);
+  border: 1px solid var(--portal-navy-a08);
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
-  color: #9aaaba;
+  box-shadow: inset 0 0 0 1px var(--portal-white-a62);
+  color: var(--portal-slate-300);
   display: inline-flex;
   flex: 0 0 auto;
   height: 2.2rem;
@@ -6730,7 +6795,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 .players-table-footer .page-item.active .page-link {
   background: #1f5f8b;
   border-color: #1a557d;
-  color: #ffffff;
+  color: var(--color-surface);
 }
 
 .players-table-footer .page-item.disabled .page-link {
@@ -7795,9 +7860,9 @@ table.dataTable.players-table thead th.sorting_desc::after {
   .tournament-tablet-card {
     align-items: stretch;
     background: #ffffff;
-    border: 1px solid #dfe7ef;
+    border: 1px solid var(--portal-border-card);
     border-radius: 8px;
-    box-shadow: 0 5px 16px rgba(23, 32, 51, 0.04);
+    box-shadow: 0 5px 16px var(--portal-shadow-navy-04);
     contain: layout paint;
     display: grid;
     gap: 0.85rem;
@@ -7814,12 +7879,12 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
   .tournament-tablet-card:hover,
   .tournament-tablet-card:focus-within {
-    border-color: #bdd0df;
-    box-shadow: 0 7px 20px rgba(23, 32, 51, 0.07);
+    border-color: var(--portal-bluegray-250);
+    box-shadow: 0 7px 20px var(--portal-shadow-navy-07);
   }
 
   .tournament-tablet-side {
-    border-right: 1px solid #e7edf3;
+    border-right: 1px solid var(--portal-border-light-blue);
     display: grid;
     gap: 0.65rem;
     grid-template-rows: auto auto;
@@ -8478,7 +8543,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
   .tournament-mobile-card {
     border-radius: 8px;
-    box-shadow: 0 5px 16px rgba(23, 32, 51, 0.04);
+    box-shadow: 0 5px 16px var(--portal-shadow-navy-04);
     gap: 10px;
     padding: 12px;
   }
@@ -8734,7 +8799,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-detail-additional-actions {
-  border-bottom: 1px solid rgba(15, 45, 75, 0.08);
+  border-bottom: 1px solid var(--portal-navy-a08);
   margin-bottom: 0.9rem;
   padding-bottom: 0.95rem;
 }
@@ -8742,10 +8807,10 @@ table.dataTable.players-table thead th.sorting_desc::after {
 .tournament-detail-action {
   align-items: center;
   appearance: none;
-  background: #ffffff;
-  border: 1px solid #dbe5ef;
+  background: var(--color-surface);
+  border: 1px solid var(--portal-border-control);
   border-radius: 10px;
-  color: #23304a;
+  color: var(--portal-slate-850);
   display: inline-flex;
   font-size: 0.86rem;
   font-weight: 850;
@@ -8799,17 +8864,17 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-detail-action-notes {
-  background: #eff8ff;
-  border-color: #bfdbfe;
+  background: var(--portal-blue-tint);
+  border-color: var(--tournament-tag-men-border);
   border-radius: 999px;
-  color: #075985;
+  color: var(--portal-sky-900);
 }
 
 .tournament-detail-action-notes:hover,
 .tournament-detail-action-notes:focus {
-  background: #dff1ff;
-  border-color: #93c5fd;
-  color: #0c4a6e;
+  background: var(--portal-sky-100);
+  border-color: var(--portal-sky-300);
+  color: var(--portal-sky-950);
   transform: translateY(-1px);
 }
 
@@ -9152,7 +9217,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 .tournament-detail-note i,
 .tournament-detail-empty-inline i {
-  color: #94a3b8;
+  color: var(--portal-slate-400);
 }
 
 .tournament-detail-empty-inline,
@@ -9293,7 +9358,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
   background: #ffffff;
   border: 1px solid #dbe5ef;
   border-radius: 999px;
-  color: #23304a;
+  color: var(--portal-slate-850);
   display: inline-flex;
   font-size: 0.88rem;
   font-weight: 850;
@@ -9309,8 +9374,8 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-detail-tab.active {
-  background: #eef7ff;
-  border-color: #b9d9f0;
+  background: var(--tournament-power-bg);
+  border-color: var(--tournament-power-border);
   color: #0f5f91;
 }
 
@@ -9334,10 +9399,10 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-team-mobile-card {
-  background: #ffffff;
-  border: 1px solid #dbe5ef;
+  background: var(--color-surface);
+  border: 1px solid var(--portal-border-control);
   border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(24, 52, 78, 0.05);
+  box-shadow: 0 8px 20px var(--portal-shadow-blue-05);
   display: grid;
   gap: 1rem;
   min-width: 0;
@@ -9365,7 +9430,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 .tournament-team-mobile-people h3,
 .tournament-team-mobile-stat h3 {
-  color: #68778e;
+  color: var(--portal-slate-500);
   font-size: 0.9rem;
   font-weight: 800;
   line-height: 1.2;
@@ -9391,7 +9456,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-team-mobile-stats {
-  border-top: 1px solid #e3ebf3;
+  border-top: 1px solid var(--portal-border-muted-blue);
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
@@ -9421,7 +9486,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-team-mobile-stat .tournament-heading-help {
-  color: #718198;
+  color: var(--portal-bluegray-500);
 }
 
 .tournament-team-mobile-stat .tournament-team-date {
@@ -9446,8 +9511,8 @@ table.dataTable.players-table thead th.sorting_desc::after {
 table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 .tournament-detail-teams-table:not(.players-table) thead th {
   background: transparent !important;
-  border-bottom: 2px solid #e8eef4 !important;
-  color: #5b6b78 !important;
+  border-bottom: 2px solid var(--portal-border-table-head) !important;
+  color: var(--color-muted) !important;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.4px;
@@ -9458,19 +9523,19 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-detail-teams-table tbody td {
-  border-bottom: 1px solid #f0f4f8;
-  color: #12213f;
+  border-bottom: 1px solid var(--portal-slate-50);
+  color: var(--portal-navy-900);
   font-size: 14px;
   padding: 14px 12px;
   vertical-align: middle;
 }
 
 .tournament-detail-teams-table tbody tr:nth-child(odd) td {
-  background: #ffffff;
+  background: var(--color-surface);
 }
 
 .tournament-detail-teams-table tbody tr:nth-child(even) td {
-  background: #f7f9fb;
+  background: var(--portal-table-row-alt);
 }
 
 .tournament-detail-teams-table tbody tr:last-child td {
@@ -9478,7 +9543,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-detail-teams-table tbody tr:hover td {
-  background: #eef6fb;
+  background: var(--portal-sky-50);
 }
 
 .tournament-team-place-col {
@@ -9605,7 +9670,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
 .tournament-team-club-link:hover,
 .tournament-team-club-link:focus {
-  color: #0b55c6;
+  color: var(--portal-blue-700);
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
@@ -9638,7 +9703,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-team-player-club-mobile {
-  color: #7a8798;
+  color: var(--portal-slate-450);
   display: none;
   font-size: 0.78rem;
   font-weight: 700;
@@ -9649,8 +9714,8 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-captain-link {
-  background: #eef7ff;
-  border-color: #b9d9f0;
+  background: var(--tournament-power-bg);
+  border-color: var(--tournament-power-border);
   color: var(--td-navy);
   font-weight: 850;
 }
@@ -9791,7 +9856,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 .tournament-team-delete-button:focus {
   background: var(--td-red);
   border-color: var(--td-red);
-  color: #ffffff;
+  color: var(--color-surface);
 }
 
 .tournament-detail-page .tournament-place-field:not(.tournament-ranking-place) {
@@ -9809,7 +9874,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 .tournament-detail-page
   .tournament-place-field:not(.tournament-ranking-place)
   input[type="text"] {
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid rgba(22, 130, 77, 0.28);
   border-radius: 8px;
   color: var(--td-navy);
@@ -9823,11 +9888,11 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
 .tournament-ranking-place {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #ccd6e3;
+  background: var(--color-surface);
+  border: 1px solid var(--portal-slate-250);
   border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(18, 33, 63, 0.04);
-  color: #12213f;
+  box-shadow: 0 1px 2px var(--portal-shadow-ink-04);
+  color: var(--portal-navy-900);
   display: inline-grid;
   font-variant-numeric: tabular-nums;
   grid-template-columns: 2.18rem 1px minmax(1.55rem, 1fr) 0.8rem minmax(
@@ -9846,20 +9911,20 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-ranking-place:hover {
-  border-color: #9ad7b3;
-  box-shadow: 0 0 0 2px rgba(32, 166, 91, 0.12);
+  border-color: var(--portal-green-300);
+  box-shadow: 0 0 0 2px var(--portal-green-ring-soft);
 }
 
 .tournament-ranking-place:focus-within {
-  border-color: #18a54d;
-  box-shadow: 0 0 0 2px rgba(24, 165, 77, 0.16);
+  border-color: var(--portal-green-550);
+  box-shadow: 0 0 0 2px var(--portal-green-ring);
 }
 
 .tournament-ranking-place-icon {
   align-items: center;
-  background: #e1f8e7;
+  background: var(--portal-green-50);
   border-radius: 7px;
-  color: #159447;
+  color: var(--portal-green-600);
   display: inline-flex;
   font-size: 1rem;
   height: 1.9rem;
@@ -9868,7 +9933,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-ranking-place-divider {
-  background: #d6deea;
+  background: var(--portal-slate-200);
   height: 1.42rem;
   width: 1px;
 }
@@ -9878,7 +9943,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   background: transparent;
   border: 0;
   box-shadow: none;
-  color: #12213f;
+  color: var(--portal-navy-900);
   font-size: 0.94rem;
   font-weight: 850;
   height: 100%;
@@ -9890,7 +9955,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-ranking-place-input::placeholder {
-  color: #68778e;
+  color: var(--portal-slate-500);
   opacity: 1;
 }
 
@@ -9900,7 +9965,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-ranking-place-separator {
-  color: #68778e;
+  color: var(--portal-slate-500);
   font-size: 0.92rem;
   font-weight: 850;
   justify-self: center;
@@ -9939,8 +10004,8 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-notes-textarea {
-  background: #ffffff;
-  border: 1px solid #dbe5ef;
+  background: var(--color-surface);
+  border: 1px solid var(--portal-border-control);
   border-radius: 14px;
   color: var(--td-navy);
   font-size: 0.95rem;
@@ -9953,8 +10018,8 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-notes-textarea:focus {
-  border-color: #95c7e3;
-  box-shadow: 0 0 0 0.2rem rgba(15, 111, 136, 0.12);
+  border-color: var(--portal-sky-350);
+  box-shadow: 0 0 0 0.2rem var(--portal-section-border);
   outline: 0;
 }
 
@@ -10040,11 +10105,11 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-teams-table .tournament-detail-team-row {
-    background: #ffffff;
-    border: 1px solid #dfe8f1;
+    background: var(--color-surface);
+    border: 1px solid var(--portal-border-subtle-blue);
     border-radius: 8px;
     box-sizing: border-box;
-    box-shadow: 0 8px 20px rgba(24, 52, 78, 0.06);
+    box-shadow: 0 8px 20px var(--portal-shadow-blue-06);
     display: grid;
     gap: 0;
     grid-template-columns:
@@ -10057,7 +10122,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table tbody td {
     align-content: center;
     border-bottom: 0;
-    border-right: 1px solid #edf2f7;
+    border-right: 1px solid var(--portal-border-row);
     display: grid;
     gap: 0.38rem;
     min-width: 0;
@@ -10065,7 +10130,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-teams-table tbody td::before {
-    color: #718096;
+    color: var(--portal-slate-500-alt);
     content: attr(data-label);
     display: block;
     font-size: 0.64rem;
@@ -10375,7 +10440,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table.is-single-player-format
     .tournament-team-date-cell {
     border-right: 0;
-    border-top: 1px solid #edf2f7;
+    border-top: 1px solid var(--portal-border-row);
     grid-column: span 2;
     grid-row: 2;
     margin-top: 0.25rem;
@@ -10518,17 +10583,17 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-team-mobile-people .tournament-captain-link {
-    background: #ffffff;
-    border-color: #e1eaf3;
-    color: #23304a;
+    background: var(--color-surface);
+    border-color: var(--portal-border-soft-blue);
+    color: var(--portal-slate-850);
     font-weight: 750;
   }
 
   .tournament-team-mobile-people .tournament-captain-link:hover,
   .tournament-team-mobile-people .tournament-captain-link:focus {
-    background: #eef7ff;
-    border-color: #b9d9f0;
-    color: #0b55c6;
+    background: var(--tournament-power-bg);
+    border-color: var(--tournament-power-border);
+    color: var(--portal-blue-700);
     text-decoration: none;
   }
 
@@ -10608,7 +10673,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-teams-table tbody td {
-    border-bottom: 1px solid #edf2f7;
+    border-bottom: 1px solid var(--portal-border-row);
     border-right: 0;
     padding: 0.65rem;
   }
@@ -10644,7 +10709,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
   .tournament-detail-teams-table.is-single-player-format
     .tournament-team-name-cell {
-    border-bottom: 1px solid #edf2f7;
+    border-bottom: 1px solid var(--portal-border-row);
     grid-column: 1 / -1;
     grid-row: 1;
     padding-top: 0;
@@ -10684,7 +10749,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table.is-single-player-format
     .tournament-team-date-cell {
     align-items: center;
-    border-top: 1px solid #edf2f7;
+    border-top: 1px solid var(--portal-border-row);
     display: flex;
     grid-column: 1 / -1;
     grid-row: auto;
@@ -10695,7 +10760,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
   .tournament-detail-teams-table.is-single-player-format
     .tournament-team-date-cell {
-    border-top: 1px solid #edf2f7;
+    border-top: 1px solid var(--portal-border-row);
   }
 
   .tournament-detail-teams-table.is-single-player-format:not(.has-rating-points)
@@ -12342,7 +12407,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .documents-view-button.is-active {
-  background: #ffffff;
+  background: var(--color-surface);
   box-shadow: 0 2px 8px rgba(15, 63, 95, 0.12);
   color: var(--link-action);
 }
@@ -13664,7 +13729,7 @@ Title registry refinements
       rgba(255, 230, 145, 0.45),
       transparent 42%
     ),
-    linear-gradient(115deg, #dfe9ff 0%, #f7faff 46%, #fff8df 100%);
+    var(--title-registry-federation-bg);
 }
 
 .title-registry-page--sport_titles
@@ -13673,8 +13738,8 @@ Title registry refinements
   background:
     radial-gradient(
       circle at 16% 14%,
-      rgba(250, 238, 211, 0.42),
+      var(--title-registry-federation-glow),
       transparent 48%
     ),
-    linear-gradient(135deg, #fffefa 0%, #fffaf4 52%, #fcf5e8 100%);
+    var(--title-registry-neutral-bg);
 }
