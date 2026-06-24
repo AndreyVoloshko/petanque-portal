@@ -9496,10 +9496,11 @@ table.dataTable.players-table thead th.sorting_desc::after {
 
 .tournament-detail-teams-table {
   --tournament-team-metric-column-width: 11rem;
+  --tournament-team-table-min-width: 77rem;
   border-collapse: separate !important;
   border-spacing: 0 !important;
   margin: 0 !important;
-  min-width: 860px;
+  min-width: var(--tournament-team-table-min-width);
   table-layout: fixed;
   width: 100% !important;
 }
@@ -9796,11 +9797,20 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 .tournament-team-player-name {
   align-items: center;
   display: inline-flex;
+  flex: 1 1 auto;
   gap: 0.22rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.tournament-team-player-label {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.tournament-team-player-country {
+  flex: none;
 }
 
 .tournament-team-date {
@@ -10051,7 +10061,6 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
   .tournament-detail-teams-table {
     display: table !important;
-    min-width: 860px;
   }
 
   .tournament-detail-teams-table.is-single-player-format {

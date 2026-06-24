@@ -105,8 +105,8 @@
                                             {% endif %}
                                         </span>
                                         <span class="tournament-team-player-name">
-                                            {{ player.get_name }}
-                                            {{ player.country|country_flag|safe }}
+                                            <span class="tournament-team-player-label">{{ player.get_name }}</span>
+                                            <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
                                         </span>
                                     </a>
                                     {% endif %}
@@ -164,8 +164,8 @@
                                         {% endif %}
                                     </span>
                                     <span class="tournament-team-player-name">
-                                        {{ player.get_name }}
-                                        {{ player.country|country_flag|safe }}
+                                        <span class="tournament-team-player-label">{{ player.get_name }}</span>
+                                        <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
                                     </span>
                                 </a>
                             {% empty %}
@@ -268,7 +268,10 @@
                                         {% endif %}
                                     </span>
                                     <span class="tournament-team-player-copy">
-                                        <span class="tournament-team-player-name">{{ player.get_name }} {{ player.country|country_flag|safe }}</span>
+                                        <span class="tournament-team-player-name">
+                                            <span class="tournament-team-player-label">{{ player.get_name }}</span>
+                                            <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
+                                        </span>
                                         {% if player.current_club %}
                                             <span class="tournament-team-player-club-mobile">{{ player.current_club.short_name }}</span>
                                         {% else %}
@@ -306,7 +309,10 @@
                                         <span class="players-athlete-avatar-placeholder"><i class="bi bi-person-fill"></i></span>
                                     {% endif %}
                                 </span>
-                                <span class="tournament-team-player-name">{{ player.get_name }} {{ player.country|country_flag|safe }}</span>
+                                <span class="tournament-team-player-name">
+                                    <span class="tournament-team-player-label">{{ player.get_name }}</span>
+                                    <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
+                                </span>
                             </a>
                         {% empty %}
                             <span class="tournament-team-muted">{% trans "No teammates" %}</span>
