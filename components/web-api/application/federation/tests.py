@@ -1813,6 +1813,10 @@ class TournamentListingPageTests(TestCase):
         self.assertNotIn('flag-icon', mobile_captain_section)
         self.assertIn(captain.get_name(), athletes_cell)
         self.assertIn(teammate.get_name(), athletes_cell)
+        self.assertContains(response, 'data-tournament-team-sort="place"')
+        self.assertContains(response, 'data-tournament-team-sort="power"')
+        self.assertContains(response, 'class="tournament-team-player-label"')
+        self.assertContains(response, 'class="tournament-team-player-country"')
 
     def test_tournament_detail_unready_tournament_does_not_show_place_editor(self):
         admin = User.objects.create_superuser(

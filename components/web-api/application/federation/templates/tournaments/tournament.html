@@ -19,10 +19,18 @@
     {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
 
     <section class="tournament-detail-main-card" aria-labelledby="tournament-teams-title">
-        <div class="tournament-detail-section-heading tournament-detail-section-heading-row">
+        <div class="tournament-detail-section-heading tournament-detail-section-heading-row tournament-teams-heading">
             <div>
                 <h2 id="tournament-teams-title">{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}</h2>
                 <p>{{ row.teams_count_label }}</p>
+            </div>
+            <div class="tournament-team-mobile-sort" role="group" aria-label="{% trans "Sort" %}">
+                <button type="button" class="tournament-team-mobile-sort-button is-active" data-tournament-team-sort="place" aria-pressed="true">
+                    {% trans "Place" %}
+                </button>
+                <button type="button" class="tournament-team-mobile-sort-button" data-tournament-team-sort="power" aria-pressed="false">
+                    {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
+                </button>
             </div>
         </div>
 

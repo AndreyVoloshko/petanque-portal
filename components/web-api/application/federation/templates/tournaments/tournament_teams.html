@@ -396,19 +396,65 @@
 $(document).ready(function() {
     var tableElement = $('#{{ table_id }}');
     var section = tableElement.closest('.tournament-teams-section');
+    var detailCard = tableElement.closest('.tournament-detail-main-card');
     var footer = section.find('.tournament-teams-footer');
+    var mobileList = section.find('.tournament-team-mobile-list');
     var mobileCards = section.find('.tournament-team-mobile-card');
+    var mobileCardsById = {};
+    var mobileSortButtons = detailCard.find('[data-tournament-team-sort]');
+    var hasPlaces = tableElement.find('tbody .tournament-team-place-cell').filter(function () {
+        return Number($(this).data('order')) > 0;
+    }).length > 0;
+    var activeMobileSort = hasPlaces ? 'place' : 'power';
+    var placeColumnIndex = 0;
+    var powerColumnIndex = {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}4{% else %}3{% endif %};
+    var table;
+
+    mobileCards.each(function () {
+        mobileCardsById[String($(this).data('team-membership-id'))] = this;
+    });
 
     function syncMobileCards() {
         var visibleIds = {};
+        var orderedCards = [];
 
         tableElement.find('tbody .tournament-detail-team-row').each(function () {
-            visibleIds[String($(this).data('team-membership-id'))] = true;
+            var membershipId = String($(this).data('team-membership-id'));
+            visibleIds[membershipId] = true;
+            if (mobileCardsById[membershipId]) {
+                orderedCards.push(mobileCardsById[membershipId]);
+            }
         });
 
+        mobileList.append(orderedCards);
         mobileCards.each(function () {
             $(this).toggle(Boolean(visibleIds[String($(this).data('team-membership-id'))]));
         });
+    }
+
+    function updateMobileSortState() {
+        mobileSortButtons.filter('[data-tournament-team-sort="place"]').prop('hidden', !hasPlaces);
+        mobileSortButtons.each(function () {
+            var isActive = $(this).data('tournament-team-sort') === activeMobileSort;
+            $(this).toggleClass('is-active', isActive).attr('aria-pressed', String(isActive));
+        });
+    }
+
+    function mobileSortOrder(sortKey) {
+        return [[
+            sortKey === 'place' ? placeColumnIndex : powerColumnIndex,
+            sortKey === 'place' ? 'asc' : 'desc'
+        ]];
+    }
+
+    function applyMobileSort(sortKey) {
+        if (!table || (sortKey === 'place' && !hasPlaces)) {
+            return;
+        }
+
+        activeMobileSort = sortKey;
+        updateMobileSortState();
+        table.order(mobileSortOrder(sortKey)).draw();
     }
 
     function initTooltips() {
@@ -423,7 +469,6 @@ $(document).ready(function() {
     }
 
     function activePlaceInputScope() {
-        var mobileList = section.find('.tournament-team-mobile-list');
         return mobileList.is(':visible') ? mobileList : tableElement;
     }
 
@@ -437,7 +482,7 @@ $(document).ready(function() {
     }
 
     if ($.fn.DataTable) {
-        var table = window.PetanquePortal.dataTableFooter.init(tableElement, {
+        table = window.PetanquePortal.dataTableFooter.init(tableElement, {
             portalFooter: {
                 allLabel: "{% trans "All" %}",
                 lengthLabel: "{% if tournament_detail.is_single_player_format %}{{ participants_per_page_label }}{% else %}{{ teams_per_page_label }}{% endif %}"
@@ -466,7 +511,7 @@ $(document).ready(function() {
                 {% endif %}
             ],
             autoWidth: false,
-            order: [[0, 'asc']],
+            order: mobileSortOrder(activeMobileSort),
             language: {
                 zeroRecords: "{% if tournament_detail.is_single_player_format %}{% trans "No participants found" %}{% else %}{% trans "No teams found" %}{% endif %}",
                 info: "{% if tournament_detail.is_single_player_format %}{% trans "Showing _START_ to _END_ of _TOTAL_ participants" %}{% else %}{% trans "Showing _START_ to _END_ of _TOTAL_ teams" %}{% endif %}",
@@ -477,9 +522,14 @@ $(document).ready(function() {
         }, footer, afterTableDraw);
     }
 
+    updateMobileSortState();
     syncMobileCards();
     initTooltips();
     updateRankingPlaceState();
+
+    mobileSortButtons.on('click', function () {
+        applyMobileSort($(this).data('tournament-team-sort'));
+    });
 
     section.on('input', '.tournament-ranking-place-input', function () {
         var input = this;
