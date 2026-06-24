@@ -9495,6 +9495,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-detail-teams-table {
+  --tournament-team-metric-column-width: 11rem;
   border-collapse: separate !important;
   border-spacing: 0 !important;
   margin: 0 !important;
@@ -9563,15 +9564,15 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-team-score-col {
-  width: 8rem;
+  width: var(--tournament-team-metric-column-width);
 }
 
 .tournament-team-power-col {
-  width: 8.75rem;
+  width: var(--tournament-team-metric-column-width);
 }
 
 .tournament-team-date-col {
-  width: 9rem;
+  width: var(--tournament-team-metric-column-width);
 }
 
 .tournament-team-actions-col {
@@ -9584,14 +9585,6 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
 .tournament-detail-teams-table.is-processing-finished .tournament-team-name-col {
   width: 11.5rem;
-}
-
-.tournament-detail-teams-table.is-processing-finished .tournament-team-power-col {
-  width: 8rem !important;
-}
-
-.tournament-detail-teams-table.is-processing-finished .tournament-team-date-col {
-  width: 8.75rem !important;
 }
 
 .tournament-detail-teams-table.is-processing-finished .tournament-team-actions-col {
