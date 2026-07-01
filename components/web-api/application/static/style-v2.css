@@ -41,6 +41,7 @@ body {
   --portal-text-heading: var(--color-text);
   --portal-text-muted: var(--color-muted);
   --portal-text-soft: #263c4e;
+  --player-club-logo-border: #b4b4b4;
   --tournament-participants-icon: #1f5f8b;
   --tournament-register-bg: var(--button-primary);
   --tournament-register-hover-bg: var(--button-primary-hover);
@@ -11420,9 +11421,10 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 
 .player-club-logo {
   flex-shrink: 0;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  width: 108px;
+  height: 108px;
+  border: 2px solid var(--player-club-logo-border);
+  border-radius: 16%;
   overflow: hidden;
   background: #f5f8fa;
   display: flex;
@@ -12413,11 +12415,6 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
     flex-direction: row;
     gap: 14px;
     text-align: left;
-  }
-
-  .player-club-logo {
-    height: 68px;
-    width: 68px;
   }
 
   .player-club-info {
