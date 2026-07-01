@@ -425,7 +425,10 @@
                                 {% if team_power %}
                                     {{ team_power|team_power_badge|safe }}
                                 {% else %}
-                                    <span class="pt-muted">&mdash;</span>
+                                    <span class="badge tournament-power-badge team-power-badge player-team-power-missing" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}" aria-label="{{ tournament_team_power_help_text }}">
+                                        <i class="bi bi-star" aria-hidden="true"></i>
+                                        <span>---</span>
+                                    </span>
                                 {% endif %}
                                 {% if tournament_power %}
                                     {{ tournament_power|tournament_power_badge|safe }}
@@ -506,6 +509,11 @@
                         {% endif %}
                         {% if team_power %}
                             {{ team_power|team_power_badge|safe }}
+                        {% else %}
+                            <span class="badge tournament-power-badge team-power-badge player-team-power-missing" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}" aria-label="{{ tournament_team_power_help_text }}">
+                                <i class="bi bi-star" aria-hidden="true"></i>
+                                <span>---</span>
+                            </span>
                         {% endif %}
                         {% if points %}
                             <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">

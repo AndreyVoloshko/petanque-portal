@@ -948,6 +948,46 @@ class PlayerTournamentListTests(TestCase):
             table_body.index('class="pt-col-points"'),
         )
 
+    def test_player_tournament_table_shows_placeholder_team_power_badge(self):
+        player = self.create_player('missing-team-power-player')
+        team = Team.objects.create(name='Missing Power Team')
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        tournament = Tournament.objects.create(
+            name='Missing Team Power Cup',
+            category='open',
+            is_goes_to_rating=True,
+            start_date=timezone.localdate() - timedelta(days=7),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+            power='11.3700',
+            is_processing_finished=True,
+        )
+        TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=9,
+            place_max=16,
+            power='0.0000',
+        )
+
+        response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'player-team-power-missing')
+        self.assertContains(response, '<span>---</span>', html=True)
+        self.assertIn('team-power-badge player-team-power-missing', content)
+        table_strength_cell = re.search(
+            r'<td class="pt-col-strength"[^>]*>(.*?)</td>',
+            content,
+            re.S,
+        ).group(1)
+        self.assertLess(
+            table_strength_cell.index('player-team-power-missing'),
+            table_strength_cell.index('tournament-power-badge tournament-power-'),
+        )
+
     def test_player_page_shows_single_national_team_chip_for_multiple_memberships(self):
         player = self.create_player('national-team-player')
         men_veterans = National_team.objects.create(name='Veterans Men')
