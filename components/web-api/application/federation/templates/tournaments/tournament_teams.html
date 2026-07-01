@@ -16,7 +16,7 @@
 
 {% with can_manage_tournament=tournament|is_user_has_admin_access_to_tournament:current_user %}
 <div class="tournament-teams-section">
-    <div class="players-table-responsive tournament-teams-table-wrap">
+    <div class="players-table-responsive tournament-teams-table-wrap{% if tournament_detail.is_single_player_format %} is-single-player-format{% endif %}">
         <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished %}is-processing-finished{% endif %} {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" id="{{ table_id }}">
             <colgroup>
                 <col class="tournament-team-place-col">
@@ -53,7 +53,7 @@
                     {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
                     <th class="tournament-team-score-col">
                         <span class="pt-heading-with-help">
-                            {% trans "Rating earned" %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Rating" %}{% else %}{% trans "Rating earned" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}" aria-label="{{ points_help_text }}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -62,7 +62,7 @@
                     {% endif %}
                     <th class="tournament-team-power-col">
                         <span class="pt-heading-with-help">
-                            {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Power" %}{% else %}{% trans "Team power" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -70,7 +70,7 @@
                     </th>
                     <th class="tournament-team-date-col">
                         <span class="pt-heading-with-help">
-                            {% trans "Registration date" %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Registered" %}{% else %}{% trans "Registration date" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -104,9 +104,16 @@
                                                 </span>
                                             {% endif %}
                                         </span>
-                                        <span class="tournament-team-player-name">
-                                            <span class="tournament-team-player-label">{{ player.get_name }}</span>
-                                            <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
+                                        <span class="tournament-team-player-copy">
+                                            <span class="tournament-team-player-name">
+                                                <span class="tournament-team-player-label">{{ player.get_name }}</span>
+                                                <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
+                                            </span>
+                                            {% if player.current_club %}
+                                                <span class="tournament-team-player-club-mobile">{{ player.current_club.short_name }}</span>
+                                            {% else %}
+                                                <span class="tournament-team-player-club-mobile">{% trans "No club" %}</span>
+                                            {% endif %}
                                         </span>
                                     </a>
                                     {% endif %}
@@ -175,7 +182,7 @@
                     </td>
                     {% endif %}
                     {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
-                    <td class="tournament-team-score-cell" data-order="{% if tournament.is_processing_finished %}{{ team.rating_points }}{% else %}0{% endif %}" data-label="{% trans "Rating earned" %}">
+                    <td class="tournament-team-score-cell" data-order="{% if tournament.is_processing_finished %}{{ team.rating_points }}{% else %}0{% endif %}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Rating" %}{% else %}{% trans "Rating earned" %}{% endif %}">
                         {% if tournament.is_processing_finished and team.rating_points %}
                             <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
                                 <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
@@ -186,7 +193,7 @@
                         {% endif %}
                     </td>
                     {% endif %}
-                    <td class="tournament-team-power-cell" data-order="{{ team.power }}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}">
+                    <td class="tournament-team-power-cell" data-order="{{ team.power }}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Power" %}{% else %}{% trans "Team power" %}{% endif %}">
                         {% if tournament_detail.is_single_player_format %}
                             {% with power=team.power|participant_power_badge %}
                                 {% if power %}
@@ -205,7 +212,7 @@
                             {% endwith %}
                         {% endif %}
                     </td>
-                    <td class="tournament-team-date-cell" data-order="{{ team.date_registration|date:'Ymd' }}" data-label="{% trans "Registration date" %}">
+                    <td class="tournament-team-date-cell" data-order="{{ team.date_registration|date:'Ymd' }}" data-label="{% if tournament_detail.is_single_player_format %}{% trans "Registered" %}{% else %}{% trans "Registration date" %}{% endif %}">
                         <span class="tournament-team-date" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
                             <i class="bi bi-calendar3" aria-hidden="true"></i>
                             <time datetime="{{ team.date_registration|date:'Y-m-d' }}">{{ team.date_registration|date:"Y-m-d" }}</time>
@@ -230,7 +237,7 @@
         </table>
     </div>
 
-    <div class="tournament-team-mobile-list {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}">
+    <div class="tournament-team-mobile-list {% if tournament_detail.is_single_player_format %}is-single-player-format {% endif %}{% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}">
         {% for team in teams %}
         {% with can_remove_team=team|is_user_has_admin_access_to_team:current_user %}
         <article class="tournament-team-mobile-card" data-team-membership-id="{{ team.pk }}">

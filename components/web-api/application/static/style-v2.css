@@ -10506,6 +10506,207 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 }
 
+@media (min-width: 768px) and (max-width: 1200px) {
+  .tournament-teams-table-wrap.is-single-player-format {
+    display: block;
+    overflow-x: visible;
+  }
+
+  .tournament-team-mobile-list.is-single-player-format {
+    display: none;
+  }
+
+  .tournament-teams-heading.is-single-player-format .tournament-team-mobile-sort {
+    display: none;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format {
+    --tournament-team-metric-column-width: 6.3rem;
+    display: table !important;
+    min-width: 0;
+    table-layout: fixed;
+    width: 100% !important;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format thead {
+    display: table-header-group !important;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format tbody {
+    display: table-row-group !important;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format thead tr {
+    display: table-row !important;
+    width: auto;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-detail-team-row {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: table-row !important;
+    padding: 0;
+    width: auto;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format th,
+  .tournament-detail-teams-table.is-single-player-format tbody td {
+    display: table-cell !important;
+    width: auto;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format tbody td {
+    border-bottom: 1px solid var(--portal-slate-50);
+    border-right: 0;
+    font-size: 0.82rem;
+    padding: 0.55rem 0.38rem;
+    vertical-align: middle;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format tbody td::before {
+    content: none;
+    display: none;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-club-col,
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-club-cell {
+    display: none !important;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-place-col,
+  .tournament-detail-teams-table.is-single-player-format.is-processing-finished
+    .tournament-team-place-col {
+    width: 4.8rem !important;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-name-col,
+  .tournament-detail-teams-table.is-single-player-format.has-rating-points
+    .tournament-team-name-col,
+  .tournament-detail-teams-table.is-single-player-format.is-processing-finished
+    .tournament-team-name-col {
+    width: auto;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-score-col {
+    width: var(--tournament-team-metric-column-width);
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-power-col {
+    width: 5.8rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-date-col {
+    width: 7.4rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-actions-col,
+  .tournament-detail-teams-table.is-single-player-format.is-processing-finished
+    .tournament-team-actions-col {
+    width: 3rem;
+  }
+
+  table.dataTable.tournament-detail-teams-table.is-single-player-format
+    thead
+    th,
+  .tournament-detail-teams-table.is-single-player-format thead th {
+    font-size: 0.68rem;
+    letter-spacing: 0;
+    padding: 0.5rem 0.38rem !important;
+    white-space: nowrap;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .pt-heading-with-help {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.18rem;
+    min-width: 0;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-heading-help {
+    font-size: 0.72rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-participant {
+    display: block;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-participant
+    .tournament-team-player {
+    border-radius: 999px;
+    font-size: 0.78rem;
+    gap: 0.32rem;
+    min-height: 2.12rem;
+    padding: 0.2rem 0.46rem 0.2rem 0.22rem;
+    width: 100%;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-participant
+    .tournament-team-player-avatar {
+    flex-basis: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-name-cell
+    .tournament-team-player-copy {
+    gap: 0.08rem;
+    overflow: hidden;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-name-cell
+    .tournament-team-player-name {
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-name-cell
+    .tournament-team-player-club-mobile {
+    display: block;
+    font-size: 0.66rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .pt-points-chip,
+  .tournament-detail-teams-table.is-single-player-format
+    .participant-power-badge {
+    font-size: 0.72rem;
+    gap: 0.2rem;
+    max-width: 100%;
+    min-height: 1.35rem;
+    padding: 0.24rem 0.38rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format .tournament-team-date {
+    font-size: 0.74rem;
+    gap: 0.25rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-delete-button {
+    border-radius: 8px;
+    height: 1.95rem;
+    width: 1.95rem;
+  }
+}
+
 @media (max-width: 767.98px) {
   .tournament-detail-page {
     gap: 1rem;
