@@ -332,7 +332,7 @@
                     {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
                     <section class="tournament-team-mobile-stat">
                         <h3>
-                            {% trans "Rating earned" %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Rating" %}{% else %}{% trans "Rating earned" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}" aria-label="{{ points_help_text }}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -350,7 +350,7 @@
 
                     <section class="tournament-team-mobile-stat">
                         <h3>
-                            {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Power" %}{% else %}{% trans "Team power" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_power_help_text }}{% else %}{{ team_power_help_text }}{% endif %}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
@@ -368,7 +368,7 @@
 
                     <section class="tournament-team-mobile-stat tournament-team-mobile-date-stat">
                         <h3>
-                            {% trans "Registration date" %}
+                            {% if tournament_detail.is_single_player_format %}{% trans "Registered" %}{% else %}{% trans "Registration date" %}{% endif %}
                             <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{{ participant_registration_date_help_text }}{% else %}{{ team_registration_date_help_text }}{% endif %}">
                                 <i class="bi bi-info-circle" aria-hidden="true"></i>
                             </button>
