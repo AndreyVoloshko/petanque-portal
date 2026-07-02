@@ -54,9 +54,14 @@ these values or paste them into chat/AI tooling.
    SSH into the server, then `sudo visudo -f /etc/sudoers.d/deploy` and add
    (confirm the real path to `git` on the server first with `which git`):
    ```
-   admin ALL=(root) NOPASSWD: /usr/bin/git pull, /bin/bash /home/admin/app/portal/deploy/remote_run.sh
+   admin ALL=(root) NOPASSWD: /usr/bin/git pull, /bin/bash deploy/remote_run.sh
    ```
-   Do not grant blanket `NOPASSWD: ALL` — scope it to just these two commands.
+   The workflow runs `cd ~/app/portal` first and then invokes `bash` with the
+   relative argument `deploy/remote_run.sh`, so the sudoers entry must match
+   that literal argv (not an absolute path) — verify with `sudo -l -U admin`
+   or by running the exact command as `admin` and confirming it doesn't
+   prompt for a password. Do not grant blanket `NOPASSWD: ALL` — scope it to
+   just these two commands.
 5. Confirm `~/app/portal` on the server has its git remote pointed at GitHub,
    not Bitbucket:
    ```bash
@@ -71,6 +76,10 @@ these values or paste them into chat/AI tooling.
    The server also needs the GitHub deploy key (or a separate read key) able
    to `git pull` from the GitHub repo — add a deploy key under repo Settings
    → Deploy keys, or reuse an existing key already authorized on GitHub.
+   Since the workflow runs `sudo git pull`, that pull executes as **root**,
+   so the deploy key, SSH config, and `known_hosts` entry for `github.com`
+   must be set up under `/root/.ssh/` (not just `admin`'s) — otherwise the
+   first automated pull fails on host-key verification or authentication.
 
 ## Failure handling
 
