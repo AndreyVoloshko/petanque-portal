@@ -20,5 +20,4 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            sudo git -C /root/app/portal pull
-            sudo bash /root/app/portal/deploy/remote_run.sh
+            sudo bash -c 'cd /root/app/portal && git pull && bash deploy/remote_run.sh'

@@ -5,15 +5,17 @@ when a PR merges into `master`, via `.github/workflows/deploy.yml`. The
 workflow SSHes in and runs the same steps as the old manual process:
 
 ```
-sudo git -C /root/app/portal pull
-sudo bash /root/app/portal/deploy/remote_run.sh
+sudo bash -c 'cd /root/app/portal && git pull && bash deploy/remote_run.sh'
 ```
 
 The checkout lives under **root's** home directory (`/root/app/portal`), not the
 SSH login user's — because the old manual process ran `sudo su` (becoming root)
-before `cd ~/app/portal`, so `~` resolved to `/root`. The workflow uses the
-absolute path directly instead of relying on a `cd` happening before/after
-`sudo`.
+before `cd ~/app/portal`, so `~` resolved to `/root`. The workflow runs the
+whole sequence inside one `sudo bash -c '...'` shell so both `git pull` and
+`remote_run.sh` (which sources `.env` via a relative path) execute with the
+correct working directory. Two separate `sudo` invocations don't work here:
+`remote_run.sh` needs to actually run *from* `/root/app/portal`, not just be
+invoked by absolute path.
 
 ## Triggering a deploy manually
 
@@ -59,13 +61,13 @@ these values or paste them into chat/AI tooling.
    SSH into the server, then `sudo visudo -f /etc/sudoers.d/deploy` and add
    (confirm the real path to `git` on the server first with `which git`):
    ```
-   admin ALL=(root) NOPASSWD: /usr/bin/git -C /root/app/portal pull, /bin/bash /root/app/portal/deploy/remote_run.sh
+   admin ALL=(root) NOPASSWD: /bin/bash -c "cd /root/app/portal && git pull && bash deploy/remote_run.sh"
    ```
-   The workflow invokes these with absolute paths (`/root/app/portal`), so the
-   sudoers entry must match that literal argv exactly — verify with
-   `sudo -l -U admin` or by running the exact command as `admin` and
-   confirming it doesn't prompt for a password. Do not grant blanket
-   `NOPASSWD: ALL` — scope it to just these two commands.
+   The workflow invokes this exact `bash -c "..."` string, so the sudoers
+   entry must match it literally — verify with `sudo -l -U admin` or by
+   running the exact command as `admin` and confirming it doesn't prompt for
+   a password. Do not grant blanket `NOPASSWD: ALL` — scope it to just this
+   one command.
 5. Confirm `/root/app/portal` on the server has its git remote pointed at
    GitHub, not Bitbucket (requires `sudo`, since the checkout is under root's
    home):
@@ -81,10 +83,11 @@ these values or paste them into chat/AI tooling.
    The server also needs the GitHub deploy key (or a separate read key) able
    to `git pull` from the GitHub repo — add a deploy key under repo Settings
    → Deploy keys, or reuse an existing key already authorized on GitHub.
-   Since the workflow runs `sudo git pull`, that pull executes as **root**,
-   so the deploy key, SSH config, and `known_hosts` entry for `github.com`
-   must be set up under `/root/.ssh/` (not just `admin`'s) — otherwise the
-   first automated pull fails on host-key verification or authentication.
+   Since the workflow's `git pull` runs inside `sudo bash -c '...'`, it
+   executes as **root**, so the deploy key, SSH config, and `known_hosts`
+   entry for `github.com` must be set up under `/root/.ssh/` (not just
+   `admin`'s) — otherwise the first automated pull fails on host-key
+   verification or authentication.
 
 ## Failure handling
 
