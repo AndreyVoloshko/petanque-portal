@@ -4,18 +4,23 @@ import re
 from contextlib import nullcontext
 from datetime import date, timedelta
 from decimal import Decimal
+from io import BytesIO
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
+from PIL import Image
 
 from federation.forms.player_form import PlayerForm
 from federation.forms.registration_team_form import RegistrationTeamForm
@@ -54,6 +59,11 @@ from federation.utils.tournament_names import (
 )
 from federation.views.login import _needs_email_prompt
 from federation.views.tournaments import _tournament_status_key
+from federation.validators import (
+    validate_image_dimensions,
+    validate_image_file_size,
+    validate_image_format,
+)
 
 
 class TournamentDisplayNameTests(SimpleTestCase):
@@ -2236,3 +2246,58 @@ class TournamentListingPageTests(TestCase):
             is_active=False,
             is_superuser=True,
         )))
+
+
+def _make_uploaded_image(width, height, image_format='JPEG', file_name='test.jpg',
+                          content_type='image/jpeg'):
+    buffer = BytesIO()
+    Image.new('RGB', (width, height), color='red').save(buffer, format=image_format)
+    return SimpleUploadedFile(file_name, buffer.getvalue(), content_type=content_type)
+
+
+class ImageValidatorsTests(SimpleTestCase):
+    def test_validate_image_file_size_accepts_file_under_limit(self):
+        small_file = SimpleUploadedFile('small.jpg', b'x' * 1024, content_type='image/jpeg')
+
+        self.assertIsNone(validate_image_file_size(small_file))
+
+    def test_validate_image_file_size_rejects_file_over_limit(self):
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        with self.assertRaises(ValidationError):
+            validate_image_file_size(oversized_file)
+
+    def test_validate_image_dimensions_accepts_image_within_limit(self):
+        image = _make_uploaded_image(100, 100)
+
+        self.assertIsNone(validate_image_dimensions(image))
+
+    def test_validate_image_dimensions_rejects_image_over_limit(self):
+        image = _make_uploaded_image(settings.MAX_IMAGE_DIMENSION_PX + 1, 10)
+
+        with self.assertRaises(ValidationError):
+            validate_image_dimensions(image)
+
+    def test_validate_image_format_accepts_allowed_formats(self):
+        for image_format in ('JPEG', 'PNG', 'WEBP'):
+            with self.subTest(image_format=image_format):
+                image = _make_uploaded_image(10, 10, image_format=image_format)
+
+                self.assertIsNone(validate_image_format(image))
+
+    def test_validate_image_format_rejects_disallowed_format(self):
+        image = _make_uploaded_image(10, 10, image_format='BMP')
+
+        with self.assertRaises(ValidationError):
+            validate_image_format(image)
+
+    def test_validate_image_format_rejects_spoofed_extension(self):
+        # A file named .jpg whose actual content is a BMP must still be rejected —
+        # validate_image_format checks Pillow's detected format, not the filename.
+        image = _make_uploaded_image(10, 10, image_format='BMP', file_name='fake.jpg',
+                                      content_type='image/jpeg')
+
+        with self.assertRaises(ValidationError):
+            validate_image_format(image)
