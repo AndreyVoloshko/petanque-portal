@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs
 
+from django import forms as django_forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
@@ -2301,3 +2302,92 @@ class ImageValidatorsTests(SimpleTestCase):
 
         with self.assertRaises(ValidationError):
             validate_image_format(image)
+
+
+class ImageFieldValidationTests(TestCase):
+    def test_player_form_rejects_oversized_avatar(self):
+        user = User.objects.create_user(username='avatar_size_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': oversized_file},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)
+
+    def test_player_form_rejects_disallowed_format_avatar(self):
+        user = User.objects.create_user(username='avatar_format_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        bmp_file = _make_uploaded_image(10, 10, image_format='BMP', file_name='avatar.bmp',
+                                         content_type='image/bmp')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': bmp_file},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)
+
+    def test_player_form_accepts_valid_avatar(self):
+        user = User.objects.create_user(username='avatar_valid_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        valid_file = _make_uploaded_image(100, 100, image_format='JPEG', file_name='avatar.jpg')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': valid_file},
+            instance=player,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_club_admin_form_rejects_oversized_logo(self):
+        # Django admin builds its ModelForm the same way modelform_factory does —
+        # this proves the validators are shared between the profile and admin paths
+        # without needing a full AdminSite/RequestFactory round trip.
+        ClubForm = django_forms.modelform_factory(Club, fields=['name', 'short_name', 'address', 'logo'])
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        form = ClubForm(
+            data={'name': 'Test Club', 'short_name': 'TC', 'address': 'Test address'},
+            files={'logo': oversized_file},
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('logo', form.errors)
+
+    def test_player_form_accepts_blank_avatar(self):
+        # avatar is optional (blank=True, null=True) — validators must not run on an
+        # empty upload, and existing players/clubs without an avatar/logo must keep saving.
+        user = User.objects.create_user(username='avatar_blank_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={},
+            instance=player,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
