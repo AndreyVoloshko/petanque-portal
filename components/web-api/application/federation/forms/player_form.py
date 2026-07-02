@@ -5,7 +5,6 @@ from crispy_forms.layout import Layout, Submit, Div, HTML, Field
 from django.forms.widgets import ClearableFileInput
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -78,20 +77,6 @@ class PlayerForm(forms.ModelForm):
                 css_class="col-lg-12 text-center mb-3"
             )
         )
-
-    def clean_content(self):
-        content = self.cleaned_data['content']
-        content_type = content.content_type.split('/')[0]
-        if content_type in settings.CONTENT_TYPES:
-            if content._size > settings.MAX_UPLOAD_SIZE:
-                raise forms.ValidationError(_('Please keep filesize under %(max_size)s. Current filesize %(current_size)s') % {
-                    'max_size': filesizeformat(settings.MAX_UPLOAD_SIZE),
-                    'current_size': filesizeformat(content._size),
-                })
-        else:
-            raise forms.ValidationError(_('File type is not supported'))
-        return content
-
 
     def save(self, *args, **kwargs):
       """
