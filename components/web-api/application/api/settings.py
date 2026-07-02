@@ -166,17 +166,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
-CONTENT_TYPES = ['image']
-
-# 2.5MB - 2621440
-# 5MB - 5242880
-# 10MB - 10485760
-# 20MB - 20971520
-# 50MB - 5242880
-# 100MB 104857600
-# 250MB - 214958080
-# 500MB - 429916160
-MAX_UPLOAD_SIZE = "2621440"
+# Image upload validation for avatar/logo fields (federation/validators.py).
+# Applies to Player.avatar and Club.logo only.
+MAX_UPLOAD_SIZE = 3 * 1024 * 1024  # 3 MB
+MAX_IMAGE_DIMENSION_PX = 4000  # max width/height in pixels
+ALLOWED_IMAGE_FORMATS = ['JPEG', 'PNG', 'WEBP']  # Pillow-detected formats, not file extensions
+ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 # Static files storage in S3
 AWS_STORAGE_BUCKET_NAME = get_credential('s3_bucket')

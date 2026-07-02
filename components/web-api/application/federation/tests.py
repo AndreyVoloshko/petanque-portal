@@ -4,18 +4,24 @@ import re
 from contextlib import nullcontext
 from datetime import date, timedelta
 from decimal import Decimal
+from io import BytesIO
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs
 
+from django import forms as django_forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
+from PIL import Image
 
 from federation.forms.player_form import PlayerForm
 from federation.forms.registration_team_form import RegistrationTeamForm
@@ -54,6 +60,11 @@ from federation.utils.tournament_names import (
 )
 from federation.views.login import _needs_email_prompt
 from federation.views.tournaments import _tournament_status_key
+from federation.validators import (
+    validate_image_dimensions,
+    validate_image_file_size,
+    validate_image_format,
+)
 
 
 class TournamentDisplayNameTests(SimpleTestCase):
@@ -2290,3 +2301,169 @@ class TournamentListingPageTests(TestCase):
             is_active=False,
             is_superuser=True,
         )))
+
+
+def _make_uploaded_image(width, height, image_format='JPEG', file_name='test.jpg',
+                          content_type='image/jpeg'):
+    buffer = BytesIO()
+    Image.new('RGB', (width, height), color='red').save(buffer, format=image_format)
+    return SimpleUploadedFile(file_name, buffer.getvalue(), content_type=content_type)
+
+
+class ImageValidatorsTests(SimpleTestCase):
+    def test_validate_image_file_size_accepts_file_under_limit(self):
+        small_file = SimpleUploadedFile('small.jpg', b'x' * 1024, content_type='image/jpeg')
+
+        self.assertIsNone(validate_image_file_size(small_file))
+
+    def test_validate_image_file_size_rejects_file_over_limit(self):
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        with self.assertRaises(ValidationError):
+            validate_image_file_size(oversized_file)
+
+    def test_validate_image_dimensions_accepts_image_within_limit(self):
+        image = _make_uploaded_image(100, 100)
+
+        self.assertIsNone(validate_image_dimensions(image))
+
+    def test_validate_image_dimensions_rejects_image_over_limit(self):
+        image = _make_uploaded_image(settings.MAX_IMAGE_DIMENSION_PX + 1, 10)
+
+        with self.assertRaises(ValidationError):
+            validate_image_dimensions(image)
+
+    def test_validate_image_format_accepts_allowed_formats(self):
+        for image_format in ('JPEG', 'PNG', 'WEBP'):
+            with self.subTest(image_format=image_format):
+                image = _make_uploaded_image(10, 10, image_format=image_format)
+
+                self.assertIsNone(validate_image_format(image))
+
+    def test_validate_image_format_rejects_disallowed_format(self):
+        image = _make_uploaded_image(10, 10, image_format='BMP')
+
+        with self.assertRaises(ValidationError):
+            validate_image_format(image)
+
+    def test_validate_image_format_rejects_spoofed_extension(self):
+        # A file named .jpg whose actual content is a BMP must still be rejected —
+        # validate_image_format checks Pillow's detected format, not the filename.
+        image = _make_uploaded_image(10, 10, image_format='BMP', file_name='fake.jpg',
+                                      content_type='image/jpeg')
+
+        with self.assertRaises(ValidationError):
+            validate_image_format(image)
+
+
+class ImageFieldValidationTests(TestCase):
+    def test_player_form_rejects_oversized_avatar(self):
+        user = User.objects.create_user(username='avatar_size_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': oversized_file},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)
+
+    def test_player_form_rejects_disallowed_format_avatar(self):
+        user = User.objects.create_user(username='avatar_format_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        bmp_file = _make_uploaded_image(10, 10, image_format='BMP', file_name='avatar.bmp',
+                                         content_type='image/bmp')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': bmp_file},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)
+
+    def test_player_form_accepts_valid_avatar(self):
+        user = User.objects.create_user(username='avatar_valid_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        valid_file = _make_uploaded_image(100, 100, image_format='JPEG', file_name='avatar.jpg')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': valid_file},
+            instance=player,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_club_admin_form_rejects_oversized_logo(self):
+        # Django admin builds its ModelForm the same way modelform_factory does —
+        # this proves the validators are shared between the profile and admin paths
+        # without needing a full AdminSite/RequestFactory round trip.
+        ClubForm = django_forms.modelform_factory(Club, fields=['name', 'short_name', 'address', 'logo'])
+        oversized_file = SimpleUploadedFile(
+            'big.jpg', b'x' * (settings.MAX_UPLOAD_SIZE + 1), content_type='image/jpeg'
+        )
+
+        form = ClubForm(
+            data={'name': 'Test Club', 'short_name': 'TC', 'address': 'Test address'},
+            files={'logo': oversized_file},
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('logo', form.errors)
+
+    def test_player_form_accepts_blank_avatar(self):
+        # avatar is optional (blank=True, null=True) — validators must not run on an
+        # empty upload, and existing players/clubs without an avatar/logo must keep saving.
+        user = User.objects.create_user(username='avatar_blank_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={},
+            instance=player,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    @override_settings(MAX_UPLOAD_SIZE=100)
+    def test_player_form_rejects_valid_image_exceeding_lowered_size_limit(self):
+        user = User.objects.create_user(username='avatar_real_oversize_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        # A genuinely decodable JPEG whose encoded size exceeds the (lowered) 100-byte
+        # limit — proves validate_image_file_size fires through the full field pipeline,
+        # not just Django's own "not a decodable image" base check (the gap the two
+        # garbage-byte fixtures above don't cover).
+        valid_but_oversized = _make_uploaded_image(200, 200, image_format='JPEG', file_name='big.jpg')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': valid_but_oversized},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)

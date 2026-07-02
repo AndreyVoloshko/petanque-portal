@@ -72,6 +72,30 @@ msgstr "Будь ласка, завантажте файл розміром до
 msgid "File type is not supported"
 msgstr "Тип файлу не підтримується"
 
+#: federation/validators.py:12
+#, python-format
+msgid ""
+"File size must not exceed %(max_size)s. Current file size: %(current_size)s."
+msgstr ""
+"Розмір файлу не повинен перевищувати %(max_size)s. Поточний розмір файлу: "
+"%(current_size)s."
+
+#: federation/validators.py:29
+#, python-format
+msgid ""
+"Image dimensions must not exceed %(max)s×%(max)s px. Current dimensions: "
+"%(width)s×%(height)s px."
+msgstr ""
+"Розміри зображення не повинні перевищувати %(max)s×%(max)s пікселів. "
+"Поточні розміри: %(width)s×%(height)s пікселів."
+
+#: federation/validators.py:43
+#, python-format
+msgid "Unsupported image format \"%(format)s\". Allowed formats: %(allowed)s."
+msgstr ""
+"Непідтримуваний формат зображення \"%(format)s\". Дозволені формати: "
+"%(allowed)s."
+
 #: federation/forms/player_form.py:125
 msgid "Avatar"
 msgstr "Аватар"

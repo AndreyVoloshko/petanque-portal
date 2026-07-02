@@ -7,6 +7,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import gettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
+from federation.validators import IMAGE_UPLOAD_VALIDATORS
 from django.conf import settings
 import json
 
@@ -55,7 +56,10 @@ class Player(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
+    avatar = models.ImageField(
+        _('avatar'), blank=True, null=True, storage=MediaStorage(),
+        validators=IMAGE_UPLOAD_VALIDATORS,
+    )
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Last name'), max_length=100)
     second_name = models.CharField(_('Middle name'), max_length=100, blank=True, null=True)
