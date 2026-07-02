@@ -6,7 +6,6 @@ from django.forms.widgets import ClearableFileInput
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 from django.contrib.auth.models import User
 
 
