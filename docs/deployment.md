@@ -5,10 +5,15 @@ when a PR merges into `master`, via `.github/workflows/deploy.yml`. The
 workflow SSHes in and runs the same steps as the old manual process:
 
 ```
-cd ~/app/portal
-sudo git pull
-sudo bash deploy/remote_run.sh
+sudo git -C /root/app/portal pull
+sudo bash /root/app/portal/deploy/remote_run.sh
 ```
+
+The checkout lives under **root's** home directory (`/root/app/portal`), not the
+SSH login user's — because the old manual process ran `sudo su` (becoming root)
+before `cd ~/app/portal`, so `~` resolved to `/root`. The workflow uses the
+absolute path directly instead of relying on a `cd` happening before/after
+`sudo`.
 
 ## Triggering a deploy manually
 
@@ -54,24 +59,24 @@ these values or paste them into chat/AI tooling.
    SSH into the server, then `sudo visudo -f /etc/sudoers.d/deploy` and add
    (confirm the real path to `git` on the server first with `which git`):
    ```
-   admin ALL=(root) NOPASSWD: /usr/bin/git pull, /bin/bash deploy/remote_run.sh
+   admin ALL=(root) NOPASSWD: /usr/bin/git -C /root/app/portal pull, /bin/bash /root/app/portal/deploy/remote_run.sh
    ```
-   The workflow runs `cd ~/app/portal` first and then invokes `bash` with the
-   relative argument `deploy/remote_run.sh`, so the sudoers entry must match
-   that literal argv (not an absolute path) — verify with `sudo -l -U admin`
-   or by running the exact command as `admin` and confirming it doesn't
-   prompt for a password. Do not grant blanket `NOPASSWD: ALL` — scope it to
-   just these two commands.
-5. Confirm `~/app/portal` on the server has its git remote pointed at GitHub,
-   not Bitbucket:
+   The workflow invokes these with absolute paths (`/root/app/portal`), so the
+   sudoers entry must match that literal argv exactly — verify with
+   `sudo -l -U admin` or by running the exact command as `admin` and
+   confirming it doesn't prompt for a password. Do not grant blanket
+   `NOPASSWD: ALL` — scope it to just these two commands.
+5. Confirm `/root/app/portal` on the server has its git remote pointed at
+   GitHub, not Bitbucket (requires `sudo`, since the checkout is under root's
+   home):
    ```bash
    ssh -i ~/Work/petanque/ssh/thatsit-keypair1.pem -p 22 admin@52.59.170.52 \
-     "cd ~/app/portal && git remote -v"
+     "sudo git -C /root/app/portal remote -v"
    ```
    If it still points at `bitbucket.org`, update it:
    ```bash
    ssh -i ~/Work/petanque/ssh/thatsit-keypair1.pem -p 22 admin@52.59.170.52 \
-     "cd ~/app/portal && git remote set-url origin git@github.com:andreyvoloshko/petanque-portal.git"
+     "sudo git -C /root/app/portal remote set-url origin git@github.com:andreyvoloshko/petanque-portal.git"
    ```
    The server also needs the GitHub deploy key (or a separate read key) able
    to `git pull` from the GitHub repo — add a deploy key under repo Settings
