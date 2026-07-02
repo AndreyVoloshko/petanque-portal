@@ -53,7 +53,7 @@ docs/                              ← project-overview.md, local-development.md
 - **Function-based views** throughout. Keep new views consistent with the existing style.
 - **Configuration via `APP_CREDENTIALS`** — a single JSON env var in `.env`. Never hardcode credentials or secrets.
 - **S3 for static/media in production.** Falls back to local filesystem when S3 credentials are absent (safe for local dev).
-- **No CI/CD.** Deployment is manual via `./deploy/remote_run.sh` on the server.
+- **CI/CD:** merging a PR into `master` on GitHub triggers `.github/workflows/deploy.yml`, which SSHes into the production server and runs `deploy/remote_run.sh` automatically. See `docs/deployment.md` for secrets and server setup. Manual deploys (`./deploy/remote_run.sh` after SSHing in) are still available for out-of-band fixes.
 
 ## Local Services
 
