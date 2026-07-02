@@ -642,6 +642,60 @@ class SeasonSnapshotGenerationTests(TestCase):
         )
 
 
+class PlayerRatingWindowTests(TestCase):
+    def create_player(self, username):
+        club = Club.objects.create(
+            name=f'{username.title()} Club',
+            short_name=username.upper(),
+            address='Kyiv',
+        )
+        user = User.objects.create_user(username=username)
+
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            current_club=club,
+            is_licence_active=True,
+            licence_number=username,
+        )
+
+    def create_tournament_membership(self, player, start_date, points):
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=player)
+        tournament = Tournament.objects.create(
+            name='Rating Window Cup',
+            category='open',
+            place='Kyiv',
+            start_date=start_date,
+            format='swiko',
+            is_processing_finished=True,
+            is_goes_to_rating=True,
+        )
+
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            rating_points=points,
+        )
+
+    def test_recalculate_ratings_counts_tournament_362_days_old(self):
+        # 362 days before 2026-01-15 is still within the last calendar year
+        # (12 months back is 2025-01-15), even though it's more than the
+        # buggy "30 * 12 = 360 day" window.
+        player = self.create_player('window-player')
+        self.create_tournament_membership(player, date(2025, 1, 18), Decimal('42.0000'))
+
+        with patch('federation.models.player.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime.datetime(2026, 1, 15)
+            player.recalculate_ratings()
+
+        player.refresh_from_db()
+        self.assertEqual(player.current_rating, Decimal('42.0000'))
+
+
 class PlayerProfileFormTests(TestCase):
     def test_profile_form_layout_renders_every_bound_field(self):
         form = PlayerForm()

@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
@@ -168,8 +169,7 @@ class Player(models.Model):
         all_past_tournaments = tournaments_model.get_list_by_player(player=self, date_filter='past')
 
         # filter last tournaments
-        last_period_days = 30 * rating_config.RATING_PLAYER_POWER_PAST_MONTHES
-        last_period = datetime.today() - timedelta(days=last_period_days)
+        last_period = datetime.today() - relativedelta(months=rating_config.RATING_PLAYER_POWER_PAST_MONTHES)
 
         all_past_tournaments = all_past_tournaments.filter(start_date__gte=last_period, is_processing_finished=True)
 
