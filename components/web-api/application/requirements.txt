@@ -1,6 +1,7 @@
 boto
 boto3
 transliterate
+python-dateutil
 
 Pillow
 Django==5.1.6
