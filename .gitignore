@@ -7,3 +7,4 @@ petanque-portal/
 *.pyc
 __pycache__
 .claude/settings.local.json
+.superpowers/
