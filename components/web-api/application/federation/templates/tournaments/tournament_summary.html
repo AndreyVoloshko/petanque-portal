@@ -130,17 +130,10 @@
                 <span class="tournament-detail-row-label">{% trans "Team limit" %}</span>
                 <span class="tournament-detail-row-value">{{ tournament.teams_limit }}</span>
             </div>
-            {% if tournament.fee %}
-            <div class="tournament-detail-row tournament-detail-row-block">
-                <i class="bi bi-cash-coin" aria-hidden="true"></i>
-                <span class="tournament-detail-row-label">{% trans "Fees" %}</span>
-                <span class="tournament-detail-row-value">{{ tournament.fee|linebreaksbr }}</span>
-            </div>
-            {% endif %}
         </div>
     </article>
 
-    <article class="tournament-detail-info-card tournament-detail-notes-card">
+    <article class="tournament-detail-info-card tournament-detail-notes-card" data-tournament-notes-card>
         <div class="tournament-detail-section-heading">
             <h2>{% trans "Additional information" %}</h2>
         </div>
@@ -152,6 +145,7 @@
                 {% endif %}
             </div>
 
+            {% if not hide_action_panel %}
             <div class="tournament-detail-actions tournament-detail-additional-actions">
                 {% if row.status.key == "registration_open" %}
                     <a class="tournament-detail-action tournament-detail-action-primary" href="{{ row.registration_url }}">
@@ -200,18 +194,53 @@
                         </li>
                     </ul>
                 </div>
+                {% if can_manage %}
+                    <button class="tournament-detail-action tournament-detail-action-notes"
+                            type="button"
+                            data-tournament-notes-edit
+                            aria-controls="tournament-detail-notes-form-{{ tournament.pk }}"
+                            aria-expanded="false">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                        <span>{% trans "Notes" %}</span>
+                    </button>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="tournament-detail-notes-display" data-tournament-notes-display>
+                {% if tournament.notes %}
+                <div class="tournament-detail-note">
+                    <div>{{ tournament.notes|linebreaksbr }}</div>
+                </div>
+                {% else %}
+                <div class="tournament-detail-empty-inline">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <span>{% trans "No additional notes." %}</span>
+                </div>
+                {% endif %}
             </div>
 
-            {% if tournament.notes %}
-            <div class="tournament-detail-note">
-                <i class="bi bi-info-circle" aria-hidden="true"></i>
-                <div>{{ tournament.notes|linebreaksbr }}</div>
-            </div>
-            {% else %}
-            <div class="tournament-detail-empty-inline">
-                <i class="bi bi-info-circle" aria-hidden="true"></i>
-                <span>{% trans "No additional notes." %}</span>
-            </div>
+            {% if can_manage %}
+            <form id="tournament-detail-notes-form-{{ tournament.pk }}"
+                  class="tournament-notes-form tournament-detail-notes-form"
+                  method="post"
+                  action=""
+                  data-tournament-notes-form
+                  hidden>
+                {% csrf_token %}
+                <label class="visually-hidden" for="tournament-detail-notes-content-{{ tournament.pk }}">{% trans "Notes" %}</label>
+                <textarea id="tournament-detail-notes-content-{{ tournament.pk }}"
+                          name="tournament_detail_notes_content"
+                          class="tournament-notes-textarea"
+                          rows="7"
+                          placeholder="{% trans "Notes" %}">{{ tournament.notes|default_if_none:""|trim }}</textarea>
+                <div class="tournament-notes-actions">
+                    <button type="submit" class="tournament-detail-action tournament-detail-action-primary">
+                        <i class="bi bi-check2" aria-hidden="true"></i>
+                        <span>{% trans "Save" %}</span>
+                    </button>
+                </div>
+            </form>
             {% endif %}
         </div>
     </article>

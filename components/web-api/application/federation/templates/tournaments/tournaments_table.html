@@ -121,7 +121,14 @@
             </tbody>
         </table>
 
-        <div class="tournaments-responsive-list" data-tournaments-responsive-list></div>
+        <div
+            class="tournaments-responsive-list"
+            data-responsive-template-mount
+            data-tablet-template="tournaments-tablet-template"
+            data-mobile-template="tournaments-mobile-template"
+            data-layout-class="has-responsive-tournament-layout"
+            data-disable-mobile-tooltips="true"
+        ></div>
 
         <template id="tournaments-tablet-template">
             <div class="tournaments-tablet-list" aria-label="{% trans "Список турнірів" %}">
@@ -194,8 +201,6 @@
                                     {% with power=item|tournament_power_badge %}
                                         {% if power %}
                                             {{ power|safe }}
-                                        {% else %}
-                                            <span class="tournaments-muted">—</span>
                                         {% endif %}
                                     {% endwith %}
                                 </div>
@@ -249,7 +254,7 @@
                             <span class="tournament-chip tournament-chip-{{ row.openness_key }}">{{ row.openness_label }}</span>
                         </div>
 
-                        <a class="tournament-mobile-title" href="{{ row.detail_url }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.full_title }}">{{ row.title }}</a>
+                        <a class="tournament-mobile-title" href="{{ row.detail_url }}">{{ row.title }}</a>
 
                         <div class="tournament-mobile-details">
                             <div class="tournament-mobile-info">

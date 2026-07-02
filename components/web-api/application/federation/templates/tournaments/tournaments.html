@@ -5,7 +5,7 @@
 {% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-<section class="tournaments-page" aria-labelledby="tournaments-page-title">
+<section class="tournaments-page" aria-labelledby="tournaments-page-title" data-responsive-page-size>
     <div class="tournaments-titlebar">
         <h1 id="tournaments-page-title">{% trans "Турніри" %}</h1>
         {% if can_create_tournament %}
@@ -31,7 +31,7 @@
             <form class="tournament-toggle-form tournament-rating-form" method="get" action="{% url 'tournaments' %}">
                 <input type="hidden" name="period" value="{{ filters.period }}">
                 <input type="hidden" name="sort" value="{{ filters.sort }}">
-                {% if page_size != 50 %}
+                {% if page_size != default_page_size %}
                     <input type="hidden" name="per_page" value="{{ page_size }}">
                 {% endif %}
                 {% if filters.foreign %}
@@ -62,7 +62,7 @@
             <form class="tournament-toggle-form tournament-foreign-form" method="get" action="{% url 'tournaments' %}">
                 <input type="hidden" name="period" value="{{ filters.period }}">
                 <input type="hidden" name="sort" value="{{ filters.sort }}">
-                {% if page_size != 50 %}
+                {% if page_size != default_page_size %}
                     <input type="hidden" name="per_page" value="{{ page_size }}">
                 {% endif %}
                 {% if filters.rating_type != "all" %}
@@ -95,7 +95,7 @@
     <form class="tournament-filter-form" method="get" action="{% url 'tournaments' %}">
         <input type="hidden" name="period" value="{{ filters.period }}">
         <input type="hidden" name="sort" value="{{ filters.sort }}">
-        {% if page_size != 50 %}
+        {% if page_size != default_page_size %}
             <input type="hidden" name="per_page" value="{{ page_size }}">
         {% endif %}
         {% if filters.rating_type != "all" %}
@@ -152,233 +152,5 @@
 
     {% include "tournaments/tournaments_table.html" %}
 </section>
-
-<script>
-(function() {
-    function desiredPageSize() {
-        if (!window.matchMedia) {
-            return 50;
-        }
-
-        if (window.matchMedia('(max-width: 767.98px)').matches) {
-            return 25;
-        }
-
-        if (window.matchMedia('(max-width: 1199.98px)').matches) {
-            return 30;
-        }
-
-        return 50;
-    }
-
-    function enforceResponsivePageSize() {
-        if (!window.matchMedia || !window.URL || !window.URLSearchParams) {
-            return false;
-        }
-
-        const url = new URL(window.location.href);
-        if (url.searchParams.has('per_page')) {
-            return false;
-        }
-
-        const targetSize = desiredPageSize();
-        if (targetSize === 50) {
-            return false;
-        }
-
-        url.searchParams.set('per_page', String(targetSize));
-        url.searchParams.delete('page');
-        window.location.replace(url.toString());
-        return true;
-    }
-
-    if (enforceResponsivePageSize()) {
-        return;
-    }
-
-    function initTournamentControls() {
-        const filterForm = document.querySelector('.tournament-filter-form');
-        const toggleForms = document.querySelectorAll('.tournament-toggle-form');
-
-        if (filterForm) {
-            filterForm.querySelectorAll('select').forEach(function(select) {
-                select.addEventListener('change', function() {
-                    filterForm.submit();
-                });
-            });
-        }
-
-        toggleForms.forEach(function(form) {
-            form.querySelectorAll('input[type="checkbox"]').forEach(function(input) {
-                input.addEventListener('change', function() {
-                    form.submit();
-                });
-            });
-        });
-
-        const tooltipSelector = '[data-bs-toggle="tooltip"]';
-
-        function prepareTooltip(element) {
-            element.setAttribute('data-bs-offset', '0,2');
-        }
-
-        function prepareTooltips(root) {
-            root.querySelectorAll(tooltipSelector).forEach(prepareTooltip);
-        }
-
-        function initTooltip(element, showImmediately) {
-            prepareTooltip(element);
-
-            if (window.bootstrap && window.bootstrap.Tooltip) {
-                const tooltip = window.bootstrap.Tooltip.getOrCreateInstance
-                    ? window.bootstrap.Tooltip.getOrCreateInstance(element, {
-                        container: 'body',
-                        offset: [0, 2]
-                    })
-                    : (window.bootstrap.Tooltip.getInstance(element) || new window.bootstrap.Tooltip(element, {
-                        container: 'body',
-                        offset: [0, 2]
-                    }));
-
-                if (showImmediately && tooltip.show) {
-                    tooltip.show();
-                }
-            } else if (window.jQuery && window.jQuery.fn.tooltip) {
-                const $element = window.jQuery(element);
-
-                if (!$element.data('bs.tooltip')) {
-                    $element.tooltip({
-                        container: 'body',
-                        offset: [0, 2]
-                    });
-                }
-
-                if (showImmediately) {
-                    $element.tooltip('show');
-                }
-            }
-        }
-
-        const responsiveMount = document.querySelector('[data-tournaments-responsive-list]');
-        const tabletTemplate = document.getElementById('tournaments-tablet-template');
-        const mobileTemplate = document.getElementById('tournaments-mobile-template');
-        const tabletMedia = window.matchMedia ? window.matchMedia('(min-width: 768px) and (max-width: 1199.98px)') : null;
-        const mobileMedia = window.matchMedia ? window.matchMedia('(max-width: 767.98px)') : null;
-
-        function getResponsiveLayout() {
-            if (mobileMedia && mobileMedia.matches) {
-                return 'mobile';
-            }
-
-            if (tabletMedia && tabletMedia.matches) {
-                return 'tablet';
-            }
-
-            return 'desktop';
-        }
-
-        function renderResponsiveLayout() {
-            if (!responsiveMount) {
-                return;
-            }
-
-            document.documentElement.classList.add('has-responsive-tournament-layout');
-
-            const layout = getResponsiveLayout();
-            if (responsiveMount.dataset.layout === layout) {
-                return;
-            }
-
-            responsiveMount.textContent = '';
-            responsiveMount.dataset.layout = layout;
-
-            if (layout === 'desktop') {
-                return;
-            }
-
-            const template = layout === 'mobile' ? mobileTemplate : tabletTemplate;
-            if (template) {
-                responsiveMount.appendChild(template.content.cloneNode(true));
-                prepareTooltips(responsiveMount);
-            }
-        }
-
-        if (responsiveMount) {
-            renderResponsiveLayout();
-
-            [tabletMedia, mobileMedia].forEach(function(media) {
-                if (!media) {
-                    return;
-                }
-
-                if (media.addEventListener) {
-                    media.addEventListener('change', renderResponsiveLayout);
-                } else if (media.addListener) {
-                    media.addListener(renderResponsiveLayout);
-                }
-            });
-        }
-
-        prepareTooltips(document);
-
-        document.addEventListener('pointerover', function(event) {
-            const element = event.target.closest ? event.target.closest(tooltipSelector) : null;
-            if (element) {
-                initTooltip(element, true);
-            }
-        }, true);
-
-        document.addEventListener('focusin', function(event) {
-            const element = event.target.closest ? event.target.closest(tooltipSelector) : null;
-            if (element) {
-                initTooltip(element, true);
-            }
-        });
-    }
-
-    function initRowClicks() {
-        document.querySelectorAll('.tournament-row-clickable').forEach(function(row) {
-            row.addEventListener('click', function(e) {
-                if (e.target.closest('a, button')) return;
-                window.location.href = row.dataset.href;
-            });
-        });
-    }
-
-    function initTableScroll() {
-        const scrollKey = 'tournaments-table-scroll';
-        document.querySelectorAll('.tournaments-page-link').forEach(function(link) {
-            link.addEventListener('click', function() {
-                if (!link.classList.contains('is-disabled') && link.getAttribute('href') !== '#') {
-                    window.sessionStorage.setItem(scrollKey, '1');
-                }
-            });
-        });
-
-        if (window.sessionStorage.getItem(scrollKey) === '1') {
-            window.sessionStorage.removeItem(scrollKey);
-            const table = document.querySelector('.tournaments-results-surface');
-            if (table) {
-                table.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            initTournamentControls();
-            initRowClicks();
-            initTableScroll();
-        });
-    } else {
-        initTournamentControls();
-        initRowClicks();
-        initTableScroll();
-    }
-})();
-</script>
 
 {% endblock %}

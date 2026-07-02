@@ -1,7 +1,6 @@
 {% load i18n %}
 
 {% trans "Main organizer" as main_organizer_label %}
-{% trans "UPF delegate" as federation_delegate_label %}
 {% trans "Head arbiter" as head_arbiter_label %}
 {% trans "Arbiter" as arbiter_label %}
 
@@ -10,14 +9,10 @@
         <h2 id="tournament-people-title">{% trans "Organizers and arbiters" %}</h2>
     </div>
 
-    {% if tournament.main_organizer or tournament.federation_delegat or arbiters %}
+    {% if tournament.main_organizer or arbiters %}
     <div class="tournament-person-grid">
         {% if tournament.main_organizer %}
             {% include "tournaments/_tournament_person_card.html" with person=tournament.main_organizer role_label=main_organizer_label role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
-        {% endif %}
-
-        {% if tournament.federation_delegat %}
-            {% include "tournaments/_tournament_person_card.html" with person=tournament.federation_delegat role_label=federation_delegate_label role_icon="bi-shield-check" card_class="tournament-person-card-delegate" %}
         {% endif %}
 
         {% for arbiter in arbiters %}

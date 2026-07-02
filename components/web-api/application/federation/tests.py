@@ -10,6 +10,7 @@ from urllib.parse import parse_qs
 
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
@@ -17,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import get_language, gettext as _, override
 
 from federation.forms.player_form import PlayerForm
+from federation.forms.registration_team_form import RegistrationTeamForm
 from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.admin_actions.tournament import recalculate_power
 from federation.middleware import InitialLanguageMiddleware
@@ -386,6 +388,36 @@ class TeamCaptainSelectionTests(TestCase):
         self.assertEqual(team.pk, legacy_team.pk)
         self.assert_team_capitan(team, second_player)
 
+    def test_team_without_explicit_capitan_has_display_fallback_to_first_registered_player(self):
+        first_player = self.create_player('first')
+        second_player = self.create_player('second')
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=first_player)
+        PlayerTeamMembership.objects.create(team=team, player=second_player)
+
+        self.assertIsNone(team.get_capitan())
+        self.assertEqual(team.get_display_capitan(), first_player)
+        self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
+
+    def test_prefetched_team_without_explicit_capitan_has_display_fallback_to_first_registered_player(self):
+        first_player = self.create_player('first')
+        second_player = self.create_player('second')
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=first_player)
+        PlayerTeamMembership.objects.create(team=team, player=second_player)
+
+        prefetched_team = Team.objects.prefetch_related(
+            Prefetch(
+                'playerteammembership_set',
+                queryset=PlayerTeamMembership.objects.filter(is_capitan=True).select_related('player'),
+                to_attr='captain_memberships',
+            )
+        ).get(pk=team.pk)
+
+        self.assertIsNone(prefetched_team.get_capitan())
+        self.assertEqual(prefetched_team.get_display_capitan(), first_player)
+        self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
+
 
 class SeasonSnapshotGenerationTests(TestCase):
     def create_player(self, username, gender='M', with_club=True):
@@ -576,6 +608,20 @@ class SeasonSnapshotGenerationTests(TestCase):
         ranks = re.findall(r'<span class="players-rank-value">(\d+)</span>', response.content.decode())
         self.assertEqual(ranks[:1], ['1'])
 
+    def test_season_page_shows_club_logo_in_table(self):
+        player = self.create_player('season-logo-player')
+        player.current_club.logo = 'clubs/season-kpc.png'
+        player.current_club.short_name = 'KPC'
+        player.current_club.save()
+        Season.objects.create(year=2024, player=player, club=player.current_club, rating=Decimal('10.0000'))
+
+        response = self.client.get('/seasons/2024')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/season-kpc.png')
+        self.assertContains(response, 'alt="KPC"')
+
     def test_year_tabs_preserve_active_filters(self):
         player = self.create_player('filtered-player')
         Season.objects.create(year=2024, player=player, club=player.current_club, rating=Decimal('10.0000'))
@@ -608,7 +654,7 @@ class PlayerProfileFormTests(TestCase):
 
 
 class PlayerLicenseListTests(TestCase):
-    def create_player(self, username, is_licence_active=True, licence_number_value=None):
+    def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
         user = User.objects.create_user(username=username)
 
         return Player.objects.create(
@@ -619,6 +665,7 @@ class PlayerLicenseListTests(TestCase):
             gender='M',
             is_licence_active=is_licence_active,
             licence_number=licence_number_value,
+            current_club=current_club,
         )
 
     def test_actual_players_list_requires_active_license_number(self):
@@ -695,6 +742,38 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(response.context['page_obj'].paginator.count, 55)
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
+
+    def test_licensed_players_page_shows_club_logo_in_table(self):
+        club = Club.objects.create(
+            name='Kyiv Petanque Club',
+            short_name='KPC',
+            address='Kyiv',
+            logo='clubs/kpc.png',
+        )
+        self.create_player('club-player', licence_number_value='00001', current_club=club)
+
+        response = self.client.get('/players/licence')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/kpc.png')
+        self.assertContains(response, 'alt="KPC"')
+
+
+class ClubListingPageTests(TestCase):
+    def test_filter_form_has_reset_button_that_clears_query_params(self):
+        response = self.client.get('/clubs/', {
+            'q': 'Kyiv',
+            'city': 'Kyiv',
+            'year': '2024',
+            'sort': 'name',
+            'per_page': '50',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="tournament-reset-button clubs-reset-button"')
+        self.assertContains(response, 'href="/clubs/?per_page=50"')
+        self.assertContains(response, 'Скинути фільтри')
 
 
 class ClubDetailPageTests(TestCase):
@@ -867,6 +946,46 @@ class PlayerTournamentListTests(TestCase):
         self.assertLess(
             table_body.index('class="pt-col-strength"'),
             table_body.index('class="pt-col-points"'),
+        )
+
+    def test_player_tournament_table_shows_placeholder_team_power_badge(self):
+        player = self.create_player('missing-team-power-player')
+        team = Team.objects.create(name='Missing Power Team')
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        tournament = Tournament.objects.create(
+            name='Missing Team Power Cup',
+            category='open',
+            is_goes_to_rating=True,
+            start_date=timezone.localdate() - timedelta(days=7),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+            power='11.3700',
+            is_processing_finished=True,
+        )
+        TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=9,
+            place_max=16,
+            power='0.0000',
+        )
+
+        response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'player-team-power-missing')
+        self.assertContains(response, '<span>---</span>', html=True)
+        self.assertIn('team-power-badge player-team-power-missing', content)
+        table_strength_cell = re.search(
+            r'<td class="pt-col-strength"[^>]*>(.*?)</td>',
+            content,
+            re.S,
+        ).group(1)
+        self.assertLess(
+            table_strength_cell.index('player-team-power-missing'),
+            table_strength_cell.index('tournament-power-badge tournament-power-'),
         )
 
     def test_player_page_shows_single_national_team_chip_for_multiple_memberships(self):
@@ -1287,6 +1406,111 @@ class PlayerRegistrationRedesignTests(TestCase):
         send_email.assert_called_once()
 
 
+@override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
+class TeamRegistrationRedesignTests(TestCase):
+    def test_page_uses_tournament_detail_summary_and_hides_export_actions(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=1,
+            number_of_players_in_team_max=1,
+            teams_limit=100,
+            format='swiko',
+        )
+
+        response = self.client.get(f'/register/team/{tournament.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-detail-breadcrumbs')
+        self.assertContains(response, 'tournament-detail-title')
+        self.assertContains(response, 'registration-team-form')
+        self.assertContains(response, 'dropdownParent: $field.closest(')
+        self.assertContains(response, 'tournament-registration-add-player-link')
+        self.assertContains(response, '1 гравець')
+        self.assertContains(response, 'Польща')
+        self.assertContains(response, 'name="players[1]"')
+        self.assertNotContains(response, 'tournament-detail-export')
+        self.assertRegex(content, r'style-v2\.css\?v=[0-9a-f]{12}')
+        self.assertRegex(content, r'portal-ui\.js\?v=[0-9a-f]{12}')
+        self.assertNotIn('20260609-review-hardcode-cleanup-v1', content)
+
+    def test_team_registration_fields_render_capitan_first(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=3,
+            number_of_players_in_team_max=4,
+            teams_limit=100,
+            format='swiko',
+        )
+
+        response = self.client.get(f'/register/team/{tournament.pk}')
+
+        content = response.content.decode()
+        player_field_positions = [
+            content.index('name="players[1]"'),
+            content.index('name="players[2]"'),
+            content.index('name="players[3]"'),
+            content.index('name="players[4]"'),
+        ]
+        self.assertEqual(player_field_positions, sorted(player_field_positions))
+
+    def test_team_registration_form_keeps_capitan_first_team_creation_order(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+        capitan = Player.objects.create(
+            user=User.objects.create_user(username='team-capitan'),
+            name='Team',
+            surname='Capitan',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        teammate = Player.objects.create(
+            user=User.objects.create_user(username='team-player'),
+            name='Team',
+            surname='Player',
+            birth_date=date(1991, 1, 1),
+            gender='M',
+        )
+
+        form = RegistrationTeamForm(
+            data={
+                'players[1]': str(capitan.pk),
+                'players[2]': str(teammate.pk),
+            },
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_player_ids, [teammate.pk, capitan.pk])
+
+        team = Team.get_or_create_for_players(list(reversed(form.verified_player_ids)))
+
+        self.assertEqual(team.get_capitan(), capitan)
+
+
 @override_settings(
     DEBUG=False,
     RECAPTCHA_PUBLIC_KEY='public-key',
@@ -1491,6 +1715,192 @@ class TournamentListingPageTests(TestCase):
             team=team,
             place_min=place_min,
         )
+
+    def test_tournament_detail_shows_rating_column_without_points_until_processing_is_finished(self):
+        tournament = self.create_tournament('Unprocessed rating cup', is_rating=True)
+        player = self.create_player('unprocessed-player')
+        membership = self.register_player_for_tournament(tournament, player, place_min=1)
+        membership.rating_points = '14.5000'
+        membership.save(update_fields=['rating_points'])
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-score-col')
+        self.assertContains(response, 'tournament-team-score-cell')
+        self.assertContains(response, 'has-rating-points')
+        self.assertNotContains(response, '14,50')
+
+    def test_tournament_detail_shows_rating_points_after_processing_is_finished(self):
+        tournament = self.create_tournament(
+            'Processed rating cup',
+            is_rating=True,
+            processed=True,
+        )
+        player = self.create_player('processed-player')
+        membership = self.register_player_for_tournament(tournament, player, place_min=1)
+        membership.rating_points = '14.5000'
+        membership.save(update_fields=['rating_points'])
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-score-col')
+        self.assertContains(response, 'tournament-team-score-cell')
+        self.assertContains(response, 'has-rating-points')
+        self.assertContains(response, '14,50')
+        self.assertContains(response, 'tournament-team-mobile-card')
+        self.assertContains(response, 'tournament-team-mobile-content')
+
+    def test_tournament_detail_only_displays_public_admin_notes(self):
+        delegate = self.create_player('delegate-player')
+        tournament = self.create_tournament('Public Notes Cup')
+        tournament.notes = 'Public tournament note'
+        tournament.fee = 'Hidden fee note'
+        tournament.meta = 'Hidden draw information'
+        tournament.final_notes = 'Hidden final protocol note'
+        tournament.federation_delegat = delegate
+        tournament.save()
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Public tournament note')
+        html = response.content.decode()
+        note_start = html.index('<div class="tournament-detail-note">')
+        note_content_start = html.index('Public tournament note', note_start)
+        self.assertNotIn('bi-info-circle', html[note_start:note_content_start])
+        self.assertNotContains(response, 'Hidden fee note')
+        self.assertNotContains(response, 'Hidden draw information')
+        self.assertNotContains(response, 'Hidden final protocol note')
+        self.assertNotContains(response, delegate.get_name())
+        self.assertNotContains(response, 'tournament-notes-tab')
+        self.assertNotContains(response, 'tournament_notes_content')
+
+    def test_tournament_detail_ignores_technical_meta_for_status(self):
+        tournament = self.create_tournament('Technical Meta Cup')
+        tournament.meta = '111111111111111111'
+        tournament.save(update_fields=['meta'])
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '111111111111111111')
+
+    def test_tournament_detail_manager_can_edit_public_notes_inline(self):
+        admin = User.objects.create_superuser(
+            username='tournament-admin',
+            email='tournament-admin@example.com',
+            password='password',
+        )
+        tournament = self.create_tournament('Editable Notes Cup')
+        tournament.final_notes = 'Protocol-only note'
+        tournament.save(update_fields=['final_notes'])
+
+        self.client.force_login(admin)
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-tournament-notes-edit')
+        self.assertContains(response, 'tournament_detail_notes_content')
+        self.assertContains(response, 'tournament-detail-empty-inline')
+
+        response = self.client.post(
+            f'/tournament/{tournament.pk}',
+            {'tournament_detail_notes_content': 'Saved public note'},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        tournament.refresh_from_db()
+        self.assertEqual(tournament.notes, 'Saved public note')
+        self.assertEqual(tournament.final_notes, 'Protocol-only note')
+
+    def test_tournament_detail_team_table_uses_plain_captain_and_lists_all_athletes(self):
+        tournament = self.create_tournament('Captain Table Cup')
+        captain = self.create_player('captain-table')
+        teammate = self.create_player('teammate-table')
+        team = Team.objects.create()
+        PlayerTeamMembership.objects.create(team=team, player=captain, is_capitan=True)
+        PlayerTeamMembership.objects.create(team=team, player=teammate)
+        TeamTournamentMembership.objects.create(tournament=tournament, team=team)
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+        html = response.content.decode()
+        captain_cell = re.search(
+            r'<td class="tournament-team-name-cell"[^>]*>(.*?)</td>',
+            html,
+            re.S,
+        ).group(1)
+        athletes_cell = re.search(
+            r'<td class="tournament-team-athletes-cell"[^>]*>(.*?)</td>',
+            html,
+            re.S,
+        ).group(1)
+        mobile_captain_section = re.search(
+            r'<section class="tournament-team-mobile-people">\s*<h3>.*?</h3>(.*?)</section>',
+            html,
+            re.S,
+        ).group(1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('class="tournament-team-captain-name"', captain_cell)
+        self.assertIn(captain.get_name(), captain_cell)
+        self.assertNotIn('tournament-team-player-avatar', captain_cell)
+        self.assertNotIn('flag-icon', captain_cell)
+        self.assertIn('class="tournament-team-captain-name"', mobile_captain_section)
+        self.assertIn(captain.get_name(), mobile_captain_section)
+        self.assertNotIn('tournament-team-player-avatar', mobile_captain_section)
+        self.assertNotIn('flag-icon', mobile_captain_section)
+        self.assertIn(captain.get_name(), athletes_cell)
+        self.assertIn(teammate.get_name(), athletes_cell)
+        self.assertContains(response, 'data-tournament-team-sort="place"')
+        self.assertContains(response, 'data-tournament-team-sort="power"')
+        self.assertContains(response, 'class="tournament-team-player-label"')
+        self.assertContains(response, 'class="tournament-team-player-country"')
+
+    def test_tournament_detail_unready_tournament_does_not_show_place_editor(self):
+        admin = User.objects.create_superuser(
+            username='place-editor-admin',
+            email='place-editor-admin@example.com',
+            password='password',
+        )
+        tournament = self.create_tournament('Unready Places Cup', is_rating=True)
+        player = self.create_player('unready-place-player')
+        self.register_player_for_tournament(tournament, player)
+
+        self.client.force_login(admin)
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'pt-place-chip')
+        self.assertContains(response, '<span class="pt-place-value">-</span>', html=True)
+        self.assertNotContains(response, 'class="tournament-ranking-place-input tournament-place-field-min"')
+        self.assertNotContains(response, 'class="tournament-ranking-place-input tournament-place-field-max"')
+
+    def test_tournament_detail_single_player_table_shows_club(self):
+        club = Club.objects.create(
+            name='Kyiv Petanque Club',
+            short_name='KPC',
+            address='Kyiv',
+            logo='clubs/kpc.png',
+        )
+        tournament = self.create_tournament('Tete Club Cup', players_min=1)
+        player = self.create_player('club-participant')
+        player.current_club = club
+        player.save(update_fields=['current_club'])
+        self.register_player_for_tournament(tournament, player, place_min=1)
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'is-single-player-format')
+        self.assertContains(response, 'tournament-team-club-col')
+        self.assertContains(response, 'tournament-team-club-cell')
+        self.assertContains(response, 'tournament-team-club-logo')
+        self.assertContains(response, 'tournament-team-club-name')
+        self.assertContains(response, 'tournament-team-player-club-mobile')
+        self.assertNotContains(response, 'tournament-team-mobile-club-link')
+        self.assertContains(response, 'KPC')
 
     def test_rating_route_preset_shows_future_rating_rows_and_strength(self):
         self.create_tournament('Rating Cup', is_rating=True, power='22.2800')

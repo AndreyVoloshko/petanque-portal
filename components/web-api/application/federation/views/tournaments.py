@@ -86,6 +86,7 @@ def tournaments(request, date_filter=None, type_filter=None):
         'show_strength': True,
         'page_obj': page_obj,
         'page_size': filters['page_size'],
+        'default_page_size': DEFAULT_TOURNAMENTS_PAGE_SIZE,
         'pagination_pages': _pagination_pages(page_obj),
         'pagination_summary': _pagination_summary(page_obj),
         'pagination_urls': _pagination_urls(filters, page_obj),
@@ -689,22 +690,7 @@ def _is_finished_by_dates(tournament, today):
 
 
 def _is_cancelled(tournament):
-    if tournament.is_auto_cancelled():
-        return True
-
-    if getattr(tournament, 'is_cancelled', False):
-        return True
-
-    try:
-        meta = json.loads(tournament.meta or '{}')
-    except (TypeError, ValueError):
-        return False
-
-    return bool(
-        meta.get('cancelled') or
-        meta.get('is_cancelled') or
-        meta.get('status') == 'cancelled'
-    )
+    return tournament.is_auto_cancelled()
 
 
 def _tournament_status_note(tournament, status_key):
@@ -946,6 +932,13 @@ def tournament(request, id):
             tournament.save()
             record_model_change(current_user, tournament_before, tournament)
             return JsonResponse({'status': 'ok'}, safe=False)
+
+        if 'tournament_detail_notes_content' in request.POST and current_user.is_authenticated:
+            if tournament.is_user_has_admin_access_to_tournament(current_user):
+                tournament.notes = request.POST['tournament_detail_notes_content'].strip() or None
+                tournament.save(update_fields=['notes'])
+                messages.success(request, _('Notes saved.'))
+                return HttpResponseRedirect(request.path_info)
 
         if 'tournament_notes_content' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):

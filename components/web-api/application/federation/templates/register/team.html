@@ -1,87 +1,172 @@
 {% extends "common/page_base.html" %}
-{% load app_filters %}
 {% load i18n %}
-{% load crispy_forms_tags %}
+
+{% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-lg-7">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">{% trans "Team registration" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <b>{% trans "Competitions" %}</b>:
-                            <a href="{% url 'tournament' id=tournament.pk %}">{{ tournament|tournament_display_name }}</a>
-                        </div>
+{% trans "Search athlete by first or last name" as athlete_search_placeholder %}
+{% with row=tournament_detail.row %}
+    <section class="tournament-detail-page tournament-registration-page" aria-labelledby="team-registration-title">
+        <nav class="tournament-detail-breadcrumbs" aria-label="breadcrumb">
+            <a href="/" class="tournament-detail-breadcrumb-link"><i class="bi bi-house-door-fill" aria-hidden="true"></i></a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <a href="{% url 'tournaments' %}" class="tournament-detail-breadcrumb-link">{% trans "Competitions" %}</a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-breadcrumb-link">{{ row.title }}</a>
+            <i class="bi bi-chevron-right tournament-detail-breadcrumb-sep" aria-hidden="true"></i>
+            <span class="tournament-detail-breadcrumb-current">{% trans "Team registration" %}</span>
+        </nav>
 
-                        {% if is_registration_opened %}
-                            {% crispy team_registration_form %}
-                        {% else %}
-                            <div class="text-center">
-                                <p class="text-danger fw-bold">{% trans "Registration for this competition is closed." %}</p>
+        {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row hide_action_panel=True %}
+
+        <div class="registration-redesign tournament-registration-layout">
+            <section class="registration-card team-registration-card" aria-labelledby="team-registration-title">
+                <header class="registration-header">
+                    <span class="registration-header-icon" aria-hidden="true">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+                    <div class="registration-header-copy">
+                        <h1 id="team-registration-title">{% trans "Team registration" %}</h1>
+                        <p>{% blocktrans with team_size=tournament_detail.team_size_label %}Choose the roster for this competition. Team format: {{ team_size }}.{% endblocktrans %}</p>
+                    </div>
+                </header>
+
+                {% if is_registration_opened %}
+                    <form class="registration-form registration-team-form" method="post" action="{% url 'register_team' tournament.pk %}" novalidate>
+                        {% csrf_token %}
+
+                        {% if team_registration_form.non_field_errors %}
+                            <div class="registration-form-alert" role="alert">
+                                {{ team_registration_form.non_field_errors }}
                             </div>
                         {% endif %}
+
+                        <div class="registration-info-box registration-team-intro-box">
+                            <i class="bi bi-info-circle" aria-hidden="true"></i>
+                            <p>
+                                {% if tournament.number_of_players_in_team_max > tournament.number_of_players_in_team_min %}
+                                    {% trans "Choose the captain first. Reserve player fields can be left empty." %}
+                                {% else %}
+                                    {% trans "Search for an athlete by first or last name in the federation database." %}
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="registration-field-grid registration-team-field-grid">
+                            {% for field in team_registration_form.ordered_player_fields %}
+                                <div class="registration-field registration-team-field">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true">*</span>{% endif %}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="registration-field-errors">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="registration-actions">
+                            <button type="submit" class="registration-submit-button">
+                                <i class="bi bi-person-check" aria-hidden="true"></i>
+                                <span>{% trans "Register team" %}</span>
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="registration-form-alert" role="alert">
+                        {% trans "Registration for this competition is closed." %}
                     </div>
-                </div>
+                    <a href="{% url 'tournament' id=tournament.pk %}" class="tournament-detail-action">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        <span>{% trans "Back to competition" %}</span>
+                    </a>
+                {% endif %}
             </section>
-        </div>
 
-        <div class="col-lg-5">
-            {% include "tournaments/tournament_summary.html" with tournament=tournament full_width="true" %}
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-12">
-            <section class="p-3 rounded shadow">
-                <h5 class="pb-2 border-bottom fw-bold">{% trans "Cannot find a player?" %}</h5>
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="fw-bold">{% trans "Register player" %}</h4>
-                        <p>{% url 'register_player' as register_player_url %}{% blocktrans %}Not all athletes may appear in search results. If you cannot find an athlete, <a target="_blank" href="{{ register_player_url }}" class="btn btn-sm btn-success">add them to the portal</a>.{% endblocktrans %}</p>
-                        <p class="text-danger fw-bold">
-                            {% trans "Please do not add duplicate or non-existent players. First, try searching for the player using both Cyrillic and Latin spelling." %}
-                        </p>
+            <aside class="registration-sidebar tournament-registration-sidebar" aria-label="{% trans "Registration tips" %}">
+                <section class="registration-warning-card">
+                    <span class="registration-warning-icon" aria-hidden="true">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <div>
+                        <h2>{% trans "Check the athlete in the database first" %}</h2>
+                        <p>{% trans "Before creating a new athlete, try searching in both Cyrillic and Latin spelling." %}</p>
                     </div>
-                </div>
-            </section>
-        </div>
-    </div>
+                </section>
 
-    <!-- Подключение select2 -->
+                <section class="registration-search-card tournament-registration-help-card" aria-labelledby="register-player-title">
+                    <div class="tournament-detail-section-heading">
+                        <h2 id="register-player-title">{% trans "Register player" %}</h2>
+                        <p>{% trans "Use this block only when the athlete is missing from search results." %}</p>
+                    </div>
+
+                    <a
+                        href="{% url 'register_player' %}"
+                        target="_blank"
+                        rel="noopener"
+                        class="tournament-detail-action tournament-detail-action-primary tournament-registration-add-player-link"
+                    >
+                        <i class="bi bi-person-plus" aria-hidden="true"></i>
+                        <span>{% trans "Register player" %}</span>
+                    </a>
+
+                    <div class="registration-info-box tournament-registration-note-box">
+                        <i class="bi bi-shield-check" aria-hidden="true"></i>
+                        <p>{% trans "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database." %}</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </section>
+
+    {% if is_registration_opened %}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
     <script>
-    $(document).ready(function() {
-      const select2LettersOne = "{% trans "character" %}";
-      const select2LettersFew = "{% trans "characters" %}";
-      const select2LettersMany = "{% trans "characters" %}";
+    $(function() {
+      var select2LettersOne = "{% trans "character" %}";
+      var select2LettersFew = "{% trans "characters" %}";
+      var select2LettersMany = "{% trans "characters" %}";
 
-      $('.player-autocomplete').select2({
-        ajax: {
+      $('.player-autocomplete').each(function() {
+        var $field = $(this);
+        var minimumInputLength = Number($field.data('minimumInputLength'));
+
+        if (!$field.find('option[value=""]').length) {
+          $field.prepend('<option value=""></option>');
+        }
+
+        $field.select2({
+          ajax: {
             url: '{% url 'api_players_list' %}',
             dataType: 'json'
-        },
-        language: {
-          inputTooShort: function (args) {
-            var remainingChars = args.minimum - args.input.length;
-            return "{% trans "Please enter" %} " + remainingChars + " {% trans "or more characters" %}";
           },
-          inputTooLong: function (args) {
-            var overChars = args.input.length - args.maximum;
-            return "{% trans "Please delete" %} " + overChars + ' ' +
-            ending(args.maximum, select2LettersOne, select2LettersFew, select2LettersMany);
-          },
-          noResults: function () {
-            return "{% trans "No athletes found. Enter a first or last name." %}";
-          },
-          searching: function () {
-            return "{% trans "Searching..." %}";
+          allowClear: true,
+          dropdownParent: $field.closest('.team-registration-card'),
+          minimumInputLength: isNaN(minimumInputLength) ? undefined : minimumInputLength,
+          placeholder: $field.data('placeholder') || "{{ athlete_search_placeholder|escapejs }}",
+          width: '100%',
+          language: {
+            inputTooShort: function (args) {
+              var remainingChars = args.minimum - args.input.length;
+              return "{% trans "Please enter" %} " + remainingChars + " {% trans "or more characters" %}";
+            },
+            inputTooLong: function (args) {
+              var overChars = args.input.length - args.maximum;
+              return "{% trans "Please delete" %} " + overChars + ' ' +
+              ending(args.maximum, select2LettersOne, select2LettersFew, select2LettersMany);
+            },
+            noResults: function () {
+              return "{% trans "No athletes found. Enter a first or last name." %}";
+            },
+            searching: function () {
+              return "{% trans "Searching..." %}";
+            }
           }
-        }
+        });
       });
     });
     </script>
+    {% endif %}
+{% endwith %}
 {% endblock %}

@@ -84,6 +84,21 @@ class Team(models.Model):
 
         return self.players.filter(playerteammembership__is_capitan=True).first()
 
+    def get_display_capitan(self):
+        capitan = self.get_capitan()
+        if capitan:
+            return capitan
+
+        first_membership = (
+            PlayerTeamMembership.objects
+            .filter(team=self)
+            .select_related('player')
+            .order_by('pk')
+            .first()
+        )
+
+        return first_membership.player if first_membership else None
+
     def set_capitan(self, player_id):
         PlayerTeamMembership.objects.filter(team=self).update(is_capitan=False)
 

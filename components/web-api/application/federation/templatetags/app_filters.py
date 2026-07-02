@@ -558,6 +558,8 @@ def team_place_range_in_tournament(tournament, player=False):
 
     place_min = team.place_min or 0
     place_max = team.place_max or 0
+    if place_min <= 0:
+        return '-'
     if place_max > place_min:
         return f"{place_min}-{place_max}"
 

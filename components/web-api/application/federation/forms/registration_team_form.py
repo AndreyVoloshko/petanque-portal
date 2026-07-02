@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div
 from django.utils.translation import gettext_lazy as _
 
+PLAYER_SEARCH_MINIMUM_INPUT_LENGTH = 2
+
 
 class RegistrationTeamForm(forms.Form):
 
@@ -16,17 +18,39 @@ class RegistrationTeamForm(forms.Form):
         super(RegistrationTeamForm, self).__init__(*args, **kwargs)
 
         for i in range(self.tournament.get_max_players_per_team(), 0, -1):
+            field_name = 'players[%d]' % i
             label = _("Player %(number)s") % {'number': i}
             if i == 1:
                 label = _("%(player)s (Captain)") % {'player': label}
             elif i > self.tournament.number_of_players_in_team_min:
                 label = _("%(player)s (Reserve)") % {'player': label}
 
-            self.fields['players[%d]' % i] = forms.CharField(
-                widget=forms.Select(attrs={'class': 'player-autocomplete', 'data-player_index': i}),
+            field = forms.CharField(
+                widget=forms.Select(
+                    attrs={
+                        'class': 'player-autocomplete',
+                        'data-player_index': i,
+                        'data-minimum-input-length': PLAYER_SEARCH_MINIMUM_INPUT_LENGTH,
+                        'data-placeholder': _("Search athlete by first or last name"),
+                    },
+                ),
                 label=label,
                 required=(i <= self.tournament.number_of_players_in_team_min),
             )
+            selected_player_id = None
+            if self.is_bound:
+                selected_player_id = self.data.get(field_name)
+            elif self.initial.get(field_name):
+                selected_player_id = self.initial.get(field_name)
+
+            if selected_player_id:
+                try:
+                    selected_player = Player.objects.get(pk=selected_player_id)
+                    field.widget.choices = [(selected_player.pk, selected_player.get_name())]
+                except Player.DoesNotExist:
+                    field.widget.choices = [(selected_player_id, selected_player_id)]
+
+            self.fields[field_name] = field
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -46,6 +70,12 @@ class RegistrationTeamForm(forms.Form):
                 'players[%d]' % i,
                 css_class="col-lg-12"
             ))
+
+    def ordered_player_fields(self):
+        return [
+            self['players[%d]' % i]
+            for i in range(1, self.tournament.get_max_players_per_team() + 1)
+        ]
 
     def is_valid(self):
         # run the parent validation first

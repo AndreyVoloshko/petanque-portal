@@ -2225,6 +2225,18 @@ msgstr "Competition"
 msgid "Score"
 msgstr "Score"
 
+#: federation/templates/tournaments/tournament_teams.html
+msgid "Rating earned"
+msgstr "Rating earned"
+
+#: federation/templates/tournaments/tournament_teams.html
+msgid "More details"
+msgstr "More details"
+
+#: federation/templates/tournaments/tournament.html
+msgid "Participants"
+msgstr "Participants"
+
 #: federation/templates/tournaments/tournament_delegations.html:7
 msgid "Organizers, delegates, and arbiters"
 msgstr "Organizers, delegates, and arbiters"
@@ -2652,3 +2664,45 @@ msgstr "Sort: name"
 #: federation/templates/clubs/club.html
 msgid "No athletes match the selected filters."
 msgstr "No athletes match the selected filters."
+
+#: federation/forms/registration_team_form.py
+#: federation/templates/register/team.html
+msgid "Search athlete by first or last name"
+msgstr "Search athlete by first or last name"
+
+#: federation/templates/register/team.html
+#, python-format
+msgid "Choose the roster for this competition. Team format: %(team_size)s."
+msgstr "Choose the roster for this competition. Team format: %(team_size)s."
+
+#: federation/templates/register/team.html
+msgid "Choose the captain first. Reserve player fields can be left empty."
+msgstr "Choose the captain first. Reserve player fields can be left empty."
+
+#: federation/templates/register/team.html
+msgid "Search for an athlete by first or last name in the federation database."
+msgstr "Search for an athlete by first or last name in the federation database."
+
+#: federation/templates/register/team.html
+msgid "Back to competition"
+msgstr "Back to competition"
+
+#: federation/templates/register/team.html
+msgid "Registration tips"
+msgstr "Registration tips"
+
+#: federation/templates/register/team.html
+msgid "Check the athlete in the database first"
+msgstr "Check the athlete in the database first"
+
+#: federation/templates/register/team.html
+msgid "Before creating a new athlete, try searching in both Cyrillic and Latin spelling."
+msgstr "Before creating a new athlete, try searching in both Cyrillic and Latin spelling."
+
+#: federation/templates/register/team.html
+msgid "Use this block only when the athlete is missing from search results."
+msgstr "Use this block only when the athlete is missing from search results."
+
+#: federation/templates/register/team.html
+msgid "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
+msgstr "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
