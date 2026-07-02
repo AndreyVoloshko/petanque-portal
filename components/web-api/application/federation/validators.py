@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
@@ -45,3 +46,11 @@ def validate_image_format(file):
                 'allowed': ', '.join(settings.ALLOWED_IMAGE_FORMATS),
             },
         )
+
+
+IMAGE_UPLOAD_VALIDATORS = [
+    FileExtensionValidator(allowed_extensions=settings.ALLOWED_IMAGE_EXTENSIONS),
+    validate_image_file_size,
+    validate_image_dimensions,
+    validate_image_format,
+]

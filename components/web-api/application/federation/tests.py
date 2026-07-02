@@ -2391,3 +2391,25 @@ class ImageFieldValidationTests(TestCase):
         )
 
         self.assertTrue(form.is_valid(), form.errors)
+
+    @override_settings(MAX_UPLOAD_SIZE=100)
+    def test_player_form_rejects_valid_image_exceeding_lowered_size_limit(self):
+        user = User.objects.create_user(username='avatar_real_oversize_test')
+        player = Player.objects.create(
+            user=user, name='Test', surname='Player', birth_date=date(1990, 1, 1),
+        )
+        # A genuinely decodable JPEG whose encoded size exceeds the (lowered) 100-byte
+        # limit — proves validate_image_file_size fires through the full field pipeline,
+        # not just Django's own "not a decodable image" base check (the gap the two
+        # garbage-byte fixtures above don't cover).
+        valid_but_oversized = _make_uploaded_image(200, 200, image_format='JPEG', file_name='big.jpg')
+
+        form = PlayerForm(
+            data={'name': 'Test', 'surname': 'Player', 'email': 'a@example.com',
+                  'birth_date': '01.01.1990', 'gender': 'M', 'country': 'UA'},
+            files={'avatar': valid_but_oversized},
+            instance=player,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)

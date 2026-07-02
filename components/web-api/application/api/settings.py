@@ -171,6 +171,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 MAX_UPLOAD_SIZE = 3 * 1024 * 1024  # 3 MB
 MAX_IMAGE_DIMENSION_PX = 4000  # max width/height in pixels
 ALLOWED_IMAGE_FORMATS = ['JPEG', 'PNG', 'WEBP']  # Pillow-detected formats, not file extensions
+ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 # Static files storage in S3
 AWS_STORAGE_BUCKET_NAME = get_credential('s3_bucket')

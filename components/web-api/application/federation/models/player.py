@@ -2,16 +2,11 @@ from datetime import datetime, timedelta
 from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator
 from federation.storage import MediaStorage
 from django.utils.translation import gettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
-from federation.validators import (
-    validate_image_dimensions,
-    validate_image_file_size,
-    validate_image_format,
-)
+from federation.validators import IMAGE_UPLOAD_VALIDATORS
 from django.conf import settings
 import json
 
@@ -62,12 +57,7 @@ class Player(models.Model):
 
     avatar = models.ImageField(
         _('avatar'), blank=True, null=True, storage=MediaStorage(),
-        validators=[
-            FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp']),
-            validate_image_file_size,
-            validate_image_dimensions,
-            validate_image_format,
-        ],
+        validators=IMAGE_UPLOAD_VALIDATORS,
     )
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Last name'), max_length=100)
