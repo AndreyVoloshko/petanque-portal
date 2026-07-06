@@ -165,13 +165,6 @@
                                 </span>
                             </div>
                             {% endif %}
-                            {% if player.current_club.date_created %}
-                            <div class="player-club-meta-item">
-                                <i class="bi bi-calendar-event"></i>
-                                <span class="player-club-meta-label">{% trans "Member since" %}</span>
-                                <span class="player-club-meta-value">{{ player.current_club.date_created|date:"E Y" }}</span>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
