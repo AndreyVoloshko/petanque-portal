@@ -78,12 +78,12 @@ _FORMAT_ALIASES = {
 }
 
 _AUDIENCE_LABELS = (
-    (r"жінк[аи]?|women|female", {"uk": "Жінки", "en": "Women"}),
-    (r"чоловік[и]?|men|male", {"uk": "Чоловіки", "en": "Men"}),
+    (r"жінк[аи]?|жінок|women|female", {"uk": "Жінки", "en": "Women"}),
+    (r"чоловік[и]?|чоловіків|men|male", {"uk": "Чоловіки", "en": "Men"}),
     (r"молодь|youth", {"uk": "Молодь", "en": "Youth"}),
     (r"юніори?|juniors?", {"uk": "Юніори", "en": "Juniors"}),
     (r"юнаки|cadets?", {"uk": "Юнаки", "en": "Cadets"}),
-    (r"ветерани?|veterans?", {"uk": "Ветерани", "en": "Veterans"}),
+    (r"ветеран(?:и|ів)?(?:\s+(?:спорту|війни))?(?:\s*\d+\+)?|veterans?", {"uk": "Ветерани", "en": "Veterans"}),
     (r"дорослі|adults?", {"uk": "Дорослі", "en": "Adults"}),
     (r"мікст|mix|mixed", {"uk": "Мікст", "en": "Mixed"}),
 )
@@ -421,9 +421,9 @@ def _normalize_audience_tag(value):
         if re.fullmatch(pattern, normalized, flags=re.IGNORECASE):
             return labels[language]
 
-    rank_match = re.fullmatch(r"([ivxіїvх]+)\s*ранг", normalized, flags=re.IGNORECASE)
+    rank_match = re.fullmatch(r"([ivxіїvх]+(?:\s*[-–—]\s*[ivxіїvх]+)?)\s*ранг(?:\s+ранг)?", normalized, flags=re.IGNORECASE)
     if rank_match:
-        roman_rank = rank_match.group(1).upper()
+        roman_rank = re.sub(r"\s*[-–—]\s*", "-", rank_match.group(1).upper())
         return f"{roman_rank} ранг" if language == "uk" else f"{roman_rank} rank"
 
     group_match = re.fullmatch(r"група\s+([a-zа-яіїєґ])", normalized, flags=re.IGNORECASE)

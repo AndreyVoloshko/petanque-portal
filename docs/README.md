@@ -84,5 +84,5 @@ untracked schema described in [Database schema: live-only drift](database-schema
 - The repository has almost no automated test coverage. Treat rating,
   tournament processing, registration, permissions, and migrations as
   high-risk changes.
-- Publishing uses Bitbucket. Push the branch and prepare a Markdown pull request
-  description; do not create a GitHub pull request.
+- Publishing uses GitHub at `https://github.com/AndreyVoloshko/petanque-portal`.
+  Push the branch and create or prepare a GitHub pull request as requested.
