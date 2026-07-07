@@ -116,6 +116,17 @@
                         {% if player.country %}{{ player.country.name }}{% else %}&mdash;{% endif %}
                     </span>
                 </div>
+                <div class="player-detail-row">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="player-detail-label">{% trans "Insurance" %}</span>
+                    <span class="player-detail-value">
+                        {% if player.has_valid_insurance %}
+                            {% trans "valid until" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </span>
+                </div>
                 {% if player.prefred_position %}
                 <div class="player-detail-row">
                     <i class="bi bi-bullseye"></i>

@@ -7,5 +7,6 @@
 - After code or config changes that affect runtime behavior, rebuild or restart the existing service before verifying in the browser. For web API changes, prefer `docker compose up -d --build petanque_portal_web_api`; use `docker compose restart petanque_portal_web_api` when a rebuild is not needed.
 - Use `docker compose ps` to inspect the current stack and `docker compose logs petanque_portal_web_api` or `docker compose logs -f petanque_portal_web_api` for diagnostics.
 - Verify app behavior against `http://localhost:60102/`. Adminer is available at `http://localhost:60103/` when database inspection is needed. Do not rely on the nginx service as the primary local entrypoint; it may be stopped in this environment.
-- This repository uses Bitbucket for code review. When asked to publish work, push the branch only. Do not try to create a GitHub PR or any remote pull request automatically.
-- After preparing or pushing changes, generate a detailed Markdown pull request description that the user can paste into Bitbucket manually. Include a concise summary, changed areas, verification performed, and any notes or risks relevant to review.
+- This repository uses GitHub for code review. When asked to publish work, push the branch and create a GitHub pull request.
+- After preparing or pushing changes, generate a detailed Markdown pull request description. Include a concise summary, changed areas, verification performed, and any notes or risks relevant to review.
+- Format PR summary bullets as Conventional Commits-style scoped lines, for example `fix(tournament list): ...`, `feat(player profile): ...`, and `feat(admin): ...`.

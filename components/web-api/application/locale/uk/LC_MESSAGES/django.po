@@ -2966,3 +2966,23 @@ msgstr "Використовуйте цей блок лише тоді, коли
 #: federation/templates/register/team.html
 msgid "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
 msgstr "Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового спортсмена лише після уважної перевірки бази."
+
+#: federation/models/player.py
+msgid "Insurance valid until"
+msgstr "Страхування дійсне до"
+
+#: federation/models/tournament.py
+msgid "Insurance required"
+msgstr "Необхідне страхування"
+
+#: federation/templates/players/player.html
+msgid "Insurance"
+msgstr "Страхування"
+
+#: federation/templates/players/player.html
+msgid "valid until"
+msgstr "дійсне до"
+
+#: federation/templates/tournaments/tournament_teams.html
+msgid "Insurance is missing or expired"
+msgstr "Страхування відсутнє або прострочене"

@@ -45,6 +45,7 @@ class Tournament(models.Model):
     is_inclusive = models.BooleanField(_('Inclusive tournament'), default=False)
     is_ukrainian_league = models.BooleanField(_('Ukrainian Petanque League tournament'), default=False)
     is_b_tournament = models.BooleanField(_('B tournament'), default=False)
+    requires_insurance = models.BooleanField(_('Insurance required'), default=False)
     is_ready_for_processing = models.BooleanField(_('Tournament is ready for processing'), default=False)
 
     total_number_of_teams = models.IntegerField(_('Total number of teams'), blank=True, null=True)
@@ -634,6 +635,7 @@ class ArbiterTeamTournamentAdminInline(RevertibleAuditAdminMixin, admin.ModelAdm
         'is_goes_to_rating',
         'is_b_tournament',
         'is_inclusive',
+        'requires_insurance',
         'is_ready_for_processing',
         'is_processing_finished',
     ]

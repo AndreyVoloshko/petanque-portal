@@ -33,7 +33,7 @@ from federation.models.club import Club
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from federation.models.player import Player
 from federation.models.season import Season
-from federation.models.team import PlayerTeamMembership, Team
+from federation.models.team import PlayerAdmin, PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
     TeamTournamentMembership,
@@ -718,6 +718,31 @@ class PlayerProfileFormTests(TestCase):
         self.assertEqual(set(form.fields), layout_fields)
 
 
+class PlayerInsuranceAdminTests(TestCase):
+    def test_insurance_expiration_date_is_editable_only_for_superusers(self):
+        player_admin = PlayerAdmin(Player, AdminSite())
+        superuser = User.objects.create_superuser(
+            username='insurance-superuser',
+            email='insurance-superuser@example.com',
+            password='password',
+        )
+        staff_user = User.objects.create_user(
+            username='insurance-staff',
+            email='insurance-staff@example.com',
+            password='password',
+            is_staff=True,
+        )
+
+        self.assertNotIn(
+            'insurance_expiration_date',
+            player_admin.get_readonly_fields(SimpleNamespace(user=superuser)),
+        )
+        self.assertIn(
+            'insurance_expiration_date',
+            player_admin.get_readonly_fields(SimpleNamespace(user=staff_user)),
+        )
+
+
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
         user = User.objects.create_user(username=username)
@@ -767,7 +792,9 @@ class PlayerLicenseListTests(TestCase):
 
     def test_profile_form_save_preserves_non_profile_fields(self):
         player = self.create_player('licensed-profile', licence_number_value='00001')
+        valid_until = timezone.localdate() + timedelta(days=30)
         player.prefred_position = 'point'
+        player.insurance_expiration_date = valid_until
         player.save()
         form = PlayerForm(data={
             'name': player.name,
@@ -786,6 +813,7 @@ class PlayerLicenseListTests(TestCase):
 
         self.assertNotIn('licence_number', form.fields)
         self.assertNotIn('prefred_position', form.fields)
+        self.assertNotIn('insurance_expiration_date', form.fields)
         self.assertTrue(form.is_valid(), form.errors)
 
         form.save()
@@ -794,6 +822,7 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(player.licence_number, '00001')
         self.assertTrue(player.is_licence_active)
         self.assertEqual(player.prefred_position, 'point')
+        self.assertEqual(player.insurance_expiration_date, valid_until)
 
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
@@ -953,7 +982,7 @@ class ClubDetailPageTests(TestCase):
 
 
 class PlayerTournamentListTests(TestCase):
-    def create_player(self, username='player-page'):
+    def create_player(self, username='player-page', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
             user=user,
@@ -961,6 +990,7 @@ class PlayerTournamentListTests(TestCase):
             surname='Player',
             birth_date=date(1990, 1, 1),
             gender='M',
+            insurance_expiration_date=insurance_expiration_date,
         )
 
     def test_player_tournament_table_shows_place_range_and_tournament_power(self):
@@ -1073,6 +1103,49 @@ class PlayerTournamentListTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content.count('player-chip-national-team'), 1)
+
+    def test_player_profile_shows_valid_insurance_expiration_date(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        player = self.create_player(
+            'insured-player',
+            insurance_expiration_date=valid_until,
+        )
+
+        with override('uk'):
+            response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Страхування', content)
+        self.assertIn('дійсне до', content)
+        self.assertIn(valid_until.strftime('%d.%m.%Y'), content)
+
+    def test_insurance_profile_labels_have_english_translations(self):
+        with override('en'):
+            self.assertEqual(_('Insurance'), 'Insurance')
+            self.assertEqual(_('valid until'), 'valid until')
+
+    def test_player_profile_shows_dash_for_expired_insurance(self):
+        expired_on = timezone.localdate() - timedelta(days=1)
+        player = self.create_player(
+            'expired-insurance-player',
+            insurance_expiration_date=expired_on,
+        )
+
+        with override('uk'):
+            response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+        insurance_row = re.search(
+            r'<span class="player-detail-label">Страхування</span>\s*'
+            r'<span class="player-detail-value">\s*(.*?)\s*</span>',
+            content,
+            re.S,
+        ).group(1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('-', insurance_row)
+        self.assertNotIn('дійсне до', insurance_row)
+        self.assertNotIn(expired_on.strftime('%d.%m.%Y'), insurance_row)
 
 
 class TournamentRegistrationLifecycleTests(TestCase):
@@ -1734,6 +1807,7 @@ class TournamentListingPageTests(TestCase):
         processed=False,
         meta=None,
         place='Київ',
+        requires_insurance=False,
     ):
         start_date = timezone.localdate() + timedelta(days=start_offset)
         end_date = None
@@ -1760,9 +1834,10 @@ class TournamentListingPageTests(TestCase):
             power=power,
             is_processing_finished=processed,
             meta=meta,
+            requires_insurance=requires_insurance,
         )
 
-    def create_player(self, username='history-player'):
+    def create_player(self, username='history-player', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
             user=user,
@@ -1770,6 +1845,7 @@ class TournamentListingPageTests(TestCase):
             surname='Player',
             birth_date=date(1990, 1, 1),
             gender='M',
+            insurance_expiration_date=insurance_expiration_date,
         )
 
     def register_player_for_tournament(self, tournament, player, place_min=0):
@@ -1922,6 +1998,36 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, 'data-tournament-team-sort="power"')
         self.assertContains(response, 'class="tournament-team-player-label"')
         self.assertContains(response, 'class="tournament-team-player-country"')
+
+    def test_tournament_detail_marks_uninsured_players_when_insurance_is_required(self):
+        tournament = self.create_tournament(
+            'Insurance Required Cup',
+            requires_insurance=True,
+        )
+        uninsured_player = self.create_player('uninsured-player')
+        insured_player = self.create_player(
+            'insured-tournament-player',
+            insurance_expiration_date=timezone.localdate() + timedelta(days=1),
+        )
+        self.register_player_for_tournament(tournament, uninsured_player)
+        self.register_player_for_tournament(tournament, insured_player)
+
+        with override('uk'):
+            response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-insurance-warning', count=2)
+        self.assertContains(response, 'Страхування відсутнє або прострочене')
+
+    def test_tournament_detail_does_not_mark_players_when_insurance_is_optional(self):
+        tournament = self.create_tournament('Insurance Optional Cup')
+        player = self.create_player('optional-insurance-player')
+        self.register_player_for_tournament(tournament, player)
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-team-insurance-warning')
 
     def test_tournament_detail_unready_tournament_does_not_show_place_editor(self):
         admin = User.objects.create_superuser(
