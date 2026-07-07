@@ -235,6 +235,60 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'audience_tags': ['Молодь', 'Юніори', 'Юнаки'],
         })
 
+    def test_card_metadata_extracts_rank_ranges_and_gender_from_parentheses(self):
+        tete_women = self.create_tournament(
+            'Чемпіонат України (тети, жінки, ІІІ-IV ранг)',
+            players_min=1,
+            players_max=1,
+        )
+        doublets_men = self.create_tournament(
+            'Чемпіонат України (дуплети, чоловіки, ІІІ-IV ранг)',
+            players_min=2,
+            players_max=2,
+        )
+        duplicated_rank_word = self.create_tournament(
+            'Міжнародний турнір “Сакура” (тет, ІІІ-IV ранг ранг)',
+            players_min=1,
+            players_max=1,
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tete_women), {
+            'name': 'Чемпіонат України',
+            'format': 'Тет-а-тет',
+            'format_source': 'Тет-а-тет',
+            'format_tags': ['Тет-а-тет'],
+            'audience_tags': ['Жінки', 'ІІІ-IV ранг'],
+        })
+        self.assertEqual(get_tournament_card_metadata(doublets_men), {
+            'name': 'Чемпіонат України',
+            'format': 'Дуплети',
+            'format_source': 'Дуплети',
+            'format_tags': ['Дуплети'],
+            'audience_tags': ['Чоловіки', 'ІІІ-IV ранг'],
+        })
+        self.assertEqual(get_tournament_card_metadata(duplicated_rank_word), {
+            'name': 'Міжнародний турнір “Сакура”',
+            'format': 'Тет-а-тет',
+            'format_source': 'Тет-а-тет',
+            'format_tags': ['Тет-а-тет'],
+            'audience_tags': ['ІІІ-IV ранг'],
+        })
+
+    def test_card_metadata_extracts_veteran_sport_age_category(self):
+        tournament = self.create_tournament(
+            'Чемпіонат України (триплети, тир, ветерани спорту   55+)',
+            players_min=3,
+            players_max=4,
+        )
+
+        self.assertEqual(get_tournament_card_metadata(tournament), {
+            'name': 'Чемпіонат України',
+            'format': 'Триплети',
+            'format_source': 'Триплети',
+            'format_tags': ['Триплети', 'Тир'],
+            'audience_tags': ['Ветерани'],
+        })
+
     def test_card_metadata_normalizes_super_melee_variants(self):
         tournament = self.create_tournament(
             'July Rose Cup (супермеле)',
