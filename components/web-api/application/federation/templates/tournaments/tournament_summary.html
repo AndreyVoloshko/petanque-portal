@@ -26,6 +26,12 @@
             {% if tournament.is_inclusive %}
                 <span class="tournament-chip tournament-detail-chip-inclusive">{% trans "Inclusive" %}</span>
             {% endif %}
+            {% if tournament.requires_insurance %}
+                {% trans "Insurance required" as insurance_required_text %}
+                <span class="tournament-chip tournament-detail-chip-insurance" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ insurance_required_text }}" aria-label="{{ insurance_required_text }}">
+                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                </span>
+            {% endif %}
         </div>
 
         <h1 id="tournament-detail-title" class="tournament-detail-title">{{ row.title }}</h1>

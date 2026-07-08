@@ -178,9 +178,13 @@ AWS_STORAGE_BUCKET_NAME = get_credential('s3_bucket')
 AWS_S3_REGION_NAME = get_credential('s3_region')  # e.g. us-east-2
 AWS_ACCESS_KEY_ID = get_credential('s3_key')
 AWS_SECRET_ACCESS_KEY = get_credential('s3_secret')
+AWS_S3_PUBLIC_BASE_URL = (get_credential('s3_host') or '').rstrip('/')
 
 # Tell django-storages the domain to use to refer to static files.
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = (
+    AWS_S3_PUBLIC_BASE_URL.replace('https://', '').replace('http://', '') or
+    ('%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME if AWS_STORAGE_BUCKET_NAME else '')
+)
 AWS_S3_ENDPOINT_URL = "https://s3.%s.amazonaws.com" % AWS_S3_REGION_NAME
 
 DBBACKUP_CONNECTOR_MAPPING = {
@@ -226,7 +230,7 @@ else:
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-    MEDIA_URL = '/media/'
+    MEDIA_URL = AWS_S3_PUBLIC_BASE_URL+'/'+MEDIAFILES_LOCATION+'/' if AWS_S3_PUBLIC_BASE_URL else '/media/'
     STORAGES.update({
         'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
         'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},

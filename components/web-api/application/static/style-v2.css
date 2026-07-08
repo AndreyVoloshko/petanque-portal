@@ -8719,6 +8719,12 @@ table.dataTable.players-table thead th.sorting_desc::after {
   color: var(--td-green);
 }
 
+.tournament-detail-chip-insurance {
+  background: var(--portal-green-50);
+  border-color: var(--portal-green-300);
+  color: var(--portal-green-600);
+}
+
 .tournament-detail-title {
   color: var(--td-navy);
   font-size: 2.45rem;

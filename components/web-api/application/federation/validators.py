@@ -6,18 +6,29 @@ from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
 
+def _is_committed_field_file(file):
+    return getattr(file, '_committed', False)
+
+
 def validate_image_file_size(file):
-    if file.size > settings.MAX_UPLOAD_SIZE:
+    if _is_committed_field_file(file):
+        return
+
+    file_size = file.size
+    if file_size > settings.MAX_UPLOAD_SIZE:
         raise ValidationError(
             _('File size must not exceed %(max_size)s. Current file size: %(current_size)s.'),
             params={
                 'max_size': filesizeformat(settings.MAX_UPLOAD_SIZE),
-                'current_size': filesizeformat(file.size),
+                'current_size': filesizeformat(file_size),
             },
         )
 
 
 def validate_image_dimensions(file):
+    if _is_committed_field_file(file):
+        return
+
     file.seek(0)
     with Image.open(file) as image:
         width, height = image.size
@@ -33,6 +44,9 @@ def validate_image_dimensions(file):
 
 
 def validate_image_format(file):
+    if _is_committed_field_file(file):
+        return
+
     file.seek(0)
     with Image.open(file) as image:
         image_format = image.format

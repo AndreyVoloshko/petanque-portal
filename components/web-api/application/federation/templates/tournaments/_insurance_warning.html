@@ -1,8 +1,15 @@
 {% load i18n %}
 
-{% if tournament.requires_insurance and not player.has_valid_insurance %}
-    {% trans "Insurance is missing or expired" as insurance_warning_text %}
-    <span class="tournament-team-insurance-warning badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center justify-content-center p-1 flex-shrink-0" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ insurance_warning_text }}" aria-label="{{ insurance_warning_text }}">
-        <i class="bi bi-exclamation-triangle-fill lh-1" aria-hidden="true"></i>
-    </span>
+{% if can_view_insurance_warnings %}
+    {% if player.has_valid_insurance %}
+        {% trans "Insurance valid until" as insurance_valid_text %}
+        <span class="tournament-team-insurance-marker tournament-team-insurance-valid d-inline-flex align-items-center flex-shrink-0 ms-1 text-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ insurance_valid_text }} {{ player.insurance_expiration_date|date:'d.m.Y' }}" aria-label="{{ insurance_valid_text }} {{ player.insurance_expiration_date|date:'d.m.Y' }}">
+            <i class="bi bi-shield-check lh-1" aria-hidden="true"></i>
+        </span>
+    {% else %}
+        {% trans "Insurance is missing or expired" as insurance_warning_text %}
+        <span class="tournament-team-insurance-marker tournament-team-insurance-warning d-inline-flex align-items-center flex-shrink-0 ms-1 text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ insurance_warning_text }}" aria-label="{{ insurance_warning_text }}">
+            <i class="bi bi-shield-exclamation lh-1" aria-hidden="true"></i>
+        </span>
+    {% endif %}
 {% endif %}

@@ -1020,8 +1020,25 @@ def tournament(request, id):
         'arbiters': arbiters,
         'teams': teams,
         'page_title': _("Competitions"),
-        'current_user': current_user
+        'current_user': current_user,
+        'can_view_insurance_warnings': _can_view_insurance_warnings(tournament, current_user),
     })
+
+
+def _can_view_insurance_warnings(tournament, user):
+    if not tournament.requires_insurance:
+        return False
+
+    if tournament.is_finished():
+        return False
+
+    if not getattr(user, 'is_authenticated', False):
+        return False
+
+    if user.is_superuser:
+        return True
+
+    return bool(tournament.main_organizer_id and tournament.main_organizer.user_id == user.pk)
 
 
 def tournament_teams_export(request, id):

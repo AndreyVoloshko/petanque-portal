@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}
+        {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user can_view_insurance_warnings=can_view_insurance_warnings table_id="tournament_teams_table" %}
     </section>
 </section>
 {% endwith %}

@@ -108,7 +108,7 @@
                                             <span class="tournament-team-player-name">
                                                 <span class="tournament-team-player-label">{{ player.get_name }}</span>
                                                 <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
-                                                {% include "tournaments/_insurance_warning.html" with tournament=tournament player=player only %}
+                                                {% include "tournaments/_insurance_warning.html" with player=player can_view_insurance_warnings=can_view_insurance_warnings only %}
                                             </span>
                                             {% if player.current_club %}
                                                 <span class="tournament-team-player-club-mobile">{{ player.current_club.short_name }}</span>
@@ -174,7 +174,7 @@
                                     <span class="tournament-team-player-name">
                                         <span class="tournament-team-player-label">{{ player.get_name }}</span>
                                         <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
-                                        {% include "tournaments/_insurance_warning.html" with tournament=tournament player=player only %}
+                                        {% include "tournaments/_insurance_warning.html" with player=player can_view_insurance_warnings=can_view_insurance_warnings only %}
                                     </span>
                                 </a>
                             {% empty %}
@@ -280,7 +280,7 @@
                                         <span class="tournament-team-player-name">
                                             <span class="tournament-team-player-label">{{ player.get_name }}</span>
                                             <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
-                                            {% include "tournaments/_insurance_warning.html" with tournament=tournament player=player only %}
+                                            {% include "tournaments/_insurance_warning.html" with player=player can_view_insurance_warnings=can_view_insurance_warnings only %}
                                         </span>
                                         {% if player.current_club %}
                                             <span class="tournament-team-player-club-mobile">{{ player.current_club.short_name }}</span>
@@ -322,7 +322,7 @@
                                 <span class="tournament-team-player-name">
                                     <span class="tournament-team-player-label">{{ player.get_name }}</span>
                                     <span class="tournament-team-player-country">{{ player.country|country_flag|safe }}</span>
-                                    {% include "tournaments/_insurance_warning.html" with tournament=tournament player=player only %}
+                                    {% include "tournaments/_insurance_warning.html" with player=player can_view_insurance_warnings=can_view_insurance_warnings only %}
                                 </span>
                             </a>
                         {% empty %}
