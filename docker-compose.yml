@@ -42,6 +42,25 @@ services:
     ports:
       - 60103:8080
 
+  petanque_feedback_fider:
+    build:
+      context: https://github.com/AndreyVoloshko/fider.git#main
+    profiles: ["feedback"]
+    restart: always
+    environment:
+      BASE_URL: ${FIDER_BASE_URL:-https://feedback.petanque.org.ua}
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@petanque_portal_db:5432/fider?sslmode=disable
+      JWT_SECRET: ${FIDER_JWT_SECRET}
+      LOCALE: uk
+      EMAIL: smtp
+      EMAIL_NOREPLY: ${FIDER_EMAIL_NOREPLY:-noreply@petanque.org.ua}
+      EMAIL_SMTP_HOST: ${FIDER_SMTP_HOST}
+      EMAIL_SMTP_PORT: ${FIDER_SMTP_PORT:-587}
+      EMAIL_SMTP_USERNAME: ${FIDER_SMTP_USERNAME}
+      EMAIL_SMTP_PASSWORD: ${FIDER_SMTP_PASSWORD}
+    depends_on:
+      - petanque_portal_db
+
   certbot:
     image: certbot/certbot
     depends_on:

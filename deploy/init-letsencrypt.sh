@@ -1,5 +1,5 @@
 #!/bin/bash
-domains=(portal.petanque.org.ua)
+domains=(portal.petanque.org.ua feedback.petanque.org.ua)
 email="andreyvoloshko@gmail.com"
 webroot="/var/www/certbot"
 
@@ -9,5 +9,6 @@ docker compose -p "petanque-portal" \
     --email $email \
     --agree-tos \
     --no-eff-email \
+    --expand \
     $(for d in "${domains[@]}"; do echo -n "-d $d "; done)
 
