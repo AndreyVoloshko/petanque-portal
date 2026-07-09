@@ -7,25 +7,28 @@ change data, and how the database is related.
 The application is a server-rendered Django monolith. For a normal page, trace
 behavior in this order:
 
-```text
-federation/urls.py
-  -> federation/views/<feature>.py
-  -> federation/templates/<feature>/*.html
-  -> federation/models/*.py and federation/templatetags/app_filters.py
-  -> static/style-v2.css and inline template JavaScript
+```mermaid
+flowchart TD
+    urls["federation/urls.py"] --> views["federation/views/&lt;feature&gt;.py"]
+    views --> templates["federation/templates/&lt;feature&gt;/*.html"]
+    templates --> models["federation/models/*.py<br/>federation/templatetags/app_filters.py"]
+    models --> static["static/style-v2.css · static/portal-ui.js<br/>(plus legacy inline template JavaScript)"]
 ```
 
 ## Start Here
 
-1. [Project overview](project-overview.md) - stack, repository layout, runtime,
+1. [Architecture foundation](architecture.md) - engineering values, binding
+   rules for backend/CSS/JS, technology stack, hosting, and CI/CD. Read this
+   before your first PR.
+2. [Project overview](project-overview.md) - stack, repository layout, runtime,
    configuration, and major domain areas.
-2. [Local development](local-development.md) - how to use the existing Docker
+3. [Local development](local-development.md) - how to use the existing Docker
    Compose stack and production-derived local database safely.
-3. [Route index](route-index.md) - every public, authentication, export, API,
+4. [Route index](route-index.md) - every public, authentication, export, API,
    admin, and framework route.
-4. [Database schema](database-schema.md) - ER diagram, all domain tables,
+5. [Database schema](database-schema.md) - ER diagram, all domain tables,
    relationships, deletion behavior, indexes, and known live-schema drift.
-5. [Operations and workflows](operations-and-workflows.md) - admin actions,
+6. [Operations and workflows](operations-and-workflows.md) - admin actions,
    scheduled jobs, tournament processing, season snapshots, and safe change
    procedures.
 
@@ -81,8 +84,10 @@ untracked schema described in [Database schema: live-only drift](database-schema
   `http://localhost:60103/`.
 - After runtime code changes, rebuild the existing web service with
   `docker compose -p petanque-portal up -d --build petanque_portal_web_api`.
-- The repository has almost no automated test coverage. Treat rating,
-  tournament processing, registration, permissions, and migrations as
-  high-risk changes.
-- Publishing uses Bitbucket. Push the branch and prepare a Markdown pull request
-  description; do not create a GitHub pull request.
+- Automated test coverage is thin (~134 tests in `federation/tests.py` and
+  `federation/test_audit.py`). Treat rating, tournament processing,
+  registration, permissions, and migrations as high-risk changes; tests are
+  mandatory for rating/tournament logic.
+- Publishing uses GitHub. Push the branch and open a GitHub pull request;
+  merging to `master` triggers the automated production deploy
+  (see [deployment.md](deployment.md)).
