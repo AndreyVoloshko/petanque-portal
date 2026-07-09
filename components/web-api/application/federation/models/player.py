@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
@@ -6,6 +7,7 @@ from federation.storage import MediaStorage
 from django.utils.translation import gettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
+from federation.validators import IMAGE_UPLOAD_VALIDATORS
 from django.conf import settings
 import json
 
@@ -54,7 +56,10 @@ class Player(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
+    avatar = models.ImageField(
+        _('avatar'), blank=True, null=True, storage=MediaStorage(),
+        validators=IMAGE_UPLOAD_VALIDATORS,
+    )
     name = models.CharField(_('name'), max_length=100)
     surname = models.CharField(_('Last name'), max_length=100)
     second_name = models.CharField(_('Middle name'), max_length=100, blank=True, null=True)
@@ -168,8 +173,7 @@ class Player(models.Model):
         all_past_tournaments = tournaments_model.get_list_by_player(player=self, date_filter='past')
 
         # filter last tournaments
-        last_period_days = 30 * rating_config.RATING_PLAYER_POWER_PAST_MONTHES
-        last_period = datetime.today() - timedelta(days=last_period_days)
+        last_period = datetime.today() - relativedelta(months=rating_config.RATING_PLAYER_POWER_PAST_MONTHES)
 
         all_past_tournaments = all_past_tournaments.filter(start_date__gte=last_period, is_processing_finished=True)
 

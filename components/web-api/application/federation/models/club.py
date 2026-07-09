@@ -3,12 +3,16 @@ from django.contrib import admin
 from django.utils import timezone
 from federation.storage import MediaStorage
 from django.utils.translation import gettext_lazy as _
+from federation.validators import IMAGE_UPLOAD_VALIDATORS
 
 
 # Clubs
 class Club (models.Model):
     name = models.CharField(_('Full name'), max_length=150)
-    logo  = models.ImageField(_('avatar'), blank=True, null=True, storage=MediaStorage())
+    logo = models.ImageField(
+        _('avatar'), blank=True, null=True, storage=MediaStorage(),
+        validators=IMAGE_UPLOAD_VALIDATORS,
+    )
     short_name = models.CharField(_('Short name'), max_length=50)
     date_registered = models.DateTimeField(_('Registration date'), default=timezone.now)
     date_created = models.DateTimeField(_('Creation date'), default=timezone.now)
