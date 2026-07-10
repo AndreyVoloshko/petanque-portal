@@ -1,17 +1,23 @@
-boto
-boto3
-transliterate
-python-dateutil
+# Direct dependencies, pinned. This is the file to edit when changing deps.
+# After editing, regenerate requirements.lock (reproducible builds):
+#   docker run --rm -v "$PWD":/app python:3.11-bookworm \
+#     bash -c "pip install -q -r /app/requirements.txt && pip freeze > /app/requirements.lock"
 
-Pillow
-Django==5.1.6
-psycopg2
-django-countries
-django-extensions
-django-crispy-forms
-crispy-bootstrap5
-django-silk
+Django==5.2.16
+psycopg2==2.9.12
+gunicorn==26.0.0
 
-django-dbbackup
-django-storages[boto3]
-django-cors-headers
+Pillow==12.3.0
+boto3==1.43.45
+django-storages[boto3]==1.14.6
+
+django-countries==9.0.0
+django-extensions==4.1
+django-crispy-forms==2.6
+crispy-bootstrap5==2026.3
+django-dbbackup==5.3.0
+django-cors-headers==4.9.0
+django-silk==5.5.0
+
+transliterate==1.10.2
+python-dateutil==2.9.0.post0

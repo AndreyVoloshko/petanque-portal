@@ -9,14 +9,10 @@ RUN wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | tee /etc/apt
 RUN apt-get update -y && apt-get install -y supervisor postgresql-client-17 cron gettext
 
 
-# Install gunicorn
-RUN pip install gunicorn
-
-# Copy requirements.txt to application
+# Install pinned requirements from the lockfile (gunicorn included)
 ADD ./application/requirements.txt /application/requirements.txt
-
-# Install requirements
-RUN pip install -r /application/requirements.txt
+ADD ./application/requirements.lock /application/requirements.lock
+RUN pip install -r /application/requirements.lock
 
 # Copy server configurations
 ADD ./conf/ /conf/
