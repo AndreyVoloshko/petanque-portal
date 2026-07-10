@@ -180,12 +180,6 @@ class PlayerAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
     actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
     autocomplete_fields = ['current_club', 'user']
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super().get_readonly_fields(request, obj))
-        if not request.user.is_superuser and 'insurance_expiration_date' not in readonly_fields:
-            readonly_fields.append('insurance_expiration_date')
-        return readonly_fields
-
     def get_audit_before_instance(self, obj):
         return self.model.objects.select_related('user').get(pk=obj.pk)
 

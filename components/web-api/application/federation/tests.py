@@ -33,7 +33,7 @@ from federation.models.club import Club
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from federation.models.player import Player
 from federation.models.season import Season
-from federation.models.team import PlayerAdmin, PlayerTeamMembership, Team
+from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
     TeamTournamentMembership,
@@ -716,31 +716,6 @@ class PlayerProfileFormTests(TestCase):
         }
 
         self.assertEqual(set(form.fields), layout_fields)
-
-
-class PlayerInsuranceAdminTests(TestCase):
-    def test_insurance_expiration_date_is_editable_only_for_superusers(self):
-        player_admin = PlayerAdmin(Player, AdminSite())
-        superuser = User.objects.create_superuser(
-            username='insurance-superuser',
-            email='insurance-superuser@example.com',
-            password='password',
-        )
-        staff_user = User.objects.create_user(
-            username='insurance-staff',
-            email='insurance-staff@example.com',
-            password='password',
-            is_staff=True,
-        )
-
-        self.assertNotIn(
-            'insurance_expiration_date',
-            player_admin.get_readonly_fields(SimpleNamespace(user=superuser)),
-        )
-        self.assertIn(
-            'insurance_expiration_date',
-            player_admin.get_readonly_fields(SimpleNamespace(user=staff_user)),
-        )
 
 
 class PlayerLicenseListTests(TestCase):
