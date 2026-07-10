@@ -173,12 +173,18 @@ class MembershipInline(admin.TabularInline):
         verbose_name_plural = 'Належнiсть до команд'
 
 class PlayerAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
-    list_display = ('id', 'name', 'surname', 'licence_number', 'is_licence_active', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_inclusive', 'arbiter_level', 'coach_level')
+    list_display = ('id', 'name', 'surname', 'licence_number', 'is_licence_active', 'insurance_expiration_date', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_inclusive', 'arbiter_level', 'coach_level')
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     # inlines = (MembershipInline,)
     actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
     autocomplete_fields = ['current_club', 'user']
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if not request.user.is_superuser and 'insurance_expiration_date' not in readonly_fields:
+            readonly_fields.append('insurance_expiration_date')
+        return readonly_fields
 
     def get_audit_before_instance(self, obj):
         return self.model.objects.select_related('user').get(pk=obj.pk)
