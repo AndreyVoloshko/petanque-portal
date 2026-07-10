@@ -96,7 +96,10 @@
                             </td>
                         {% endif %}
                         <td class="tournament-status-cell" data-label="{% trans "Статус" %}">
-                            <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                            <span class="tournament-status-line">
+                                <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                                {% include "tournaments/_insurance_required.html" with tournament=item only %}
+                            </span>
                             {% if row.status.note %}
                                 <span class="tournament-status-note">{{ row.status.note }}</span>
                             {% endif %}
@@ -144,7 +147,10 @@
                                 </div>
                             </div>
                             <div class="tournament-tablet-registration">
-                                <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                                <span class="tournament-status-line">
+                                    <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                                    {% include "tournaments/_insurance_required.html" with tournament=item only %}
+                                </span>
                                 {% if row.status.note %}
                                     <span class="tournament-status-note">{{ row.status.note }}</span>
                                 {% endif %}
@@ -293,7 +299,10 @@
                                     {% endwith %}
                                 {% endif %}
                                 <div class="tournament-mobile-registration">
-                                    <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                                    <span class="tournament-status-line">
+                                        <span class="tournament-status tournament-status-{{ row.status.key }}">{{ row.status.label }}</span>
+                                        {% include "tournaments/_insurance_required.html" with tournament=item only %}
+                                    </span>
                                     {% if row.status.note %}
                                         <span class="tournament-status-note">{{ row.status.note }}</span>
                                     {% endif %}
