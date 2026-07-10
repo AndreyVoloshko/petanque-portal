@@ -1203,6 +1203,7 @@ def tournament_teams_export(request, id):
                     'rating': getattr(player, player_rating_field),
                     'rating_field': player_rating_field,
                     'rating_place': rating_place,
+                    'insurance_valid': not tournament.requires_insurance or player.has_valid_insurance(),
                 })
 
 

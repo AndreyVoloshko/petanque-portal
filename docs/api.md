@@ -140,7 +140,8 @@ Returns tournament data with registered teams and players.
           "sport_title": "",
           "rating": 320,
           "rating_field": "current_rating",
-          "rating_place": 5
+          "rating_place": 5,
+          "insurance_valid": true
         }
       ]
     }
@@ -149,6 +150,8 @@ Returns tournament data with registered teams and players.
 ```
 
 `teams[].club` and `teams[].club_logo_url` are populated only when every player in the exported team has the same current club; otherwise both values are `null`. `players[].rating` uses the tournament-specific rating field: regular, B, League, or inclusive.
+
+`players[].insurance_valid` is `true` when the tournament does not require insurance, or when the player's insurance expiration date is today or later; it is `false` when the tournament requires insurance and the player's insurance is missing or expired.
 
 **Response (CSV)**
 

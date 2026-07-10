@@ -1264,6 +1264,7 @@ class TournamentTeamExportJsonTests(TestCase):
         avatar='',
         is_licence_active=True,
         licence_number=None,
+        insurance_expiration_date=None,
     ):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
@@ -1277,9 +1278,10 @@ class TournamentTeamExportJsonTests(TestCase):
             is_licence_active=is_licence_active,
             licence_number=licence_number if licence_number is not None else username,
             avatar=avatar,
+            insurance_expiration_date=insurance_expiration_date,
         )
 
-    def create_tournament(self):
+    def create_tournament(self, requires_insurance=False):
         return Tournament.objects.create(
             name='Export Cup',
             category='open',
@@ -1288,6 +1290,7 @@ class TournamentTeamExportJsonTests(TestCase):
             number_of_players_in_team_min=2,
             number_of_players_in_team_max=2,
             format='swiko',
+            requires_insurance=requires_insurance,
         )
 
     def create_team_membership(self, tournament, players, name, place_min, power='0.0000'):
@@ -1355,6 +1358,49 @@ class TournamentTeamExportJsonTests(TestCase):
         mixed_team = data['teams'][1]
         self.assertIsNone(mixed_team['club'])
         self.assertIsNone(mixed_team['club_logo_url'])
+
+    def test_json_export_marks_player_insurance_validity(self):
+        insured = self.create_player(
+            'export-insured',
+            insurance_expiration_date=timezone.localdate() + timedelta(days=1),
+        )
+        expired = self.create_player(
+            'export-expired',
+            insurance_expiration_date=timezone.localdate() - timedelta(days=1),
+        )
+        uninsured = self.create_player('export-uninsured')
+
+        tournament = self.create_tournament(requires_insurance=True)
+        self.create_team_membership(tournament, [insured, expired], 'Insured Pair', place_min=1)
+        self.create_team_membership(tournament, [uninsured, insured], 'Uninsured Pair', place_min=2)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        players_by_id = {
+            player['id']: player
+            for team in response.json()['teams']
+            for player in team['players']
+        }
+        self.assertTrue(players_by_id[insured.pk]['insurance_valid'])
+        self.assertFalse(players_by_id[expired.pk]['insurance_valid'])
+        self.assertFalse(players_by_id[uninsured.pk]['insurance_valid'])
+
+    def test_json_export_marks_insurance_valid_when_not_required(self):
+        expired = self.create_player(
+            'optional-export-expired',
+            insurance_expiration_date=timezone.localdate() - timedelta(days=1),
+        )
+        uninsured = self.create_player('optional-export-uninsured')
+
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [expired, uninsured], 'Optional Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        players = response.json()['teams'][0]['players']
+        self.assertTrue(all(player['insurance_valid'] for player in players))
 
 
 class OptionalRegistrationEmailTests(TestCase):
