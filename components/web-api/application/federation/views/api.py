@@ -123,77 +123,88 @@ def _validate_team_entry(team, index):
     return None
 
 
-@csrf_exempt
-@require_POST
-def submit_tournament_results(request):
-    """Update submitted team places and record one revertable tournament change."""
-    if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
+# The external draw tool owns three tournament attributes. They are writable
+# only here, authenticated by the shared API password (no session, no CSRF).
+TOURNAMENT_META_MAX_BYTES = 256 * 1024
+TOURNAMENT_META_REQUIRED_KEYS = {'games', 'teams'}
+TOURNAMENT_API_ATTRIBUTES = ('meta', 'petanque_draw_id', 'teams')
 
-    try:
-        body = json.loads(request.body)
-    except (json.JSONDecodeError, ValueError):
-        return _bad_request('Invalid JSON body')
 
-    tournament_id = body.get('tournament_id')
-    teams = body.get('teams')
-
-    if tournament_id is None:
-        return _bad_request('tournament_id is required')
-    if not isinstance(teams, list) or len(teams) == 0:
-        return _bad_request('teams must be a non-empty array')
-
-    for i, team in enumerate(teams):
-        error = _validate_team_entry(team, i)
-        if error:
-            return _bad_request(error)
-
-    with transaction.atomic():
+def _validate_meta(meta):
+    """Return (serialized_meta, error). Accepts a draw object or its JSON text."""
+    if isinstance(meta, str):
         try:
-            tournament = Tournament.objects.select_for_update().get(pk=tournament_id)
-        except Tournament.DoesNotExist:
-            return JsonResponse({'error': 'Tournament not found'}, status=404)
+            parsed = json.loads(meta)
+        except (json.JSONDecodeError, ValueError):
+            return None, 'meta must be valid JSON'
+        raw = meta
+    elif isinstance(meta, dict):
+        parsed = meta
+        raw = json.dumps(meta, ensure_ascii=False)
+    else:
+        return None, 'meta must be a draw object'
 
-        # Validate and lock the complete submission before applying any result
-        # so a rejected request cannot leave unaudited partial updates.
-        team_ids = [team['team_id'] for team in teams]
-        locked_memberships = list(
-            TeamTournamentMembership.objects.select_for_update().filter(
-                tournament=tournament,
-                team_id__in=team_ids,
-            )
+    if not isinstance(parsed, dict) or not TOURNAMENT_META_REQUIRED_KEYS <= parsed.keys():
+        return None, 'meta must be a draw object containing "games" and "teams"'
+
+    if len(raw.encode('utf-8')) > TOURNAMENT_META_MAX_BYTES:
+        return None, 'meta is too large'
+
+    return raw, None
+
+
+def _apply_team_places(tournament, teams):
+    """Lock and validate the whole submission before writing any place."""
+    team_ids = [team['team_id'] for team in teams]
+    locked_memberships = list(
+        TeamTournamentMembership.objects.select_for_update().filter(
+            tournament=tournament,
+            team_id__in=team_ids,
         )
-        memberships = {
-            membership.team_id: membership
-            for membership in locked_memberships
-        }
-        for i, team in enumerate(teams):
-            if team['team_id'] not in memberships:
-                return _bad_request(f'teams[{i}]: team {team["team_id"]} is not registered in this tournament')
+    )
+    memberships = {
+        membership.team_id: membership
+        for membership in locked_memberships
+    }
+    for i, team in enumerate(teams):
+        if team['team_id'] not in memberships:
+            return None, f'teams[{i}]: team {team["team_id"]} is not registered in this tournament'
 
-        before_memberships = [copy(membership) for membership in locked_memberships]
-        updated = []
-        for team in teams:
-            membership = memberships[team['team_id']]
-            membership.place_min = team['place_min']
-            membership.place_max = team.get('place_max') or 0
-            membership.save()
-            updated.append(team['team_id'])
+    before_memberships = [copy(membership) for membership in locked_memberships]
+    updated = []
+    for team in teams:
+        membership = memberships[team['team_id']]
+        membership.place_min = team['place_min']
+        membership.place_max = team.get('place_max') or 0
+        membership.save()
+        updated.append(team['team_id'])
 
-        record_tournament_team_places_change(
-            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME),
-            tournament,
-            before_memberships,
-            locked_memberships,
-        )
+    record_tournament_team_places_change(
+        get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME),
+        tournament,
+        before_memberships,
+        locked_memberships,
+    )
+    return updated, None
 
-    return JsonResponse({'updated_teams': updated})
+
+class _ApiError(Exception):
+    """Abort the transaction and return `response` to the caller."""
+
+    def __init__(self, response):
+        self.response = response
 
 
 @csrf_exempt
 @require_POST
-def submit_tournament_draw_id(request):
-    """Set the tournament's identifier inside the external draw tool."""
+def update_tournament(request):
+    """Update the draw-owned tournament attributes: meta, petanque_draw_id, teams.
+
+    Serves both `/api/tournament/` and the legacy `/api/tournament/results/`.
+    Every provided attribute is validated before anything is written, and the
+    whole request is applied in one transaction: a rejected team rolls back the
+    meta and draw-id writes that accompanied it.
+    """
     if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
@@ -206,31 +217,77 @@ def submit_tournament_draw_id(request):
         return _bad_request('Body must be an object')
 
     tournament_id = body.get('tournament_id')
-    draw_id = body.get('petanque_draw_id')
-
     if tournament_id is None:
         return _bad_request('tournament_id is required')
-    if draw_id is None:
-        return _bad_request('petanque_draw_id is required')
-    if not isinstance(draw_id, str):
-        return _bad_request('petanque_draw_id must be a string')
 
-    with transaction.atomic():
-        try:
-            tournament = Tournament.objects.select_for_update().get(pk=tournament_id)
-        except (Tournament.DoesNotExist, ValueError, TypeError):
-            return JsonResponse({'error': 'Tournament not found'}, status=404)
-
-        tournament_before = copy(tournament)
-        tournament.petanque_draw_id = draw_id
-        tournament.save(update_fields=['petanque_draw_id'])
-        record_model_change(
-            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME),
-            tournament_before,
-            tournament,
+    if not any(attribute in body for attribute in TOURNAMENT_API_ATTRIBUTES):
+        return _bad_request(
+            'at least one of "meta", "petanque_draw_id" or "teams" is required'
         )
 
-    return JsonResponse({'status': 'ok', 'petanque_draw_id': draw_id})
+    raw_meta = None
+    if 'meta' in body:
+        raw_meta, error = _validate_meta(body['meta'])
+        if error:
+            return _bad_request(error)
+
+    draw_id = None
+    if 'petanque_draw_id' in body:
+        draw_id = body['petanque_draw_id']
+        if not isinstance(draw_id, str):
+            return _bad_request('petanque_draw_id must be a string')
+
+    teams = None
+    if 'teams' in body:
+        teams = body['teams']
+        if not isinstance(teams, list) or len(teams) == 0:
+            return _bad_request('teams must be a non-empty array')
+        for i, team in enumerate(teams):
+            error = _validate_team_entry(team, i)
+            if error:
+                return _bad_request(error)
+
+    updated_teams = []
+    try:
+        with transaction.atomic():
+            try:
+                tournament = Tournament.objects.select_for_update().get(pk=tournament_id)
+            except (Tournament.DoesNotExist, ValueError, TypeError):
+                raise _ApiError(JsonResponse({'error': 'Tournament not found'}, status=404))
+
+            updated_fields = []
+            if raw_meta is not None:
+                if tournament.is_processing_closed():
+                    raise _ApiError(JsonResponse(
+                        {'error': 'tournament processing is closed'}, status=403,
+                    ))
+                updated_fields.append('meta')
+            if draw_id is not None:
+                updated_fields.append('petanque_draw_id')
+
+            if updated_fields:
+                tournament_before = copy(tournament)
+                if raw_meta is not None:
+                    tournament.meta = raw_meta
+                if draw_id is not None:
+                    tournament.petanque_draw_id = draw_id
+                tournament.save(update_fields=updated_fields)
+                # The tool authenticates by header, not session: attribute the
+                # change to the system user or the audit entry is dropped.
+                record_model_change(
+                    get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME),
+                    tournament_before,
+                    tournament,
+                )
+
+            if teams is not None:
+                updated_teams, error = _apply_team_places(tournament, teams)
+                if error:
+                    raise _ApiError(_bad_request(error))
+    except _ApiError as api_error:
+        return api_error.response
+
+    return JsonResponse({'status': 'ok', 'updated_teams': updated_teams})
 
 
 def players_list(request):

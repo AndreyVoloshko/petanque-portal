@@ -20,12 +20,8 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
-from copy import copy
-from django.db import transaction
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_protect
 from federation.audit import (
-    SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME,
-    get_or_create_system_audit_user,
     record_model_change,
     record_tournament_team_places_change,
 )
@@ -915,73 +911,10 @@ def _empty_state(filters):
         'description': _('Спробуйте змінити фільтри.'),
     }
 
-# The external draw tool POSTs its draw state as a `meta` field to the
-# tournament page with the shared API password in the Authorization header
-# (same mechanism as submit_tournament_results) — no session, no CSRF token.
-# Defense in depth on top of the password: strict payload validation, a size
-# cap, a tournament-state gate, and an audit record. Every real payload
-# observed is a JSON object that always carries "games" and "teams" keys.
-TOURNAMENT_META_MAX_BYTES = 256 * 1024
-TOURNAMENT_META_REQUIRED_KEYS = {'games', 'teams'}
-
-
-def _update_tournament_meta(request, tournament_id):
-    if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-
-    raw_meta = request.POST['meta']
-
-    if len(raw_meta.encode('utf-8')) > TOURNAMENT_META_MAX_BYTES:
-        return JsonResponse({'error': 'meta is too large'}, status=400)
-
-    try:
-        parsed_meta = json.loads(raw_meta)
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'error': 'meta must be valid JSON'}, status=400)
-
-    if not isinstance(parsed_meta, dict) or not TOURNAMENT_META_REQUIRED_KEYS <= parsed_meta.keys():
-        return JsonResponse(
-            {'error': 'meta must be a draw object containing "games" and "teams"'},
-            status=400,
-        )
-
-    with transaction.atomic():
-        tournament = get_object_or_404(
-            Tournament.objects.select_for_update(), pk=tournament_id,
-        )
-
-        if tournament.is_processing_closed():
-            return JsonResponse(
-                {'error': 'tournament processing is closed'},
-                status=403,
-            )
-
-        tournament_before = copy(tournament)
-        tournament.meta = raw_meta
-        tournament.save(update_fields=['meta'])
-        # The draw tool authenticates with the API password, not a session, so
-        # attribute the change to the system user: an AnonymousUser makes the
-        # audit entry be dropped silently.
-        record_model_change(
-            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME),
-            tournament_before,
-            tournament,
-        )
-
-    return JsonResponse({'status': 'ok'}, safe=False)
-
-
-@csrf_exempt
-def tournament(request, id):
-    # CSRF exemption is quarantined to the draw tool's meta write; every
-    # other request goes through the CSRF-protected page view below.
-    if request.method == "POST" and 'meta' in request.POST:
-        return _update_tournament_meta(request, id)
-    return _tournament_page(request, id)
-
-
+# Draw-tool writes (meta, petanque_draw_id, results) live in views/api.py behind
+# the API password. This page is a CSRF-protected, session-authenticated view.
 @csrf_protect
-def _tournament_page(request, id):
+def tournament(request, id):
     current_user = request.user
 
     tournament = get_object_or_404(
