@@ -405,6 +405,7 @@ class PlayerProfileAuditLogTests(TestCase):
         self.assertIsNone(record_model_change(admin_user, document, document))
         self.assertEqual(LogEntry.objects.count(), 1)
 
+    @override_settings(API_PASSWORD='no-op-audit-api-password')
     def test_no_op_tournament_meta_and_notes_are_not_logged(self):
         admin_user = User.objects.create_superuser(
             username='tournament-no-op-audit-admin',
@@ -425,7 +426,11 @@ class PlayerProfileAuditLogTests(TestCase):
         )
         self.client.force_login(admin_user)
 
-        meta_response = self.client.post('/tournament/{}'.format(tournament.pk), {'meta': tournament.meta})
+        meta_response = self.client.post(
+            '/tournament/{}'.format(tournament.pk),
+            {'meta': tournament.meta},
+            headers={'authorization': 'no-op-audit-api-password'},
+        )
         notes_response = self.client.post(
             '/tournament/{}'.format(tournament.pk),
             {'tournament_notes_content': tournament.final_notes},

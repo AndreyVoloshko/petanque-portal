@@ -1,10 +1,13 @@
 import json
 from datetime import date
 
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from federation.models.tournament import Tournament
+
+API_PASSWORD = 'test-api-password'
+AUTH = {'headers': {'authorization': API_PASSWORD}}
 
 
 def draw_tool_payload(**overrides):
@@ -34,6 +37,7 @@ def draw_tool_payload(**overrides):
     return json.dumps(payload)
 
 
+@override_settings(API_PASSWORD=API_PASSWORD)
 class TournamentMetaEndpointTests(TestCase):
     def setUp(self):
         self.tournament = Tournament.objects.create(
@@ -49,11 +53,11 @@ class TournamentMetaEndpointTests(TestCase):
         self.tournament.refresh_from_db()
         return self.tournament.meta
 
-    # -- external draw tool compatibility (must keep working unchanged) --
+    # -- external draw tool compatibility (API password, no session/CSRF) --
 
-    def test_draw_tool_payload_saved_without_authentication(self):
+    def test_draw_tool_payload_saved_with_api_password(self):
         payload = draw_tool_payload()
-        response = self.client.post(self.url, {'meta': payload})
+        response = self.client.post(self.url, {'meta': payload}, **AUTH)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'status': 'ok'})
@@ -62,15 +66,41 @@ class TournamentMetaEndpointTests(TestCase):
     def test_draw_tool_payload_accepted_without_csrf_token(self):
         csrf_client = Client(enforce_csrf_checks=True)
         payload = draw_tool_payload()
-        response = csrf_client.post(self.url, {'meta': payload})
+        response = csrf_client.post(self.url, {'meta': payload}, **AUTH)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.refreshed_meta(), payload)
 
+    # -- hardening: same API password mechanism as submit_tournament_results --
+
+    def test_meta_rejected_without_api_password(self):
+        response = self.client.post(self.url, {'meta': draw_tool_payload()})
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIsNone(self.refreshed_meta())
+
+    def test_meta_rejected_with_wrong_api_password(self):
+        response = self.client.post(
+            self.url, {'meta': draw_tool_payload()},
+            headers={'authorization': 'wrong-password'},
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIsNone(self.refreshed_meta())
+
+    @override_settings(API_PASSWORD=None)
+    def test_meta_rejected_when_api_password_unconfigured(self):
+        response = self.client.post(self.url, {'meta': draw_tool_payload()}, **AUTH)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertIsNone(self.refreshed_meta())
+
     # -- hardening: payload validation --
 
     def test_non_json_meta_rejected(self):
-        response = self.client.post(self.url, {'meta': '<script>alert(1)</script>'})
+        response = self.client.post(
+            self.url, {'meta': '<script>alert(1)</script>'}, **AUTH,
+        )
 
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(self.refreshed_meta())
@@ -78,14 +108,14 @@ class TournamentMetaEndpointTests(TestCase):
     def test_json_without_draw_shape_rejected(self):
         for payload in ('"just a string"', '[]', '{"foo": "bar"}', '{"games": []}'):
             with self.subTest(payload=payload):
-                response = self.client.post(self.url, {'meta': payload})
+                response = self.client.post(self.url, {'meta': payload}, **AUTH)
 
                 self.assertEqual(response.status_code, 400)
                 self.assertIsNone(self.refreshed_meta())
 
     def test_oversized_meta_rejected(self):
         oversized = draw_tool_payload(padding='x' * (300 * 1024))
-        response = self.client.post(self.url, {'meta': oversized})
+        response = self.client.post(self.url, {'meta': oversized}, **AUTH)
 
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(self.refreshed_meta())
@@ -96,7 +126,7 @@ class TournamentMetaEndpointTests(TestCase):
         self.tournament.is_processing_finished = True
         self.tournament.save()
 
-        response = self.client.post(self.url, {'meta': draw_tool_payload()})
+        response = self.client.post(self.url, {'meta': draw_tool_payload()}, **AUTH)
 
         self.assertEqual(response.status_code, 403)
         self.assertIsNone(self.refreshed_meta())

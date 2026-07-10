@@ -912,16 +912,19 @@ def _empty_state(filters):
     }
 
 # The external draw tool POSTs its draw state as a `meta` field to the
-# tournament page anonymously — no auth header, no CSRF token — and cannot be
-# updated to send credentials. The write therefore stays open, but is
-# quarantined: strict payload validation, a size cap, a tournament-state gate,
-# and an audit record. Every real payload observed is a JSON object that
-# always carries "games" and "teams" keys.
+# tournament page with the shared API password in the Authorization header
+# (same mechanism as submit_tournament_results) — no session, no CSRF token.
+# Defense in depth on top of the password: strict payload validation, a size
+# cap, a tournament-state gate, and an audit record. Every real payload
+# observed is a JSON object that always carries "games" and "teams" keys.
 TOURNAMENT_META_MAX_BYTES = 256 * 1024
 TOURNAMENT_META_REQUIRED_KEYS = {'games', 'teams'}
 
 
 def _update_tournament_meta(request, tournament):
+    if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
     raw_meta = request.POST['meta']
 
     if len(raw_meta.encode('utf-8')) > TOURNAMENT_META_MAX_BYTES:
