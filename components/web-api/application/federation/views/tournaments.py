@@ -1027,19 +1027,11 @@ def tournament(request, id):
 
 
 def _can_view_insurance_warnings(tournament, user):
-    if not tournament.requires_insurance:
-        return False
-
-    if tournament.is_finished():
-        return False
-
-    if not getattr(user, 'is_authenticated', False):
-        return False
-
-    if user.is_superuser:
-        return True
-
-    return bool(tournament.main_organizer_id and tournament.main_organizer.user_id == user.pk)
+    return (
+        tournament.requires_insurance and
+        not tournament.is_finished() and
+        tournament.is_user_has_admin_access_to_tournament(user)
+    )
 
 
 def tournament_teams_export(request, id):
