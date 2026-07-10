@@ -1377,9 +1377,11 @@ class TournamentTeamExportJsonTests(TestCase):
         response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
 
         self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['tournament']['requires_insurance'])
         players_by_id = {
             player['id']: player
-            for team in response.json()['teams']
+            for team in data['teams']
             for player in team['players']
         }
         self.assertTrue(players_by_id[insured.pk]['insurance_valid'])
@@ -1399,7 +1401,9 @@ class TournamentTeamExportJsonTests(TestCase):
         response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
 
         self.assertEqual(response.status_code, 200)
-        players = response.json()['teams'][0]['players']
+        data = response.json()
+        self.assertFalse(data['tournament']['requires_insurance'])
+        players = data['teams'][0]['players']
         self.assertTrue(all(player['insurance_valid'] for player in players))
 
 

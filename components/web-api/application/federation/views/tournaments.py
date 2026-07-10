@@ -1143,6 +1143,7 @@ def tournament_teams_export(request, id):
                 'meta': tournament.meta,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time,
+                'requires_insurance': tournament.requires_insurance,
                 'player_rating_field': player_rating_field,
                 'organizer_club': {'id': tournament.organizer_club.pk, 'name': tournament.organizer_club.name} if tournament.organizer_club else None,
                 'main_organizer': _player_brief(tournament.main_organizer) if tournament.main_organizer else None,

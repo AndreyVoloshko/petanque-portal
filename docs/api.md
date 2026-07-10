@@ -105,6 +105,7 @@ Returns tournament data with registered teams and players.
     "meta": "...",
     "start_date": "2024-06-01",
     "start_time": "10:00:00",
+    "requires_insurance": false,
     "player_rating_field": "current_rating",
     "organizer_club": { "id": 3, "name": "Club Name" },
     "main_organizer": { "id": 10, "name": "Ivan", "surname": "Petrenko", "second_name": "", "avatar_url": "https://example.com/media/player.jpg" },
