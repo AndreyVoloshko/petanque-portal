@@ -20,7 +20,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
@@ -911,7 +911,9 @@ def _empty_state(filters):
         'description': _('Спробуйте змінити фільтри.'),
     }
 
-@csrf_exempt
+# Draw-tool writes (meta, petanque_draw_id, results) live in views/api.py behind
+# the API password. This page is a CSRF-protected, session-authenticated view.
+@csrf_protect
 def tournament(request, id):
     current_user = request.user
 
@@ -926,13 +928,6 @@ def tournament(request, id):
     )
 
     if request.method == "POST":
-        if 'meta' in request.POST:
-            tournament_before = Tournament.objects.get(pk=tournament.pk)
-            tournament.meta = request.POST['meta']
-            tournament.save()
-            record_model_change(current_user, tournament_before, tournament)
-            return JsonResponse({'status': 'ok'}, safe=False)
-
         if 'tournament_detail_notes_content' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.notes = request.POST['tournament_detail_notes_content'].strip() or None
@@ -1141,6 +1136,7 @@ def tournament_teams_export(request, id):
                 'name': tournament.name,
                 'display_name': tournament.get_display_name(),
                 'meta': tournament.meta,
+                'petanque_draw_id': tournament.petanque_draw_id,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time,
                 'requires_insurance': tournament.requires_insurance,

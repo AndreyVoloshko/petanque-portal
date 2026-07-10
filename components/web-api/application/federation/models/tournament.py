@@ -79,6 +79,9 @@ class Tournament(models.Model):
     teams = models.ManyToManyField(Team, through='TeamTournamentMembership', related_name='tournament_teams', blank=True)
     notes = models.TextField(_('Notes'), blank=True, null=True)
     meta = models.TextField(_('Technical information for the draw'), blank=True, null=True)
+    # Identifier of this tournament inside the external draw tool. Written only
+    # through the authenticated API (see views/api.py); read-only in the admin.
+    petanque_draw_id = models.TextField(_('Petanque draw ID'), blank=True, default='')
 
     final_notes = models.TextField(_('Notes for the final protocol'), blank=True, null=True)
 
@@ -640,6 +643,8 @@ class ArbiterTeamTournamentAdminInline(RevertibleAuditAdminMixin, admin.ModelAdm
         'is_processing_finished',
     ]
     autocomplete_fields = ['organizer_club', 'federation_delegat', 'main_organizer']
+    # Owned by the external draw tool; visible here but only writable via the API.
+    readonly_fields = ('petanque_draw_id',)
 
     actions = [recalculate_power,
                recalculate_ratings,

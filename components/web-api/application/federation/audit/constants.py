@@ -16,6 +16,7 @@ PLAYER_CHANGE_FIELD_SPORT_TITLE = 'sport_title'
 PLAYER_CHANGE_FILTER_CLUB = 'club'
 TOURNAMENT_CHANGE_FIELD_TEAM_PLACES = 'team_places'
 SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME = 'system.tournament.results'
+SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME = 'system.petanque.draw'
 
 PLAYER_CHANGE_IGNORED_FIELDS = frozenset((
     'current_rating',

@@ -405,7 +405,7 @@ class PlayerProfileAuditLogTests(TestCase):
         self.assertIsNone(record_model_change(admin_user, document, document))
         self.assertEqual(LogEntry.objects.count(), 1)
 
-    def test_no_op_tournament_meta_and_notes_are_not_logged(self):
+    def test_no_op_tournament_notes_are_not_logged(self):
         admin_user = User.objects.create_superuser(
             username='tournament-no-op-audit-admin',
             email='tournament-no-op-audit-admin@example.com',
@@ -420,18 +420,15 @@ class PlayerProfileAuditLogTests(TestCase):
             number_of_players_in_team_min=1,
             number_of_players_in_team_max=1,
             format='swiss',
-            meta='{"round": 1}',
             final_notes='Existing notes',
         )
         self.client.force_login(admin_user)
 
-        meta_response = self.client.post('/tournament/{}'.format(tournament.pk), {'meta': tournament.meta})
         notes_response = self.client.post(
             '/tournament/{}'.format(tournament.pk),
             {'tournament_notes_content': tournament.final_notes},
         )
 
-        self.assertEqual(meta_response.status_code, 200)
         self.assertEqual(notes_response.status_code, 302)
         self.assertFalse(LogEntry.objects.exists())
 
