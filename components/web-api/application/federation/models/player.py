@@ -4,6 +4,7 @@ from django.db import models
 from django_countries.fields import CountryField
 from django.contrib.auth.models import User
 from federation.storage import MediaStorage
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import federation.config.rating as rating_config
 from federation.helpers.general import get_model
@@ -69,6 +70,7 @@ class Player(models.Model):
 
     licence_number = models.CharField(_('License number'), max_length=50, blank=True, null=True)
     is_licence_active = models.BooleanField(_('License active'), default=False)
+    insurance_expiration_date = models.DateField(_('Insurance valid until'), blank=True, null=True)
 
     is_inclusive = models.BooleanField(_('Inclusive player'), default=False)
 
@@ -130,6 +132,12 @@ class Player(models.Model):
     def deactivate_licence(self):
         self.is_licence_active = False
         self.save()
+
+    def has_valid_insurance(self):
+        return (
+            self.insurance_expiration_date is not None and
+            self.insurance_expiration_date >= timezone.localdate()
+        )
 
     '''
     Ranking among licensed players

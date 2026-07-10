@@ -2706,3 +2706,15 @@ msgstr "Use this block only when the athlete is missing from search results."
 #: federation/templates/register/team.html
 msgid "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
 msgstr "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
+
+#: federation/models/player.py
+msgid "Insurance valid until"
+msgstr "Insurance valid until"
+
+#: federation/models/tournament.py
+msgid "Insurance required"
+msgstr "Insurance required"
+
+#: federation/templates/tournaments/_insurance_warning.html
+msgid "Insurance is missing or expired"
+msgstr "Insurance is missing or expired"

@@ -1014,14 +1014,24 @@ def tournament(request, id):
         .order_by('place_min', 'place_max', 'date_registration', 'pk')
     )
 
+    current_user.can_view_insurance_warnings = _can_view_insurance_warnings(tournament, current_user)
+
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
         'tournament_detail': _build_tournament_detail(tournament),
         'arbiters': arbiters,
         'teams': teams,
         'page_title': _("Competitions"),
-        'current_user': current_user
+        'current_user': current_user,
     })
+
+
+def _can_view_insurance_warnings(tournament, user):
+    return (
+        tournament.requires_insurance and
+        not tournament.is_finished() and
+        tournament.is_user_has_admin_access_to_tournament(user)
+    )
 
 
 def tournament_teams_export(request, id):
@@ -1133,6 +1143,7 @@ def tournament_teams_export(request, id):
                 'meta': tournament.meta,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time,
+                'requires_insurance': tournament.requires_insurance,
                 'player_rating_field': player_rating_field,
                 'organizer_club': {'id': tournament.organizer_club.pk, 'name': tournament.organizer_club.name} if tournament.organizer_club else None,
                 'main_organizer': _player_brief(tournament.main_organizer) if tournament.main_organizer else None,
@@ -1193,6 +1204,7 @@ def tournament_teams_export(request, id):
                     'rating': getattr(player, player_rating_field),
                     'rating_field': player_rating_field,
                     'rating_place': rating_place,
+                    'insurance_valid': not tournament.requires_insurance or player.has_valid_insurance(),
                 })
 
 
