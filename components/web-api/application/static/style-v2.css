@@ -5666,6 +5666,21 @@ Tournaments classes
   white-space: normal;
 }
 
+.tournament-status-line {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.tournament-status-insurance {
+  color: var(--portal-green-600);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .tournament-status-registration_open {
   background: #e8f7e9;
   color: #1a7f37;

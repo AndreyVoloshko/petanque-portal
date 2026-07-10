@@ -2111,6 +2111,24 @@ class TournamentListingPageTests(TestCase):
         self.assertNotContains(response, 'tournament-detail-chip-insurance')
         self.assertNotContains(response, 'tournament-team-insurance-marker')
 
+    def test_tournaments_list_shows_insurance_icon_in_status_column(self):
+        self.create_tournament('Insured List Cup', requires_insurance=True)
+
+        with override('uk'):
+            response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-status-insurance')
+        self.assertContains(response, 'Необхідне страхування')
+
+    def test_tournaments_list_hides_insurance_icon_when_not_required(self):
+        self.create_tournament('Plain List Cup')
+
+        response = self.client.get('/tournaments/', {'period': 'future'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-status-insurance')
+
     def test_tournament_detail_unready_tournament_does_not_show_place_editor(self):
         admin = User.objects.create_superuser(
             username='place-editor-admin',
