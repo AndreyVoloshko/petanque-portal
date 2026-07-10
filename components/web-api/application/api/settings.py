@@ -30,11 +30,21 @@ GEOS_LIBRARY_PATH = '/usr/lib/libgeos_c.so.1'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k1n!-r2wazl!q#2dn3wa9_lm5v2))#n-k8veqn_u@+^0-@4m$w'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_credential('debug')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# Comes from APP_CREDENTIALS like every other credential; a key committed to
+# source control is compromised by definition. The fallback below exists for
+# local development only — production must fail hard rather than sign
+# sessions and password-reset tokens with a public value.
+SECRET_KEY = get_credential('secret_key')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-local-dev-only-key'
+    else:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('APP_CREDENTIALS must include "secret_key" when debug is off')
 
 ALLOWED_HOSTS = get_credential('domains')
 
