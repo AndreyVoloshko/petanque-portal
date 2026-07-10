@@ -53,7 +53,8 @@ docs/                              ← project-overview.md, local-development.md
 - **Function-based views** throughout. Keep new views consistent with the existing style.
 - **Configuration via `APP_CREDENTIALS`** — a single JSON env var in `.env`. Never hardcode credentials or secrets.
 - **S3 for static/media in production.** Falls back to local filesystem when S3 credentials are absent (safe for local dev).
-- **CI/CD:** merging a PR into `master` on GitHub triggers `.github/workflows/deploy.yml`, which SSHes into the production server and runs `deploy/remote_run.sh` automatically. See `docs/deployment.md` for secrets and server setup. Manual deploys (`./deploy/remote_run.sh` after SSHing in) are still available for out-of-band fixes.
+- **CI/CD:** merging a PR into `master` on GitHub triggers `.github/workflows/deploy.yml` ("CI & Deploy"): a test gate (system checks, migration-drift check, full test suite against Postgres 17) runs first, and only if it passes does the workflow SSH into the production server and run `deploy/remote_run.sh`. The test job also runs on every PR. See `docs/deployment.md` for secrets and server setup. Manual deploys (`./deploy/remote_run.sh` after SSHing in) are still available for out-of-band fixes.
+- **Dependencies are pinned.** Edit `components/web-api/application/requirements.txt` (direct deps only), then regenerate `requirements.lock` with the command in its header. Docker and CI install from the lock.
 
 ## Local Services
 
@@ -68,7 +69,7 @@ docs/                              ← project-overview.md, local-development.md
 
 - **Migrations:** always run `makemigrations` + `migrate` after model changes. Never edit existing migration files.
 - **Ratings logic is complex.** `Player`, `Tournament` models and `recalculate_ratings` command contain the core business logic — change carefully and test manually.
-- **No meaningful test coverage.** `federation/tests.py` is a placeholder. Write tests when touching rating/tournament processing.
+- **Tests exist and gate deploys.** `federation/tests.py` + `federation/test_audit.py` hold ~160 tests that CI runs before every deploy. Keep them green; add tests when touching rating/tournament processing.
 - **Ukrainian locale.** User-visible strings should use `_()` / `gettext`. Translations live in `locale/uk/LC_MESSAGES/django.po`.
 - **`db.json`** is a data fixture for local seeding — treat as read-only unless intentionally refreshing it.
 - **`CORS_ORIGIN_ALLOW_ALL = True`** is set globally (GET only). Do not add new cross-origin endpoints without reviewing this.

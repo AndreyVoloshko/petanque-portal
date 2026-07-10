@@ -1,8 +1,13 @@
 # Deployment
 
 Deploys to the single production server (`52.59.170.52`) happen automatically
-when a PR merges into `master`, via `.github/workflows/deploy.yml`. The
-workflow SSHes in and runs the same steps as the old manual process:
+when a PR merges into `master`, via `.github/workflows/deploy.yml` ("CI &
+Deploy"). The workflow first runs a **test gate** — `manage.py check`,
+`makemigrations --check` (migration drift), and the full test suite against a
+PostgreSQL 17 service, installing pinned dependencies from
+`components/web-api/application/requirements.lock` — and only deploys if it
+passes. The same test job also runs on every pull request. The deploy step
+SSHes in and runs the same steps as the old manual process:
 
 ```
 sudo bash -c 'cd /root/app/portal && git pull && bash deploy/remote_run.sh'
@@ -20,7 +25,8 @@ invoked by absolute path.
 ## Triggering a deploy manually
 
 Without pushing a new commit, trigger a re-deploy from the Actions tab:
-GitHub repo → Actions → "Deploy" workflow → "Run workflow" → select `master`.
+GitHub repo → Actions → "CI & Deploy" workflow → "Run workflow" → select
+`master`. Manual runs also pass through the test gate first.
 
 Or via the CLI:
 
