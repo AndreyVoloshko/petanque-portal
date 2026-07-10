@@ -420,7 +420,7 @@ class PlayerProfileAuditLogTests(TestCase):
             number_of_players_in_team_min=1,
             number_of_players_in_team_max=1,
             format='swiss',
-            meta='{"round": 1}',
+            meta='{"games": [], "teams": [], "round": 1}',
             final_notes='Existing notes',
         )
         self.client.force_login(admin_user)

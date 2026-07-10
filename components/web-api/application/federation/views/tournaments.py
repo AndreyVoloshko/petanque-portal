@@ -20,7 +20,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
@@ -911,8 +911,57 @@ def _empty_state(filters):
         'description': _('Спробуйте змінити фільтри.'),
     }
 
+# The external draw tool POSTs its draw state as a `meta` field to the
+# tournament page anonymously — no auth header, no CSRF token — and cannot be
+# updated to send credentials. The write therefore stays open, but is
+# quarantined: strict payload validation, a size cap, a tournament-state gate,
+# and an audit record. Every real payload observed is a JSON object that
+# always carries "games" and "teams" keys.
+TOURNAMENT_META_MAX_BYTES = 256 * 1024
+TOURNAMENT_META_REQUIRED_KEYS = {'games', 'teams'}
+
+
+def _update_tournament_meta(request, tournament):
+    raw_meta = request.POST['meta']
+
+    if len(raw_meta.encode('utf-8')) > TOURNAMENT_META_MAX_BYTES:
+        return JsonResponse({'error': 'meta is too large'}, status=400)
+
+    try:
+        parsed_meta = json.loads(raw_meta)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'meta must be valid JSON'}, status=400)
+
+    if not isinstance(parsed_meta, dict) or not TOURNAMENT_META_REQUIRED_KEYS <= parsed_meta.keys():
+        return JsonResponse(
+            {'error': 'meta must be a draw object containing "games" and "teams"'},
+            status=400,
+        )
+
+    if tournament.is_processing_closed():
+        return JsonResponse(
+            {'error': 'tournament processing is closed'},
+            status=403,
+        )
+
+    tournament_before = Tournament.objects.get(pk=tournament.pk)
+    tournament.meta = raw_meta
+    tournament.save()
+    record_model_change(request.user, tournament_before, tournament)
+    return JsonResponse({'status': 'ok'}, safe=False)
+
+
 @csrf_exempt
 def tournament(request, id):
+    # CSRF exemption is quarantined to the draw tool's meta write; every
+    # other request goes through the CSRF-protected page view below.
+    if request.method == "POST" and 'meta' in request.POST:
+        return _update_tournament_meta(request, get_object_or_404(Tournament, pk=id))
+    return _tournament_page(request, id)
+
+
+@csrf_protect
+def _tournament_page(request, id):
     current_user = request.user
 
     tournament = get_object_or_404(
@@ -926,13 +975,6 @@ def tournament(request, id):
     )
 
     if request.method == "POST":
-        if 'meta' in request.POST:
-            tournament_before = Tournament.objects.get(pk=tournament.pk)
-            tournament.meta = request.POST['meta']
-            tournament.save()
-            record_model_change(current_user, tournament_before, tournament)
-            return JsonResponse({'status': 'ok'}, safe=False)
-
         if 'tournament_detail_notes_content' in request.POST and current_user.is_authenticated:
             if tournament.is_user_has_admin_access_to_tournament(current_user):
                 tournament.notes = request.POST['tournament_detail_notes_content'].strip() or None
