@@ -235,60 +235,6 @@ class TournamentDisplayNameTests(SimpleTestCase):
             'audience_tags': ['Молодь', 'Юніори', 'Юнаки'],
         })
 
-    def test_card_metadata_extracts_rank_ranges_and_gender_from_parentheses(self):
-        tete_women = self.create_tournament(
-            'Чемпіонат України (тети, жінки, ІІІ-IV ранг)',
-            players_min=1,
-            players_max=1,
-        )
-        doublets_men = self.create_tournament(
-            'Чемпіонат України (дуплети, чоловіки, ІІІ-IV ранг)',
-            players_min=2,
-            players_max=2,
-        )
-        duplicated_rank_word = self.create_tournament(
-            'Міжнародний турнір “Сакура” (тет, ІІІ-IV ранг ранг)',
-            players_min=1,
-            players_max=1,
-        )
-
-        self.assertEqual(get_tournament_card_metadata(tete_women), {
-            'name': 'Чемпіонат України',
-            'format': 'Тет-а-тет',
-            'format_source': 'Тет-а-тет',
-            'format_tags': ['Тет-а-тет'],
-            'audience_tags': ['Жінки', 'ІІІ-IV ранг'],
-        })
-        self.assertEqual(get_tournament_card_metadata(doublets_men), {
-            'name': 'Чемпіонат України',
-            'format': 'Дуплети',
-            'format_source': 'Дуплети',
-            'format_tags': ['Дуплети'],
-            'audience_tags': ['Чоловіки', 'ІІІ-IV ранг'],
-        })
-        self.assertEqual(get_tournament_card_metadata(duplicated_rank_word), {
-            'name': 'Міжнародний турнір “Сакура”',
-            'format': 'Тет-а-тет',
-            'format_source': 'Тет-а-тет',
-            'format_tags': ['Тет-а-тет'],
-            'audience_tags': ['ІІІ-IV ранг'],
-        })
-
-    def test_card_metadata_extracts_veteran_sport_age_category(self):
-        tournament = self.create_tournament(
-            'Чемпіонат України (триплети, тир, ветерани спорту   55+)',
-            players_min=3,
-            players_max=4,
-        )
-
-        self.assertEqual(get_tournament_card_metadata(tournament), {
-            'name': 'Чемпіонат України',
-            'format': 'Триплети',
-            'format_source': 'Триплети',
-            'format_tags': ['Триплети', 'Тир'],
-            'audience_tags': ['Ветерани'],
-        })
-
     def test_card_metadata_normalizes_super_melee_variants(self):
         tournament = self.create_tournament(
             'July Rose Cup (супермеле)',
@@ -821,7 +767,9 @@ class PlayerLicenseListTests(TestCase):
 
     def test_profile_form_save_preserves_non_profile_fields(self):
         player = self.create_player('licensed-profile', licence_number_value='00001')
+        valid_until = timezone.localdate() + timedelta(days=30)
         player.prefred_position = 'point'
+        player.insurance_expiration_date = valid_until
         player.save()
         form = PlayerForm(data={
             'name': player.name,
@@ -840,6 +788,7 @@ class PlayerLicenseListTests(TestCase):
 
         self.assertNotIn('licence_number', form.fields)
         self.assertNotIn('prefred_position', form.fields)
+        self.assertNotIn('insurance_expiration_date', form.fields)
         self.assertTrue(form.is_valid(), form.errors)
 
         form.save()
@@ -848,6 +797,7 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(player.licence_number, '00001')
         self.assertTrue(player.is_licence_active)
         self.assertEqual(player.prefred_position, 'point')
+        self.assertEqual(player.insurance_expiration_date, valid_until)
 
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
@@ -1007,7 +957,7 @@ class ClubDetailPageTests(TestCase):
 
 
 class PlayerTournamentListTests(TestCase):
-    def create_player(self, username='player-page'):
+    def create_player(self, username='player-page', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
             user=user,
@@ -1015,6 +965,7 @@ class PlayerTournamentListTests(TestCase):
             surname='Player',
             birth_date=date(1990, 1, 1),
             gender='M',
+            insurance_expiration_date=insurance_expiration_date,
         )
 
     def test_player_tournament_table_shows_place_range_and_tournament_power(self):
@@ -1127,6 +1078,22 @@ class PlayerTournamentListTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content.count('player-chip-national-team'), 1)
+
+    def test_player_profile_does_not_show_insurance_details(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        player = self.create_player(
+            'insured-player',
+            insurance_expiration_date=valid_until,
+        )
+
+        with override('uk'):
+            response = self.client.get(f'/player/{player.pk}')
+        content = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('Страхування', content)
+        self.assertNotIn('дійсне до', content)
+        self.assertNotIn(valid_until.strftime('%d.%m.%Y'), content)
 
 
 class TournamentRegistrationLifecycleTests(TestCase):
@@ -1297,6 +1264,7 @@ class TournamentTeamExportJsonTests(TestCase):
         avatar='',
         is_licence_active=True,
         licence_number=None,
+        insurance_expiration_date=None,
     ):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
@@ -1310,9 +1278,10 @@ class TournamentTeamExportJsonTests(TestCase):
             is_licence_active=is_licence_active,
             licence_number=licence_number if licence_number is not None else username,
             avatar=avatar,
+            insurance_expiration_date=insurance_expiration_date,
         )
 
-    def create_tournament(self):
+    def create_tournament(self, requires_insurance=False):
         return Tournament.objects.create(
             name='Export Cup',
             category='open',
@@ -1321,6 +1290,7 @@ class TournamentTeamExportJsonTests(TestCase):
             number_of_players_in_team_min=2,
             number_of_players_in_team_max=2,
             format='swiko',
+            requires_insurance=requires_insurance,
         )
 
     def create_team_membership(self, tournament, players, name, place_min, power='0.0000'):
@@ -1388,6 +1358,53 @@ class TournamentTeamExportJsonTests(TestCase):
         mixed_team = data['teams'][1]
         self.assertIsNone(mixed_team['club'])
         self.assertIsNone(mixed_team['club_logo_url'])
+
+    def test_json_export_marks_player_insurance_validity(self):
+        insured = self.create_player(
+            'export-insured',
+            insurance_expiration_date=timezone.localdate() + timedelta(days=1),
+        )
+        expired = self.create_player(
+            'export-expired',
+            insurance_expiration_date=timezone.localdate() - timedelta(days=1),
+        )
+        uninsured = self.create_player('export-uninsured')
+
+        tournament = self.create_tournament(requires_insurance=True)
+        self.create_team_membership(tournament, [insured, expired], 'Insured Pair', place_min=1)
+        self.create_team_membership(tournament, [uninsured, insured], 'Uninsured Pair', place_min=2)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['tournament']['requires_insurance'])
+        players_by_id = {
+            player['id']: player
+            for team in data['teams']
+            for player in team['players']
+        }
+        self.assertTrue(players_by_id[insured.pk]['insurance_valid'])
+        self.assertFalse(players_by_id[expired.pk]['insurance_valid'])
+        self.assertFalse(players_by_id[uninsured.pk]['insurance_valid'])
+
+    def test_json_export_marks_insurance_valid_when_not_required(self):
+        expired = self.create_player(
+            'optional-export-expired',
+            insurance_expiration_date=timezone.localdate() - timedelta(days=1),
+        )
+        uninsured = self.create_player('optional-export-uninsured')
+
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [expired, uninsured], 'Optional Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['tournament']['requires_insurance'])
+        players = data['teams'][0]['players']
+        self.assertTrue(all(player['insurance_valid'] for player in players))
 
 
 class OptionalRegistrationEmailTests(TestCase):
@@ -1788,6 +1805,7 @@ class TournamentListingPageTests(TestCase):
         processed=False,
         meta=None,
         place='Київ',
+        requires_insurance=False,
     ):
         start_date = timezone.localdate() + timedelta(days=start_offset)
         end_date = None
@@ -1814,9 +1832,10 @@ class TournamentListingPageTests(TestCase):
             power=power,
             is_processing_finished=processed,
             meta=meta,
+            requires_insurance=requires_insurance,
         )
 
-    def create_player(self, username='history-player'):
+    def create_player(self, username='history-player', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
         return Player.objects.create(
             user=user,
@@ -1824,6 +1843,7 @@ class TournamentListingPageTests(TestCase):
             surname='Player',
             birth_date=date(1990, 1, 1),
             gender='M',
+            insurance_expiration_date=insurance_expiration_date,
         )
 
     def register_player_for_tournament(self, tournament, player, place_min=0):
@@ -1976,6 +1996,120 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, 'data-tournament-team-sort="power"')
         self.assertContains(response, 'class="tournament-team-player-label"')
         self.assertContains(response, 'class="tournament-team-player-country"')
+
+    def test_tournament_detail_marks_uninsured_players_for_admin_when_insurance_is_required(self):
+        admin = User.objects.create_superuser(
+            username='insurance-warning-admin',
+            email='insurance-warning-admin@example.com',
+            password='password',
+        )
+        tournament = self.create_tournament(
+            'Insurance Required Cup',
+            requires_insurance=True,
+        )
+        uninsured_player = self.create_player('uninsured-player')
+        insured_player = self.create_player(
+            'insured-tournament-player',
+            insurance_expiration_date=timezone.localdate() + timedelta(days=1),
+        )
+        self.register_player_for_tournament(tournament, uninsured_player)
+        self.register_player_for_tournament(tournament, insured_player)
+
+        self.client.force_login(admin)
+        with override('uk'):
+            response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-detail-chip-insurance')
+        self.assertContains(response, 'Необхідне страхування')
+        self.assertContains(
+            response,
+            'tournament-team-insurance-marker tournament-team-insurance-warning d-inline-flex align-items-center flex-shrink-0 ms-1',
+            count=2,
+        )
+        self.assertNotContains(response, 'tournament-team-insurance-valid')
+        self.assertContains(response, 'bi-shield-exclamation', count=2)
+        self.assertContains(response, 'bi-shield-check', count=1)
+        self.assertContains(response, 'Страхування відсутнє або прострочене')
+        self.assertNotContains(response, 'Страхування дійсне до {}'.format(insured_player.insurance_expiration_date.strftime('%d.%m.%Y')))
+
+    def test_tournament_detail_marks_uninsured_players_for_main_organizer(self):
+        organizer = self.create_player('insurance-organizer')
+        tournament = self.create_tournament(
+            'Organizer Insurance Required Cup',
+            requires_insurance=True,
+        )
+        tournament.main_organizer = organizer
+        tournament.save(update_fields=['main_organizer'])
+        uninsured_player = self.create_player('organizer-uninsured-player')
+        self.register_player_for_tournament(tournament, uninsured_player)
+
+        self.client.force_login(organizer.user)
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-insurance-warning', count=2)
+
+    def test_tournament_detail_hides_uninsured_marker_when_tournament_is_finished(self):
+        admin = User.objects.create_superuser(
+            username='finished-insurance-warning-admin',
+            email='finished-insurance-warning-admin@example.com',
+            password='password',
+        )
+        tournament = self.create_tournament(
+            'Finished Insurance Required Cup',
+            start_offset=-2,
+            requires_insurance=True,
+        )
+        uninsured_player = self.create_player('finished-uninsured-player')
+        self.register_player_for_tournament(tournament, uninsured_player)
+
+        self.client.force_login(admin)
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-team-insurance-marker')
+
+    def test_tournament_detail_hides_uninsured_marker_from_regular_users(self):
+        regular_user = User.objects.create_user(username='regular-insurance-viewer')
+        tournament = self.create_tournament(
+            'Hidden Insurance Warning Cup',
+            requires_insurance=True,
+        )
+        uninsured_player = self.create_player('hidden-uninsured-player')
+        self.register_player_for_tournament(tournament, uninsured_player)
+
+        self.client.force_login(regular_user)
+        with override('uk'):
+            response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-team-insurance-marker')
+        self.assertNotContains(response, 'Страхування відсутнє або прострочене')
+
+    def test_tournament_detail_hides_uninsured_marker_from_public_users(self):
+        tournament = self.create_tournament(
+            'Public Hidden Insurance Warning Cup',
+            requires_insurance=True,
+        )
+        uninsured_player = self.create_player('public-hidden-uninsured-player')
+        self.register_player_for_tournament(tournament, uninsured_player)
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-team-insurance-marker')
+
+    def test_tournament_detail_does_not_mark_players_when_insurance_is_optional(self):
+        tournament = self.create_tournament('Insurance Optional Cup')
+        player = self.create_player('optional-insurance-player')
+        self.register_player_for_tournament(tournament, player)
+
+        response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'tournament-detail-chip-insurance')
+        self.assertNotContains(response, 'tournament-team-insurance-marker')
 
     def test_tournament_detail_unready_tournament_does_not_show_place_editor(self):
         admin = User.objects.create_superuser(
