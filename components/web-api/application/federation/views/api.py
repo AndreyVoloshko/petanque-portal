@@ -10,8 +10,10 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from federation.audit import (
+    SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME,
     SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
     get_or_create_system_audit_user,
+    record_model_change,
     record_tournament_team_places_change,
 )
 from federation.models.tournament import Tournament, TeamTournamentMembership
@@ -186,6 +188,49 @@ def submit_tournament_results(request):
         )
 
     return JsonResponse({'updated_teams': updated})
+
+
+@csrf_exempt
+@require_POST
+def submit_tournament_draw_id(request):
+    """Set the tournament's identifier inside the external draw tool."""
+    if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return _bad_request('Invalid JSON body')
+
+    if not isinstance(body, dict):
+        return _bad_request('Body must be an object')
+
+    tournament_id = body.get('tournament_id')
+    draw_id = body.get('petanque_draw_id')
+
+    if tournament_id is None:
+        return _bad_request('tournament_id is required')
+    if draw_id is None:
+        return _bad_request('petanque_draw_id is required')
+    if not isinstance(draw_id, str):
+        return _bad_request('petanque_draw_id must be a string')
+
+    with transaction.atomic():
+        try:
+            tournament = Tournament.objects.select_for_update().get(pk=tournament_id)
+        except (Tournament.DoesNotExist, ValueError, TypeError):
+            return JsonResponse({'error': 'Tournament not found'}, status=404)
+
+        tournament_before = copy(tournament)
+        tournament.petanque_draw_id = draw_id
+        tournament.save(update_fields=['petanque_draw_id'])
+        record_model_change(
+            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME),
+            tournament_before,
+            tournament,
+        )
+
+    return JsonResponse({'status': 'ok', 'petanque_draw_id': draw_id})
 
 
 def players_list(request):

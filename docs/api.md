@@ -103,6 +103,7 @@ Returns tournament data with registered teams and players.
     "name": "Tournament Name",
     "display_name": "Tournament Name (Open)",
     "meta": "...",
+    "petanque_draw_id": "draw-abc-123",
     "start_date": "2024-06-01",
     "start_time": "10:00:00",
     "requires_insurance": false,
@@ -162,9 +163,8 @@ Semicolon-delimited. First row contains the minimum team size. Second row is a h
 
 ## Authenticated endpoints
 
-### `POST /api/tournament/results/`
-
-Submit tournament placement results from an external application.
+All endpoints in this section are used by the external draw tool and share one
+authentication mechanism.
 
 **Authentication**
 
@@ -174,7 +174,34 @@ Pass the API password in the `Authorization` header:
 Authorization: <password>
 ```
 
-The password is configured via `APP_CREDENTIALS.api_password` in `.env`.
+The password is configured via `APP_CREDENTIALS.api_password` in `.env`. When
+`api_password` is unset, these endpoints reject every request with `401` — they
+fail closed rather than falling open.
+
+These endpoints are exempt from CSRF (they authenticate by header, not by
+session cookie) and therefore accept no session-based authentication: an
+authenticated admin browsing the site cannot invoke them, and the API password
+alone cannot be used to log in.
+
+**Audit behavior (all authenticated endpoints)**
+
+Every write that actually changes a value creates a `Tournament` change entry in
+the Django admin journal at `/admin/admin/logentry/`, attributed to a disabled
+system user, and storing the affected values before and after the request. Writes
+that change nothing create no entry. See
+[Audit log and reverting changes](features/audit-log.md).
+
+| Endpoint | System user |
+|----------|-------------|
+| `POST /api/tournament/results/` | `system.tournament.results` |
+| `POST /api/tournament/draw_id/` | `system.petanque.draw` |
+| `POST /tournament/<id>` (meta) | `system.petanque.draw` |
+
+---
+
+### `POST /api/tournament/results/`
+
+Submit tournament placement results from an external application.
 
 **Request body** — JSON
 
@@ -206,14 +233,13 @@ The password is configured via `APP_CREDENTIALS.api_password` in `.env`.
 **Audit behavior**
 
 A successful request that changes at least one submitted team's place creates a
-`Tournament` change entry in the Django admin journal at
-`/admin/admin/logentry/`. The entry is attributed to the disabled system user
-`system.tournament.results` and stores the affected membership-place values
-before and after the request. An authorized admin can revert the result change
-from the journal while those memberships still match the recorded new values.
+change entry attributed to `system.tournament.results`, storing the affected
+membership-place values before and after the request. An authorized admin can
+revert the result change from the journal while those memberships still match
+the recorded new values.
 
-Requests that leave every submitted place unchanged do not create an audit
-entry. See [Audit log and reverting changes](features/audit-log.md).
+The whole submission is validated and its rows locked before any place is
+written, so a rejected request cannot leave partially-applied results.
 
 **Error responses**
 
@@ -222,3 +248,97 @@ entry. See [Audit log and reverting changes](features/audit-log.md).
 | 400 | Validation error — `error` field contains details |
 | 401 | Missing or incorrect API password |
 | 404 | Tournament not found |
+
+---
+
+### `POST /tournament/<id>` (draw state)
+
+Store the external draw tool's state for a tournament in `Tournament.meta`.
+Unlike the other authenticated endpoints, this one takes a **form-encoded** body
+(`application/x-www-form-urlencoded`), because it shares a URL with the
+tournament detail page.
+
+**Request body** — form-encoded
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `meta` | string | Yes | The draw state, serialized as a JSON object |
+
+The value must be a JSON **object** containing at least the `games` and `teams`
+keys, and must not exceed **256 KB** when UTF-8 encoded. Anything else is
+rejected with `400` and nothing is written.
+
+```
+POST /tournament/42
+Authorization: <password>
+Content-Type: application/x-www-form-urlencoded
+
+meta=%7B%22games%22%3A%5B%5D%2C%22teams%22%3A%5B%5D%7D
+```
+
+**Response**
+
+```json
+{ "status": "ok" }
+```
+
+**Restrictions**
+
+Draw state cannot be written once the tournament's results have been processed
+(`is_processing_finished`); such requests are rejected with `403`. This keeps
+the finished-tournament archive immutable.
+
+A `POST` to this URL **without** a `meta` field is treated as a normal page form
+submission (notes, team management) and requires a logged-in session with a
+valid CSRF token — the API password grants no access to those actions.
+
+**Error responses**
+
+| Status | Meaning |
+|--------|---------|
+| 400 | `meta` is not valid JSON, is not a draw object, or exceeds 256 KB |
+| 401 | Missing or incorrect API password |
+| 403 | Tournament processing is already finished |
+| 404 | Tournament not found |
+
+---
+
+### `POST /api/tournament/draw_id/`
+
+Set the tournament's identifier inside the external draw tool
+(`Tournament.petanque_draw_id`). The field is blank by default and is **managed
+exclusively through this endpoint** — it is read-only in the Django admin and
+is not exposed on any site form.
+
+**Request body** — JSON
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `tournament_id` | integer | Yes | Tournament ID |
+| `petanque_draw_id` | string | Yes | Draw-tool identifier; pass `""` to clear it |
+
+```json
+{
+  "tournament_id": 1,
+  "petanque_draw_id": "draw-abc-123"
+}
+```
+
+**Response**
+
+```json
+{ "status": "ok", "petanque_draw_id": "draw-abc-123" }
+```
+
+The current value is readable via
+[`GET /tournament/team_export/<id>?format=json`](#get-tournamentteam_exportidformatjson)
+under `tournament.petanque_draw_id`.
+
+**Error responses**
+
+| Status | Meaning |
+|--------|---------|
+| 400 | Invalid JSON body, missing field, or `petanque_draw_id` is not a string |
+| 401 | Missing or incorrect API password |
+| 404 | Tournament not found |
+| 405 | Method other than `POST` |

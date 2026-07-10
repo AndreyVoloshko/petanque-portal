@@ -20,8 +20,12 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
+from copy import copy
+from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from federation.audit import (
+    SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME,
+    get_or_create_system_audit_user,
     record_model_change,
     record_tournament_team_places_change,
 )
@@ -921,7 +925,7 @@ TOURNAMENT_META_MAX_BYTES = 256 * 1024
 TOURNAMENT_META_REQUIRED_KEYS = {'games', 'teams'}
 
 
-def _update_tournament_meta(request, tournament):
+def _update_tournament_meta(request, tournament_id):
     if not settings.API_PASSWORD or request.headers.get('Authorization') != settings.API_PASSWORD:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
@@ -941,16 +945,29 @@ def _update_tournament_meta(request, tournament):
             status=400,
         )
 
-    if tournament.is_processing_closed():
-        return JsonResponse(
-            {'error': 'tournament processing is closed'},
-            status=403,
+    with transaction.atomic():
+        tournament = get_object_or_404(
+            Tournament.objects.select_for_update(), pk=tournament_id,
         )
 
-    tournament_before = Tournament.objects.get(pk=tournament.pk)
-    tournament.meta = raw_meta
-    tournament.save()
-    record_model_change(request.user, tournament_before, tournament)
+        if tournament.is_processing_closed():
+            return JsonResponse(
+                {'error': 'tournament processing is closed'},
+                status=403,
+            )
+
+        tournament_before = copy(tournament)
+        tournament.meta = raw_meta
+        tournament.save(update_fields=['meta'])
+        # The draw tool authenticates with the API password, not a session, so
+        # attribute the change to the system user: an AnonymousUser makes the
+        # audit entry be dropped silently.
+        record_model_change(
+            get_or_create_system_audit_user(SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME),
+            tournament_before,
+            tournament,
+        )
+
     return JsonResponse({'status': 'ok'}, safe=False)
 
 
@@ -959,7 +976,7 @@ def tournament(request, id):
     # CSRF exemption is quarantined to the draw tool's meta write; every
     # other request goes through the CSRF-protected page view below.
     if request.method == "POST" and 'meta' in request.POST:
-        return _update_tournament_meta(request, get_object_or_404(Tournament, pk=id))
+        return _update_tournament_meta(request, id)
     return _tournament_page(request, id)
 
 
@@ -1186,6 +1203,7 @@ def tournament_teams_export(request, id):
                 'name': tournament.name,
                 'display_name': tournament.get_display_name(),
                 'meta': tournament.meta,
+                'petanque_draw_id': tournament.petanque_draw_id,
                 'start_date': tournament.start_date,
                 'start_time': tournament.start_time,
                 'requires_insurance': tournament.requires_insurance,
