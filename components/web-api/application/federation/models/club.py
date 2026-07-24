@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.audit_admin import RevertibleAuditAdminMixin
 from federation.models.player import Player
 from federation.storage import MediaStorage
@@ -70,7 +71,7 @@ class ClubPlayerInline(admin.TabularInline):
     player_link.short_description = 'Гравець'
 
 
-class ClubAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
+class ClubAdmin(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'city', 'president', 'logo', 'is_active')
     list_editable = ('is_active',)
     search_fields = ['name', 'city__name', 'president__name', 'president__surname', 'city__id', 'president__id', ]

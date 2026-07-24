@@ -13,6 +13,7 @@ from federation.models.team import Team
 from django_countries.fields import CountryField
 from django.conf import settings
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.audit_admin import RevertibleAuditAdminMixin
 from federation.permissions import can_create_tournament
 from federation.utils.tournament_names import get_tournament_display_name
@@ -594,7 +595,7 @@ class ArbiterTournamentMembership(models.Model):
 
 
 # Classes for admin
-class ArbiterTournamentMembershipInline(admin.TabularInline):
+class ArbiterTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = ArbiterTournamentMembership
     extra = 0
     autocomplete_fields = ['arbiter']
@@ -605,7 +606,7 @@ class ArbiterTournamentMembershipInline(admin.TabularInline):
 
 
 # Classes for admin
-class TeamsTournamentMembershipInline(admin.TabularInline):
+class TeamsTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = TeamTournamentMembership
     extra = 0
     autocomplete_fields = ['team']
@@ -615,7 +616,7 @@ class TeamsTournamentMembershipInline(admin.TabularInline):
         verbose_name_plural = 'Команди турніру'
 
 
-class ArbiterTeamTournamentAdminInline(RevertibleAuditAdminMixin, admin.ModelAdmin):
+class ArbiterTeamTournamentAdminInline(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
     inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)
     search_fields = (
         'id',

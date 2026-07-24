@@ -3,6 +3,7 @@ from django.db.models import Count
 from django.utils import timezone
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.models.player import Player
 
 
@@ -38,7 +39,7 @@ class PlayerDepartmentMembership(models.Model):
 
 
 # Classes for admin
-class PlayerDepartmentMembershipInline(admin.TabularInline):
+class PlayerDepartmentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = PlayerDepartmentMembership
     extra = 1
     autocomplete_fields = ['player']

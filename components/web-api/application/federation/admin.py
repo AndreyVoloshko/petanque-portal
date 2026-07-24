@@ -13,6 +13,7 @@ from .models.season import Season, SeasonAdmin
 from .models.department import Department, DepartmentAdmin
 from .models.email_confirmation import EmailConfirmation
 from .player_change_log_admin import AuditLogAdmin
+from .admin_mixins import RestrictedRelatedWidgetAdminMixin
 from .audit_admin import RevertibleAuditAdminMixin
 
 
@@ -24,12 +25,16 @@ class DocumentCategoryAdmin(admin.ModelAdmin):
     ordering = ('order', 'name')
 
 
-class DocumentAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
+class DocumentAdmin(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'category', 'document_date', 'download_count', 'is_active')
     list_filter = ('category', 'is_active')
     search_fields = ('name', 'notes')
     readonly_fields = ('download_count', 'created_at')
     ordering = ('-document_date', '-created_at')
+
+
+class RecordAdmin(RestrictedRelatedWidgetAdminMixin, admin.ModelAdmin):
+    pass
 
 
 # Register your models here.
@@ -39,7 +44,7 @@ admin.site.register(Player, PlayerAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Tournament, ArbiterTeamTournamentAdminInline)
 admin.site.register(National_team, National_teamAdmin)
-admin.site.register(Record)
+admin.site.register(Record, RecordAdmin)
 admin.site.register(DocumentCategory, DocumentCategoryAdmin)
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Season, SeasonAdmin)
