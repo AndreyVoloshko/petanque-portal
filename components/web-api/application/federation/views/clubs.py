@@ -61,6 +61,7 @@ def _clubs_queryset():
 
     return (
         Club.objects
+        .filter(is_active=True)
         .select_related('city', 'president')
         .annotate(
             total_rating=Coalesce(
@@ -242,7 +243,11 @@ def _club_pagination_summary(page_obj):
 
 
 def club(request, id):
-    club = get_object_or_404(Club.objects.select_related('city', 'president'), pk=id)
+    club_queryset = Club.objects.select_related('city', 'president')
+    if not (request.user.is_authenticated and request.user.is_staff):
+        club_queryset = club_queryset.filter(is_active=True)
+
+    club = get_object_or_404(club_queryset, pk=id)
     players = (
         Player.objects
         .filter(current_club=club)
@@ -269,6 +274,7 @@ def club(request, id):
     total_rating = rating_stats['total_rating'] or 0
     club_rank = (
         Club.objects
+        .filter(is_active=True)
         .annotate(total_rating=Sum('player__current_rating', filter=RATED_CLUB_PLAYER_FILTER))
         .filter(total_rating__gt=total_rating)
         .count()

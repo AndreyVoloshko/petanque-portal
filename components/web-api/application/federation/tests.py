@@ -11,6 +11,7 @@ from urllib.parse import parse_qs
 
 from django import forms as django_forms
 from django.conf import settings
+from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError
@@ -954,6 +955,103 @@ class ClubDetailPageTests(TestCase):
         club_row = next(item for item in response.context['clubs'] if item.pk == club.pk)
         self.assertEqual(club_row.players_count, 3)
         self.assertEqual(club_row.total_rating, Decimal('10.0000'))
+
+
+class ClubVisibilityTests(TestCase):
+    def create_club(self, name='Visible Club', short_name='VIS', is_active=True):
+        return Club.objects.create(name=name, short_name=short_name, address='Kyiv', is_active=is_active)
+
+    def test_hidden_club_is_excluded_from_public_listing(self):
+        visible = self.create_club(name='Visible Club', short_name='VIS')
+        hidden = self.create_club(name='Hidden Club', short_name='HID', is_active=False)
+
+        response = self.client.get('/clubs/')
+
+        self.assertContains(response, visible.name)
+        self.assertNotContains(response, hidden.name)
+
+    def test_hidden_club_detail_page_404s_for_anonymous_visitor(self):
+        hidden = self.create_club(name='Hidden Club', short_name='HID', is_active=False)
+
+        response = self.client.get('/club/{}'.format(hidden.pk))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_hidden_club_detail_page_is_visible_to_staff(self):
+        hidden = self.create_club(name='Hidden Club', short_name='HID', is_active=False)
+        self.client.force_login(User.objects.create_user(username='club-preview-staff', is_staff=True))
+
+        response = self.client.get('/club/{}'.format(hidden.pk))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_hidden_club_is_excluded_from_search_autocomplete(self):
+        hidden = self.create_club(name='Hidden Search Club', short_name='HSC', is_active=False)
+
+        response = self.client.get('/api/players_clubs_and_tournaments/list/', {'typedText': 'Hidden Search'})
+
+        self.assertNotContains(response, hidden.name)
+
+
+class ClubAdminDeletionTests(TestCase):
+    def create_club(self, name='Kyiv Petanque Club', short_name='KPC'):
+        return Club.objects.create(name=name, short_name=short_name, address='Kyiv')
+
+    def create_admin(self, username='club-delete-admin'):
+        return User.objects.create_superuser(
+            username=username,
+            email='{}@example.com'.format(username),
+            password='AdminPass123!',
+        )
+
+    def test_club_admin_has_delete_permission_disabled(self):
+        club_admin = admin.site._registry[Club]
+        request = RequestFactory().get('/admin/federation/club/')
+        request.user = self.create_admin()
+
+        self.assertFalse(club_admin.has_delete_permission(request))
+
+    def test_deleting_club_instance_raises(self):
+        club = self.create_club()
+
+        with self.assertRaises(PermissionError):
+            club.delete()
+
+        self.assertTrue(Club.objects.filter(pk=club.pk).exists())
+
+    def test_club_delete_view_is_forbidden_for_superuser(self):
+        club = self.create_club()
+        self.client.force_login(self.create_admin())
+
+        response = self.client.post('/admin/federation/club/{}/delete/'.format(club.pk))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Club.objects.filter(pk=club.pk).exists())
+
+    def test_club_changelist_does_not_offer_bulk_delete(self):
+        self.create_club()
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/club/')
+
+        self.assertNotContains(response, 'value="delete_selected"')
+
+    def test_player_change_form_has_no_delete_icon_for_club_field(self):
+        club = self.create_club()
+        player = Player.objects.create(
+            user=User.objects.create_user(username='club-widget-player'),
+            name='Test',
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            current_club=club,
+        )
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/player/{}/change/'.format(player.pk))
+
+        self.assertContains(response, 'change_id_current_club')
+        self.assertNotContains(response, 'delete_id_current_club')
 
 
 class PlayerTournamentListTests(TestCase):

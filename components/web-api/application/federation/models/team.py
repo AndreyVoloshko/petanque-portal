@@ -10,7 +10,7 @@ from federation.audit import (
 )
 from federation.audit_admin import RevertibleAuditAdminMixin
 from federation.models.player import Player
-from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence
+from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence,set_club
 
 # Teams
 class Team(models.Model):
@@ -177,7 +177,7 @@ class PlayerAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
     # inlines = (MembershipInline,)
-    actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence]
+    actions = [recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence,set_club]
     autocomplete_fields = ['current_club', 'user']
 
     def get_audit_before_instance(self, obj):
