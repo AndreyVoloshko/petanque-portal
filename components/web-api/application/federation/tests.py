@@ -30,6 +30,7 @@ from federation.forms.registration_player_form import RegistrationPlayerForm
 from federation.admin_actions.tournament import recalculate_power
 from federation.middleware import InitialLanguageMiddleware
 from federation.models.email_confirmation import EmailConfirmation
+from federation.models.city import City
 from federation.models.club import Club
 from federation.models.national_teams import National_team, PlayerNational_teamMembership
 from federation.models.player import Player
@@ -1052,6 +1053,53 @@ class ClubAdminDeletionTests(TestCase):
 
         self.assertContains(response, 'change_id_current_club')
         self.assertNotContains(response, 'delete_id_current_club')
+
+
+class RestrictedRelatedWidgetAdminMixinTests(TestCase):
+    def create_admin(self, username='restricted-widget-admin'):
+        return User.objects.create_superuser(
+            username=username,
+            email='{}@example.com'.format(username),
+            password='AdminPass123!',
+        )
+
+    def test_club_change_form_hides_add_and_delete_icons_for_related_fields(self):
+        city = City.objects.create(name='Kyiv', country='UA')
+        president = Player.objects.create(
+            user=User.objects.create_user(username='club-president'),
+            name='President',
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        club = Club.objects.create(
+            name='Kyiv Petanque Club',
+            short_name='KPC',
+            address='Kyiv',
+            city=city,
+            president=president,
+        )
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/club/{}/change/'.format(club.pk))
+        content = response.content.decode()
+
+        self.assertContains(response, 'change_id_city')
+        self.assertContains(response, 'view_id_city')
+        self.assertNotIn('add_id_city', content)
+        self.assertNotIn('delete_id_city', content)
+
+        self.assertContains(response, 'change_id_president')
+        self.assertContains(response, 'view_id_president')
+        self.assertNotIn('add_id_president', content)
+        self.assertNotIn('delete_id_president', content)
+
+    def test_city_admin_still_allows_add_on_its_own_page(self):
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/city/add/')
+
+        self.assertEqual(response.status_code, 200)
 
 
 class PlayerTournamentListTests(TestCase):

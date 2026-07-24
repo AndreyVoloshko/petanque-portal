@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.contrib import admin
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.helpers.general import get_model
 from federation.admin_actions.seasons import save_current_ratings
 from django.utils.translation import gettext_lazy as _
@@ -72,7 +73,7 @@ class Season (models.Model):
         verbose_name_plural = 'Сезони'
 
 
-class SeasonAdmin(admin.ModelAdmin):
+class SeasonAdmin(RestrictedRelatedWidgetAdminMixin, admin.ModelAdmin):
     list_display = ('id', 'year', 'player', 'club', 'rating', 'rating_b', 'rating_liga')
     search_fields = ('year', 'player__name', 'player__surname', )
     actions = [save_current_ratings, ]

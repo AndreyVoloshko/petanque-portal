@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.models.player import Player
 
 # Clubs
@@ -48,7 +49,7 @@ class PlayerNational_teamMembership(models.Model):
 
 
 # Classes for admin
-class MembershipInline(admin.TabularInline):
+class MembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = PlayerNational_teamMembership
     extra = 1
     autocomplete_fields = ['player']

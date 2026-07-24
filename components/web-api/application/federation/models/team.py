@@ -8,6 +8,7 @@ from federation.audit import (
     normalize_player_change_fields,
     replace_changed_fields_in_message,
 )
+from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.audit_admin import RevertibleAuditAdminMixin
 from federation.models.player import Player
 from federation.admin_actions.player import recalculate_ratings,erase_ratings,erase_licence_number,activate_licence,deactivate_licence,set_club
@@ -164,7 +165,7 @@ class PlayerTeamMembership(models.Model):
         verbose_name_plural = 'Належнiсть до команд'
 
 # Classes for admin
-class MembershipInline(admin.TabularInline):
+class MembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = PlayerTeamMembership
     extra = 1
 
@@ -172,7 +173,7 @@ class MembershipInline(admin.TabularInline):
         verbose_name = 'Належнiсть до команд'
         verbose_name_plural = 'Належнiсть до команд'
 
-class PlayerAdmin(RevertibleAuditAdminMixin, admin.ModelAdmin):
+class PlayerAdmin(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'surname', 'licence_number', 'is_licence_active', 'insurance_expiration_date', 'current_club', 'current_rating', 'current_rating_b', 'current_rating_inclusive', 'arbiter_level', 'coach_level')
     search_fields = ('name', 'surname', 'current_club__name', 'arbiter_level', 'licence_number', )
     list_per_page = 25
