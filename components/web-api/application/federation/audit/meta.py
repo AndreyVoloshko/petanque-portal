@@ -21,6 +21,12 @@ def get_player_model():
 
 
 @lru_cache(maxsize=1)
+def get_club_model():
+    from federation.models.club import Club
+    return Club
+
+
+@lru_cache(maxsize=1)
 def get_tournament_model():
     from federation.models.tournament import Tournament
     return Tournament

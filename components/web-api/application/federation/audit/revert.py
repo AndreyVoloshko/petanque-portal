@@ -12,6 +12,7 @@ from .constants import (
 from .log_entries import log_model_change, log_player_change
 from .messages import extract_changed_field_values, extract_changed_fields
 from .meta import (
+    get_club_model,
     get_document_model,
     get_player_model,
     get_team_tournament_membership_model,
@@ -40,7 +41,7 @@ def _get_log_entry_revert_reason(log_entry, obj):
         return _('This action is available only for change entries.')
 
     model = log_entry.content_type.model_class()
-    if model not in {get_player_model(), get_document_model(), get_tournament_model()}:
+    if model not in {get_player_model(), get_document_model(), get_tournament_model(), get_club_model()}:
         return _('This change cannot be reverted from the log.')
 
     changed_fields = _normalize_log_entry_changed_fields(model, log_entry.change_message)

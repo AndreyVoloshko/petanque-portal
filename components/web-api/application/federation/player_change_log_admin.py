@@ -18,12 +18,13 @@ from federation.audit import (
     is_revert_change_message,
     revert_log_entry,
 )
+from .models.club import Club
 from .models.document import Document
 from .models.player import Player
 from .models.tournament import Tournament
 
 
-AUDITED_MODELS = (Player, Document, Tournament)
+AUDITED_MODELS = (Player, Document, Tournament, Club)
 
 
 class AuditContentTypeFilter(admin.SimpleListFilter):
