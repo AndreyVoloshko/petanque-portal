@@ -361,6 +361,54 @@ class PlayerProfileAuditLogTests(TestCase):
         self.assertFalse(field_values[PLAYER_CHANGE_FIELD_IS_LICENCE_ACTIVE]['old'])
         self.assertTrue(field_values[PLAYER_CHANGE_FIELD_IS_LICENCE_ACTIVE]['new'])
 
+    def test_set_club_admin_action_reassigns_player_and_is_logged(self):
+        admin_user = User.objects.create_superuser(
+            username='set-club-audit-admin',
+            email='set-club-audit-admin@example.com',
+            password='AdminPass123!',
+        )
+        _player_user, player = self.create_player()
+        original_club_id = player.current_club_id
+        new_club = Club.objects.create(name='Reassigned Club', short_name='REASSIGN', address='Address')
+        request = RequestFactory().post('/admin/federation/player/', {'post': 'yes', 'club': new_club.pk})
+        request.user = admin_user
+
+        with patch.object(player_admin_actions.messages, 'success'), patch.object(
+            player_admin_actions.messages,
+            'error',
+        ):
+            player_admin_actions.set_club(None, request, Player.objects.filter(pk=player.pk))
+
+        player.refresh_from_db()
+        self.assertEqual(player.current_club_id, new_club.pk)
+        self.assertNotEqual(player.current_club_id, original_club_id)
+
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, admin_user)
+        self.assertEqual(log_entry.object_id, str(player.pk))
+        self.assertIn(PLAYER_CHANGE_FIELD_CURRENT_CLUB, self.get_changed_fields(log_entry))
+        field_values = extract_changed_field_values(log_entry.change_message)
+        self.assertEqual(field_values[PLAYER_CHANGE_FIELD_CURRENT_CLUB]['old'], original_club_id)
+        self.assertEqual(field_values[PLAYER_CHANGE_FIELD_CURRENT_CLUB]['new'], new_club.pk)
+
+    def test_set_club_admin_action_without_confirmation_does_not_change_club(self):
+        admin_user = User.objects.create_superuser(
+            username='set-club-no-op-audit-admin',
+            email='set-club-no-op-audit-admin@example.com',
+            password='AdminPass123!',
+        )
+        _player_user, player = self.create_player()
+        original_club_id = player.current_club_id
+        request = RequestFactory().post('/admin/federation/player/', {})
+        request.user = admin_user
+
+        response = player_admin_actions.set_club(None, request, Player.objects.filter(pk=player.pk))
+
+        self.assertEqual(response.status_code, 200)
+        player.refresh_from_db()
+        self.assertEqual(player.current_club_id, original_club_id)
+        self.assertFalse(LogEntry.objects.exists())
+
     def test_no_op_player_admin_action_is_not_logged(self):
         admin_user = User.objects.create_superuser(
             username='licence-no-op-audit-admin',
@@ -577,6 +625,35 @@ class AuditLogRevertTests(TestCase):
         self.assertEqual(
             revert_values[PLAYER_CHANGE_FIELD_CURRENT_CLUB]['new'],
             field_values[PLAYER_CHANGE_FIELD_CURRENT_CLUB]['old'],
+        )
+
+    def test_club_change_appears_in_audit_journal_and_reverts(self):
+        admin_user = User.objects.create_superuser(
+            username='club-revert-admin',
+            email='club-revert-admin@example.com',
+            password='AdminPass123!',
+        )
+        club = Club.objects.create(name='Old Club Name', short_name='OLD', address='Address')
+        before_club = Club.objects.get(pk=club.pk)
+        club.name = 'New Club Name'
+        club.save()
+        original_log_entry = record_model_change(admin_user, before_club, club)
+        self.client.force_login(admin_user)
+
+        journal_response = self.client.get('/admin/admin/logentry/', {
+            'content_type__id__exact': ContentType.objects.get_for_model(Club).pk,
+        })
+
+        self.assertContains(journal_response, 'New Club Name')
+
+        revert_response = self.client.post('/admin/admin/logentry/{}/revert/'.format(original_log_entry.pk))
+
+        self.assertEqual(revert_response.status_code, 302)
+        club.refresh_from_db()
+        self.assertEqual(club.name, 'Old Club Name')
+        self.assertEqual(
+            LogEntry.objects.filter(content_type=ContentType.objects.get_for_model(Club)).count(),
+            2,
         )
 
     def test_player_email_revert_requires_change_user_permission(self):
