@@ -9,12 +9,14 @@ from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.forms import modelform_factory
 from django.test import RequestFactory, TestCase, override_settings
+from django.utils import timezone
 from django.utils.translation import gettext as _, override
 
 from federation.audit import (
     AUDIT_CHANGE_MESSAGE_VALUES_KEY,
     PLAYER_CHANGE_FIELD_AVATAR,
     PLAYER_CHANGE_FIELD_CURRENT_CLUB,
+    PLAYER_CHANGE_FIELD_INSURANCE_EXPIRATION_DATE,
     PLAYER_CHANGE_FIELD_IS_LICENCE_ACTIVE,
     PLAYER_CHANGE_FIELD_PASSWORD,
     PLAYER_CHANGE_FIELD_SPORT_TITLE,
@@ -125,6 +127,35 @@ class PlayerProfileAuditLogTests(TestCase):
         self.assertEqual(player.country.code, 'FR')
         values = extract_changed_field_values(LogEntry.objects.get().change_message)
         self.assertEqual(values['country'], {'old': 'UA', 'new': 'FR'})
+
+    def test_profile_insurance_expiration_date_change_creates_player_log_entry(self):
+        user, player = self.create_player()
+        new_date = timezone.localdate() + timedelta(days=200)
+        self.client.login(username=user.username, password='OldPass123!')
+
+        response = self.client.post('/profile/', {
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': str(player.current_club_id),
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': user.email,
+            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        player.refresh_from_db()
+        self.assertEqual(player.insurance_expiration_date, new_date)
+        log_entry = LogEntry.objects.get()
+        self.assertIn(PLAYER_CHANGE_FIELD_INSURANCE_EXPIRATION_DATE, self.get_changed_fields(log_entry))
+        values = extract_changed_field_values(log_entry.change_message)
+        self.assertEqual(values['insurance_expiration_date'], {'old': None, 'new': new_date.isoformat()})
 
     def test_password_change_creates_player_log_entry(self):
         user, player = self.create_player()
