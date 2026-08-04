@@ -736,9 +736,9 @@ class PlayerProfileFormTests(TestCase):
         valid_until = timezone.localdate() + timedelta(days=30)
         self.create_player_with_insurance('badge-valid-player', valid_until)
         self.client.login(username='badge-valid-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
 
-        with override('en'):
-            response = self.client.get('/profile/')
+        response = self.client.get('/profile/')
 
         self.assertContains(response, 'Valid until')
         self.assertContains(response, valid_until.strftime('%d.%m.%Y'))
@@ -748,9 +748,9 @@ class PlayerProfileFormTests(TestCase):
         expired_on = timezone.localdate() - timedelta(days=5)
         self.create_player_with_insurance('badge-expired-player', expired_on)
         self.client.login(username='badge-expired-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
 
-        with override('en'):
-            response = self.client.get('/profile/')
+        response = self.client.get('/profile/')
 
         self.assertContains(response, 'Expired')
         self.assertContains(response, expired_on.strftime('%d.%m.%Y'))
@@ -759,9 +759,9 @@ class PlayerProfileFormTests(TestCase):
     def test_profile_page_shows_no_insurance_badge_when_blank(self):
         self.create_player_with_insurance('badge-none-player')
         self.client.login(username='badge-none-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
 
-        with override('en'):
-            response = self.client.get('/profile/')
+        response = self.client.get('/profile/')
 
         self.assertContains(response, 'No insurance on file')
         self.assertContains(response, 'text-muted')
