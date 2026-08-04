@@ -719,6 +719,53 @@ class PlayerProfileFormTests(TestCase):
 
         self.assertEqual(set(form.fields), layout_fields)
 
+    def create_player_with_insurance(self, username, insurance_expiration_date=None):
+        user = User.objects.create_user(username=username, password='Pass1234!')
+        Player.objects.create(
+            user=user,
+            name='Badge',
+            surname=username.title(),
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            country='UA',
+            insurance_expiration_date=insurance_expiration_date,
+        )
+        return user
+
+    def test_profile_page_shows_valid_insurance_badge(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        self.create_player_with_insurance('badge-valid-player', valid_until)
+        self.client.login(username='badge-valid-player', password='Pass1234!')
+
+        with override('en'):
+            response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Valid until')
+        self.assertContains(response, valid_until.strftime('%d.%m.%Y'))
+        self.assertContains(response, 'text-success')
+
+    def test_profile_page_shows_expired_insurance_badge(self):
+        expired_on = timezone.localdate() - timedelta(days=5)
+        self.create_player_with_insurance('badge-expired-player', expired_on)
+        self.client.login(username='badge-expired-player', password='Pass1234!')
+
+        with override('en'):
+            response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Expired')
+        self.assertContains(response, expired_on.strftime('%d.%m.%Y'))
+        self.assertContains(response, 'text-danger')
+
+    def test_profile_page_shows_no_insurance_badge_when_blank(self):
+        self.create_player_with_insurance('badge-none-player')
+        self.client.login(username='badge-none-player', password='Pass1234!')
+
+        with override('en'):
+            response = self.client.get('/profile/')
+
+        self.assertContains(response, 'No insurance on file')
+        self.assertContains(response, 'text-muted')
+
 
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):

@@ -29,6 +29,11 @@ class PlayerForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_action = '/profile/#profile'
 
+        insurance_status_html = render_to_string(
+            'forms/profile/insurance_status.html',
+            {'player': self.instance}
+        )
+
         self.helper.layout = Layout(
             Div(
                 Div(
@@ -75,6 +80,10 @@ class PlayerForm(forms.ModelForm):
                 HTML('<hr class="my-2">'),
                 Div(
                     Div('insurance_expiration_date', css_class="col-lg-4"),
+                    Div(
+                        HTML(insurance_status_html),
+                        css_class="col-lg-8 d-flex align-items-center"
+                    ),
                     css_class="row"
                 ),
                 css_class="col-lg-12"

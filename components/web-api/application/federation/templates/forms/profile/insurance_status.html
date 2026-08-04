@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if player.insurance_expiration_date %}
+    {% if player.has_valid_insurance %}
+        <span class="text-success">{% trans "Valid until" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
+    {% else %}
+        <span class="text-danger">{% trans "Expired" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
+    {% endif %}
+{% else %}
+    <span class="text-muted">{% trans "No insurance on file" %}</span>
+{% endif %}
