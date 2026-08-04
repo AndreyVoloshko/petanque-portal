@@ -766,6 +766,33 @@ class PlayerProfileFormTests(TestCase):
         self.assertContains(response, 'No insurance on file')
         self.assertContains(response, 'text-muted')
 
+    def test_profile_page_badge_reflects_submitted_date_when_another_field_is_invalid(self):
+        old_date = timezone.localdate() + timedelta(days=30)
+        user = self.create_player_with_insurance('badge-stale-check-player', old_date)
+        self.client.login(username='badge-stale-check-player', password='Pass1234!')
+        new_date = timezone.localdate() + timedelta(days=90)
+
+        with override('en'):
+            response = self.client.post('/profile/', {
+                'name': '',
+                'surname': 'Valid',
+                'second_name': '',
+                'birth_date': '1990-01-01',
+                'current_club': '',
+                'country': 'UA',
+                'gender': 'M',
+                'facebook': '',
+                'twitter': '',
+                'instagram': '',
+                'website': '',
+                'email': user.email,
+                'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+            })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, new_date.strftime('%d.%m.%Y'))
+        self.assertNotContains(response, old_date.strftime('%d.%m.%Y'))
+
 
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
