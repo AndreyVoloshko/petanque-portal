@@ -793,13 +793,68 @@ Expected: `processing file django.po in .../locale/uk/LC_MESSAGES` and the same 
 
 Run: `docker compose -p petanque-portal exec petanque_portal_web_api python manage.py test federation.tests.PlayerProfileFormTests -v 2`
 
-Expected: PASS for the whole class, including the Task 2 English-language badge tests (unaffected) and the new Ukrainian test.
+Expected: PASS for the whole class — **this expectation was wrong, see Step 7 below.** The Task
+2 English-language badge tests are NOT unaffected; adding real translations breaks them.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add components/web-api/application/locale/uk/LC_MESSAGES/django.po components/web-api/application/locale/uk/LC_MESSAGES/django.mo components/web-api/application/locale/en/LC_MESSAGES/django.po components/web-api/application/locale/en/LC_MESSAGES/django.mo components/web-api/application/federation/tests.py
 git commit -m "i18n(profile): translate insurance status badge strings"
+```
+
+- [ ] **Step 7 (addendum, found while implementing): fix the Task 2 English badge tests**
+
+Running the full `PlayerProfileFormTests` class after Step 6 breaks
+`test_profile_page_shows_valid_insurance_badge`, `test_profile_page_shows_expired_insurance_badge`,
+and `test_profile_page_shows_no_insurance_badge_when_blank` — the ones added in Task 2 that use
+`with override('en'): response = self.client.get('/profile/')`. This app has a custom
+`federation.middleware.InitialLanguageMiddleware` (see `api/settings.py`'s `MIDDLEWARE` list,
+ordered directly before `django.middleware.locale.LocaleMiddleware`) that, on any request
+without an existing `django_language` cookie, injects one into `request.COOKIES` — falling
+back to `settings.LANGUAGE_CODE` (`'uk'`) when no geo-IP header is present, which is always the
+case in tests. `LocaleMiddleware` then activates that cookie's language *inside* the
+request/response cycle, which overrides whatever `django.utils.translation.override('en')` set
+*outside* it. So `self.client.get(...)` inside `with override('en'):` was never actually
+rendering the page in English — it was always rendering in `uk`.
+
+This was invisible before this task because no `uk` catalog entry existed yet for "Valid
+until" / "Expired" / "No insurance on file": gettext's fallback-to-msgid behavior meant the
+(actually-`uk`) response showed the literal English source text anyway, which is exactly what
+those tests asserted — for the wrong reason. Once Step 3's real `uk` translations exist, the
+same (still actually-`uk`) response now shows "Дійсне до" / "Прострочено" / "Страхування
+відсутнє" instead, and the English-text assertions fail.
+
+This codebase already has the correct pattern for this, used in three existing tests
+(`federation/tests.py`, search for `self.client.cookies['django_language'] = 'en'` — e.g.
+`test_filter_form_auto_submits_without_apply_button`): set the cookie directly on the test
+client instead of using `override()`, since `InitialLanguageMiddleware` only overrides the
+cookie when one isn't already present on the request. Fix the three Task 2 tests by replacing:
+
+```python
+        with override('en'):
+            response = self.client.get('/profile/')
+```
+
+with:
+
+```python
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/profile/')
+```
+
+(placed after `self.client.login(...)` and before the request, matching the existing
+convention; no other line in each test changes). Re-run
+`docker compose -p petanque-portal exec petanque_portal_web_api python manage.py test federation.tests.PlayerProfileFormTests -v 2`
+to confirm all 6 tests in the class pass, then run the full suite
+(`docker compose -p petanque-portal exec petanque_portal_web_api python manage.py test federation`)
+to confirm no other test happens to rely on the same mistaken assumption for these specific
+strings, then commit:
+
+```bash
+git add components/web-api/application/federation/tests.py
+git commit -m "fix(tests): force the language cookie for English-locale profile badge tests"
 ```
 
 ---
