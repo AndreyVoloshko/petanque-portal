@@ -769,9 +769,7 @@ class PlayerLicenseListTests(TestCase):
 
     def test_profile_form_save_preserves_non_profile_fields(self):
         player = self.create_player('licensed-profile', licence_number_value='00001')
-        valid_until = timezone.localdate() + timedelta(days=30)
         player.prefred_position = 'point'
-        player.insurance_expiration_date = valid_until
         player.save()
         form = PlayerForm(data={
             'name': player.name,
@@ -786,11 +784,12 @@ class PlayerLicenseListTests(TestCase):
             'instagram': '',
             'website': '',
             'email': 'licensed-profile@example.com',
+            'insurance_expiration_date': '',
         }, instance=player)
 
         self.assertNotIn('licence_number', form.fields)
         self.assertNotIn('prefred_position', form.fields)
-        self.assertNotIn('insurance_expiration_date', form.fields)
+        self.assertIn('insurance_expiration_date', form.fields)
         self.assertTrue(form.is_valid(), form.errors)
 
         form.save()
@@ -799,7 +798,83 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(player.licence_number, '00001')
         self.assertTrue(player.is_licence_active)
         self.assertEqual(player.prefred_position, 'point')
-        self.assertEqual(player.insurance_expiration_date, valid_until)
+
+    def test_profile_form_updates_insurance_expiration_date(self):
+        player = self.create_player('insurance-update-player')
+        new_date = timezone.localdate() + timedelta(days=400)
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-update-player@example.com',
+            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertEqual(player.insurance_expiration_date, new_date)
+
+    def test_profile_form_accepts_past_insurance_expiration_date(self):
+        player = self.create_player('insurance-past-player')
+        past_date = timezone.localdate() - timedelta(days=10)
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-past-player@example.com',
+            'insurance_expiration_date': past_date.strftime('%Y-%m-%d'),
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertEqual(player.insurance_expiration_date, past_date)
+
+    def test_profile_form_clears_insurance_expiration_date(self):
+        player = self.create_player('insurance-clear-player')
+        player.insurance_expiration_date = timezone.localdate() + timedelta(days=30)
+        player.save()
+
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-clear-player@example.com',
+            'insurance_expiration_date': '',
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertIsNone(player.insurance_expiration_date)
 
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
