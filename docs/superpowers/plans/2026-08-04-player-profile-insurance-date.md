@@ -282,18 +282,27 @@ to `Meta.widgets` in `components/web-api/application/federation/forms/player_for
 ```python
         widgets = {
             'avatar': ImageThumbnailFileInput,
-            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}),
+            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
 ```
 
 (`forms` is already imported at the top of the file: `from django import forms`.) HTML5 date
 inputs always submit `YYYY-MM-DD`, which matches the `.strftime('%Y-%m-%d')` format the Task 1
-tests already POST — no test changes needed. Re-run the Step 4 test command to confirm nothing
-broke, then commit:
+tests already POST — no test changes needed for submission. The explicit `format='%Y-%m-%d'` is
+required for *rendering* too: without it, Django renders an existing value through the active
+locale's display format (e.g. `dd.mm.yyyy` under `uk`), which is invalid for an HTML5
+`type="date"` input's `value` attribute — browsers silently discard it and show the picker
+empty even though the player already has a date on file, risking silent data loss if they save
+without noticing. (Caught in task review; fixed with a regression test,
+`test_profile_form_renders_existing_insurance_expiration_date_in_iso_format`, asserting the
+rendered widget contains `value="2026-09-03"` for a player whose `insurance_expiration_date` is
+already set to `date(2026, 9, 3)`.) Re-run the Step 4 test command to confirm nothing broke,
+then commit:
 
 ```bash
-git add components/web-api/application/federation/forms/player_form.py
+git add components/web-api/application/federation/forms/player_form.py components/web-api/application/federation/tests.py
 git commit -m "feat(profile): use native HTML5 date picker for insurance date input"
+git commit -m "fix(profile): render existing insurance date in ISO format for date input"
 ```
 
 ---
