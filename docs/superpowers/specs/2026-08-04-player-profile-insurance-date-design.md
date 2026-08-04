@@ -76,6 +76,9 @@ Add a new `Div` to the crispy `Layout`, placed after the existing rows (socials)
   - Red: "Expired {date}" — when a date is set and in the past.
   - Muted: "No insurance on file" — when the field is blank.
 
+  `{date}` is rendered with Django's `|date:"d.m.Y"` template filter, matching the `dd.mm.yyyy`
+  convention already used for `birth_date` elsewhere in the profile form.
+
 The status badge reflects the value currently saved on `player` (i.e., updates after a
 successful save/reload, not live as the player types).
 
@@ -112,8 +115,9 @@ No migration needed — `insurance_expiration_date` already exists on `Player`.
 
 ### 6. Translations
 
-New status-badge strings ("Valid until %(date)s", "Expired %(date)s", "No insurance on file")
-are new `_()` strings needing entries in both
+New status-badge strings ("Valid until", "Expired", "No insurance on file" — each wrapped with
+`{% trans %}` in the partial template, with the formatted date interpolated separately) are
+new strings needing entries in both
 `locale/uk/LC_MESSAGES/django.po` and `locale/en/LC_MESSAGES/django.po`, followed by
 `compilemessages` to regenerate the corresponding `.mo` files (both `.po` and `.mo` are
 committed together, matching the existing convention from commit `466a789`). The field label
