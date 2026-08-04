@@ -272,6 +272,30 @@ git add components/web-api/application/federation/forms/player_form.py component
 git commit -m "feat(profile): let players edit their own insurance expiration date"
 ```
 
+- [ ] **Step 6 (addendum, added after user request mid-implementation): use a native HTML5 date picker**
+
+The user asked for the field to render as a datepicker "in an easy way." The simplest option
+requiring no new JS dependency is Django's built-in support for HTML5 `<input type="date">`,
+which every modern browser renders with its own native calendar picker. Add a widget override
+to `Meta.widgets` in `components/web-api/application/federation/forms/player_form.py`:
+
+```python
+        widgets = {
+            'avatar': ImageThumbnailFileInput,
+            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+```
+
+(`forms` is already imported at the top of the file: `from django import forms`.) HTML5 date
+inputs always submit `YYYY-MM-DD`, which matches the `.strftime('%Y-%m-%d')` format the Task 1
+tests already POST — no test changes needed. Re-run the Step 4 test command to confirm nothing
+broke, then commit:
+
+```bash
+git add components/web-api/application/federation/forms/player_form.py
+git commit -m "feat(profile): use native HTML5 date picker for insurance date input"
+```
+
 ---
 
 ### Task 2: Add the insurance status badge
