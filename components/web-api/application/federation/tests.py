@@ -876,6 +876,15 @@ class PlayerLicenseListTests(TestCase):
 
         self.assertIsNone(player.insurance_expiration_date)
 
+    def test_profile_form_renders_existing_insurance_expiration_date_in_iso_format(self):
+        player = self.create_player('insurance-render-player')
+        player.insurance_expiration_date = date(2026, 9, 3)
+        player.save()
+
+        form = PlayerForm(instance=player)
+
+        self.assertIn('value="2026-09-03"', str(form['insurance_expiration_date']))
+
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
             self.create_player('licensed-{}'.format(index), licence_number_value='{:05d}'.format(index))

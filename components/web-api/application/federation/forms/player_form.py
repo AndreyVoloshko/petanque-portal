@@ -129,5 +129,5 @@ class PlayerForm(forms.ModelForm):
         }
         widgets = {
             'avatar': ImageThumbnailFileInput,
-            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}),
+            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
