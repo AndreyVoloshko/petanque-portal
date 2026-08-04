@@ -793,6 +793,16 @@ class PlayerProfileFormTests(TestCase):
         self.assertContains(response, new_date.strftime('%d.%m.%Y'))
         self.assertNotContains(response, old_date.strftime('%d.%m.%Y'))
 
+    def test_profile_page_shows_localized_insurance_badge_in_ukrainian(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        self.create_player_with_insurance('badge-uk-player', valid_until)
+        self.client.login(username='badge-uk-player', password='Pass1234!')
+
+        with override('uk'):
+            response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Дійсне до')
+
 
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
