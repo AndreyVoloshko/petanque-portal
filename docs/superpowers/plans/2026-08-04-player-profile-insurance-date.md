@@ -406,7 +406,7 @@ In `components/web-api/application/federation/forms/player_form.py`, update the 
                 Div(
                     Div('insurance_expiration_date', css_class="col-lg-4"),
                     Div(
-                        HTML('{% include "forms/profile/insurance_status.html" with player=form.instance %}'),
+                        HTML('{% include "forms/profile/insurance_status.html" with player=profile_form.instance %}'),
                         css_class="col-lg-8 d-flex align-items-center"
                     ),
                     css_class="row"
@@ -415,7 +415,13 @@ In `components/web-api/application/federation/forms/player_form.py`, update the 
             ),
 ```
 
-(`django-crispy-forms`' `HTML` layout node renders with the full page context, which crispy always populates with `form` — see `crispy_forms/utils.py` — so `form.instance` resolves to the `Player` being edited without any other wiring.)
+(`django-crispy-forms`' `HTML` layout node renders with the full page context of the page where
+the form is being rendered — see `crispy_forms/layout.py`'s `HTML.render()`, which wraps the
+string in a real `django.template.Template` and calls `.render(context)`, so `{% %}` tags do
+get processed. The variable name must match what this app actually puts in that context:
+`views/profile.py`'s `profile()` view renders with `{'profile_form': profile_form, ...}` and
+`profile.html` does `{% crispy profile_form %}` — not the generic `form` — so the include must
+reference `profile_form.instance`, not `form.instance`.)
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
@@ -428,6 +434,70 @@ Expected: PASS.
 ```bash
 git add components/web-api/application/federation/forms/player_form.py components/web-api/application/federation/templates/forms/profile/insurance_status.html components/web-api/application/federation/tests.py
 git commit -m "feat(profile): show insurance valid/expired/none status badge"
+```
+
+- [ ] **Step 7 (addendum, added after task review): render the badge lazily, not eagerly in `__init__`**
+
+Task review caught two problems with an initial implementation attempt that computed the badge
+HTML once via `render_to_string()` inside `PlayerForm.__init__` and passed the resulting string
+into `HTML(...)`: (1) it's unnecessary — `HTML()` already processes `{% %}` tags in its own
+render pass, so the `{% include %}` approach from Step 4 works once the context variable name
+is corrected (see above); (2) more importantly, computing the badge in `__init__` bakes it from
+`self.instance` *before* Django's `ModelForm._post_clean()`/`construct_instance()` has written
+the submitted values onto the instance (that only happens when `is_valid()` runs, which is
+after `__init__()` returns). On a POST where `insurance_expiration_date` changes and some other
+field fails validation, the page re-renders the same form object with errors — and the eagerly
+baked badge would show the OLD (pre-submission) insurance status, not what the player just
+typed. This is a real, easily-triggered, silent data-display bug.
+
+The fix is Step 4's `{% include ... with player=profile_form.instance %}` — evaluated lazily by
+Django's template engine at `{% crispy profile_form %}` render time (i.e., when `profile.html`
+is actually rendered by the view), which is after `is_valid()`/`construct_instance()` has
+already updated `profile_form.instance` for the current request, regardless of whether
+validation passed or failed elsewhere on the form.
+
+Add a regression test to `class PlayerProfileFormTests(TestCase):` (after
+`test_profile_page_shows_no_insurance_badge_when_blank`) that POSTs a new insurance date
+together with a deliberately invalid unrelated field (blank `name`), and asserts the re-rendered
+page shows the newly submitted date, not the old one:
+
+```python
+    def test_profile_page_badge_reflects_submitted_date_when_another_field_is_invalid(self):
+        old_date = timezone.localdate() + timedelta(days=30)
+        user = self.create_player_with_insurance('badge-stale-check-player', old_date)
+        self.client.login(username='badge-stale-check-player', password='Pass1234!')
+        new_date = timezone.localdate() + timedelta(days=90)
+
+        with override('en'):
+            response = self.client.post('/profile/', {
+                'name': '',
+                'surname': 'Valid',
+                'second_name': '',
+                'birth_date': '1990-01-01',
+                'current_club': '',
+                'country': 'UA',
+                'gender': 'M',
+                'facebook': '',
+                'twitter': '',
+                'instagram': '',
+                'website': '',
+                'email': user.email,
+                'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+            })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, new_date.strftime('%d.%m.%Y'))
+        self.assertNotContains(response, old_date.strftime('%d.%m.%Y'))
+```
+
+Run the RED command first (`... test federation.tests.PlayerProfileFormTests -v 2`) to confirm
+it fails against the eager `render_to_string()` version, then apply the Step 4 fix above, rerun
+to confirm all of `PlayerProfileFormTests` and `PlayerLicenseListTests` pass (15/15), then
+commit:
+
+```bash
+git add components/web-api/application/federation/forms/player_form.py components/web-api/application/federation/tests.py
+git commit -m "fix(profile): render insurance badge from live form context, not a stale __init__ snapshot"
 ```
 
 ---
