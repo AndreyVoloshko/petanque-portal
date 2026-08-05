@@ -613,6 +613,16 @@ class OrganizerTournamentMembership(models.Model):
         verbose_name_plural = 'Організатори турніру'
 
 
+class OrganizerTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
+    model = OrganizerTournamentMembership
+    extra = 0
+    autocomplete_fields = ['organizer']
+
+    class Meta:
+        verbose_name = 'Організатори турніру'
+        verbose_name_plural = 'Організатори турніру'
+
+
 # Classes for admin
 class ArbiterTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = ArbiterTournamentMembership
@@ -636,7 +646,7 @@ class TeamsTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.T
 
 
 class ArbiterTeamTournamentAdminInline(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
-    inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)
+    inlines = (OrganizerTournamentMembershipInline, ArbiterTournamentMembershipInline, TeamsTournamentMembershipInline,)
     search_fields = (
         'id',
         'name',

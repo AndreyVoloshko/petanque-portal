@@ -41,6 +41,7 @@ from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
     OrganizerTournamentMembership,
+    OrganizerTournamentMembershipInline,
     TeamsTournamentMembershipInline,
     TeamTournamentMembership,
     Tournament,
@@ -1314,6 +1315,47 @@ class TeamTournamentMembershipCoachAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'id="id_teamtournamentmembership_set-0-coach"')
+
+
+class OrganizerTournamentMembershipAdminTests(TestCase):
+    def create_admin(self):
+        return User.objects.create_superuser(
+            username='organizer-membership-admin',
+            email='organizer-membership-admin@example.com',
+            password='AdminPass123!',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Admin Organizer Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_organizer_is_an_autocomplete_field_on_the_inline(self):
+        self.assertIn('organizer', OrganizerTournamentMembershipInline.autocomplete_fields)
+
+    def test_organizer_inline_is_registered_before_arbiter_and_team_inlines(self):
+        self.assertEqual(ArbiterTeamTournamentAdminInline.inlines[0], OrganizerTournamentMembershipInline)
+
+    def test_tournament_change_page_renders_organizer_autocomplete_for_existing_row(self):
+        tournament = self.create_tournament()
+        organizer = Player.objects.create(
+            user=User.objects.create_user(username='admin-inline-co-organizer'),
+            name='Admin-Inline',
+            surname='Organizer',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/tournament/{}/change/'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_organizertournamentmembership_set-0-organizer"')
 
 
 class PlayerTournamentListTests(TestCase):
