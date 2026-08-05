@@ -64,6 +64,16 @@
                             {% endfor %}
                         </div>
 
+                        <div class="registration-field-grid registration-team-coach-grid">
+                            <div class="registration-field registration-team-field">
+                                <label for="{{ team_registration_form.coach.id_for_label }}">{{ team_registration_form.coach.label }}</label>
+                                {{ team_registration_form.coach }}
+                                {% if team_registration_form.coach.errors %}
+                                    <div class="registration-field-errors">{{ team_registration_form.coach.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="registration-actions">
                             <button type="submit" class="registration-submit-button">
                                 <i class="bi bi-person-check" aria-hidden="true"></i>

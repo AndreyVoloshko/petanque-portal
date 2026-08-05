@@ -128,6 +128,7 @@ Returns tournament data with registered teams and players.
       "date_registration": "2024-05-01T12:00:00Z",
       "rating_points": 120,
       "rating_power": 1480,
+      "coach": { "id": 55, "name": "Ivan", "surname": "Petrenko", "second_name": "", "avatar_url": null },
       "players": [
         {
           "id": 42,
@@ -151,7 +152,7 @@ Returns tournament data with registered teams and players.
 }
 ```
 
-`teams[].club` and `teams[].club_logo_url` are populated only when every player in the exported team has the same current club; otherwise both values are `null`. `players[].rating` uses the tournament-specific rating field: regular, B, League, or inclusive.
+`teams[].club` and `teams[].club_logo_url` are populated only when every player in the exported team has the same current club; otherwise both values are `null`. `teams[].coach` uses the same brief-player shape as `tournament.arbiters[]` entries (minus `is_main_arbiter`), or `null` when no coach is assigned. `players[].rating` uses the tournament-specific rating field: regular, B, League, or inclusive.
 
 `players[].insurance_valid` is `true` when the tournament does not require insurance, or when the player's insurance expiration date is today or later; it is `false` when the tournament requires insurance and the player's insurance is missing or expired.
 

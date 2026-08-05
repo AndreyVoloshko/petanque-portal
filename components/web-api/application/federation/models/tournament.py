@@ -106,8 +106,8 @@ class Tournament(models.Model):
     '''
         add team to current tournament
     '''
-    def add_team(self, team):
-        new_team = TeamTournamentMembership(tournament=self, team=team)
+    def add_team(self, team, coach_id=None):
+        new_team = TeamTournamentMembership(tournament=self, team=team, coach_id=coach_id)
         new_team.save()
 
     '''
@@ -524,6 +524,10 @@ class Tournament(models.Model):
 class TeamTournamentMembership(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, verbose_name="Команда", null=True)
+    coach = models.ForeignKey(
+        Player, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_('Coach'), related_name='coached_team_memberships',
+    )
     place_min = models.IntegerField(_('Place'), default=0)
     place_max = models.IntegerField(_('Place (maximum)'), default=0)
     date_registration = models.DateField(_('Registration date'), default=timezone.now)
@@ -609,7 +613,7 @@ class ArbiterTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin
 class TeamsTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = TeamTournamentMembership
     extra = 0
-    autocomplete_fields = ['team']
+    autocomplete_fields = ['team', 'coach']
 
     class Meta:
         verbose_name = 'Команди турніру'

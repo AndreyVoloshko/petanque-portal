@@ -994,7 +994,7 @@ def tournament(request, id):
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
-        .select_related('team', 'tournament', 'tournament__main_organizer', 'tournament__main_organizer__user')
+        .select_related('team', 'tournament', 'tournament__main_organizer', 'tournament__main_organizer__user', 'coach')
         .prefetch_related(
             Prefetch(
                 'team__players',
@@ -1040,7 +1040,7 @@ def tournament_teams_export(request, id):
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
-        .select_related('team')
+        .select_related('team', 'coach')
         .prefetch_related(
             Prefetch(
                 'team__players',
@@ -1165,6 +1165,7 @@ def tournament_teams_export(request, id):
                 'date_registration': team.date_registration,
                 'rating_points': team.rating_points,
                 'rating_power': team.rating_power,
+                'coach': _player_brief(team.coach) if team.coach else None,
                 'name': team.team.get_short_name(),
                 'club': _club_export(team_club, request) if team_club else None,
                 'club_logo_url': _media_file_url(request, team_club.logo) if team_club else None,

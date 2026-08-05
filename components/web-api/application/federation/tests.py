@@ -1,3 +1,4 @@
+import csv
 import datetime
 import json
 import re
@@ -38,6 +39,7 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    TeamsTournamentMembershipInline,
     TeamTournamentMembership,
     Tournament,
 )
@@ -430,6 +432,50 @@ class TeamCaptainSelectionTests(TestCase):
         self.assertIsNone(prefetched_team.get_capitan())
         self.assertEqual(prefetched_team.get_display_capitan(), first_player)
         self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
+
+
+class TeamTournamentMembershipCoachFieldTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Field Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_coach_defaults_to_none_and_can_be_set(self):
+        coach = self.create_player('coach-field-coach')
+        tournament = self.create_tournament()
+        team = Team.objects.create(name='Coach Field Team')
+
+        membership = TeamTournamentMembership.objects.create(tournament=tournament, team=team)
+        self.assertIsNone(membership.coach)
+
+        membership.coach = coach
+        membership.save()
+        membership.refresh_from_db()
+        self.assertEqual(membership.coach, coach)
+
+    def test_deleting_coach_player_clears_membership_instead_of_deleting_it(self):
+        coach = self.create_player('coach-field-deleted-coach')
+        tournament = self.create_tournament()
+        team = Team.objects.create(name='Coach Field Team Two')
+        membership = TeamTournamentMembership.objects.create(tournament=tournament, team=team, coach=coach)
+
+        coach.delete()
+
+        membership.refresh_from_db()
+        self.assertIsNone(membership.coach)
 
 
 class SeasonSnapshotGenerationTests(TestCase):
@@ -1269,6 +1315,35 @@ class RestrictedRelatedWidgetAdminMixinTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class TeamTournamentMembershipCoachAdminTests(TestCase):
+    def create_admin(self):
+        return User.objects.create_superuser(
+            username='team-coach-admin',
+            email='team-coach-admin@example.com',
+            password='AdminPass123!',
+        )
+
+    def test_coach_is_an_autocomplete_field_on_the_inline(self):
+        self.assertIn('coach', TeamsTournamentMembershipInline.autocomplete_fields)
+
+    def test_tournament_change_page_renders_coach_autocomplete_for_existing_team(self):
+        tournament = Tournament.objects.create(
+            name='Admin Coach Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+        team = Team.objects.create(name='Admin Coach Team')
+        tournament.add_team(team)
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/tournament/{}/change/'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_teamtournamentmembership_set-0-coach"')
+
+
 class PlayerTournamentListTests(TestCase):
     def create_player(self, username='player-page', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
@@ -1606,7 +1681,7 @@ class TournamentTeamExportJsonTests(TestCase):
             requires_insurance=requires_insurance,
         )
 
-    def create_team_membership(self, tournament, players, name, place_min, power='0.0000'):
+    def create_team_membership(self, tournament, players, name, place_min, power='0.0000', coach=None):
         team = Team.objects.create(name=name)
         for index, player in enumerate(players):
             PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
@@ -1616,6 +1691,7 @@ class TournamentTeamExportJsonTests(TestCase):
             team=team,
             place_min=place_min,
             power=Decimal(power),
+            coach=coach,
         )
 
     def test_json_export_includes_images_shared_club_power_and_player_rating_places(self):
@@ -1718,6 +1794,216 @@ class TournamentTeamExportJsonTests(TestCase):
         self.assertFalse(data['tournament']['requires_insurance'])
         players = data['teams'][0]['players']
         self.assertTrue(all(player['insurance_valid'] for player in players))
+
+    def test_json_export_includes_coach_when_assigned(self):
+        coach = self.create_player('export-coach')
+        first = self.create_player('coach-team-first')
+        second = self.create_player('coach-team-second')
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [first, second], 'Coached Pair', place_min=1, coach=coach)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['teams'][0]['coach']['id'], coach.pk)
+        self.assertEqual(data['teams'][0]['coach']['name'], coach.name)
+        self.assertEqual(data['teams'][0]['coach']['surname'], coach.surname)
+
+    def test_json_export_coach_is_null_when_not_assigned(self):
+        first = self.create_player('nocoach-team-first')
+        second = self.create_player('nocoach-team-second')
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [first, second], 'Uncoached Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIsNone(data['teams'][0]['coach'])
+
+
+class TournamentPageCoachDisplayTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Display Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+
+    def create_team(self, name, players):
+        team = Team.objects.create(name=name)
+        for index, player in enumerate(players):
+            PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
+        return team
+
+    def test_tournament_page_shows_coach_name_and_link(self):
+        coach = self.create_player('display-coach')
+        first = self.create_player('display-player-one')
+        second = self.create_player('display-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Coached Pair', [first, second])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+        self.assertContains(response, coach.get_name())
+        self.assertContains(response, '/player/{}'.format(coach.pk))
+
+    def test_tournament_page_shows_dash_when_no_coach_assigned(self):
+        first = self.create_player('nocoach-player-one')
+        second = self.create_player('nocoach-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Uncoached Pair', [first, second])
+        tournament.add_team(team)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+
+    def test_tournament_page_shows_coach_column_for_single_player_format_with_rating_points(self):
+        coach = self.create_player('single-format-coach')
+        participant = self.create_player('single-format-participant')
+        tournament = Tournament.objects.create(
+            name='Coach Display Singles Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=1,
+            number_of_players_in_team_max=1,
+            format='swiko',
+            is_goes_to_rating=True,
+        )
+        team = self.create_team('Solo Participant', [participant])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+        self.assertContains(response, coach.get_name())
+
+
+class TournamentTeamExportCsvTests(TestCase):
+    def create_club(self, name, short_name):
+        return Club.objects.create(
+            name=name,
+            short_name=short_name,
+            address='Kyiv',
+        )
+
+    def create_player(self, username, club=None, gender='M'):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender=gender,
+            current_club=club,
+        )
+
+    def create_tournament(self, players_per_team=2):
+        return Tournament.objects.create(
+            name='Export Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=players_per_team,
+            number_of_players_in_team_max=players_per_team,
+            format='swiko',
+        )
+
+    def create_team_membership(self, tournament, players, name, place_min):
+        team = Team.objects.create(name=name)
+        for index, player in enumerate(players):
+            PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
+
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=place_min,
+        )
+
+    def get_csv_rows(self, response):
+        content = response.content.decode('utf-8')
+        return list(csv.reader(content.splitlines(), delimiter=';'))
+
+    def test_csv_export_header_rows(self):
+        club = self.create_club('Kyiv Petanque Club', 'KPC')
+        first = self.create_player('first', club=club)
+        second = self.create_player('second', club=club)
+        tournament = self.create_tournament(players_per_team=2)
+        self.create_team_membership(tournament, [first, second], 'Kyiv Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'csv'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv;charset=utf-8')
+        rows = self.get_csv_rows(response)
+        self.assertEqual(rows[0], [str(tournament.number_of_players_in_team_min)])
+        self.assertEqual(rows[1], [
+            'LASTNAME1', 'FIRSTNAME1', 'GENDER1', 'CLUB1',
+            'LASTNAME2', 'FIRSTNAME2', 'GENDER2', 'CLUB2',
+            'NAME', 'SEED', 'STATUS', 'RANK',
+        ])
+
+    def test_csv_export_emits_one_row_per_team_with_player_fields(self):
+        club = self.create_club('Kyiv Petanque Club', 'KPC')
+        other_club = self.create_club('Lviv Petanque Club', 'LPC')
+        first = self.create_player('first', club=club, gender='M')
+        second = self.create_player('second', club=other_club, gender='F')
+        third = self.create_player('third', club=club, gender='M')
+        fourth = self.create_player('fourth', club=None, gender='F')
+        tournament = self.create_tournament(players_per_team=2)
+        self.create_team_membership(tournament, [first, second], 'Kyiv Pair', place_min=1)
+        self.create_team_membership(tournament, [third, fourth], 'Mixed Pair', place_min=2)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'csv'})
+
+        rows = self.get_csv_rows(response)
+        data_rows = rows[2:]
+        self.assertEqual(len(data_rows), 2)
+
+        rows_by_team_name = {row[8]: row for row in data_rows}
+        self.assertEqual(set(rows_by_team_name.keys()), {'Kyiv Pair', 'Mixed Pair'})
+
+        kyiv_row = rows_by_team_name['Kyiv Pair']
+        self.assertEqual(
+            {tuple(kyiv_row[0:4]), tuple(kyiv_row[4:8])},
+            {
+                (first.name, first.surname, first.gender, club.name),
+                (second.name, second.surname, second.gender, other_club.name),
+            },
+        )
+        self.assertEqual(kyiv_row[9], '0')
+        self.assertEqual(kyiv_row[10], '')
+        self.assertEqual(kyiv_row[11], '')
+
+        mixed_row = rows_by_team_name['Mixed Pair']
+        self.assertEqual(
+            {tuple(mixed_row[0:4]), tuple(mixed_row[4:8])},
+            {
+                (third.name, third.surname, third.gender, club.name),
+                (fourth.name, fourth.surname, fourth.gender, ''),
+            },
+        )
 
 
 class OptionalRegistrationEmailTests(TestCase):
@@ -1958,6 +2244,187 @@ class TeamRegistrationRedesignTests(TestCase):
         team = Team.get_or_create_for_players(list(reversed(form.verified_player_ids)))
 
         self.assertEqual(team.get_capitan(), capitan)
+
+    def test_team_registration_form_rejects_non_numeric_player_id(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+        teammate = Player.objects.create(
+            user=User.objects.create_user(username='team-player-nonnumeric'),
+            name='Team',
+            surname='Player',
+            birth_date=date(1991, 1, 1),
+            gender='M',
+        )
+
+        form = RegistrationTeamForm(
+            data={
+                'players[1]': 'abc',
+                'players[2]': str(teammate.pk),
+            },
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
+
+class TeamRegistrationFormCoachTests(TestCase):
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Form Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def test_coach_field_is_optional(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-first')
+        second = self.create_player('coach-form-second')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertIsNone(form.verified_coach_id)
+
+    def test_coach_field_resolves_to_verified_coach_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-third')
+        second = self.create_player('coach-form-fourth')
+        coach = self.create_player('coach-form-coach')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': str(coach.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_coach_id, coach.pk)
+
+    def test_coach_can_overlap_with_roster_or_other_teams(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-fifth')
+        second = self.create_player('coach-form-sixth')
+        # `first` is both a roster player and the selected coach: no overlap check applies.
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': str(first.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_coach_id, first.pk)
+
+    def test_coach_field_rejects_nonexistent_player_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-seventh')
+        second = self.create_player('coach-form-eighth')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': '999999'},
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
+    def test_coach_field_rejects_non_numeric_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-ninth')
+        second = self.create_player('coach-form-tenth')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': 'abc'},
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
+
+class TeamRegistrationCoachPersistenceTests(TestCase):
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Persistence Cup',
+            category='open',
+            place='Kyiv',
+            start_date=(timezone.now() + timedelta(days=30)).date(),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def test_register_team_persists_selected_coach(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-persist-first')
+        second = self.create_player('coach-persist-second')
+        coach = self.create_player('coach-persist-coach')
+
+        response = self.client.post(f'/register/team/{tournament.pk}/', {
+            'players[1]': str(first.pk),
+            'players[2]': str(second.pk),
+            'coach': str(coach.pk),
+        })
+
+        self.assertEqual(response.status_code, 302)
+        membership = TeamTournamentMembership.objects.get(tournament=tournament)
+        self.assertEqual(membership.coach, coach)
+
+    def test_register_team_without_coach_leaves_it_blank(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-persist-third')
+        second = self.create_player('coach-persist-fourth')
+
+        response = self.client.post(f'/register/team/{tournament.pk}/', {
+            'players[1]': str(first.pk),
+            'players[2]': str(second.pk),
+        })
+
+        self.assertEqual(response.status_code, 302)
+        membership = TeamTournamentMembership.objects.get(tournament=tournament)
+        self.assertIsNone(membership.coach)
+
+    def test_team_registration_page_renders_coach_field(self):
+        tournament = self.create_tournament()
+
+        response = self.client.get(f'/register/team/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="coach"')
+        self.assertContains(response, "Пошук тренера за ім&#x27;ям або прізвищем")
 
 
 @override_settings(

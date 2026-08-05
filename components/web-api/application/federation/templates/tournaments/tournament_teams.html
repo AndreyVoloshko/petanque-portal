@@ -21,6 +21,7 @@
             <colgroup>
                 <col class="tournament-team-place-col">
                 <col class="tournament-team-name-col">
+                <col class="tournament-team-coach-col">
                 {% if tournament_detail.is_single_player_format %}
                 <col class="tournament-team-club-col">
                 {% endif %}
@@ -44,6 +45,7 @@
                             {% trans "Captain" %}
                         {% endif %}
                     </th>
+                    <th class="tournament-team-coach-col">{% trans "Coach" %}</th>
                     {% if tournament_detail.is_single_player_format %}
                     <th class="tournament-team-club-col">{% trans "Club" %}</th>
                     {% endif %}
@@ -130,6 +132,13 @@
                                     <span class="tournament-team-name">{{ team.team|team_short_name|safe }}</span>
                                 {% endif %}
                             {% endwith %}
+                        {% endif %}
+                    </td>
+                    <td class="tournament-team-coach-cell" data-label="{% trans "Coach" %}">
+                        {% if team.coach %}
+                            <a class="tournament-team-captain-name" href="{% url 'player' id=team.coach.pk %}">{{ team.coach.get_name }}</a>
+                        {% else %}
+                            <span class="tournament-team-muted">&mdash;</span>
                         {% endif %}
                     </td>
                     {% if tournament_detail.is_single_player_format %}
@@ -305,6 +314,15 @@
                     {% endif %}
                 </section>
 
+                <section class="tournament-team-mobile-people">
+                    <h3>{% trans "Coach" %}</h3>
+                    {% if team.coach %}
+                        <a class="tournament-team-captain-name" href="{% url 'player' id=team.coach.pk %}">{{ team.coach.get_name }}</a>
+                    {% else %}
+                        <span class="tournament-team-muted">&mdash;</span>
+                    {% endif %}
+                </section>
+
                 {% if not tournament_detail.is_single_player_format %}
                 <section class="tournament-team-mobile-people">
                     <h3>{% trans "Athletes" %}</h3>
@@ -418,7 +436,7 @@ $(document).ready(function() {
     }).length > 0;
     var activeMobileSort = hasPlaces ? 'place' : 'power';
     var placeColumnIndex = 0;
-    var powerColumnIndex = {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}4{% else %}3{% endif %};
+    var powerColumnIndex = {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}5{% else %}4{% endif %};
     var table;
 
     mobileCards.each(function () {
@@ -502,6 +520,7 @@ $(document).ready(function() {
                 {% if tournament_detail.is_single_player_format %}
                 { searchable: true, orderable: true, type: "num" },
                 { searchable: true, orderable: true },
+                { searchable: true, orderable: false },
                 { searchable: true, orderable: true },
                 {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
                 { searchable: true, orderable: true },
@@ -512,6 +531,7 @@ $(document).ready(function() {
                 {% else %}
                 { searchable: true, orderable: true, type: "num" },
                 { searchable: true, orderable: true },
+                { searchable: true, orderable: false },
                 { searchable: true, orderable: false },
                 {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}
                 { searchable: true, orderable: true },

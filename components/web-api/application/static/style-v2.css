@@ -9607,6 +9607,10 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   width: 12rem;
 }
 
+.tournament-team-coach-col {
+  width: 10rem;
+}
+
 .tournament-team-athletes-col {
   width: auto;
 }
@@ -10633,6 +10637,11 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table.is-single-player-format
     .tournament-team-date-col {
     width: 7.4rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-coach-col {
+    width: 6rem;
   }
 
   .tournament-detail-teams-table.is-single-player-format
