@@ -2986,3 +2986,15 @@ msgstr "Необхідне страхування"
 #: federation/templates/tournaments/_insurance_warning.html
 msgid "Insurance is missing or expired"
 msgstr "Страхування відсутнє або прострочене"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "Valid until"
+msgstr "Дійсне до"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "Expired"
+msgstr "Прострочено"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "No insurance on file"
+msgstr "Страхування відсутнє"
