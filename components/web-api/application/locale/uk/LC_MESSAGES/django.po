@@ -2980,12 +2980,8 @@ msgid "Insurance is missing or expired"
 msgstr "Страхування відсутнє або прострочене"
 
 #: federation/templates/forms/profile/insurance_status.html
-msgid "Valid until"
-msgstr "Дійсне до"
-
-#: federation/templates/forms/profile/insurance_status.html
-msgid "Expired"
-msgstr "Прострочено"
+msgid "Insurance expired"
+msgstr "Страхування прострочено"
 
 #: federation/templates/forms/profile/insurance_status.html
 msgid "No insurance on file"

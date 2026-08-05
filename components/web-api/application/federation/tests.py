@@ -740,7 +740,7 @@ class PlayerProfileFormTests(TestCase):
 
         response = self.client.get('/profile/')
 
-        self.assertContains(response, 'Valid until')
+        self.assertContains(response, 'Insurance valid until')
         self.assertContains(response, valid_until.strftime('%d.%m.%Y'))
         self.assertContains(response, 'text-success')
 
@@ -752,7 +752,7 @@ class PlayerProfileFormTests(TestCase):
 
         response = self.client.get('/profile/')
 
-        self.assertContains(response, 'Expired')
+        self.assertContains(response, 'Insurance expired')
         self.assertContains(response, expired_on.strftime('%d.%m.%Y'))
         self.assertContains(response, 'text-danger')
 
@@ -801,7 +801,7 @@ class PlayerProfileFormTests(TestCase):
 
         response = self.client.get('/profile/')
 
-        self.assertContains(response, 'Дійсне до')
+        self.assertContains(response, 'Страхування дійсне до')
 
 
 class PlayerLicenseListTests(TestCase):
