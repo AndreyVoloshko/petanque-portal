@@ -1709,6 +1709,28 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'tournament-team-coach-cell')
 
+    def test_tournament_page_shows_coach_column_for_single_player_format_with_rating_points(self):
+        coach = self.create_player('single-format-coach')
+        participant = self.create_player('single-format-participant')
+        tournament = Tournament.objects.create(
+            name='Coach Display Singles Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=1,
+            number_of_players_in_team_max=1,
+            format='swiko',
+            is_goes_to_rating=True,
+        )
+        team = self.create_team('Solo Participant', [participant])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+        self.assertContains(response, coach.get_name())
+
 
 class OptionalRegistrationEmailTests(TestCase):
     @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
