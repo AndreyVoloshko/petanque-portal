@@ -2084,7 +2084,7 @@ class TeamRegistrationCoachPersistenceTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="coach"')
-        self.assertContains(response, 'Search coach by first or last name')
+        self.assertContains(response, "Пошук тренера за ім&#x27;ям або прізвищем")
 
 
 @override_settings(

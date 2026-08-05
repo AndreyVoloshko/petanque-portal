@@ -574,7 +574,11 @@ msgstr "Повна назва команди"
 msgid "Player"
 msgstr "Гравець"
 
-#: federation/models/national_teams.py:34
+#: federation/forms/registration_team_form.py:64
+#: federation/models/national_teams.py:35 federation/models/tournament.py:529
+#: federation/templates/tournaments/tournament_teams.html:48
+#: federation/templates/tournaments/tournament_teams.html:137
+#: federation/templates/tournaments/tournament_teams.html:318
 msgid "Coach"
 msgstr "Тренер"
 
@@ -2929,6 +2933,10 @@ msgstr "Відкрити запис про скасування"
 #: federation/templates/register/team.html
 msgid "Search athlete by first or last name"
 msgstr "Пошук спортсмена за ім'ям або прізвищем"
+
+#: federation/forms/registration_team_form.py:61
+msgid "Search coach by first or last name"
+msgstr "Пошук тренера за ім'ям або прізвищем"
 
 #: federation/templates/register/team.html
 #, python-format

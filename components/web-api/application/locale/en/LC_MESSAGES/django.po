@@ -549,7 +549,11 @@ msgstr "Full team name"
 msgid "Player"
 msgstr "Player"
 
-#: federation/models/national_teams.py:34
+#: federation/forms/registration_team_form.py:64
+#: federation/models/national_teams.py:35 federation/models/tournament.py:529
+#: federation/templates/tournaments/tournament_teams.html:48
+#: federation/templates/tournaments/tournament_teams.html:137
+#: federation/templates/tournaments/tournament_teams.html:318
 msgid "Coach"
 msgstr "Coach"
 
@@ -2669,6 +2673,10 @@ msgstr "No athletes match the selected filters."
 #: federation/templates/register/team.html
 msgid "Search athlete by first or last name"
 msgstr "Search athlete by first or last name"
+
+#: federation/forms/registration_team_form.py:61
+msgid "Search coach by first or last name"
+msgstr "Search coach by first or last name"
 
 #: federation/templates/register/team.html
 #, python-format
