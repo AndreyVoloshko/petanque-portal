@@ -2718,3 +2718,15 @@ msgstr "Insurance required"
 #: federation/templates/tournaments/_insurance_warning.html
 msgid "Insurance is missing or expired"
 msgstr "Insurance is missing or expired"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "Valid until"
+msgstr "Valid until"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "Expired"
+msgstr "Expired"
+
+#: federation/templates/forms/profile/insurance_status.html
+msgid "No insurance on file"
+msgstr "No insurance on file"

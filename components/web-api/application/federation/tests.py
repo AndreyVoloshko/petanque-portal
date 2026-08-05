@@ -719,6 +719,89 @@ class PlayerProfileFormTests(TestCase):
 
         self.assertEqual(set(form.fields), layout_fields)
 
+    def create_player_with_insurance(self, username, insurance_expiration_date=None):
+        user = User.objects.create_user(username=username, password='Pass1234!')
+        Player.objects.create(
+            user=user,
+            name='Badge',
+            surname=username.title(),
+            birth_date=date(1990, 1, 1),
+            gender='M',
+            country='UA',
+            insurance_expiration_date=insurance_expiration_date,
+        )
+        return user
+
+    def test_profile_page_shows_valid_insurance_badge(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        self.create_player_with_insurance('badge-valid-player', valid_until)
+        self.client.login(username='badge-valid-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Valid until')
+        self.assertContains(response, valid_until.strftime('%d.%m.%Y'))
+        self.assertContains(response, 'text-success')
+
+    def test_profile_page_shows_expired_insurance_badge(self):
+        expired_on = timezone.localdate() - timedelta(days=5)
+        self.create_player_with_insurance('badge-expired-player', expired_on)
+        self.client.login(username='badge-expired-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Expired')
+        self.assertContains(response, expired_on.strftime('%d.%m.%Y'))
+        self.assertContains(response, 'text-danger')
+
+    def test_profile_page_shows_no_insurance_badge_when_blank(self):
+        self.create_player_with_insurance('badge-none-player')
+        self.client.login(username='badge-none-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'en'
+
+        response = self.client.get('/profile/')
+
+        self.assertContains(response, 'No insurance on file')
+        self.assertContains(response, 'text-muted')
+
+    def test_profile_page_badge_reflects_submitted_date_when_another_field_is_invalid(self):
+        old_date = timezone.localdate() + timedelta(days=30)
+        user = self.create_player_with_insurance('badge-stale-check-player', old_date)
+        self.client.login(username='badge-stale-check-player', password='Pass1234!')
+        new_date = timezone.localdate() + timedelta(days=90)
+
+        response = self.client.post('/profile/', {
+            'name': '',
+            'surname': 'Valid',
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': 'M',
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': user.email,
+            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, new_date.strftime('%d.%m.%Y'))
+        self.assertNotContains(response, old_date.strftime('%d.%m.%Y'))
+
+    def test_profile_page_shows_localized_insurance_badge_in_ukrainian(self):
+        valid_until = timezone.localdate() + timedelta(days=30)
+        self.create_player_with_insurance('badge-uk-player', valid_until)
+        self.client.login(username='badge-uk-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'uk'
+
+        response = self.client.get('/profile/')
+
+        self.assertContains(response, 'Дійсне до')
+
 
 class PlayerLicenseListTests(TestCase):
     def create_player(self, username, is_licence_active=True, licence_number_value=None, current_club=None):
@@ -769,9 +852,7 @@ class PlayerLicenseListTests(TestCase):
 
     def test_profile_form_save_preserves_non_profile_fields(self):
         player = self.create_player('licensed-profile', licence_number_value='00001')
-        valid_until = timezone.localdate() + timedelta(days=30)
         player.prefred_position = 'point'
-        player.insurance_expiration_date = valid_until
         player.save()
         form = PlayerForm(data={
             'name': player.name,
@@ -786,11 +867,12 @@ class PlayerLicenseListTests(TestCase):
             'instagram': '',
             'website': '',
             'email': 'licensed-profile@example.com',
+            'insurance_expiration_date': '',
         }, instance=player)
 
         self.assertNotIn('licence_number', form.fields)
         self.assertNotIn('prefred_position', form.fields)
-        self.assertNotIn('insurance_expiration_date', form.fields)
+        self.assertIn('insurance_expiration_date', form.fields)
         self.assertTrue(form.is_valid(), form.errors)
 
         form.save()
@@ -799,7 +881,92 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(player.licence_number, '00001')
         self.assertTrue(player.is_licence_active)
         self.assertEqual(player.prefred_position, 'point')
-        self.assertEqual(player.insurance_expiration_date, valid_until)
+
+    def test_profile_form_updates_insurance_expiration_date(self):
+        player = self.create_player('insurance-update-player')
+        new_date = timezone.localdate() + timedelta(days=400)
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-update-player@example.com',
+            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertEqual(player.insurance_expiration_date, new_date)
+
+    def test_profile_form_accepts_past_insurance_expiration_date(self):
+        player = self.create_player('insurance-past-player')
+        past_date = timezone.localdate() - timedelta(days=10)
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-past-player@example.com',
+            'insurance_expiration_date': past_date.strftime('%Y-%m-%d'),
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertEqual(player.insurance_expiration_date, past_date)
+
+    def test_profile_form_clears_insurance_expiration_date(self):
+        player = self.create_player('insurance-clear-player')
+        player.insurance_expiration_date = timezone.localdate() + timedelta(days=30)
+        player.save()
+
+        form = PlayerForm(data={
+            'name': player.name,
+            'surname': player.surname,
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': player.gender,
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': 'insurance-clear-player@example.com',
+            'insurance_expiration_date': '',
+        }, instance=player)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        player.refresh_from_db()
+
+        self.assertIsNone(player.insurance_expiration_date)
+
+    def test_profile_form_renders_existing_insurance_expiration_date_in_iso_format(self):
+        player = self.create_player('insurance-render-player')
+        player.insurance_expiration_date = date(2026, 9, 3)
+        player.save()
+
+        form = PlayerForm(instance=player)
+
+        self.assertIn('value="2026-09-03"', str(form['insurance_expiration_date']))
 
     def test_licensed_players_page_uses_server_pagination(self):
         for index in range(55):
