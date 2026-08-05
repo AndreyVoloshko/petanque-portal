@@ -1837,6 +1837,80 @@ class TeamRegistrationRedesignTests(TestCase):
         self.assertEqual(team.get_capitan(), capitan)
 
 
+class TeamRegistrationFormCoachTests(TestCase):
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Form Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def test_coach_field_is_optional(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-first')
+        second = self.create_player('coach-form-second')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertIsNone(form.verified_coach_id)
+
+    def test_coach_field_resolves_to_verified_coach_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-third')
+        second = self.create_player('coach-form-fourth')
+        coach = self.create_player('coach-form-coach')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': str(coach.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_coach_id, coach.pk)
+
+    def test_coach_can_overlap_with_roster_or_other_teams(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-fifth')
+        second = self.create_player('coach-form-sixth')
+        # `first` is both a roster player and the selected coach: no overlap check applies.
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': str(first.pk)},
+            tournament=tournament,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        self.assertEqual(form.verified_coach_id, first.pk)
+
+    def test_coach_field_rejects_nonexistent_player_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-seventh')
+        second = self.create_player('coach-form-eighth')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': '999999'},
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
+
 @override_settings(
     DEBUG=False,
     RECAPTCHA_PUBLIC_KEY='public-key',

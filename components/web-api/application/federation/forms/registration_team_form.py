@@ -14,6 +14,7 @@ class RegistrationTeamForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.tournament = kwargs.pop('tournament')
         self.verified_player_ids = []
+        self.verified_coach_id = None
 
         super(RegistrationTeamForm, self).__init__(*args, **kwargs)
 
@@ -51,6 +52,30 @@ class RegistrationTeamForm(forms.Form):
                     field.widget.choices = [(selected_player_id, selected_player_id)]
 
             self.fields[field_name] = field
+
+        self.fields['coach'] = forms.CharField(
+            widget=forms.Select(
+                attrs={
+                    'class': 'player-autocomplete',
+                    'data-minimum-input-length': PLAYER_SEARCH_MINIMUM_INPUT_LENGTH,
+                    'data-placeholder': _("Search coach by first or last name"),
+                },
+            ),
+            label=_("Coach"),
+            required=False,
+        )
+        selected_coach_id = None
+        if self.is_bound:
+            selected_coach_id = self.data.get('coach')
+        elif self.initial.get('coach'):
+            selected_coach_id = self.initial.get('coach')
+
+        if selected_coach_id:
+            try:
+                selected_coach = Player.objects.get(pk=selected_coach_id)
+                self.fields['coach'].widget.choices = [(selected_coach.pk, selected_coach.get_name())]
+            except Player.DoesNotExist:
+                self.fields['coach'].widget.choices = [(selected_coach_id, selected_coach_id)]
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -112,5 +137,15 @@ class RegistrationTeamForm(forms.Form):
                 return False
 
             self.verified_player_ids.append(player.pk)
+
+        self.verified_coach_id = None
+        coach_id = self.cleaned_data.get('coach')
+        if coach_id:
+            try:
+                coach = Player.objects.get(pk=coach_id)
+            except Player.DoesNotExist:
+                self.add_error(None, _('Coach with number %(coach_id)s does not exist') % {'coach_id': coach_id})
+                return False
+            self.verified_coach_id = coach.pk
 
         return True
