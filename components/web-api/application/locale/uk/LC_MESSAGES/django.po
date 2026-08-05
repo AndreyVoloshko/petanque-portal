@@ -169,6 +169,7 @@ msgid "Personal website"
 msgstr "Пенсональна Web-сторінка"
 
 #: federation/forms/player_form.py:132 federation/models/player.py:73
+#: federation/templates/forms/profile/insurance_status.html:5
 msgid "Insurance valid until"
 msgstr "Страхування дійсне до"
 
@@ -1765,14 +1766,6 @@ msgstr "Продовжити"
 msgid "Choose a new photo"
 msgstr "Обрати нову фотографію"
 
-#: federation/templates/forms/profile/insurance_status.html:4
-msgid "Valid until"
-msgstr "Дійсне до"
-
-#: federation/templates/forms/profile/insurance_status.html:6
-msgid "Expired"
-msgstr "Прострочено"
-
 #: federation/templates/forms/profile/insurance_status.html:9
 msgid "No insurance on file"
 msgstr "Страхування відсутнє"
@@ -2733,6 +2726,10 @@ msgstr "Місця проведення (Україна)"
 #: federation/templates/tournaments/_insurance_warning.html:4
 msgid "Insurance is missing or expired"
 msgstr "Страхування відсутнє або прострочене"
+
+#: federation/templates/forms/profile/insurance_status.html:7
+msgid "Insurance expired"
+msgstr "Страхування прострочено"
 
 #: federation/templates/tournaments/_ranking_place.html:5
 #: federation/templates/tournaments/_ranking_place.html:39

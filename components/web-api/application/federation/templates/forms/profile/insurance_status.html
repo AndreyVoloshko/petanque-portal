@@ -2,9 +2,9 @@
 <div class="mt-2 text-center small">
 {% if player.insurance_expiration_date %}
     {% if player.has_valid_insurance %}
-        <span class="text-success">{% trans "Valid until" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
+        <span class="text-success">{% trans "Insurance valid until" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
     {% else %}
-        <span class="text-danger">{% trans "Expired" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
+        <span class="text-danger">{% trans "Insurance expired" %} {{ player.insurance_expiration_date|date:"d.m.Y" }}</span>
     {% endif %}
 {% else %}
     <span class="text-muted">{% trans "No insurance on file" %}</span>
