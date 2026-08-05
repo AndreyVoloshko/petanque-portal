@@ -37,6 +37,7 @@ class PlayerForm(forms.ModelForm):
                           attrs={'class': 'form-control', 'avatar': self.instance.avatar},
                           widget=ImageThumbnailFileInput()
                     ),
+                    HTML('{% include "forms/profile/insurance_status.html" with player=profile_form.instance %}'),
                     css_class="col-lg-2"
                 ),
                 Div(
@@ -72,18 +73,6 @@ class PlayerForm(forms.ModelForm):
                 css_class="row"
             ),
             Div(
-                HTML('<hr class="my-2">'),
-                Div(
-                    Div('insurance_expiration_date', css_class="col-lg-4"),
-                    Div(
-                        HTML('{% include "forms/profile/insurance_status.html" with player=profile_form.instance %}'),
-                        css_class="col-lg-8 d-flex align-items-center"
-                    ),
-                    css_class="row"
-                ),
-                css_class="col-lg-12"
-            ),
-            Div(
                 Submit('submit', _('Save'), css_class='btn btn-success'),
                 css_class="col-lg-12 text-center mb-3"
             )
@@ -113,8 +102,7 @@ class PlayerForm(forms.ModelForm):
                   'facebook',
                   'twitter',
                   'instagram',
-                  'website',
-                  'insurance_expiration_date')
+                  'website')
         labels = {
             "email": _("Email address"),
             "avatar": _("Avatar"),
@@ -129,9 +117,7 @@ class PlayerForm(forms.ModelForm):
             "twitter": _("Twitter page"),
             "instagram": _("Instagram page"),
             "website": _("Personal website"),
-            "insurance_expiration_date": _("Insurance valid until"),
         }
         widgets = {
             'avatar': ImageThumbnailFileInput,
-            'insurance_expiration_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }
