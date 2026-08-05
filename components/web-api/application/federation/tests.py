@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError, transaction
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
@@ -39,6 +40,7 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    OrganizerTournamentMembership,
     TeamsTournamentMembershipInline,
     TeamTournamentMembership,
     Tournament,
@@ -476,6 +478,59 @@ class TeamTournamentMembershipCoachFieldTests(TestCase):
 
         membership.refresh_from_db()
         self.assertIsNone(membership.coach)
+
+
+class OrganizerTournamentMembershipTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Organizer Membership Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_role_defaults_to_organizer(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-default-role')
+
+        membership = OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        self.assertEqual(membership.role, 'organizer')
+
+    def test_duplicate_organizer_on_same_tournament_raises_integrity_error(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-duplicate-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+    def test_deleting_organizer_player_deletes_the_membership(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-deleted-organizer')
+        membership = OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        organizer.delete()
+
+        self.assertFalse(OrganizerTournamentMembership.objects.filter(pk=membership.pk).exists())
+
+    def test_co_organizer_membership_does_not_grant_tournament_admin_access(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('membership-permission-check')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        self.assertFalse(tournament.is_user_has_admin_access_to_tournament(co_organizer.user))
 
 
 class SeasonSnapshotGenerationTests(TestCase):
