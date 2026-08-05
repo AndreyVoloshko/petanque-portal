@@ -1911,6 +1911,69 @@ class TeamRegistrationFormCoachTests(TestCase):
         self.assertFalse(form.is_valid())
 
 
+class TeamRegistrationCoachPersistenceTests(TestCase):
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Persistence Cup',
+            category='open',
+            place='Kyiv',
+            start_date=(timezone.now() + timedelta(days=30)).date(),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def test_register_team_persists_selected_coach(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-persist-first')
+        second = self.create_player('coach-persist-second')
+        coach = self.create_player('coach-persist-coach')
+
+        response = self.client.post(f'/register/team/{tournament.pk}/', {
+            'players[1]': str(first.pk),
+            'players[2]': str(second.pk),
+            'coach': str(coach.pk),
+        })
+
+        self.assertEqual(response.status_code, 302)
+        membership = TeamTournamentMembership.objects.get(tournament=tournament)
+        self.assertEqual(membership.coach, coach)
+
+    def test_register_team_without_coach_leaves_it_blank(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-persist-third')
+        second = self.create_player('coach-persist-fourth')
+
+        response = self.client.post(f'/register/team/{tournament.pk}/', {
+            'players[1]': str(first.pk),
+            'players[2]': str(second.pk),
+        })
+
+        self.assertEqual(response.status_code, 302)
+        membership = TeamTournamentMembership.objects.get(tournament=tournament)
+        self.assertIsNone(membership.coach)
+
+    def test_team_registration_page_renders_coach_field(self):
+        tournament = self.create_tournament()
+
+        response = self.client.get(f'/register/team/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="coach"')
+        self.assertContains(response, 'Search coach by first or last name')
+
+
 @override_settings(
     DEBUG=False,
     RECAPTCHA_PUBLIC_KEY='public-key',

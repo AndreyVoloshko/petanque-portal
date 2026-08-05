@@ -106,8 +106,8 @@ class Tournament(models.Model):
     '''
         add team to current tournament
     '''
-    def add_team(self, team):
-        new_team = TeamTournamentMembership(tournament=self, team=team)
+    def add_team(self, team, coach=None):
+        new_team = TeamTournamentMembership(tournament=self, team=team, coach=coach)
         new_team.save()
 
     '''
