@@ -126,9 +126,9 @@ Returns tournament data with registered teams and players.
       "place_min": 1,
       "place_max": 2,
       "date_registration": "2024-05-01T12:00:00Z",
-      "coach": { "id": 55, "name": "Ivan", "surname": "Petrenko", "second_name": "", "avatar_url": null },
       "rating_points": 120,
       "rating_power": 1480,
+      "coach": { "id": 55, "name": "Ivan", "surname": "Petrenko", "second_name": "", "avatar_url": null },
       "players": [
         {
           "id": 42,
