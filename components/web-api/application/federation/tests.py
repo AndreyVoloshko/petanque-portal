@@ -1513,7 +1513,7 @@ class TournamentTeamExportJsonTests(TestCase):
             requires_insurance=requires_insurance,
         )
 
-    def create_team_membership(self, tournament, players, name, place_min, power='0.0000'):
+    def create_team_membership(self, tournament, players, name, place_min, power='0.0000', coach=None):
         team = Team.objects.create(name=name)
         for index, player in enumerate(players):
             PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
@@ -1523,6 +1523,7 @@ class TournamentTeamExportJsonTests(TestCase):
             team=team,
             place_min=place_min,
             power=Decimal(power),
+            coach=coach,
         )
 
     def test_json_export_includes_images_shared_club_power_and_player_rating_places(self):
@@ -1625,6 +1626,33 @@ class TournamentTeamExportJsonTests(TestCase):
         self.assertFalse(data['tournament']['requires_insurance'])
         players = data['teams'][0]['players']
         self.assertTrue(all(player['insurance_valid'] for player in players))
+
+    def test_json_export_includes_coach_when_assigned(self):
+        coach = self.create_player('export-coach')
+        first = self.create_player('coach-team-first')
+        second = self.create_player('coach-team-second')
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [first, second], 'Coached Pair', place_min=1, coach=coach)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['teams'][0]['coach']['id'], coach.pk)
+        self.assertEqual(data['teams'][0]['coach']['name'], coach.name)
+        self.assertEqual(data['teams'][0]['coach']['surname'], coach.surname)
+
+    def test_json_export_coach_is_null_when_not_assigned(self):
+        first = self.create_player('nocoach-team-first')
+        second = self.create_player('nocoach-team-second')
+        tournament = self.create_tournament()
+        self.create_team_membership(tournament, [first, second], 'Uncoached Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'json'})
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIsNone(data['teams'][0]['coach'])
 
 
 class TournamentPageCoachDisplayTests(TestCase):
