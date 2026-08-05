@@ -432,6 +432,50 @@ class TeamCaptainSelectionTests(TestCase):
         self.assertEqual(PlayerTeamMembership.objects.filter(team=team, is_capitan=True).count(), 0)
 
 
+class TeamTournamentMembershipCoachFieldTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Field Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_coach_defaults_to_none_and_can_be_set(self):
+        coach = self.create_player('coach-field-coach')
+        tournament = self.create_tournament()
+        team = Team.objects.create(name='Coach Field Team')
+
+        membership = TeamTournamentMembership.objects.create(tournament=tournament, team=team)
+        self.assertIsNone(membership.coach)
+
+        membership.coach = coach
+        membership.save()
+        membership.refresh_from_db()
+        self.assertEqual(membership.coach, coach)
+
+    def test_deleting_coach_player_clears_membership_instead_of_deleting_it(self):
+        coach = self.create_player('coach-field-deleted-coach')
+        tournament = self.create_tournament()
+        team = Team.objects.create(name='Coach Field Team Two')
+        membership = TeamTournamentMembership.objects.create(tournament=tournament, team=team, coach=coach)
+
+        coach.delete()
+
+        membership.refresh_from_db()
+        self.assertIsNone(membership.coach)
+
+
 class SeasonSnapshotGenerationTests(TestCase):
     def create_player(self, username, gender='M', with_club=True):
         club = None
