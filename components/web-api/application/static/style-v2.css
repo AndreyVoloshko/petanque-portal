@@ -9607,6 +9607,10 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   width: 12rem;
 }
 
+.tournament-team-coach-col {
+  width: 10rem;
+}
+
 .tournament-team-athletes-col {
   width: auto;
 }

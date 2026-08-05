@@ -994,7 +994,7 @@ def tournament(request, id):
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
-        .select_related('team', 'tournament', 'tournament__main_organizer', 'tournament__main_organizer__user')
+        .select_related('team', 'tournament', 'tournament__main_organizer', 'tournament__main_organizer__user', 'coach')
         .prefetch_related(
             Prefetch(
                 'team__players',

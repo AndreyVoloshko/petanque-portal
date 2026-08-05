@@ -1627,6 +1627,61 @@ class TournamentTeamExportJsonTests(TestCase):
         self.assertTrue(all(player['insurance_valid'] for player in players))
 
 
+class TournamentPageCoachDisplayTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Coach Display Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            format='swiko',
+        )
+
+    def create_team(self, name, players):
+        team = Team.objects.create(name=name)
+        for index, player in enumerate(players):
+            PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
+        return team
+
+    def test_tournament_page_shows_coach_name_and_link(self):
+        coach = self.create_player('display-coach')
+        first = self.create_player('display-player-one')
+        second = self.create_player('display-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Coached Pair', [first, second])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+        self.assertContains(response, coach.get_name())
+        self.assertContains(response, '/player/{}'.format(coach.pk))
+
+    def test_tournament_page_shows_dash_when_no_coach_assigned(self):
+        first = self.create_player('nocoach-player-one')
+        second = self.create_player('nocoach-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Uncoached Pair', [first, second])
+        tournament.add_team(team)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-coach-cell')
+
+
 class OptionalRegistrationEmailTests(TestCase):
     @override_settings(DEBUG=True, RECAPTCHA_PUBLIC_KEY=None, RECAPTCHA_PRIVATE_KEY=None)
     def test_ukrainian_player_registration_allows_blank_email(self):
