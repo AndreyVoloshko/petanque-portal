@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership
-from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
+from federation.models.tournament import Tournament, ArbiterTournamentMembership, OrganizerTournamentMembership, TeamTournamentMembership
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -991,6 +991,7 @@ def tournament(request, id):
                 return HttpResponseRedirect(request.path_info)
 
     arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament).select_related('arbiter')
+    organizers = OrganizerTournamentMembership.objects.filter(tournament=tournament).select_related('organizer', 'organizer__current_club')
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
@@ -1015,6 +1016,7 @@ def tournament(request, id):
         'tournament': tournament,
         'tournament_detail': _build_tournament_detail(tournament),
         'arbiters': arbiters,
+        'organizers': organizers,
         'teams': teams,
         'page_title': _("Competitions"),
         'current_user': current_user,

@@ -1914,6 +1914,73 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertContains(response, coach.get_name())
 
 
+class TournamentDelegationsOrganizerDisplayTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Delegations Organizer Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_tournament_page_shows_co_organizer_card_without_main_organizer(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('delegations-co-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-person-card-organizer')
+        self.assertContains(response, co_organizer.get_name())
+        self.assertContains(response, '/player/{}'.format(co_organizer.pk))
+        self.assertNotContains(response, 'tournament-detail-empty-card')
+
+    def test_tournament_page_shows_both_main_organizer_and_co_organizer(self):
+        tournament = self.create_tournament()
+        main_organizer = self.create_player('delegations-main-organizer')
+        co_organizer = self.create_player('delegations-second-co-organizer')
+        tournament.main_organizer = main_organizer
+        tournament.save(update_fields=['main_organizer'])
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, main_organizer.get_name())
+        self.assertContains(response, co_organizer.get_name())
+        self.assertContains(response, 'tournament-person-card-organizer', count=2)
+
+    def test_tournament_page_empty_state_unaffected_without_any_organizers_or_arbiters(self):
+        tournament = self.create_tournament()
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-detail-empty-card')
+
+    def test_organizer_role_label_uses_get_role_display(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('delegations-role-label-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        with override('uk'):
+            response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Організатор')
+
+
 class TournamentTeamExportCsvTests(TestCase):
     def create_club(self, name, short_name):
         return Club.objects.create(

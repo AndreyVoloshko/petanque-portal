@@ -16,7 +16,7 @@
     </nav>
 
     {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row %}
-    {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters %}
+    {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters organizers=organizers %}
 
     <section class="tournament-detail-main-card" aria-labelledby="tournament-teams-title">
         <div class="tournament-detail-section-heading tournament-detail-section-heading-row tournament-teams-heading{% if tournament_detail.is_single_player_format %} is-single-player-format{% endif %}">

@@ -9,11 +9,15 @@
         <h2 id="tournament-people-title">{% trans "Organizers and arbiters" %}</h2>
     </div>
 
-    {% if tournament.main_organizer or arbiters %}
+    {% if tournament.main_organizer or organizers or arbiters %}
     <div class="tournament-person-grid">
         {% if tournament.main_organizer %}
             {% include "tournaments/_tournament_person_card.html" with person=tournament.main_organizer role_label=main_organizer_label role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
         {% endif %}
+
+        {% for membership in organizers %}
+            {% include "tournaments/_tournament_person_card.html" with person=membership.organizer role_label=membership.get_role_display role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
+        {% endfor %}
 
         {% for arbiter in arbiters %}
             {% if arbiter.is_main_arbiter %}
