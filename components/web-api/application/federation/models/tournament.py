@@ -613,7 +613,7 @@ class ArbiterTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin
 class TeamsTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = TeamTournamentMembership
     extra = 0
-    autocomplete_fields = ['team']
+    autocomplete_fields = ['team', 'coach']
 
     class Meta:
         verbose_name = 'Команди турніру'

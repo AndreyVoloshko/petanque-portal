@@ -38,6 +38,7 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    TeamsTournamentMembershipInline,
     TeamTournamentMembership,
     Tournament,
 )
@@ -1144,6 +1145,35 @@ class RestrictedRelatedWidgetAdminMixinTests(TestCase):
         response = self.client.get('/admin/federation/city/add/')
 
         self.assertEqual(response.status_code, 200)
+
+
+class TeamTournamentMembershipCoachAdminTests(TestCase):
+    def create_admin(self):
+        return User.objects.create_superuser(
+            username='team-coach-admin',
+            email='team-coach-admin@example.com',
+            password='AdminPass123!',
+        )
+
+    def test_coach_is_an_autocomplete_field_on_the_inline(self):
+        self.assertIn('coach', TeamsTournamentMembershipInline.autocomplete_fields)
+
+    def test_tournament_change_page_renders_coach_autocomplete_for_existing_team(self):
+        tournament = Tournament.objects.create(
+            name='Admin Coach Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+        team = Team.objects.create(name='Admin Coach Team')
+        tournament.add_team(team)
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/tournament/{}/change/'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_teamtournamentmembership_set-0-coach"')
 
 
 class PlayerTournamentListTests(TestCase):
