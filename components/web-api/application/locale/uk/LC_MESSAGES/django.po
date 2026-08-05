@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: petanque-portal\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-21 01:26+0300\n"
+"POT-Creation-Date: 2026-08-05 12:17+0000\n"
 "PO-Revision-Date: 2026-05-21 00:44+0300\n"
 "Last-Translator: Petanque Portal <noreply@petanque.org.ua>\n"
 "Language-Team: uk\n"
@@ -13,9 +13,47 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: federation/templates/common/menu.html:9
-msgid "FPU"
-msgstr "ФПУ"
+# Manual override for Django admin's built-in facet-count toggle; not
+# extracted from project source, so makemessages will mark it obsolete
+# unless re-added by hand after each regeneration.
+msgid "Show counts"
+msgstr "Показати кількість"
+
+msgid "Hide counts"
+msgstr "Сховати кількість"
+
+#: federation/audit/model_helpers.py:44
+msgid "Team places"
+msgstr "Місця команд"
+
+#: federation/audit/players.py:48
+msgid "User"
+msgstr "Користувач"
+
+#: federation/audit/revert.py:41
+msgid "This action is available only for change entries."
+msgstr "Ця дія доступна лише для записів про зміни."
+
+#: federation/audit/revert.py:45 federation/audit/revert.py:53
+msgid "This change cannot be reverted from the log."
+msgstr "Цю зміну не можна скасувати з журналу."
+
+#: federation/audit/revert.py:50 federation/audit/revert.py:56
+#: federation/test_audit.py:807
+msgid "This log entry does not contain enough data to revert the change."
+msgstr "У цьому записі журналу недостатньо даних, щоб скасувати зміну."
+
+#: federation/audit/revert.py:59
+msgid "The object no longer exists."
+msgstr "Об'єкт більше не існує."
+
+#: federation/audit/revert.py:64
+msgid ""
+"The object has changed since this log entry was created. Revert the latest "
+"related change first."
+msgstr ""
+"Об'єкт було змінено після створення цього запису журналу. Спочатку скасуйте "
+"найновішу пов'язану зміну."
 
 #: federation/forms/authorization_profile_form.py:10
 #: federation/forms/authorization_profile_form.py:58
@@ -39,524 +77,366 @@ msgid "Username"
 msgstr "Ім'я користувача"
 
 #: federation/forms/authorization_profile_form.py:51
-#: federation/forms/player_form.py:77
-#: federation/templates/tournaments/tournament.html:67
+#: federation/forms/player_form.py:87
+#: federation/templates/tournaments/tournament_summary.html:246
 msgid "Save"
 msgstr "Зберегти"
 
-#: federation/forms/player_form.py:18 federation/forms/player_form.py:124
-#: federation/forms/registration_player_form.py:49
+#: federation/forms/player_form.py:16 federation/forms/player_form.py:119
 #: federation/models/email_confirmation.py:13
-#: federation/views/email_confirm.py:27 federation/views/password_reset.py:16
+#: federation/views/email_confirm.py:27 federation/views/password_reset.py:17
 msgid "Email address"
 msgstr "Email адреса"
 
-#: federation/forms/registration_player_form.py:50
-msgid "Optional. You can leave this field empty."
-msgstr "Необов'язково. Це поле можна залишити порожнім."
-
-#: federation/forms/registration_player_form.py
-msgid "Patronymic"
-msgstr "По батькові"
-
-#: federation/forms/registration_player_form.py
-msgid "Optional. Required for tournament result protocols."
-msgstr "Необов'язково. Потрібно для протоколів результатів змагань."
-
-#: federation/forms/player_form.py:87
-#, python-format
-msgid "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"
-msgstr "Будь ласка, завантажте файл розміром до %(max_size)s. Поточний розмір файлу %(current_size)s"
-
-#: federation/forms/player_form.py:92
-msgid "File type is not supported"
-msgstr "Тип файлу не підтримується"
-
-#: federation/validators.py:12
-#, python-format
-msgid ""
-"File size must not exceed %(max_size)s. Current file size: %(current_size)s."
-msgstr ""
-"Розмір файлу не повинен перевищувати %(max_size)s. Поточний розмір файлу: "
-"%(current_size)s."
-
-#: federation/validators.py:29
-#, python-format
-msgid ""
-"Image dimensions must not exceed %(max)s×%(max)s px. Current dimensions: "
-"%(width)s×%(height)s px."
-msgstr ""
-"Розміри зображення не повинні перевищувати %(max)s×%(max)s пікселів. "
-"Поточні розміри: %(width)s×%(height)s пікселів."
-
-#: federation/validators.py:43
-#, python-format
-msgid "Unsupported image format \"%(format)s\". Allowed formats: %(allowed)s."
-msgstr ""
-"Непідтримуваний формат зображення \"%(format)s\". Дозволені формати: "
-"%(allowed)s."
-
-#: federation/forms/player_form.py:125
+#: federation/forms/player_form.py:120
 msgid "Avatar"
 msgstr "Аватар"
 
-#: federation/forms/player_form.py:126
-#: federation/forms/registration_player_form.py:25
-#: federation/templates/players/players_table.html:12
-#: federation/templates/seasons/players_list.html:14
+#: federation/forms/player_form.py:121
+#: federation/forms/registration_player_form.py:26
+#: federation/templates/register/player.html:46
+#: federation/templates/seasons/players_list.html:18
 msgid "First name"
 msgstr "Ім'я"
 
-#: federation/forms/player_form.py:127
-#: federation/forms/registration_player_form.py:31
-#: federation/models/player.py:59
+#: federation/forms/player_form.py:122
+#: federation/forms/registration_player_form.py:32
+#: federation/models/player.py:65 federation/templates/register/player.html:38
 msgid "Last name"
 msgstr "Прізвище"
 
-#: federation/forms/player_form.py:128 federation/models/player.py:60
+#: federation/forms/player_form.py:123 federation/models/player.py:66
 msgid "Middle name"
 msgstr "По батькові"
 
-#: federation/forms/player_form.py:129
+#: federation/forms/player_form.py:124
 msgid "Date of birth (dd.mm.yyyy)"
 msgstr "Дата народження (дд.мм.рррр)"
 
-#: federation/forms/player_form.py:130
+#: federation/forms/player_form.py:125
 #: federation/templates/clubs/club_short_info_panel.html:6
-#: federation/templates/players/player.html:8
+#: federation/templates/clubs/clubs_table.html:14
+#: federation/templates/clubs/clubs_table.html:59
+#: federation/templates/clubs/clubs_table.html:156
+#: federation/templates/players/player.html:133
 #: federation/templates/players/player_seasons.html:17
-#: federation/templates/players/players_table.html:16
+#: federation/templates/players/players.html:42
+#: federation/templates/players/players_table.html:7
+#: federation/templates/players/players_table.html:55
+#: federation/templates/players/players_table.html:175
 #: federation/templates/records/records_table.html:70
-#: federation/templates/seasons/players_list.html:16
+#: federation/templates/seasons/players_list.html:20
+#: federation/templates/seasons/seasons.html:50
 #: federation/templates/statistics/statistics.html:95
+#: federation/templates/tournaments/tournament_teams.html:50
+#: federation/templates/tournaments/tournament_teams.html:145
 msgid "Club"
 msgstr "Клуб"
 
-#: federation/forms/player_form.py:131
-#: federation/forms/registration_player_form.py:43
+#: federation/forms/player_form.py:126
+#: federation/forms/registration_player_form.py:60
 #: federation/templates/clubs/club_info_panel.html:19
 #: federation/templates/clubs/grid_item_club.html:38
+#: federation/templates/players/player.html:114
 #: federation/templates/players/player_info_panel.html:33
+#: federation/templates/register/player.html:95
 #: federation/templates/statistics/statistics.html:44
 msgid "Country"
 msgstr "Країна"
 
-#: federation/forms/player_form.py:132 federation/models/player.py:65
-msgid "License number"
-msgstr "Номер ліцензії"
-
-#: federation/forms/registration_player_form.py
-msgid "Only for players who already have a license issued by the federation."
-msgstr "Тільки для гравців, які вже мають ліцензію, видану федерацією."
-
-#: federation/forms/player_form.py:133
-#: federation/forms/registration_player_form.py:68
-#: federation/models/player.py:70
+#: federation/forms/player_form.py:127
+#: federation/forms/registration_player_form.py:66
+#: federation/models/player.py:77 federation/templates/players/player.html:100
 #: federation/templates/players/player_info_panel.html:25
-#: federation/templates/players/players_table.html:13
+#: federation/templates/register/player.html:103
 msgid "Gender"
 msgstr "Стать"
 
-#: federation/forms/player_form.py:134
+#: federation/forms/player_form.py:128
 msgid "Facebook page"
 msgstr "Сторінка Facebook"
 
-#: federation/forms/player_form.py:135
+#: federation/forms/player_form.py:129
 msgid "Twitter page"
 msgstr "Сторінка Twitter"
 
-#: federation/forms/player_form.py:136
+#: federation/forms/player_form.py:130
 msgid "Instagram page"
 msgstr "Сторінка Instagram"
 
-#: federation/forms/player_form.py:137
+#: federation/forms/player_form.py:131
 msgid "Personal website"
 msgstr "Пенсональна Web-сторінка"
 
-#: federation/forms/player_form.py:138 federation/models/national_teams.py:42
-#: federation/models/player.py:71
-#: federation/templates/players/player_seasons.html:14
-msgid "Position"
-msgstr "Позиція"
+#: federation/forms/player_form.py:132 federation/models/player.py:73
+msgid "Insurance valid until"
+msgstr "Страхування дійсне до"
 
-#: federation/forms/registration_player_form.py:37
-#: federation/models/player.py:61
+#: federation/forms/registration_player_form.py:38
+#: federation/templates/register/player.html:54
+msgid "Patronymic"
+msgstr "По батькові"
+
+#: federation/forms/registration_player_form.py:39
+msgid "Optional. Required for tournament result protocols."
+msgstr "Необов'язково. Потрібно для протоколів результатів змагань."
+
+#: federation/forms/registration_player_form.py:53
+#: federation/models/player.py:67 federation/templates/register/player.html:63
 msgid "Date of birth"
 msgstr "Дата народження"
 
-#: federation/forms/registration_player_form.py
-msgid "Date of birth cannot be in the future"
-msgstr "Дата народження не може бути в майбутньому"
+#: federation/forms/registration_player_form.py:72
+#: federation/models/player.py:71 federation/templates/register/player.html:111
+msgid "License number"
+msgstr "Номер ліцензії"
 
-#: federation/forms/registration_player_form.py:55
+#: federation/forms/registration_player_form.py:73
+msgid "Only for players who already have a license issued by the federation."
+msgstr "Тільки для гравців, які вже мають ліцензію, видану федерацією."
+
+#: federation/forms/registration_player_form.py:79
+msgid "Email"
+msgstr "Email"
+
+#: federation/forms/registration_player_form.py:85
 #: federation/templates/login.html:26
 msgid "Password"
 msgstr "Пароль"
 
-#: federation/forms/registration_player_form.py:62
+#: federation/forms/registration_player_form.py:91
 msgid "Confirm password"
 msgstr "Підтвердити пароль"
 
-#: federation/forms/registration_player_form.py
-msgid "Email"
-msgstr "Email"
+#: federation/forms/registration_player_form.py:113
+msgid "Date of birth cannot be in the future"
+msgstr "Дата народження не може бути в майбутньому"
 
-#: federation/forms/registration_player_form.py:77
-msgid "Additional verification"
-msgstr "Додаткова перевірка"
-
-#: federation/utils/autocaptcha.py
-msgid "Automatic verification is unavailable. Please try again later."
-msgstr "Автоматична перевірка тимчасово недоступна. Спробуйте ще раз пізніше."
-
-#: federation/utils/autocaptcha.py
-msgid "Automatic verification failed. Please reload the page and try again."
-msgstr "Автоматична перевірка не пройдена. Оновіть сторінку та спробуйте ще раз."
-
-#: federation/utils/autocaptcha.py
-msgid "Automatic verification failed. Please try again later."
-msgstr "Автоматична перевірка не вдалася. Спробуйте ще раз пізніше."
-
-#: federation/utils/autocaptcha.py
-msgid "Automatic verification rejected this registration. Please try again later."
-msgstr "Автоматична перевірка відхилила цю реєстрацію. Спробуйте ще раз пізніше."
-
-#: federation/forms/registration_player_form.py:120
-#: federation/templates/register/player.html:24
-#: federation/templates/register/team.html:41
-msgid "Register player"
-msgstr "Зареєструвати спортсмена"
-
-#: federation/templates/register/player.html
-msgid "Fill in details to add a new player"
-msgstr "Заповніть дані для додавання нового гравця"
-
-#: federation/templates/register/player.html
-msgid "Required for Ukrainian players and used in protocols."
-msgstr "Обов'язкове для українських гравців — використовується у протоколах."
-
-#: federation/templates/register/player.html
-msgid "Only for players who already have a federation license."
-msgstr "Лише для гравців з ліцензією федерації."
-
-#: federation/templates/register/player.html
-msgid "Access to personal account (optional fields)."
-msgstr "Доступ до особистого кабінету (необов'язкові поля)."
-
-#: federation/templates/register/player.html
-msgid "Email and password allow the player to sign in to the account, register for competitions, and manage their profile."
-msgstr "Email і пароль дають змогу гравцю увійти до кабінету, реєструватися на змагання й керувати профілем."
-
-#: federation/templates/register/player.html
-msgid "Player database check"
-msgstr "Перевірка бази спортсменів"
-
-#: federation/templates/register/player.html
-msgid "First check the database"
-msgstr "Спершу перевірте базу"
-
-#: federation/templates/register/player.html
-msgid "To avoid creating a duplicate, try finding the player. Search in Cyrillic and Latin."
-msgstr "Щоб не створити дублікат — спробуйте знайти спортсмена. Шукайте кирилицею і латиницею."
-
-#: federation/templates/register/player.html
-msgid "First or last name"
-msgstr "Ім'я або прізвище"
-
-#: federation/templates/register/player.html
-msgid "e.g. Kozak / Козак"
-msgstr "напр. Козак / Kozak"
-
-#: federation/templates/register/player.html
-msgid "Not found? Then fill in the registration form. After verification, the data will appear in the federation database."
-msgstr "Не знайшли? Тоді заповніть реєстраційну форму — після перевірки дані з'являться в базі федерації."
-
-#: federation/templates/register/player.html
-msgid "Found in the database"
-msgstr "Знайдено в базі"
-
-#: federation/templates/register/player.html
-msgid "Nothing found. Try another spelling or register a new player."
-msgstr "Нічого не знайдено. Спробуйте інше написання або зареєструйте нового спортсмена."
-
-#: federation/templates/register/player.html
-msgid "Could not check the database. Try again."
-msgstr "Не вдалося перевірити базу. Спробуйте ще раз."
-
-#: federation/templates/register/player.html
-msgid "Open profile"
-msgstr "Відкрити профіль"
-
-#: federation/templates/register/player.html
-msgid "Open calendar"
-msgstr "Відкрити календар"
-
-#: federation/templates/register/player.html
-msgid "Previous month"
-msgstr "Попередній місяць"
-
-#: federation/templates/register/player.html
-msgid "Next month"
-msgstr "Наступний місяць"
-
-#: federation/templates/register/player.html
-msgid "Clear"
-msgstr "Очистити"
-
-#: federation/templates/register/player.html
-msgid "January"
-msgstr "Січень"
-
-#: federation/templates/register/player.html
-msgid "February"
-msgstr "Лютий"
-
-#: federation/templates/register/player.html
-msgid "March"
-msgstr "Березень"
-
-#: federation/templates/register/player.html
-msgid "April"
-msgstr "Квітень"
-
-#: federation/templates/register/player.html
-msgid "May"
-msgstr "Травень"
-
-#: federation/templates/register/player.html
-msgid "June"
-msgstr "Червень"
-
-#: federation/templates/register/player.html
-msgid "July"
-msgstr "Липень"
-
-#: federation/templates/register/player.html
-msgid "August"
-msgstr "Серпень"
-
-#: federation/templates/register/player.html
-msgid "September"
-msgstr "Вересень"
-
-#: federation/templates/register/player.html
-msgid "October"
-msgstr "Жовтень"
-
-#: federation/templates/register/player.html
-msgid "November"
-msgstr "Листопад"
-
-#: federation/templates/register/player.html
-msgid "December"
-msgstr "Грудень"
-
-#: federation/templates/register/player.html
-msgid "Mon"
-msgstr "Пн"
-
-#: federation/templates/register/player.html
-msgid "Tue"
-msgstr "Вт"
-
-#: federation/templates/register/player.html
-msgid "Wed"
-msgstr "Ср"
-
-#: federation/templates/register/player.html
-msgid "Thu"
-msgstr "Чт"
-
-#: federation/templates/register/player.html
-msgid "Fri"
-msgstr "Пт"
-
-#: federation/templates/register/player.html
-msgid "Sat"
-msgstr "Сб"
-
-#: federation/templates/register/player.html
-msgid "Sun"
-msgstr "Нд"
-
-#: federation/forms/registration_player_form.py:136
+#: federation/forms/registration_player_form.py:127
 #, python-format
-msgid "Player <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> is already registered"
-msgstr "Гравець <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> вже зареєстрований"
+msgid ""
+"Player <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> is "
+"already registered"
+msgstr ""
+"Гравець <a target=\"_blank\" href=\"%(url)s\">%(name)s %(surname)s</a> вже "
+"зареєстрований"
 
-#: federation/forms/registration_player_form.py:146
-msgid "Passwords do not match"
-msgstr "Паролі не збігаються"
+#: federation/forms/registration_player_form.py:148
+msgid "This email is already in use"
+msgstr "Цей email вже використовується"
 
-#: federation/forms/registration_player_form.py
-msgid "Email is required when password is provided"
-msgstr "Email обов'язковий, якщо вказано пароль"
-
-#: federation/forms/registration_player_form.py
+#: federation/forms/registration_player_form.py:151
 msgid "Password is required when email is provided"
 msgstr "Пароль обов'язковий, якщо вказано email"
 
-#: federation/forms/registration_player_form.py
+#: federation/forms/registration_player_form.py:154
 msgid "Confirm password is required when password is provided"
 msgstr "Підтвердження пароля обов'язкове, якщо вказано пароль"
 
 #: federation/forms/registration_player_form.py:157
-msgid "Email is required for players from Ukraine"
-msgstr "Email обов'язковий для гравців з України"
+msgid "Passwords do not match"
+msgstr "Паролі не збігаються"
 
-#: federation/forms/registration_player_form.py:164
-msgid "This email is already in use"
-msgstr "Цей email вже використовується"
-
-#: federation/forms/registration_team_form.py:20
+#: federation/forms/registration_team_form.py:31
 #, python-format
 msgid "Player %(number)s"
 msgstr "Гравець %(number)s"
 
-#: federation/forms/registration_team_form.py:22
+#: federation/forms/registration_team_form.py:33
 #, python-format
 msgid "%(player)s (Captain)"
 msgstr "%(player)s (Капітан)"
 
-#: federation/forms/registration_team_form.py:24
+#: federation/forms/registration_team_form.py:35
 #, python-format
 msgid "%(player)s (Reserve)"
 msgstr "%(player)s (Резерв)"
 
-#: federation/forms/registration_team_form.py:47
-#: federation/templatetags/app_filters.py:710
+#: federation/forms/registration_team_form.py:43
+#: federation/templates/register/team.html:7
+msgid "Search athlete by first or last name"
+msgstr "Пошук спортсмена за ім'ям або прізвищем"
+
+#: federation/forms/registration_team_form.py:65
+msgid "Search coach by first or last name"
+msgstr "Пошук тренера за ім'ям або прізвищем"
+
+#: federation/forms/registration_team_form.py:68
+#: federation/models/national_teams.py:35 federation/models/tournament.py:529
+#: federation/templates/tournaments/tournament_teams.html:48
+#: federation/templates/tournaments/tournament_teams.html:137
+#: federation/templates/tournaments/tournament_teams.html:318
+msgid "Coach"
+msgstr "Тренер"
+
+#: federation/forms/registration_team_form.py:87
+#: federation/templates/register/team.html:80
+#: federation/templatetags/app_filters.py:1044
 msgid "Register team"
 msgstr "Зареєструвати команду"
 
-#: federation/forms/registration_team_form.py:79
+#: federation/forms/registration_team_form.py:125
 #, python-format
 msgid "Player with number %(player_id)s does not exist"
 msgstr "Гравець з номером %(player_id)s не існує"
 
-#: federation/forms/registration_team_form.py:86
+#: federation/forms/registration_team_form.py:132
 #, python-format
-msgid "Player %(player)s is already registered for the tournament in team %(team)s"
+msgid ""
+"Player %(player)s is already registered for the tournament in team %(team)s"
 msgstr "Гравець %(player)s вже зареєстрований на турнір у команді %(team)s"
 
-#: federation/models/city.py:8 federation/models/player.py:58
-#: federation/models/record.py:8 federation/models/team.py:13
-#: federation/models/tournament.py:36
+#: federation/forms/registration_team_form.py:147
+#, python-format
+msgid "Coach with number %(coach_id)s does not exist"
+msgstr "Тренер з номером %(coach_id)s не існує"
+
+#: federation/models/city.py:8 federation/models/player.py:64
+#: federation/models/record.py:8 federation/models/team.py:20
+#: federation/models/tournament.py:42
 msgid "name"
 msgstr "Ім'я"
 
-#: federation/models/club.py:10
+#: federation/models/club.py:16
 msgid "Full name"
 msgstr "Повна назва"
 
-#: federation/models/club.py:11 federation/models/player.py:57
+#: federation/models/club.py:18 federation/models/player.py:61
 msgid "avatar"
 msgstr "Фото"
 
-#: federation/models/club.py:12
+#: federation/models/club.py:21
 msgid "Short name"
 msgstr "Коротка назва"
 
-#: federation/models/club.py:13 federation/models/tournament.py:473
+#: federation/models/club.py:22 federation/models/document.py:14
+msgid "Active"
+msgstr "Активна"
+
+#: federation/models/club.py:23 federation/models/tournament.py:533
 #: federation/templates/tournaments/pure_teams_list.html:53
-#: federation/templates/tournaments/tournament_teams.html:45
+#: federation/templates/tournaments/tournament_teams.html:75
+#: federation/templates/tournaments/tournament_teams.html:226
+#: federation/templates/tournaments/tournament_teams.html:393
 msgid "Registration date"
 msgstr "Дата реєстрації"
 
-#: federation/models/club.py:14 federation/models/department.py:16
-#: federation/models/email_confirmation.py:15 federation/models/team.py:16
+#: federation/models/club.py:24 federation/models/department.py:17
+#: federation/models/email_confirmation.py:15 federation/models/team.py:23
 msgid "Creation date"
 msgstr "Дата створення"
 
-#: federation/models/club.py:15
+#: federation/models/club.py:25
 #: federation/templates/clubs/club_info_panel.html:34
 msgid "Address"
 msgstr "Адреса"
 
-#: federation/models/club.py:18 federation/models/player.py:73
+#: federation/models/club.py:28 federation/models/player.py:80
 msgid "facebook"
 msgstr "Facebook"
 
-#: federation/models/club.py:19 federation/models/player.py:74
+#: federation/models/club.py:29 federation/models/player.py:81
 msgid "twitter"
 msgstr "Twitter"
 
-#: federation/models/club.py:20 federation/models/player.py:75
+#: federation/models/club.py:30 federation/models/player.py:82
 msgid "instagram"
 msgstr "Instagram"
 
-#: federation/models/club.py:21 federation/models/player.py:76
+#: federation/models/club.py:31 federation/models/player.py:83
 msgid "website"
 msgstr "Вебсайт"
 
-#: federation/models/department.py:13 federation/models/document.py:9
-#: federation/models/document.py:24
+#: federation/models/department.py:14 federation/models/document.py:12
+#: federation/models/document.py:27
 #: federation/templates/clubs/club_info_panel.html:17
-#: federation/templates/clubs/clubs_table.html:11
 #: federation/templates/clubs/grid_item_club.html:30
-#: federation/templates/tournaments/player_future_tournaments.html:9
-#: federation/templates/tournaments/player_past_away_tournaments.html:9
-#: federation/templates/tournaments/player_past_tournaments.html:9
+#: federation/templates/players/player.html:311
+#: federation/templates/players/player.html:375
+#: federation/templates/tournaments/player_future_tournaments.html:13
+#: federation/templates/tournaments/player_past_away_tournaments.html:13
+#: federation/templates/tournaments/player_past_tournaments.html:13
 #: federation/templates/tournaments/pure_teams_list.html:20
 #: federation/templates/tournaments/tournament_protocol.html:107
-#: federation/templates/tournaments/tournament_teams.html:9
-#: federation/templates/tournaments/tournaments_table.html:9
+#: federation/test_audit.py:844
 msgid "Name"
 msgstr "Назва"
 
-#: federation/models/department.py:14
+#: federation/models/department.py:15
 msgid "Menu order"
 msgstr "Порядок у меню"
 
-#: federation/models/department.py:17 federation/models/document.py:25
-#: federation/models/tournament.py:74
-#: federation/templates/tournaments/tournament.html:38
+#: federation/models/department.py:18 federation/models/document.py:28
+#: federation/models/tournament.py:81
+#: federation/templates/tournaments/tournament_summary.html:210
+#: federation/templates/tournaments/tournament_summary.html:237
+#: federation/templates/tournaments/tournament_summary.html:242
 msgid "Notes"
 msgstr "Нотатки"
 
-#: federation/models/department.py:31
+#: federation/models/department.py:32
 #: federation/templates/tournaments/tournament_protocol.html:106
 msgid "Role"
 msgstr "Роль"
 
-#: federation/models/department.py:32 federation/models/record.py:13
+#: federation/models/department.py:33 federation/models/record.py:13
 msgid "Description"
 msgstr "Опис"
 
-#: federation/models/department.py:33
+#: federation/models/department.py:34
 msgid "Page order"
 msgstr "Порядок на сторінці"
 
-#: federation/models/document.py:8
+#: federation/models/document.py:11
 msgid "Code"
 msgstr "Код"
 
-#: federation/models/document.py:8
+#: federation/models/document.py:11
 msgid "Unique category code (for example: fpu, tournaments)"
 msgstr "Унікальний код категорії (наприклад: fpu, tournaments)"
 
-#: federation/models/document.py:10
+#: federation/models/document.py:13
 msgid "Order"
 msgstr "Порядок"
 
-#: federation/models/document.py:10
+#: federation/models/document.py:13
 msgid "Display order in the list"
 msgstr "Порядок відображення в списку"
 
-#: federation/models/document.py:11
-msgid "Active"
-msgstr "Активна"
-
-#: federation/models/document.py:26
+#: federation/models/document.py:29
 msgid "File"
 msgstr "Файл"
 
-#: federation/models/document.py:27 federation/models/tournament.py:38
+#: federation/models/document.py:30 federation/models/tournament.py:44
+#: federation/templates/clubs/club.html:165
+#: federation/templates/clubs/club.html:166
+#: federation/templates/clubs/club.html:167
+#: federation/templates/main_page/tournaments_list.html:21
+#: federation/templates/players/_player_rating_card.html:125
+#: federation/templates/players/players_table.html:157
+#: federation/templates/tournaments/tournament_summary.html:126
 msgid "Category"
 msgstr "Категорія"
 
-#: federation/models/document.py:28
+#: federation/models/document.py:31
 msgid "Available"
 msgstr "Доступний"
+
+#: federation/models/document.py:32
+msgid "Document date"
+msgstr "Дата документа"
+
+#: federation/models/document.py:32
+msgid "Publication or issue date of the document"
+msgstr "Дата публікації або видання документа"
+
+#: federation/models/document.py:33
+msgid "Created at"
+msgstr "Дата створення"
+
+#: federation/models/document.py:34
+msgid "Download count"
+msgstr "Кількість завантажень"
 
 #: federation/models/email_confirmation.py:16
 msgid "Confirmed"
@@ -566,203 +446,196 @@ msgstr "Підтверджено"
 msgid "Confirmation date"
 msgstr "Дата підтвердження"
 
-#: federation/models/national_teams.py:10
+#: federation/models/national_teams.py:11
 msgid "Full team name"
 msgstr "Повна назва команди"
 
-#: federation/models/national_teams.py:33
+#: federation/models/national_teams.py:34
 msgid "Player"
 msgstr "Гравець"
 
-#: federation/forms/registration_team_form.py:64
-#: federation/models/national_teams.py:35 federation/models/tournament.py:529
-#: federation/templates/tournaments/tournament_teams.html:48
-#: federation/templates/tournaments/tournament_teams.html:137
-#: federation/templates/tournaments/tournament_teams.html:318
-msgid "Coach"
-msgstr "Тренер"
-
-#: federation/models/national_teams.py:35
+#: federation/models/national_teams.py:36
 msgid "Head coach"
 msgstr "Головний тренер"
 
-#: federation/models/national_teams.py:36 federation/models/team.py:129
+#: federation/models/national_teams.py:37 federation/models/team.py:161
+#: federation/templates/tournaments/tournament_teams.html:45
+#: federation/templates/tournaments/tournament_teams.html:91
+#: federation/templates/tournaments/tournament_teams.html:274
 msgid "Captain"
 msgstr "Капітан"
 
-#: federation/models/national_teams.py:37
+#: federation/models/national_teams.py:38
 msgid "Main squad"
 msgstr "Основний склад"
 
-#: federation/models/player.py:16 federation/templatetags/app_filters.py:218
+#: federation/models/national_teams.py:43 federation/models/player.py:78
+#: federation/templates/players/player.html:122
+#: federation/templates/players/player_seasons.html:14
+msgid "Position"
+msgstr "Позиція"
+
+#: federation/models/player.py:19 federation/templatetags/app_filters.py:297
 msgid "Man"
 msgstr "Чоловік"
 
-#: federation/models/player.py:17 federation/templatetags/app_filters.py:215
+#: federation/models/player.py:20 federation/templatetags/app_filters.py:294
 msgid "Woman"
 msgstr "Жінка"
 
-#: federation/templates/players/players_table.html:80
-msgid "Female"
-msgstr "Жіноча"
-
-#: federation/templates/players/players_table.html:83
-msgid "Male"
-msgstr "Чоловіча"
-
-#: federation/models/player.py:21
+#: federation/models/player.py:24
 msgid "Junior sports arbiter"
 msgstr "Юний спортивний арбітр"
 
-#: federation/models/player.py:22
+#: federation/models/player.py:25
 msgid "Ukrainian Petanque Federation arbiter"
 msgstr "Арбітр Федерації петанку України"
 
-#: federation/models/player.py:23
+#: federation/models/player.py:26
 msgid "Sports arbiter, category II"
 msgstr "Спортивний арбітр II-ої категорії"
 
-#: federation/models/player.py:24
+#: federation/models/player.py:27
 msgid "Sports arbiter, category I"
 msgstr "Спортивний арбітр I-ої категорії"
 
-#: federation/models/player.py:25
+#: federation/models/player.py:28
 msgid "National category sports arbiter"
 msgstr "Спортивний арбітр національної категорії"
 
-#: federation/models/player.py:26
+#: federation/models/player.py:29
 msgid "CEP arbiter (European category)"
 msgstr "Арбітр CEP (Європейська категорія)"
 
-#: federation/models/player.py:27
+#: federation/models/player.py:30
 msgid "FIPJP arbiter (world category)"
 msgstr "Арбітр FIPJP (Світова категорія)"
 
-#: federation/models/player.py:31
+#: federation/models/player.py:34
 msgid "A (Animator)"
 msgstr "A (Аніматор)"
 
-#: federation/models/player.py:32
+#: federation/models/player.py:35
 msgid "I1 (Instructor, category 1)"
 msgstr "I1 (Інструктор 1-ої категорії)"
 
-#: federation/models/player.py:33
+#: federation/models/player.py:36
 msgid "I2 (Instructor, category 2)"
 msgstr "I2 (Інструктор 2-ої категорії)"
 
-#: federation/models/player.py:34
+#: federation/models/player.py:37
 msgid "I3 (Instructor, category 3)"
 msgstr "I3 (Інструктор 3-ої категорії)"
 
-#: federation/models/player.py:35
+#: federation/models/player.py:38
 msgid "I4 (Instructor, category 4)"
 msgstr "I4 (Інструктор 4-ої категорії)"
 
-#: federation/models/player.py:36
+#: federation/models/player.py:39
 msgid "E1 (Coach-instructor, category 1)"
 msgstr "E1 (Тренер-інструктор 1-ої категорії)"
 
-#: federation/models/player.py:37
+#: federation/models/player.py:40
 msgid "E2 (Coach-instructor, category 2)"
 msgstr "E2 (Тренер-інструктор 2-ої категорії)"
 
-#: federation/models/player.py:38
+#: federation/models/player.py:41
 msgid "E3 (Coach-instructor, category 3)"
 msgstr "E3 (Тренер-інструктор 3-ої категорії)"
 
-#: federation/models/player.py:39
+#: federation/models/player.py:42
 msgid "E4 (Coach-instructor, category 4)"
 msgstr "E4 (Тренер-інструктор 4-ої категорії)"
 
-#: federation/models/player.py:43
+#: federation/models/player.py:46
 msgid "Candidate Master of Sports of Ukraine"
 msgstr "Кандидат у майстри спорту України"
 
-#: federation/models/player.py:44
+#: federation/models/player.py:47
 msgid "Master of Sports of Ukraine"
 msgstr "Майстер спорту України"
 
-#: federation/models/player.py:45
+#: federation/models/player.py:48
 msgid "International Class Master of Sports"
 msgstr "Майстер спорту міжнародного класу"
 
-#: federation/models/player.py:46
+#: federation/models/player.py:49
 msgid "Honored Master of Sports of Ukraine"
 msgstr "Заслужений майстер спорту України"
 
-#: federation/models/player.py:50
+#: federation/models/player.py:53
 msgid "Pointer"
 msgstr "Поінтер"
 
-#: federation/models/player.py:51
+#: federation/models/player.py:54
 msgid "Middle"
 msgstr "Мідл"
 
-#: federation/models/player.py:52
+#: federation/models/player.py:55
 msgid "Shooter"
 msgstr "Шутер"
 
-#: federation/models/player.py:63 federation/models/tournament.py:51
+#: federation/models/player.py:69 federation/models/tournament.py:58
 msgid "(select country)"
 msgstr "Оберіть країну"
 
-#: federation/models/player.py:66
+#: federation/models/player.py:72
 msgid "License active"
 msgstr "Ліцензія активна"
 
-#: federation/models/player.py:68
+#: federation/models/player.py:75
 msgid "Inclusive player"
 msgstr "Інклюзивний гравець"
 
-#: federation/models/player.py:78
+#: federation/models/player.py:85
 msgid "Arbitration level"
 msgstr "Рівень арбітражу"
 
-#: federation/models/player.py:79 federation/templatetags/app_filters.py:285
+#: federation/models/player.py:86
 msgid "Coach category"
 msgstr "Тренерська категорія"
 
-#: federation/models/player.py:80 federation/templatetags/app_filters.py:266
+#: federation/models/player.py:87
 msgid "Sports title"
 msgstr "Спортивне звання"
 
-#: federation/models/player.py:82
+#: federation/models/player.py:89
 msgid "Current rating points"
 msgstr "Поточні рейтингові пункти"
 
-#: federation/models/player.py:83
+#: federation/models/player.py:90
 msgid "Current rating points in B tournaments"
 msgstr "Поточні рейтингові пункти у турнірах \"B"
 
-#: federation/models/player.py:84
+#: federation/models/player.py:91
 msgid "Current rating points in inclusive tournaments"
 msgstr "Поточні рейтингові пункти в інклюзивних турнірах"
 
-#: federation/models/player.py:85
+#: federation/models/player.py:92
 msgid "Current rating points in League tournaments"
 msgstr "Поточні рейтингові пункти у турнірах \"Ліги\""
 
-#: federation/models/player.py:87
+#: federation/models/player.py:94
 msgid "Tournaments affecting current rating"
 msgstr "Турніри що впливають на поточний рейтинг"
 
-#: federation/models/player.py:88
+#: federation/models/player.py:95
 msgid "Tournaments affecting current rating in B tournaments"
 msgstr "Турніри що впливають на поточний рейтинг у турнірах B"
 
-#: federation/models/player.py:89
+#: federation/models/player.py:96
 msgid "Tournaments affecting current rating in inclusive tournaments"
 msgstr "Турніри що впливають на поточний рейтинг у інклюзивних турнірах"
 
-#: federation/models/player.py:91
+#: federation/models/player.py:98
 msgid "Current power"
 msgstr "Поточна сила"
 
-#: federation/models/player.py:92
+#: federation/models/player.py:99
 msgid "Current power in B tournaments"
 msgstr "Поточна сила у турнірах \"B"
 
-#: federation/models/player.py:94
+#: federation/models/player.py:101
 msgid "Current power in inclusive tournaments"
 msgstr "Поточна сила у інклюзивних турнірах"
 
@@ -770,212 +643,307 @@ msgstr "Поточна сила у інклюзивних турнірах"
 msgid "Value"
 msgstr "Значення"
 
-#: federation/models/record.py:12
-#: federation/templates/tournaments/player_future_tournaments.html:8
-#: federation/templates/tournaments/player_past_away_tournaments.html:8
-#: federation/templates/tournaments/player_past_tournaments.html:8
+#: federation/models/record.py:12 federation/templates/players/player.html:286
+#: federation/templates/players/player.html:307
+#: federation/templates/players/player.html:366
+#: federation/templates/tournaments/player_future_tournaments.html:12
+#: federation/templates/tournaments/player_past_away_tournaments.html:12
+#: federation/templates/tournaments/player_past_tournaments.html:12
 #: federation/templates/tournaments/pure_teams_list.html:23
-#: federation/templates/tournaments/tournament_teams.html:12
-#: federation/templates/tournaments/tournaments_table.html:8
 msgid "Date"
 msgstr "Дата"
 
-#: federation/models/season.py:15
+#: federation/models/season.py:16
 #: federation/templates/players/player_seasons.html:13
+#: federation/templates/register/player.html:76
 msgid "Year"
 msgstr "Рік"
 
-#: federation/models/season.py:17
-#: federation/templates/main_page/players_list.html:36
+#: federation/models/season.py:18 federation/templates/players/player.html:205
 #: federation/templates/players/player_info_panel.html:44
 #: federation/templates/players/player_seasons.html:41
 #: federation/templates/players/player_short_info_panel.html:46
 #: federation/templates/players/players_cards.html:37
-#: federation/templates/players/players_table.html:42
-#: federation/templates/seasons/players_list.html:39
+#: federation/templates/seasons/players_list.html:43
 msgid "Rating points"
 msgstr "Рейтингові пункти"
 
-#: federation/models/season.py:18
+#: federation/models/season.py:19
 msgid "Rating points in B tournaments"
 msgstr "Рейтингові пункти у турнірах \"B"
 
-#: federation/models/season.py:20
+#: federation/models/season.py:21
 msgid "Rating points in League tournaments"
 msgstr "Рейтингові пункти у турнірах \"Ліги\""
 
-#: federation/models/tournament.py:21
+#: federation/models/tournament.py:27
 msgid "Open"
 msgstr "Вiдкритий"
 
-#: federation/models/tournament.py:22
+#: federation/models/tournament.py:28
 msgid "UPF"
 msgstr "ФПУ"
 
-#: federation/models/tournament.py:23
+#: federation/models/tournament.py:29
 msgid "International tournament"
 msgstr "Закордонний"
 
-#: federation/models/tournament.py:24
+#: federation/models/tournament.py:30
 msgid "Other"
 msgstr "Інше"
 
-#: federation/models/tournament.py:28
+#: federation/models/tournament.py:34
 msgid "Swiss system"
 msgstr "Швейцарська система"
 
-#: federation/models/tournament.py:29
+#: federation/models/tournament.py:35
 msgid "Swiss system + Knockout"
 msgstr "Швейцарська система + На виліт"
 
-#: federation/models/tournament.py:30
+#: federation/models/tournament.py:36
 msgid "Knockout"
 msgstr "На виліт"
 
-#: federation/models/tournament.py:31
+#: federation/models/tournament.py:37
 msgid "Round robin"
 msgstr "Кожен з кожним"
 
-#: federation/models/tournament.py:32
+#: federation/models/tournament.py:38
 msgid "Shooting tournament"
 msgstr "Турнір з тиру"
 
-#: federation/models/tournament.py:33
+#: federation/models/tournament.py:39
 msgid "Super melee"
 msgstr "Супер-меле"
 
-#: federation/models/tournament.py:39
+#: federation/models/tournament.py:45
+#: federation/templates/tournaments/tournament_summary.html:17
 msgid "Rating tournament"
 msgstr "Рейтинговий"
 
-#: federation/models/tournament.py:40
+#: federation/models/tournament.py:46
 msgid "Inclusive tournament"
 msgstr "Інклюзивний турнір"
 
-#: federation/models/tournament.py:41
+#: federation/models/tournament.py:47
 msgid "Ukrainian Petanque League tournament"
 msgstr "Турнір Української Ліги Петанку"
 
-#: federation/models/tournament.py:42
+#: federation/models/tournament.py:48
+#: federation/templates/tournaments/tournament_summary.html:21
 msgid "B tournament"
 msgstr "Турнір \"B\""
 
-#: federation/models/tournament.py:43
+#: federation/models/tournament.py:49
+#: federation/templates/tournaments/_insurance_required.html:4
+#: federation/templates/tournaments/tournament_summary.html:30
+msgid "Insurance required"
+msgstr "Необхідне страхування"
+
+#: federation/models/tournament.py:50
 msgid "Tournament is ready for processing"
 msgstr "Турнір готовий до опрацювання"
 
-#: federation/models/tournament.py:45
+#: federation/models/tournament.py:52
 #: federation/templates/tournaments/tournament_protocol.html:138
 msgid "Total number of teams"
 msgstr "Повна кількість команд"
 
-#: federation/models/tournament.py:47
+#: federation/models/tournament.py:54
+#: federation/templates/tournaments/tournament_summary.html:108
 msgid "Rating coefficient"
 msgstr "Рейтинговий коефіцієнт"
 
-#: federation/models/tournament.py:48
+#: federation/models/tournament.py:55
+#: federation/templatetags/app_filters.py:804
 msgid "Tournament power"
 msgstr "Сила турніру"
 
-#: federation/models/tournament.py:50
-#: federation/templates/main_page/tournaments_list.html:27
+#: federation/models/tournament.py:57
+#: federation/templates/main_page/tournaments_list.html:37
 #: federation/templates/statistics/statistics.html:166
 #: federation/templates/tournaments/tournament_protocol.html:98
 msgid "Venue"
 msgstr "Місце проведення"
 
-#: federation/models/tournament.py:53
+#: federation/models/tournament.py:60
+#: federation/templates/main_page/tournaments_list.html:30
 #: federation/templates/tournaments/tournament_protocol.html:74
+#: federation/templates/tournaments/tournament_summary.html:53
 msgid "Start date"
 msgstr "Дата початку"
 
-#: federation/models/tournament.py:54
+#: federation/models/tournament.py:61
 msgid "Start time"
 msgstr "Час початку"
 
-#: federation/models/tournament.py:55
+#: federation/models/tournament.py:62
 #: federation/templates/tournaments/tournament_protocol.html:80
 msgid "End date"
 msgstr "Дата закінчення"
 
-#: federation/models/tournament.py:57
+#: federation/models/tournament.py:64
 msgid "Registration deadline"
 msgstr "Дата закінчення реєстрації"
 
-#: federation/models/tournament.py:58
+#: federation/models/tournament.py:65
 msgid "Minimum number of players per team"
 msgstr "Мінімальна кількість гравців в команді"
 
-#: federation/models/tournament.py:59
+#: federation/models/tournament.py:66
 msgid "Number of players per team (including substitutes)"
 msgstr "Кількість гравців в команді (з запасними)"
 
-#: federation/models/tournament.py:60
+#: federation/models/tournament.py:67
+#: federation/templates/main_page/tournaments_list.html:18
+#: federation/templates/players/player.html:312
+#: federation/templates/players/player.html:381
+#: federation/templates/tournaments/tournament_summary.html:121
 msgid "Format"
 msgstr "Формат"
 
-#: federation/models/tournament.py:62
+#: federation/models/tournament.py:69
+#: federation/templates/tournaments/tournament_summary.html:171
 msgid "Regulations"
 msgstr "Регламент"
 
-#: federation/models/tournament.py:63
+#: federation/models/tournament.py:70
+#: federation/templates/tournaments/tournament_summary.html:136
 msgid "Team limit"
 msgstr "Ліміт команд"
 
-#: federation/models/tournament.py:64
+#: federation/models/tournament.py:71
 msgid "Fees"
 msgstr "Внески"
 
-#: federation/models/tournament.py:75
+#: federation/models/tournament.py:82
 msgid "Technical information for the draw"
 msgstr "Технічна інформація для жеребкуванння"
 
-#: federation/models/tournament.py:77
-#: federation/templates/tournaments/tournament.html:64
+#: federation/models/tournament.py:85
+msgid "Petanque draw ID"
+msgstr "Ідентифікатор жеребкування Petanque"
+
+#: federation/models/tournament.py:87
 msgid "Notes for the final protocol"
 msgstr "Нотатки до підсумкового протоколу"
 
-#: federation/models/tournament.py:79
+#: federation/models/tournament.py:89
 msgid "Tournament results processed"
 msgstr "Результати турніру опрацьовано"
 
-#: federation/models/tournament.py:471
-#: federation/templates/tournaments/player_past_away_tournaments.html:11
-#: federation/templates/tournaments/player_past_tournaments.html:11
+#: federation/models/tournament.py:531
+#: federation/templates/clubs/clubs_table.html:56
+#: federation/templates/clubs/clubs_table.html:183
+#: federation/templates/players/_player_rating_card.html:54
+#: federation/templates/players/player.html:291
+#: federation/templates/players/player.html:315
+#: federation/templates/players/player.html:391
+#: federation/templates/players/player.html:393
+#: federation/templates/players/player.html:494
+#: federation/templates/players/players_table.html:67
+#: federation/templates/tournaments/player_past_away_tournaments.html:15
+#: federation/templates/tournaments/player_past_tournaments.html:15
 #: federation/templates/tournaments/pure_teams_list.html:19
+#: federation/templates/tournaments/tournament.html:29
 #: federation/templates/tournaments/tournament_protocol.html:153
-#: federation/templates/tournaments/tournament_teams.html:8
-#: federation/templates/tournaments/tournaments_table.html:10
-#: federation/templatetags/app_filters.py:472
+#: federation/templates/tournaments/tournament_summary.html:84
+#: federation/templates/tournaments/tournament_teams.html:40
+#: federation/templates/tournaments/tournament_teams.html:88
+#: federation/templatetags/app_filters.py:619
 msgid "Place"
 msgstr "Місце"
 
-#: federation/models/tournament.py:472
+#: federation/models/tournament.py:532
 msgid "Place (maximum)"
 msgstr "Місце (максимальне)"
 
-#: federation/models/tournament.py:475
+#: federation/models/tournament.py:535
 msgid "Rating points for tournament"
 msgstr "Рейтингові пункти за турнір"
 
-#: federation/models/tournament.py:476
+#: federation/models/tournament.py:536
 msgid "Rating power for tournament"
 msgstr "Рейтингова сила за турнір"
 
-#: federation/models/tournament.py:478
-#: federation/templates/tournaments/player_future_tournaments.html:31
-#: federation/templates/tournaments/player_past_tournaments.html:37
+#: federation/models/tournament.py:538
 #: federation/templates/tournaments/pure_teams_list.html:58
-#: federation/templates/tournaments/tournament_teams.html:50
+#: federation/templates/tournaments/tournament.html:32
+#: federation/templates/tournaments/tournament_teams.html:67
+#: federation/templates/tournaments/tournament_teams.html:207
+#: federation/templates/tournaments/tournament_teams.html:375
+#: federation/templatetags/app_filters.py:813
 msgid "Team power"
 msgstr "Сила команди"
 
-#: federation/models/tournament.py:531
-#: federation/templates/tournaments/tournament_delegations.html:41
+#: federation/models/tournament.py:594
+#: federation/templates/tournaments/tournament_delegations.html:4
 #: federation/templates/tournaments/tournament_protocol.html:125
 #: federation/templates/tournaments/tournament_protocol.html:206
 msgid "Head arbiter"
 msgstr "Головний арбітр"
+
+#: federation/player_change_log_admin.py:33
+msgid "content type"
+msgstr "типом вмісту"
+
+#: federation/player_change_log_admin.py:54
+msgid "changed field"
+msgstr "зміненим полем"
+
+#: federation/player_change_log_admin.py:97
+msgid "changed by"
+msgstr "ким змінено"
+
+#: federation/player_change_log_admin.py:126
+msgid "journal action"
+msgstr "дією"
+
+#: federation/player_change_log_admin.py:143
+msgid "journal action time"
+msgstr "часом дії"
+
+#: federation/player_change_log_admin.py:212
+msgid "Changed by"
+msgstr "Змінено користувачем"
+
+#: federation/player_change_log_admin.py:218
+msgid "Content type"
+msgstr "Тип вмісту"
+
+#: federation/player_change_log_admin.py:234
+msgid "Object"
+msgstr "Об'єкт"
+
+#: federation/player_change_log_admin.py:238
+msgid "Reverted"
+msgstr "Скасовано"
+
+#: federation/player_change_log_admin.py:241
+msgid "Action"
+msgstr "Дія"
+
+#: federation/player_change_log_admin.py:247
+msgid "Changed fields"
+msgstr "Змінені поля"
+
+#: federation/player_change_log_admin.py:269
+#, python-format
+msgid "Reverted \"%(object)s\" - %(changes)s"
+msgstr "Скасовано зміну для \"%(object)s\" - %(changes)s"
+
+#: federation/player_change_log_admin.py:283
+msgid "You do not have permission to revert this change."
+msgstr "У вас немає прав, щоб скасувати цю зміну."
+
+#: federation/player_change_log_admin.py:335
+#: federation/player_change_log_admin.py:341
+msgid "Change reverted."
+msgstr "Зміну скасовано."
+
+#: federation/player_change_log_admin.py:337
+msgid "Open revert log entry"
+msgstr "Відкрити запис про скасування"
 
 #: federation/templates/404.html:10
 msgid "Page not found"
@@ -990,301 +958,428 @@ msgid "An error occurred while the portal was running"
 msgstr "Під час роботи порталу сталася помилка"
 
 #: federation/templates/admin/action_confirmation.html:18
+#: federation/templates/admin/set_club_action.html:20
 msgid "Yes, confirm"
 msgstr "Так, підтверджую"
 
 #: federation/templates/admin/action_confirmation.html:19
+#: federation/templates/admin/set_club_action.html:21
 msgid "No, go back"
 msgstr "Ні, повернутись назад"
 
-#: federation/templates/arbiters/arbiters.html:10
-#: federation/templates/common/menu.html:22 federation/views/arbiters.py:21
-msgid "Arbiters"
-msgstr "Арбітри"
+#: federation/templates/admin/audit_log/change_form.html:6
+msgid "Home"
+msgstr "Головна"
 
-#: federation/templates/arbiters/arbiters.html:53
-#: federation/templates/clubs/club_short_info_panel.html:47
-#: federation/templates/coaches/coaches.html:53
-#: federation/templates/departments/departments.html:54
-#: federation/templates/main_page/players_list.html:20
-#: federation/templates/main_page/tournaments_list.html:21
-#: federation/templates/national_teams/current_team.html:26
-#: federation/templates/players/player_seasons.html:50
-#: federation/templates/players/player_short_info_panel.html:31
-#: federation/templates/players/players_cards.html:22
-#: federation/templates/players/players_table.html:59
-#: federation/templates/records/records_table.html:47
-#: federation/templates/seasons/players_list.html:49
-#: federation/templates/sport_titles/sport_titles.html:53
-#: federation/templates/tournaments/tournaments_table.html:60
-msgid "No club"
-msgstr "Без клубу"
+#: federation/templates/admin/audit_log/change_form.html:9
+#, python-format
+msgid "Add %(name)s"
+msgstr "Додати %(name)s"
 
-#: federation/templates/clubs/club.html:8
-#: federation/templates/clubs/club_short_info_panel.html:25
-#: federation/templates/clubs/clubs_cards.html:28
-#: federation/templates/clubs/clubs_table.html:14
-msgid "President"
-msgstr "Президент"
+#: federation/templates/admin/audit_log/change_form.html:18
+msgid "Revert change"
+msgstr "Скасувати зміну"
 
-#: federation/templates/clubs/club.html:12
+#: federation/templates/clubs/club.html:15
+#: federation/templates/common/menu.html:25
+#: federation/templates/statistics/statistics.html:91
+#: federation/views/clubs.py:44
+msgid "Clubs"
+msgstr "Клуби"
+
+#: federation/templates/clubs/club.html:45
+msgid "Club links"
+msgstr "Посилання клубу"
+
+#: federation/templates/clubs/club.html:62
+msgid "Website"
+msgstr "Вебсайт"
+
+#: federation/templates/clubs/club.html:70
+msgid "Club summary"
+msgstr "Коротко про клуб"
+
+#: federation/templates/clubs/club.html:75
+#: federation/templates/clubs/clubs_table.html:38
+#: federation/templates/clubs/clubs_table.html:145
+#: federation/templates/clubs/clubs_table.html:205
 #: federation/templates/tournaments/pure_teams_list.html:22
-#: federation/templates/tournaments/tournament_teams.html:11
-#: federation/views/players.py:35
+#: federation/templates/tournaments/tournament_teams.html:53
+#: federation/templates/tournaments/tournament_teams.html:167
+#: federation/templates/tournaments/tournament_teams.html:328
 msgid "Athletes"
 msgstr "Спортсмени"
 
-#: federation/views/players.py:35
-msgid "Rating"
-msgstr "Рейтинг"
-
+#: federation/templates/clubs/club.html:82
 #: federation/templates/clubs/club_info_panel.html:21
+#: federation/templates/clubs/clubs_table.html:34
+#: federation/templates/clubs/clubs_table.html:118
 #: federation/templates/clubs/grid_item_club.html:42
 msgid "Founded"
 msgstr "Заснування"
 
+#: federation/templates/clubs/club.html:89
+msgid "Place in Ukrainian club rating"
+msgstr "Місце у рейтингу клубів України"
+
+#: federation/templates/clubs/club.html:96
+msgid "Club president"
+msgstr "Президент клубу"
+
+#: federation/templates/clubs/club.html:105
+msgid "President is not specified."
+msgstr "Президента не вказано."
+
+#: federation/templates/clubs/club.html:114
+msgid "Club indicators"
+msgstr "Показники клубу"
+
+#: federation/templates/clubs/club.html:120
+#: federation/templates/clubs/clubs_cards.html:39
+msgid "Total rating points"
+msgstr "Загальна кількість рейтингових пунктів"
+
+#: federation/templates/clubs/club.html:125
+msgid "Average athlete rating"
+msgstr "Середній рейтинг спортсменів"
+
+#: federation/templates/clubs/club.html:130
+msgid "Average athlete power"
+msgstr "Середня сила спортсменів"
+
+#: federation/templates/clubs/club.html:135
+msgid "National team athletes"
+msgstr "Гравці збірної"
+
+#: federation/templates/clubs/club.html:140
+msgid "Candidates for Master of Sports"
+msgstr "Кандидати у майстри спорту"
+
+#: federation/templates/clubs/club.html:148
+msgid "Club athletes"
+msgstr "Спортсмени клубу"
+
+#: federation/templates/clubs/club.html:149
+msgid "athletes in club"
+msgstr "спортсменів у клубі"
+
+#: federation/templates/clubs/club.html:151
+#: federation/templates/players/players.html:39
+#: federation/templates/seasons/seasons.html:47
+msgid "Athlete filters"
+msgstr "Фільтри спортсменів"
+
+#: federation/templates/clubs/club.html:154
+msgid "Search athlete..."
+msgstr "Пошук спортсмена..."
+
+#: federation/templates/clubs/club.html:154
+msgid "Search athlete"
+msgstr "Пошук спортсмена"
+
+#: federation/templates/clubs/club.html:157
+#: federation/templates/clubs/club.html:158
+#: federation/templates/clubs/club.html:159
+#: federation/templates/players/_player_rating_card.html:112
+#: federation/templates/players/players.html:62
+#: federation/templates/players/players_table.html:9
+#: federation/templates/players/players_table.html:44
+#: federation/templates/players/players_table.html:132
+#: federation/templates/players/players_table.html:138
+#: federation/templates/players/players_table.html:144
+#: federation/templates/seasons/seasons.html:70
+msgid "Sex"
+msgstr "Стать"
+
+#: federation/templates/clubs/club.html:160
+#: federation/templates/main_page.html:130
+#: federation/templates/players/_player_rating_card.html:111
+#: federation/templates/players/players_table.html:143
+#: federation/views/players.py:172 federation/views/seasons.py:120
+msgid "Men"
+msgstr "Чоловіки"
+
+#: federation/templates/clubs/club.html:161
+#: federation/templates/main_page.html:133
+#: federation/templates/players/_player_rating_card.html:111
+#: federation/templates/players/players_table.html:137
+#: federation/views/players.py:173 federation/views/seasons.py:121
+msgid "Women"
+msgstr "Жінки"
+
+#: federation/templates/clubs/club.html:175
+#: federation/templates/clubs/club.html:176
+msgid "Sort athletes"
+msgstr "Сортування спортсменів"
+
+#: federation/templates/clubs/club.html:177
+msgid "Sort: rating place"
+msgstr "Сортування: місце в рейтингу"
+
+#: federation/templates/clubs/club.html:178
+msgid "Sort: points"
+msgstr "Сортування: бали"
+
+#: federation/templates/clubs/club.html:179
+msgid "Sort: power"
+msgstr "Сортування: сила"
+
+#: federation/templates/clubs/club.html:180
+msgid "Sort: name"
+msgstr "Сортування: ім'я"
+
+#: federation/templates/clubs/club.html:196
+#: federation/templates/common/title_registry_page.html:58
+#: federation/templates/main_page/players_list.html:12
+msgid "No athletes to show yet."
+msgstr "Поки немає спортсменів для показу."
+
+#: federation/templates/clubs/club.html:200
+msgid "No athletes match the selected filters."
+msgstr "За вибраними фільтрами спортсменів не знайдено."
+
 #: federation/templates/clubs/club_info_panel.html:23
 #: federation/templates/clubs/club_short_info_panel.html:35
 #: federation/templates/clubs/clubs_cards.html:58
-#: federation/templates/clubs/clubs_table.html:45
 #: federation/templates/clubs/grid_item_club.html:43
 msgid "yr."
 msgstr "р."
 
 #: federation/templates/clubs/club_info_panel.html:25
-#: federation/templates/clubs/clubs_table.html:15
 #: federation/templates/clubs/grid_item_club.html:46
 msgid "Athlete count"
 msgstr "Спортсменів"
 
 #: federation/templates/clubs/club_info_panel.html:32
-#: federation/templates/clubs/clubs_table.html:12
+#: federation/templates/clubs/clubs.html:39
+#: federation/templates/clubs/clubs_table.html:33
+#: federation/templates/clubs/clubs_table.html:97
 #: federation/templates/clubs/grid_item_club.html:34
+#: federation/templates/players/player.html:108
+#: federation/templates/players/player.html:154
 msgid "City"
 msgstr "Місто"
-
-#: federation/templates/players/player.html
-msgid "Region"
-msgstr "Регіон"
 
 #: federation/templates/clubs/club_info_panel.html:40
 msgid "Social media"
 msgstr "Соцмережі"
 
+#: federation/templates/clubs/club_short_info_panel.html:25
+#: federation/templates/clubs/clubs_cards.html:28
+#: federation/templates/clubs/clubs_table.html:35
+#: federation/templates/clubs/clubs_table.html:124
+msgid "President"
+msgstr "Президент"
+
 #: federation/templates/clubs/club_short_info_panel.html:34
+#: federation/templates/clubs/clubs.html:49
 #: federation/templates/clubs/clubs_cards.html:57
-#: federation/templates/clubs/clubs_table.html:13
-#: federation/templates/clubs/clubs_table.html:44
 msgid "Year founded"
 msgstr "Рік заснування"
 
 #: federation/templates/clubs/club_short_info_panel.html:39
 #: federation/templates/clubs/clubs_cards.html:49
-#: federation/templates/clubs/clubs_table.html:53
 msgid "Number of athletes"
 msgstr "Кількість спортсменів"
 
-#: federation/templates/clubs/clubs_cards.html:39
-msgid "Total rating points"
-msgstr "Загальна кількість рейтингових пунктів"
+#: federation/templates/clubs/club_short_info_panel.html:47
+#: federation/templates/national_teams/current_team.html:26
+#: federation/templates/players/player.html:174
+#: federation/templates/players/player_seasons.html:50
+#: federation/templates/players/player_short_info_panel.html:31
+#: federation/templates/players/players_cards.html:22
+#: federation/templates/players/players_table.html:200
+#: federation/templates/records/records_table.html:47
+#: federation/templates/seasons/players_list.html:53
+#: federation/templates/tournaments/tournament_teams.html:118
+#: federation/templates/tournaments/tournament_teams.html:158
+#: federation/templates/tournaments/tournament_teams.html:297
+msgid "No club"
+msgstr "Без клубу"
 
-#: federation/templates/clubs/clubs_cards.html:44
-#: federation/templates/clubs/clubs_table.html:30
-msgid "Average points per athlete"
-msgstr "Середня кількість балів на спортсмена"
-
-#: federation/templates/clubs/clubs_table.html:9
-#: federation/templates/players/player_seasons.html:15
-#: federation/templates/players/players_table.html:10
-#: federation/templates/seasons/players_list.html:13
-#: federation/templates/tournaments/player_past_tournaments.html:13
-msgid "Points"
-msgstr "Бали"
-
-#: federation/templates/clubs/clubs_table.html:10
-msgid "Average"
-msgstr "Середній"
-
-#: federation/templates/clubs/clubs_table.html:25
-msgid "Total rating points in the club"
-msgstr "Загальна кількість рейтингових пунктів у клубі"
-
-#: federation/templates/clubs/clubs_table.html:79
-#: federation/templates/common/menu.html:38
-#: federation/templates/common/menu.html:46
-#: federation/templates/players/players_table.html:26
-#: federation/templates/players/players_table.html:27
-#: federation/templates/players/players_table.html:29
-#: federation/templates/players/players_table.html:80
-#: federation/templates/seasons/players_list.html:25
-#: federation/templates/seasons/players_list.html:26
-#: federation/templates/seasons/players_list.html:69
-#: federation/templates/tournaments/player_future_tournaments.html:52
-#: federation/templates/tournaments/player_past_away_tournaments.html:53
-#: federation/templates/tournaments/player_past_tournaments.html:65
-#: federation/templates/tournaments/tournament_teams.html:92
-#: federation/templates/tournaments/tournaments_table.html:98
-msgid "All"
-msgstr "Усі"
-
-#: federation/templates/clubs/clubs_table.html:81
-msgid "Show _MENU_ clubs per page"
-msgstr "Показати _MENU_ клубів на сторінку"
-
-#: federation/templates/clubs/clubs_table.html:82
-msgid "No clubs found"
-msgstr "Клубів не знайдено"
-
-#: federation/templates/clubs/clubs_table.html:83
-msgid "Showing _START_ to _END_ of _TOTAL_ clubs"
-msgstr "Показано _START_ - _END_ з _TOTAL_ клубів"
-
-#: federation/templates/clubs/clubs_table.html:84
-msgid "Showing 0 of 0 clubs"
-msgstr "Показано 0 з 0 клубів"
-
-#: federation/templates/clubs/clubs_table.html:85
-msgid "(filtered from _MAX_ clubs)"
-msgstr "(відфільтровано з _MAX_ клубів)"
-
+#: federation/templates/clubs/clubs.html:16
 msgid "Club rating by active athletes, points, and average results"
-msgstr "Рейтинг клубів за активними спортсменами, балами та середнім результатом"
+msgstr ""
+"Рейтинг клубів за активними спортсменами, балами та середнім результатом"
 
-msgid "Club points are calculated from active licensed athletes. The table can be searched by club, city, or president and sorted by the most useful club indicators."
-msgstr "Бали клубу розраховуються за активними ліцензованими спортсменами. Таблицю можна шукати за клубом, містом або президентом і сортувати за основними показниками клубу."
+#: federation/templates/clubs/clubs.html:17
+msgid ""
+"Club points are calculated from active licensed athletes. The table can be "
+"searched by club, city, or president and sorted by the most useful club "
+"indicators."
+msgstr ""
+"Бали клубу розраховуються за активними ліцензованими спортсменами. Таблицю "
+"можна шукати за клубом, містом або президентом і сортувати за основними "
+"показниками клубу."
 
+#: federation/templates/clubs/clubs.html:29
 msgid "Search clubs"
 msgstr "Пошук клубів"
 
+#: federation/templates/clubs/clubs.html:32
 msgid "Search by club, city, or president..."
 msgstr "Пошук за клубом, містом або президентом..."
 
+#: federation/templates/clubs/clubs.html:36
 msgid "Club filters"
 msgstr "Фільтри клубів"
 
+#: federation/templates/clubs/clubs.html:40
 msgid "All cities"
 msgstr "Усі міста"
 
+#: federation/templates/clubs/clubs.html:50
 msgid "All founding years"
 msgstr "Усі роки заснування"
 
+#: federation/templates/clubs/clubs.html:59
 msgid "Sort clubs"
 msgstr "Сортування клубів"
 
-msgid "Rating first"
-msgstr "Спочатку рейтинг"
+#: federation/templates/clubs/clubs.html:68
+#: federation/templates/tournaments/tournaments.html:149
+#: federation/templates/tournaments/tournaments_table.html:368
+msgid "Скинути фільтри"
+msgstr "Скинути фільтри"
 
-msgid "Most athletes"
-msgstr "Найбільше спортсменів"
+#: federation/templates/clubs/clubs_cards.html:44
+msgid "Average points per athlete"
+msgstr "Середня кількість балів на спортсмена"
 
-msgid "Best average"
-msgstr "Найкращий середній бал"
+#: federation/templates/clubs/clubs_table.html:4
+msgid ""
+"Club points are the sum of current rating points from active licensed "
+"athletes in the club."
+msgstr "Бали клубу — це сума поточних рейтингових балів активних ліцензованих спортсменів клубу."
 
-msgid "Name A-Z"
-msgstr "Назва А-Я"
+#: federation/templates/clubs/clubs_table.html:5
+msgid ""
+"Average points are calculated across active licensed athletes in the club."
+msgstr "Середній бал розраховується серед активних ліцензованих спортсменів клубу."
 
-msgid "Newest clubs"
-msgstr "Найновіші клуби"
+#: federation/templates/clubs/clubs_table.html:6
+msgid "Athlete count includes all athletes currently assigned to the club."
+msgstr "Кількість спортсменів включає всіх спортсменів, які зараз закріплені за клубом."
 
-msgid "Club points are the sum of current rating points from active athletes in the club."
-msgstr "Бали клубу — це сума поточних рейтингових балів активних спортсменів клубу."
+#: federation/templates/clubs/clubs_table.html:13
+#: federation/templates/clubs/clubs_table.html:53
+#: federation/templates/tournaments/tournament_teams.html:58
+#: federation/templates/tournaments/tournament_teams.html:196
+#: federation/templates/tournaments/tournament_teams.html:357
+#: federation/views/players.py:72
+msgid "Rating"
+msgstr "Рейтинг"
 
-msgid "Average points are calculated across active athletes in the club."
-msgstr "Середній бал розраховується серед активних спортсменів клубу."
+#: federation/templates/clubs/clubs_table.html:17
+#: federation/templates/clubs/clubs_table.html:79
+#: federation/templates/clubs/clubs_table.html:84
+#: federation/templates/clubs/clubs_table.html:191
+#: federation/templates/players/_player_rating_card.html:77
+#: federation/templates/players/player.html:296
+#: federation/templates/players/player.html:344
+#: federation/templates/players/player.html:433
+#: federation/templates/players/player_seasons.html:15
+#: federation/templates/players/players_table.html:26
+#: federation/templates/players/players_table.html:112
+#: federation/templates/players/players_table.html:117
+#: federation/templates/seasons/players_list.html:17
+#: federation/templates/tournaments/player_past_tournaments.html:17
+msgid "Points"
+msgstr "Бали"
 
-msgid "Athlete count includes active athletes currently assigned to the club."
-msgstr "Кількість спортсменів включає активних спортсменів, які зараз закріплені за клубом."
+#: federation/templates/clubs/clubs_table.html:26
+#: federation/templates/clubs/clubs_table.html:88
+#: federation/templates/clubs/clubs_table.html:93
+#: federation/templates/clubs/clubs_table.html:198
+msgid "Average"
+msgstr "Середній"
 
+#: federation/templates/clubs/clubs_table.html:45
+#: federation/templates/clubs/clubs_table.html:151
+#: federation/templates/players/players_table.html:56
+#: federation/templates/players/players_table.html:203
+#: federation/templates/seasons/players_list.html:21
+#: federation/templates/tournaments/tournament_teams.html:81
+#: federation/templates/tournaments/tournament_teams.html:232
+msgid "Actions"
+msgstr "Дії"
+
+#: federation/templates/clubs/clubs_table.html:101
 msgid "Open club address on map"
 msgstr "Відкрити адресу клубу на мапі"
 
+#: federation/templates/clubs/clubs_table.html:115
 msgid "No city"
 msgstr "Місто не вказано"
 
+#: federation/templates/clubs/clubs_table.html:142
 msgid "No president"
 msgstr "Президент не вказаний"
 
+#: federation/templates/clubs/clubs_table.html:152
 msgid "Show club"
 msgstr "Показати клуб"
 
+#: federation/templates/clubs/clubs_table.html:186
 msgid "Club metrics"
 msgstr "Показники клубу"
 
+#: federation/templates/clubs/clubs_table.html:217
+msgid "No clubs found"
+msgstr "Клубів не знайдено"
+
+#: federation/templates/clubs/clubs_table.html:218
 msgid "Try changing the filters or search query."
 msgstr "Спробуйте змінити фільтри або пошуковий запит."
 
+#: federation/templates/clubs/clubs_table.html:226
 msgid "Club pagination"
 msgstr "Пагінація клубів"
 
+#: federation/templates/clubs/clubs_table.html:229
+#: federation/templates/common/datatable_players_footer.html:5
+#: federation/templates/players/players_table.html:221
+msgid "Pages"
+msgstr "Сторінки"
+
+#: federation/templates/clubs/clubs_table.html:232
+#: federation/templates/players/player.html:572
+#: federation/templates/players/players_table.html:224
+msgid "First page"
+msgstr "Перша сторінка"
+
+#: federation/templates/clubs/clubs_table.html:237
+#: federation/templates/players/player.html:573
+#: federation/templates/players/players_table.html:229
+msgid "Previous page"
+msgstr "Попередня сторінка"
+
+#: federation/templates/clubs/clubs_table.html:251
+#: federation/templates/players/player.html:574
+#: federation/templates/players/players_table.html:243
+msgid "Next page"
+msgstr "Наступна сторінка"
+
+#: federation/templates/clubs/clubs_table.html:256
+#: federation/templates/players/player.html:575
+#: federation/templates/players/players_table.html:248
+msgid "Last page"
+msgstr "Остання сторінка"
+
+#: federation/templates/clubs/clubs_table.html:271
+#: federation/templates/clubs/clubs_table.html:272
 msgid "Clubs per page"
 msgstr "Клубів на сторінку"
 
-#: federation/templates/clubs/clubs_table.html:86
-#: federation/templates/tournaments/player_future_tournaments.html:59
-#: federation/templates/tournaments/player_past_away_tournaments.html:60
-#: federation/templates/tournaments/player_past_tournaments.html:72
-#: federation/templates/tournaments/tournament_teams.html:99
-msgid "Search"
-msgstr "Пошук"
-
-#: federation/templates/clubs/clubs_table.html:88
-#: federation/templates/players/players_table.html:89
-#: federation/templates/seasons/players_list.html:78
-#: federation/templates/tournaments/player_future_tournaments.html:61
-#: federation/templates/tournaments/player_past_away_tournaments.html:62
-#: federation/templates/tournaments/player_past_tournaments.html:74
-#: federation/templates/tournaments/tournament_teams.html:101
-#: federation/templates/tournaments/tournaments_table.html:108
-msgid "First"
-msgstr "Початок"
-
-#: federation/templates/clubs/clubs_table.html:89
-#: federation/templates/players/players_table.html:90
-#: federation/templates/seasons/players_list.html:79
-#: federation/templates/tournaments/player_future_tournaments.html:62
-#: federation/templates/tournaments/player_past_away_tournaments.html:63
-#: federation/templates/tournaments/player_past_tournaments.html:75
-#: federation/templates/tournaments/tournament_teams.html:102
-#: federation/templates/tournaments/tournaments_table.html:109
-msgid "Last"
-msgstr "Кінець"
-
-#: federation/templates/clubs/clubs_table.html:90
-#: federation/templates/players/players_table.html:91
-#: federation/templates/seasons/players_list.html:80
-#: federation/templates/tournaments/player_future_tournaments.html:63
-#: federation/templates/tournaments/player_past_away_tournaments.html:64
-#: federation/templates/tournaments/player_past_tournaments.html:76
-#: federation/templates/tournaments/tournament_teams.html:103
-#: federation/templates/tournaments/tournaments_table.html:110
-msgid "Next"
-msgstr "Далі"
-
-#: federation/templates/clubs/clubs_table.html:91
-#: federation/templates/players/players_table.html:92
-#: federation/templates/seasons/players_list.html:81
-#: federation/templates/tournaments/player_future_tournaments.html:64
-#: federation/templates/tournaments/player_past_away_tournaments.html:65
-#: federation/templates/tournaments/player_past_tournaments.html:77
-#: federation/templates/tournaments/tournament_teams.html:104
-#: federation/templates/tournaments/tournaments_table.html:111
-msgid "Previous"
-msgstr "Назад"
-
-#: federation/templates/coaches/coaches.html:10
-#: federation/templates/common/menu.html:23 federation/views/coaches.py:21
-msgid "Coaches"
-msgstr "Тренери"
-
 #: federation/templates/common/footer.html:7
-#: federation/templates/common/menu.html:11
-#: federation/templates/main_page.html:9
+#: federation/templates/common/menu.html:8
+#: federation/templates/main_page.html:13
 #: federation/templates/tournaments/tournament_protocol.html:51
-#: federation/views/departments.py:10
+#: federation/views/title_registry.py:71
 msgid "Ukrainian Petanque Federation"
 msgstr "Федерація Петанку України"
 
-#: federation/templates/common/footer.html:12
+#: federation/templates/common/footer.html:11
 msgid "Development"
 msgstr "Розробка"
 
@@ -1297,162 +1392,300 @@ msgid "Ukrainian Petanque Federation Portal"
 msgstr "Портал Федерації петанку України"
 
 #: federation/templates/common/head.html:9
-msgid "Petanque in Ukraine. Current information on competition results, athlete rankings, and the structure of the Ukrainian Petanque Federation."
-msgstr "Петанк в Україні. Актуальна інформація щодо результатів змагань, рейтингу спортсменів та структури Федерації петанку України."
+msgid ""
+"Petanque in Ukraine. Current information on competition results, athlete "
+"rankings, and the structure of the Ukrainian Petanque Federation."
+msgstr ""
+"Петанк в Україні. Актуальна інформація щодо результатів змагань, рейтингу "
+"спортсменів та структури Федерації петанку України."
 
 #: federation/templates/common/head.html:15
-msgid "Ukrainian Petanque Federation portal. Information about the federation, clubs, athletes, and competitions."
-msgstr "Портал Федерації Петанку України. Інформація про Федерацію петанку України, клуби, спортсменів та змагання."
+msgid ""
+"Ukrainian Petanque Federation portal. Information about the federation, "
+"clubs, athletes, and competitions."
+msgstr ""
+"Портал Федерації Петанку України. Інформація про Федерацію петанку України, "
+"клуби, спортсменів та змагання."
 
-#: federation/templates/common/header.html:17
-msgid "This website may use your personal information and cookies to function effectively. Do you agree?"
-msgstr "Цей веб-ресурс може використовувати вашу персональну інформацію та файли cookie для того, щоб функціонувати ефективно. Чи погоджуєтеся ви з цим?"
+#: federation/templates/common/header.html:8
+msgid ""
+"This website may use your personal information and cookies to function "
+"effectively. Do you agree?"
+msgstr ""
+"Цей веб-ресурс може використовувати вашу персональну інформацію та файли "
+"cookie для того, щоб функціонувати ефективно. Чи погоджуєтеся ви з цим?"
 
-#: federation/templates/common/header.html:21
+#: federation/templates/common/header.html:12
 msgid "Yes, I agree"
 msgstr "Так, згоден"
 
-#: federation/templates/common/header.html:24
+#: federation/templates/common/header.html:15
 msgid "No, I do not agree. I want to leave this site"
 msgstr "Ні, не згоден. Я хочу покинути цей сайт"
 
-#: federation/templates/common/menu.html:8
+#: federation/templates/common/menu.html:9
+msgid "FPU"
+msgstr "ФПУ"
+
+#: federation/templates/common/menu.html:13
 msgid "Menu"
 msgstr "Меню"
 
-#: federation/templates/common/menu.html:17
+#: federation/templates/common/menu.html:21
 msgid "Federation"
 msgstr "Федерація"
 
-#: federation/templates/common/menu.html:19
+#: federation/templates/common/menu.html:23
+#: federation/views/title_registry.py:70 federation/views/title_registry.py:72
 msgid "Structure"
 msgstr "Структура"
 
-#: federation/templates/common/menu.html:20
-#: federation/templates/documents/documents.html:10
-#: federation/views/documents.py:24
+#: federation/templates/common/menu.html:24 federation/views/documents.py:32
 msgid "Documents"
 msgstr "Документи"
 
-#: federation/templates/common/menu.html:21
-#: federation/templates/statistics/statistics.html:91
-#: federation/views/clubs.py:11
-msgid "Clubs"
-msgstr "Клуби"
+#: federation/templates/common/menu.html:26
+#: federation/views/title_registry.py:46 federation/views/title_registry.py:48
+msgid "Arbiters"
+msgstr "Арбітри"
 
-#: federation/templates/common/menu.html:24
+#: federation/templates/common/menu.html:27
+#: federation/views/title_registry.py:52 federation/views/title_registry.py:54
+msgid "Coaches"
+msgstr "Тренери"
+
+#: federation/templates/common/menu.html:28
 #: federation/templates/national_teams/national_teams_list.html:5
-#: federation/templatetags/app_filters.py:306
+#: federation/views/title_registry.py:66
 msgid "National teams"
 msgstr "Національні збірні"
 
-#: federation/templates/common/menu.html:25
-#: federation/templates/sport_titles/sport_titles.html:10
-#: federation/views/sport_titles.py:21
+#: federation/templates/common/menu.html:29
+#: federation/views/title_registry.py:58
 msgid "Sports titles"
 msgstr "Спортивні звання"
 
-#: federation/templates/common/menu.html:26 federation/views/records.py:9
+#: federation/templates/common/menu.html:30 federation/views/records.py:9
 msgid "Ukrainian records"
 msgstr "Рекорди України"
 
-#: federation/templates/common/menu.html:28 federation/views/statistics.py:166
+#: federation/templates/common/menu.html:32 federation/views/statistics.py:166
 msgid "Portal statistics"
 msgstr "Статистика порталу"
 
-#: federation/templates/common/menu.html:33
-#: federation/templates/main_page.html:27
-#: federation/templates/players/player.html:28
-#: federation/templates/register/team.html:14
+#: federation/templates/common/menu.html:37
+#: federation/templates/main_page.html:60
+#: federation/templates/register/team.html:13
 #: federation/templates/statistics/statistics.html:45
 #: federation/templates/statistics/statistics.html:96
 #: federation/templates/statistics/statistics.html:116
 #: federation/templates/statistics/statistics.html:139
 #: federation/templates/statistics/statistics.html:167
-#: federation/views/tournaments.py:27 federation/views/tournaments.py:86
+#: federation/templates/tournaments/tournament.html:13
+#: federation/views/tournaments.py:77 federation/views/tournaments.py:1019
 msgid "Competitions"
 msgstr "Змагання"
 
-#: federation/templates/common/menu.html:37
-#: federation/templates/players/player.html:82
+#: federation/templates/common/menu.html:41
 msgid "Upcoming"
 msgstr "Майбутні"
 
-#: federation/templates/common/menu.html:39
-#: federation/templates/common/menu.html:47
-#: federation/templates/main_page.html:32
+#: federation/templates/common/menu.html:42
+#: federation/templates/common/menu.html:50
+#: federation/templates/players/player.html:20
+#: federation/templates/seasons/players_list.html:29
+#: federation/templates/seasons/players_list.html:30
+#: federation/templates/seasons/players_list.html:76
+#: federation/templates/tournaments/player_future_tournaments.html:54
+#: federation/templates/tournaments/player_past_away_tournaments.html:55
+#: federation/templates/tournaments/player_past_tournaments.html:65
+#: federation/templates/tournaments/tournament_teams.html:516
+msgid "All"
+msgstr "Усі"
+
+#: federation/templates/common/menu.html:43
+#: federation/templates/common/menu.html:51
+#: federation/templates/main_page.html:81
 #: federation/templates/players/player_info_panel.html:52
 msgid "Rating competitions"
 msgstr "Рейтингові змагання"
 
-#: federation/templates/common/menu.html:40
-#: federation/templates/common/menu.html:48
+#: federation/templates/common/menu.html:44
+#: federation/templates/common/menu.html:52
 #: federation/templates/players/player_info_panel.html:56
 msgid "International competitions"
 msgstr "Закордонні змагання"
 
-#: federation/templates/common/menu.html:45
+#: federation/templates/common/menu.html:49
+#: federation/templates/tournaments/tournament_summary.html:165
 msgid "Results"
 msgstr "Результати"
 
-#: federation/templates/common/menu.html:53
+#: federation/templates/common/menu.html:57
+#: federation/templates/main_page.html:71
 msgid "Calendar"
 msgstr "Календар"
 
-#: federation/templates/common/menu.html:59
+#: federation/templates/common/menu.html:63
 msgid "Rankings"
 msgstr "Рейтинги"
 
-#: federation/templates/common/menu.html:61
+#: federation/templates/common/menu.html:65
 #: federation/templates/statistics/statistics.html:22
 msgid "Overall"
 msgstr "Загальний"
 
-#: federation/templates/common/menu.html:62
-msgid "Inclusive"
-msgstr "Інклюзивний"
-
-#: federation/templates/common/menu.html:64
+#: federation/templates/common/menu.html:67
 msgid "Previous seasons"
 msgstr "Попередні сезони"
 
-#: federation/templates/common/menu.html:80
+#: federation/templates/common/menu.html:83
 #: federation/templates/profile.html:13
 msgid "Profile"
 msgstr "Профіль"
 
-#: federation/templates/common/menu.html:81
+#: federation/templates/common/menu.html:84
 msgid "Log out"
 msgstr "Вийти"
 
-#: federation/templates/common/menu.html:84
+#: federation/templates/common/menu.html:87
 msgid "Additional options"
 msgstr "Додаткові можливості"
 
-#: federation/templates/common/menu.html:85
+#: federation/templates/common/menu.html:88
 msgid "Admin panel"
 msgstr "Адмін панель"
 
-#: federation/templates/common/menu.html:90 federation/templates/login.html:32
+#: federation/templates/common/menu.html:93 federation/templates/login.html:32
 #: federation/templates/password_reset/complete.html:10
 msgid "Log in"
 msgstr "Увійти"
 
-#: federation/templates/common/menu.html:97
+#: federation/templates/common/menu.html:94 federation/templates/login.html:37
+#: federation/templates/tournaments/tournament_summary.html:159
+#: federation/templatetags/app_filters.py:974
+#: federation/templatetags/app_filters.py:1033 federation/tests.py:350
+msgid "Register"
+msgstr "Реєстрація"
+
+#: federation/templates/common/menu.html:101
 msgid "Find an athlete, club, or competition"
 msgstr "Знайти спортсмена, клуб або змагання"
 
-#: federation/templates/common/menu.html:103
+#: federation/templates/common/menu.html:101
+#: federation/templates/common/menu.html:102
+#: federation/templates/tournaments/player_future_tournaments.html:70
+#: federation/templates/tournaments/player_past_away_tournaments.html:71
+#: federation/templates/tournaments/player_past_tournaments.html:83
+#: federation/templates/tournaments/tournament_teams.html:551
+msgid "Search"
+msgstr "Пошук"
+
+#: federation/templates/common/menu.html:113
+#: federation/templates/common/menu.html:114
 msgid "Language"
 msgstr "Мова"
 
-#: federation/templates/common/menu.html:140
+#: federation/templates/common/menu.html:138
 msgid "Light theme"
 msgstr "Світла тема"
 
-#: federation/templates/common/menu.html:141
+#: federation/templates/common/menu.html:139
 msgid "Dark theme"
 msgstr "Темна тема"
+
+#: federation/templates/documents/documents.html:9
+msgid "Документи"
+msgstr "Документи"
+
+#: federation/templates/documents/documents.html:10
+msgid ""
+"Офіційні документи Федерації петанку України. Правила, регламенти, рішення "
+"та інші важливі матеріали."
+msgstr "Офіційні документи Федерації петанку України. Правила, регламенти, рішення та інші важливі матеріали."
+
+#: federation/templates/documents/documents.html:17
+msgid "Категорії документів"
+msgstr "Категорії документів"
+
+#: federation/templates/documents/documents.html:20
+msgid "Всі"
+msgstr "Всі"
+
+#: federation/templates/documents/documents.html:37
+msgid "Пошук документів..."
+msgstr "Пошук документів..."
+
+#: federation/templates/documents/documents.html:44
+msgid "За датою (нові)"
+msgstr "За датою (нові)"
+
+#: federation/templates/documents/documents.html:45
+msgid "За датою (старі)"
+msgstr "За датою (старі)"
+
+#: federation/templates/documents/documents.html:47
+msgid "Вигляд документів"
+msgstr "Вигляд документів"
+
+#: federation/templates/documents/documents.html:51
+#: federation/templates/documents/documents.html:53
+msgid "Картки"
+msgstr "Картки"
+
+#: federation/templates/documents/documents.html:59
+#: federation/templates/documents/documents.html:61
+msgid "Рядки"
+msgstr "Рядки"
+
+#: federation/templates/documents/documents.html:69
+msgid "Всі роки"
+msgstr "Всі роки"
+
+#: federation/templates/documents/documents.html:104
+msgid "Новий"
+msgstr "Новий"
+
+#: federation/templates/documents/documents.html:107
+#: federation/templates/documents/documents.html:154
+msgid "Завантажити"
+msgstr "Завантажити"
+
+#: federation/templates/documents/documents.html:121
+msgid "Нічого не знайдено"
+msgstr "Нічого не знайдено"
+
+#: federation/templates/documents/documents.html:122
+msgid "Спробуйте змінити пошуковий запит або обрати інший рік."
+msgstr "Спробуйте змінити пошуковий запит або обрати інший рік."
+
+#: federation/templates/documents/documents.html:128
+msgid "Показати ще"
+msgstr "Показати ще"
+
+#: federation/templates/documents/documents.html:144
+msgid "Популярні документи"
+msgstr "Популярні документи"
+
+#: federation/templates/documents/documents.html:163
+msgid "Поки немає даних"
+msgstr "Поки немає даних"
+
+#: federation/templates/documents/documents.html:165
+msgid "Переглянути всі"
+msgstr "Переглянути всі"
+
+#: federation/templates/documents/documents.html:173
+msgid "Не знайшли потрібний документ?"
+msgstr "Не знайшли потрібний документ?"
+
+#: federation/templates/documents/documents.html:174
+msgid "Зверніться до нас, і ми допоможемо знайти потрібну інформацію."
+msgstr "Зверніться до нас, і ми допоможемо знайти потрібну інформацію."
+
+#: federation/templates/documents/documents.html:180
+msgid "Зв'язатись з нами"
+msgstr "Зв'язатись з нами"
 
 #: federation/templates/email_confirm/email_body.html:6
 #: federation/templates/password_reset/email_body.html:6
@@ -1491,16 +1724,21 @@ msgstr "Підтвердження email"
 
 #: federation/templates/email_confirm/prompt.html:12
 msgid "Email sent. Check your inbox and follow the link to confirm your email."
-msgstr "Лист надіслано! Перевірте пошту та перейдіть за посиланням для підтвердження email."
+msgstr ""
+"Лист надіслано! Перевірте пошту та перейдіть за посиланням для підтвердження "
+"email."
 
 #: federation/templates/email_confirm/prompt.html:16
 #, python-format
-msgid "Confirmation for %(email)s is still pending. You can send the email again."
-msgstr "Підтвердження для %(email)s ще очікується. Ви можете надіслати лист повторно."
+msgid ""
+"Confirmation for %(email)s is still pending. You can send the email again."
+msgstr ""
+"Підтвердження для %(email)s ще очікується. Ви можете надіслати лист повторно."
 
 #: federation/templates/email_confirm/prompt.html:21
 msgid "Please provide your email for password recovery and notifications."
-msgstr "Для відновлення паролю та отримання сповіщень, будь ласка, вкажіть ваш email."
+msgstr ""
+"Для відновлення паролю та отримання сповіщень, будь ласка, вкажіть ваш email."
 
 #: federation/templates/email_confirm/prompt.html:37
 msgid "Send confirmation"
@@ -1527,6 +1765,18 @@ msgstr "Продовжити"
 msgid "Choose a new photo"
 msgstr "Обрати нову фотографію"
 
+#: federation/templates/forms/profile/insurance_status.html:4
+msgid "Valid until"
+msgstr "Дійсне до"
+
+#: federation/templates/forms/profile/insurance_status.html:6
+msgid "Expired"
+msgstr "Прострочено"
+
+#: federation/templates/forms/profile/insurance_status.html:9
+msgid "No insurance on file"
+msgstr "Страхування відсутнє"
+
 #: federation/templates/login.html:9 federation/templates/profile.html:18
 msgid "Authorization"
 msgstr "Авторизація"
@@ -1543,139 +1793,119 @@ msgstr "Введіть пароль"
 msgid "Forgot password?"
 msgstr "Забули пароль?"
 
-#: federation/templates/main_page.html:9
-msgid "official portal"
-msgstr "офіційний портал"
+#: federation/templates/main_page.html:16
+msgid ""
+"Official portal for competitions, rankings, clubs, athletes, and federation "
+"updates."
+msgstr ""
+"Офіційний портал для змагань, рейтингів, клубів, спортсменів та новин "
+"федерації."
 
-#: federation/templates/main_page.html:12
-msgid "Let us play petanque in Ukraine and <strong>win</strong>!"
-msgstr "Граймо в петанк в Україні та <strong>перемагаймо</strong>!"
-
-#: federation/templates/main_page.html:15
-msgid "Welcome to the official portal of the Ukrainian Petanque Federation. Here you will find current information about the federation, competitions, athletes, clubs, and more. Learn about upcoming competitions and join the world of petanque!"
-msgstr "Ласкаво просимо до офіційного порталу Федерації Петанку України! Тут ви знайдете актуальну інформацію щодо роботи та структури Федерації, змагань, спортсменів, клубів та ін. Дізнайся більше про найближчі змагання та приєднуйся до світу петанку!"
-
-#: federation/templates/main_page.html:15
-msgid "Official portal for competitions, rankings, clubs, athletes, and federation updates."
-msgstr "Офіційний портал для змагань, рейтингів, клубів, спортсменів та новин федерації."
-
-#: federation/templates/main_page.html:18
+#: federation/templates/main_page.html:19
 msgid "Portal highlights"
 msgstr "Основне на порталі"
 
-#: federation/templates/main_page.html:117
-msgid "Find upcoming tournaments, register your team, and follow official rating events."
-msgstr "Знаходьте майбутні турніри, реєструйте команду та стежте за офіційними рейтинговими подіями."
+#: federation/templates/main_page.html:25
+msgid "Let us play petanque in Ukraine and <strong>win</strong>!"
+msgstr "Граймо в петанк в Україні та <strong>перемагаймо</strong>!"
 
-#: federation/templates/main_page.html:122
+#: federation/templates/main_page.html:34
+msgid "Find current federation news, competitions, athletes, clubs, and more."
+msgstr ""
+"Знаходь актуальні новини федерації, змагання, спортсменів, клуби та інше."
+
+#: federation/templates/main_page.html:43
+#, python-format
+msgid ""
+"Ready to throw boules? Start now — <a href=\"%(register_url)s\" class=\"fw-"
+"bold text-decoration-none\">register</a> and choose <a "
+"href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</"
+"a>."
+msgstr ""
+"Готовий кидати кулі? Розпочни зараз — <a href=\"%(register_url)s\" "
+"class=\"fw-bold text-decoration-none\">зареєструйся</a> та обери <a "
+"href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">клуб поблизу</"
+"a>."
+
+#: federation/templates/main_page.html:61
+msgid ""
+"Find upcoming tournaments, register your team, and follow official rating "
+"events."
+msgstr ""
+"Знаходьте майбутні турніри, реєструйте команду та стежте за офіційними "
+"рейтинговими подіями."
+
+#: federation/templates/main_page.html:66
 msgid "All competitions"
 msgstr "Усі змагання"
 
-#: federation/templates/main_page.html:139
-msgid "Official tournaments that affect Ukrainian pétanque ratings."
-msgstr "Офіційні турніри, що впливають на українські рейтинги з петанку."
-
-#: federation/templates/main_page.html:142
+#: federation/templates/main_page.html:84
 msgid "View all rating competitions"
 msgstr "Переглянути всі рейтингові змагання"
 
-#: federation/templates/main_page.html:154
+#: federation/templates/main_page.html:88
+msgid "Official tournaments that affect Ukrainian pétanque ratings."
+msgstr "Офіційні турніри, що впливають на українські рейтинги з петанку."
+
+#: federation/templates/main_page.html:98
 msgid "Non-rating competitions"
 msgstr "Нерейтингові змагання"
 
-#: federation/templates/main_page.html:156
-msgid "Open, club, training and community tournaments."
-msgstr "Відкриті, клубні, тренувальні та громадські турніри."
-
-#: federation/templates/main_page.html:159
+#: federation/templates/main_page.html:101
 msgid "View all non-rating competitions"
 msgstr "Переглянути всі нерейтингові змагання"
 
-#: federation/templates/main_page.html:175
-msgid "Leading players of Ukraine with the highest ratings."
-msgstr "Провідні гравці України з найвищими рейтингами."
+#: federation/templates/main_page.html:105
+msgid "Open, club, training and community tournaments."
+msgstr "Відкриті, клубні, тренувальні та громадські турніри."
 
-#: federation/templates/main_page.html:179
-msgid "View all athletes"
-msgstr "Переглянути всіх спортсменів"
-
-#: federation/templates/main_page.html:184
-msgid "Athlete ranking groups"
-msgstr "Групи рейтингу спортсменів"
-
-#: federation/templates/main_page.html:213
-msgid "Go to slide"
-msgstr "Перейти до слайда"
-
-#: federation/templates/main_page.html:27
-msgid "Find current federation news, competitions, athletes, clubs, and more."
-msgstr "Знаходь актуальні новини федерації, змагання, спортсменів, клуби та інше."
-
-#: federation/templates/main_page.html:18
-#, python-format
-msgid "Ready to throw boules? Start now — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">register</a> and choose <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">a nearby club</a>."
-msgstr "Готовий кидати кулі? Розпочни зараз — <a href=\"%(register_url)s\" class=\"fw-bold text-decoration-none\">зареєструйся</a> та обери <a href=\"%(clubs_url)s\" class=\"fw-bold text-decoration-none\">клуб поблизу</a>."
-
-#: federation/templates/main_page.html:41
-msgid "Nearest upcoming"
-msgstr "Найближчі"
-
-#: federation/templates/main_page.html:47
+#: federation/templates/main_page.html:118
 msgid "Top Ukrainian athletes"
 msgstr "Найкращі українські спортсмени"
 
-#: federation/templates/main_page.html:52
-msgid "Men"
-msgstr "Чоловіки"
+#: federation/templates/main_page.html:119
+msgid "Leading players of Ukraine with the highest ratings."
+msgstr "Провідні гравці України з найвищими рейтингами."
 
-#: federation/templates/main_page.html:60
-msgid "Women"
-msgstr "Жінки"
+#: federation/templates/main_page.html:123
+msgid "View all athletes"
+msgstr "Переглянути всіх спортсменів"
 
-#: federation/templates/main_page.html:69
+#: federation/templates/main_page.html:128
+msgid "Athlete ranking groups"
+msgstr "Групи рейтингу спортсменів"
+
+#: federation/templates/main_page.html:136
 msgid "Veterans"
 msgstr "Ветерани"
 
-#: federation/templates/main_page.html:78
+#: federation/templates/main_page.html:139
 msgid "Juniors and youth"
 msgstr "Юніори та молодь"
 
-#: federation/templates/main_page/players_list.html:31
-#: federation/templates/players/player_info_panel.html:40
-#: federation/templates/players/player_short_info_panel.html:41
-#: federation/templates/players/players_cards.html:32
-msgid "Current ranking"
-msgstr "Поточний рейтинг"
-
-#: federation/templates/main_page/players_list.html:41
-#: federation/templates/players/player_info_panel.html:48
-#: federation/templates/players/player_short_info_panel.html:51
-#: federation/templates/players/players_cards.html:42
-#: federation/templates/players/players_table.html:47
-msgid "Rating power"
-msgstr "Рейтингова сила"
-
-#: federation/templates/main_page/players_list.html:35
-msgid "Player ranking details"
-msgstr "Деталі рейтингу гравця"
-
-#: federation/templates/main_page/players_list.html:57
-msgid "No athletes to show yet."
-msgstr "Поки немає спортсменів для показу."
+#: federation/templates/main_page.html:160
+msgid "Go to slide"
+msgstr "Перейти до слайда"
 
 #: federation/templates/main_page/tournaments_list.html:5
 msgid "Previous competitions"
 msgstr "Попередні змагання"
 
-#: federation/templates/main_page/tournaments_list.html:69
-msgid "No upcoming competitions yet."
-msgstr "Поки немає майбутніх змагань."
+#: federation/templates/main_page/tournaments_list.html:16
+msgid "Competition details"
+msgstr "Деталі змагання"
 
-#: federation/templates/main_page/tournaments_list.html:77
-msgid "Next competitions"
-msgstr "Наступні змагання"
+#: federation/templates/main_page/tournaments_list.html:44
+#: federation/templates/statistics/statistics.html:115
+#: federation/templates/tournaments/tournament_protocol.html:90
+msgid "Organizer"
+msgstr "Організатор"
 
-#: federation/templates/main_page/tournaments_list.html:54
+#: federation/templates/main_page/tournaments_list.html:67
+msgid "Registered teams count"
+msgstr "Кількість зареєстрованих команд"
+
+#: federation/templates/main_page/tournaments_list.html:70
 #, python-format
 msgid "%(counter)s team"
 msgid_plural "%(counter)s teams"
@@ -1683,21 +1913,13 @@ msgstr[0] "%(counter)s команда"
 msgstr[1] "%(counter)s команди"
 msgstr[2] "%(counter)s команд"
 
-#: federation/templates/main_page/tournaments_list.html:35
-#: federation/templates/tournaments/player_past_away_tournaments.html:32
-#: federation/templates/tournaments/player_past_tournaments.html:32
-#: federation/templates/tournaments/tournaments_table.html:68
-msgid "Number of teams"
-msgstr "Кількість команд"
+#: federation/templates/main_page/tournaments_list.html:91
+msgid "No upcoming competitions yet."
+msgstr "Поки немає майбутніх змагань."
 
-#: federation/templates/main_page/tournaments_list.html:67
-msgid "Registered teams count"
-msgstr "Кількість зареєстрованих команд"
-
-#: federation/templates/main_page/tournaments_list.html:43
-#: federation/templates/tournaments/tournaments_table.html:51
-msgid "Competition power"
-msgstr "Сила змагань"
+#: federation/templates/main_page/tournaments_list.html:98
+msgid "Next competitions"
+msgstr "Наступні змагання"
 
 #: federation/templates/password_reset/complete.html:8
 msgid "Password changed"
@@ -1707,15 +1929,15 @@ msgstr "Пароль змінено"
 msgid "Your password has been changed successfully."
 msgstr "Ваш пароль успішно змінено."
 
-#: federation/templates/password_reset/confirm.html:14
+#: federation/templates/password_reset/confirm.html:48
 msgid "Save new password"
 msgstr "Зберегти новий пароль"
 
-#: federation/templates/password_reset/confirm.html:18
+#: federation/templates/password_reset/confirm.html:52
 msgid "The password reset link is invalid or expired."
 msgstr "Посилання для відновлення паролю недійсне або протерміноване."
 
-#: federation/templates/password_reset/confirm.html:20
+#: federation/templates/password_reset/confirm.html:54
 msgid "Request a new link"
 msgstr "Запитати нове посилання"
 
@@ -1744,138 +1966,341 @@ msgid "Password recovery"
 msgstr "Відновлення паролю"
 
 #: federation/templates/password_reset/request.html:12
-msgid "This email was not found in the system. You may not have added an email to your profile yet."
-msgstr "Такого email не знайдено в системі. Можливо, ви ще не додали email до свого профілю."
+msgid ""
+"This email was not found in the system. You may not have added an email to "
+"your profile yet."
+msgstr ""
+"Такого email не знайдено в системі. Можливо, ви ще не додали email до свого "
+"профілю."
 
 #: federation/templates/password_reset/request.html:13
 msgid "Contact the administrators for help:"
 msgstr "Сконтактуйтеся з адміністраторами для допомоги:"
 
-#: federation/templates/password_reset/request.html:14
-msgid "Federation Telegram chat"
-msgstr "Telegram чат федерації"
-
-#: federation/views/password_reset.py
-msgid "your.email@example.com"
-msgstr "ваш.email@example.com"
-
-#: federation/templates/password_reset/request.html
+#: federation/templates/password_reset/request.html:27
 msgid "If you don't remember your email, contact the administration via"
 msgstr "Якщо ви не пам'ятаєте свій email, зв'яжіться з адміністрацією через"
 
-#: federation/templates/password_reset/request.html:27
+#: federation/templates/password_reset/request.html:31
 msgid "Send recovery email"
 msgstr "Надіслати лист для відновлення"
 
-#: federation/templates/players/player.html:16
-msgid "Athlete information"
-msgstr "Інформація про спортсмена"
+#: federation/templates/players/_player_rating_card.html:4
+#: federation/templates/players/players_table.html:204
+#: federation/templates/seasons/players_list.html:57
+msgid "Show athlete"
+msgstr "Показати спортсмена"
 
-#: federation/templates/players/player.html:40
-msgid "Additional information"
-msgstr "Додаткова інформація"
+#: federation/templates/players/_player_rating_card.html:52
+#: federation/templates/players/player_info_panel.html:40
+#: federation/templates/players/player_short_info_panel.html:41
+#: federation/templates/players/players_cards.html:32
+msgid "Current ranking"
+msgstr "Поточний рейтинг"
 
-#: federation/templates/players/player.html:58
-msgid "Ukrainian"
-msgstr "Українські"
+#: federation/templates/players/_player_rating_card.html:70
+#: federation/templates/players/_player_rating_card.html:94
+msgid "Player ranking details"
+msgstr "Деталі рейтингу гравця"
 
-#: federation/templates/players/player.html:70
-msgid "International"
-msgstr "Іноземні"
+#: federation/templates/players/_player_rating_card.html:87
+#: federation/templates/players/player.html:218
+#: federation/templates/players/player.html:322
+#: federation/templates/players/player.html:416
+#: federation/templates/players/players_table.html:36
+#: federation/templates/players/players_table.html:122
+#: federation/templates/players/players_table.html:127
+#: federation/templates/tournaments/player_future_tournaments.html:15
+#: federation/templates/tournaments/player_past_tournaments.html:16
+#: federation/templates/tournaments/pure_teams_list.html:24
+#: federation/templates/tournaments/tournament_teams.html:67
+#: federation/templates/tournaments/tournament_teams.html:207
+#: federation/templates/tournaments/tournament_teams.html:375
+#: federation/templatetags/app_filters.py:834
+msgid "Power"
+msgstr "Сила"
 
+#: federation/templates/players/_player_rating_card.html:99
+#: federation/templates/players/player.html:44
 #: federation/templates/players/player_info_panel.html:21
-#: federation/templates/players/players_table.html:15
-#: federation/templatetags/app_filters.py:225
-#: federation/templatetags/app_filters.py:226
+#: federation/templates/players/players_table.html:48
+#: federation/templates/players/players_table.html:160
+#: federation/templates/players/players_table.html:166
+#: federation/templatetags/app_filters.py:304
+#: federation/templatetags/app_filters.py:305
 msgid "License"
 msgstr "Ліцензія"
 
+#: federation/templates/players/player.html:9
+msgid ""
+"Official place in the current player rating among active licensed players. A "
+"lower place number means a higher rating."
+msgstr ""
+"Офіційне місце у поточному рейтингу серед спортсменів з активною ліцензією. "
+"Менший номер місця означає вищий рейтинг."
+
+#: federation/templates/players/player.html:10
+msgid ""
+"Current rating points earned from the player's strongest recent rating "
+"tournament results."
+msgstr ""
+"Поточні рейтингові бали, набрані за найсильніші нещодавні результати "
+"спортсмена у рейтингових змаганнях."
+
+#: federation/templates/players/player.html:11
+msgid ""
+"Power summarizes the player's strongest recent rating results. It is used to "
+"estimate team and tournament strength."
+msgstr ""
+"Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її "
+"використовують для оцінки сили команд і змагань."
+
+#: federation/templates/players/player.html:12
+msgid "Finished competitions in the current year that count toward the rating."
+msgstr "Завершені змагання поточного року, які враховуються у рейтингу."
+
+#: federation/templates/players/player.html:13
+msgid ""
+"International competitions this player played in during the current year."
+msgstr "Закордонні змагання, у яких спортсмен грав протягом поточного року."
+
+#: federation/templates/players/player.html:14
+msgid ""
+"All competitions this player played in during the current year, including "
+"rating, B, and international competitions."
+msgstr ""
+"Усі змагання, у яких спортсмен грав протягом поточного року, включно з "
+"рейтинговими, B-турнірами та закордонними змаганнями."
+
+#: federation/templates/players/player.html:15
+#: federation/templates/tournaments/tournaments_table.html:20
+#: federation/templatetags/app_filters.py:801
+msgid ""
+"Tournament power affects how many rating points results are worth. It "
+"estimates the strength of the tournament field from the strongest teams that "
+"played; higher power means the same place gives more rating points."
+msgstr ""
+"Сила змагання впливає на те, скільки рейтингових балів дає результат. Вона "
+"оцінює силу складу змагання за найсильнішими командами, які грали; вища сила "
+"означає, що те саме місце дає більше рейтингових балів."
+
+#: federation/templates/players/player.html:16
+#: federation/templatetags/app_filters.py:810
+msgid ""
+"Team power in this tournament is calculated from the power of the players in "
+"this player's team."
+msgstr ""
+"Сила команди у цьому змаганні розраховується з показників сили гравців у "
+"команді цього спортсмена."
+
+#: federation/templates/players/player.html:17
+msgid "Rating points earned by this player's team in this tournament."
+msgstr ""
+"Рейтингові бали, які команда цього спортсмена набрала у цьому змаганні."
+
+#: federation/templates/players/player.html:18
+#: federation/templates/tournaments/player_future_tournaments.html:4
+#: federation/templates/tournaments/player_past_away_tournaments.html:4
+#: federation/templates/tournaments/player_past_tournaments.html:4
+msgid "Competitions per page"
+msgstr "Змагань на сторінку"
+
+#: federation/templates/players/player.html:19
+#: federation/templates/tournaments/player_future_tournaments.html:5
+#: federation/templates/tournaments/player_past_away_tournaments.html:5
+#: federation/templates/tournaments/player_past_tournaments.html:5
+msgid "Competition pagination"
+msgstr "Пагінація змагань"
+
+#: federation/templates/players/player.html:25
+msgid "Players"
+msgstr "Спортсмени"
+
+#: federation/templates/players/player.html:27
+msgid "Player profile"
+msgstr "Профіль спортсмена"
+
+#: federation/templates/players/player.html:49
+#: federation/templates/players/players_table.html:171
+#: federation/templatetags/app_filters.py:304
+msgid "No license"
+msgstr "Без ліцензії"
+
+#: federation/templates/players/player.html:69
+msgid "National team player"
+msgstr "Гравець збірної"
+
+#: federation/templates/players/player.html:86
+msgid "Details"
+msgstr "Деталі"
+
+#: federation/templates/players/player.html:94
+#: federation/templates/players/player_seasons.html:16
+#: federation/templates/seasons/players_list.html:19
+msgid "Age category"
+msgstr "Вікова категорія"
+
+#: federation/templates/players/player.html:161
+msgid "Region"
+msgstr "Регіон"
+
+#: federation/templates/players/player.html:183
+msgid "Player statistics"
+msgstr "Статистика спортсмена"
+
+#: federation/templates/players/player.html:190
+#: federation/templates/players/player_seasons.html:28
+#: federation/templates/seasons/players_list.html:38
+msgid "Ranking place"
+msgstr "Місце у рейтингу"
+
+#: federation/templates/players/player.html:231
+msgid "Rating this year"
+msgstr "Рейтингові цього року"
+
+#: federation/templates/players/player.html:244
+msgid "International this year"
+msgstr "Закордонні цього року"
+
+#: federation/templates/players/player.html:257
+msgid "This year competitions"
+msgstr "Змагання цього року"
+
+#: federation/templates/players/player.html:277
+msgid "Tournaments"
+msgstr "Змагання"
+
+#: federation/templates/players/player.html:282
+msgid "Sort tournaments"
+msgstr "Сортування змагань"
+
+#: federation/templates/players/player.html:283
+#: federation/templates/tournaments/tournament.html:27
+msgid "Sort"
+msgstr "Сортувати"
+
+#: federation/templates/players/player.html:284
+#: federation/templates/players/player.html:306
+msgid "Sort by date"
+msgstr "Сортувати за датою"
+
+#: federation/templates/players/player.html:289
+#: federation/templates/players/player.html:314
+msgid "Sort by place"
+msgstr "Сортувати за місцем"
+
+#: federation/templates/players/player.html:294
+#: federation/templates/players/player.html:343
+msgid "Sort by points"
+msgstr "Сортувати за балами"
+
+#: federation/templates/players/player.html:319
+#: federation/templates/players/player.html:405
+#: federation/templates/tournaments/player_future_tournaments.html:14
+#: federation/templates/tournaments/player_past_away_tournaments.html:14
+#: federation/templates/tournaments/player_past_tournaments.html:14
+msgid "Team"
+msgstr "Команда"
+
+#: federation/templates/players/player.html:325
+msgid "Power column team"
+msgstr "Команди"
+
+#: federation/templates/players/player.html:332
+msgid "Power column tournament"
+msgstr "Турніру"
+
+#: federation/templates/players/player.html:528
+#: federation/templates/tournaments/player_future_tournaments.html:66
+#: federation/templates/tournaments/player_past_away_tournaments.html:67
+#: federation/templates/tournaments/player_past_tournaments.html:79
+msgid "No competitions found"
+msgstr "Змагань не знайдено"
+
+#: federation/templates/players/player.html:576
+#: federation/templates/tournaments/player_future_tournaments.html:67
+#: federation/templates/tournaments/player_past_away_tournaments.html:68
+#: federation/templates/tournaments/player_past_tournaments.html:80
+msgid "Showing _START_ to _END_ of _TOTAL_ competitions"
+msgstr "Показано _START_ - _END_ з _TOTAL_ змагань"
+
+#: federation/templates/players/player.html:577
+#: federation/templates/tournaments/player_future_tournaments.html:68
+#: federation/templates/tournaments/player_past_away_tournaments.html:69
+#: federation/templates/tournaments/player_past_tournaments.html:81
+msgid "Showing 0 of 0 competitions"
+msgstr "Показано 0 з 0 змагань"
+
 #: federation/templates/players/player_info_panel.html:29
-#: federation/templates/players/players_table.html:14
+#: federation/templates/players/players.html:52
+#: federation/templates/players/players_table.html:8
+#: federation/templates/players/players_table.html:45
+#: federation/templates/players/players_table.html:149
+#: federation/templates/seasons/seasons.html:60
 msgid "Age"
 msgstr "Вік"
+
+#: federation/templates/players/player_info_panel.html:48
+#: federation/templates/players/player_short_info_panel.html:51
+#: federation/templates/players/players_cards.html:42
+msgid "Rating power"
+msgstr "Рейтингова сила"
 
 #: federation/templates/players/player_info_panel.html:60
 msgid "Total competitions"
 msgstr "Всього змагань"
 
-#: federation/templates/players/player_seasons.html:16
-#: federation/templates/seasons/players_list.html:15
-msgid "Age category"
-msgstr "Вікова категорія"
-
-#: federation/templates/players/player_seasons.html:28
-#: federation/templates/seasons/players_list.html:34
-msgid "Ranking place"
-msgstr "Місце у рейтингу"
-
 #: federation/templates/players/player_seasons.html:32
 msgid "Total athletes"
 msgstr "Усього спортсменів"
 
-#: federation/templates/players/players_table.html:9
-#: federation/templates/seasons/players_list.html:12
-msgid "Ranking"
-msgstr "Рейтинг"
-
-#: federation/templates/players/players_table.html:11
-#: federation/templates/tournaments/player_future_tournaments.html:11
-#: federation/templates/tournaments/player_past_tournaments.html:12
-#: federation/templates/tournaments/pure_teams_list.html:24
-#: federation/templates/tournaments/tournament_teams.html:13
-#: federation/templates/tournaments/tournaments_table.html:12
-msgid "Power"
-msgstr "Сила"
-
-#: federation/templates/players/players_table.html:17
-#: federation/templates/seasons/players_list.html:17
-#: federation/templates/tournaments/tournaments_table.html:14
-msgid "Actions"
-msgstr "Дії"
-
-#: federation/templates/players/players.html:17
+#: federation/templates/players/players.html:19
 msgid "Official athlete ranking by points and power"
 msgstr "Офіційний рейтинг спортсменів за балами та силою"
 
-#: federation/templates/players/players.html:18
-msgid "Rankings are based on current official federation rating metrics."
-msgstr "Рейтинг базується на поточних офіційних рейтингових показниках Федерації."
+#: federation/templates/players/players.html:20
+msgid ""
+"This table shows the official athlete rating. Points come from tournament "
+"results; power summarizes the athlete's strongest recent rating results and "
+"helps determine how strong teams and tournaments are."
+msgstr ""
+"Ця таблиця показує офіційний рейтинг спортсменів. Бали нараховуються за "
+"результати змагань; сила підсумовує найсильніші нещодавні рейтингові "
+"результати спортсмена і допомагає визначати силу команд та змагань."
 
-#: federation/templates/players/players.html:24
+#: federation/templates/players/players.html:32
+#: federation/templates/seasons/seasons.html:40
 msgid "Search athletes"
 msgstr "Пошук спортсменів"
 
-#: federation/templates/players/players.html:28
-msgid "Athlete filters"
-msgstr "Фільтри спортсменів"
-
-#: federation/templates/players/players_table.html:4
-msgid "All clubs"
-msgstr "Усі клуби"
-
-#: federation/templates/players/players_table.html:5
-msgid "All age categories"
-msgstr "Усі вікові категорії"
-
-#: federation/templates/players/players_table.html:6
-msgid "All athletes"
-msgstr "Усі спортсмени"
-
-#: federation/templates/players/players_table.html:9
-#: federation/templates/players/players_table.html:22
-#: federation/templates/players/players_table.html:75
-msgid "Sex"
-msgstr "Стать"
-
+#: federation/templates/players/players.html:35
 #: federation/templates/players/players_table.html:10
-msgid "Search by name, club, license, sex, age, points..."
-msgstr "Пошук за ім'ям, клубом, ліцензією, статтю, віком, балами..."
-
-#: federation/templates/players/players_table.html:10
+#: federation/templates/seasons/seasons.html:43
 msgid "Search by name or club..."
 msgstr "Пошук за ім'ям або клубом..."
 
+#: federation/templates/players/players.html:43
+#: federation/templates/players/players_table.html:4
+#: federation/templates/seasons/seasons.html:51
+msgid "All clubs"
+msgstr "Усі клуби"
+
+#: federation/templates/players/players.html:53
+#: federation/templates/players/players_table.html:5
+#: federation/templates/seasons/seasons.html:61
+msgid "All age categories"
+msgstr "Усі вікові категорії"
+
+#: federation/templates/players/players.html:63
+#: federation/templates/players/players_table.html:6
+#: federation/templates/seasons/seasons.html:71
+msgid "All athletes"
+msgstr "Усі спортсмени"
+
 #: federation/templates/players/players_table.html:11
+#: federation/templates/players/players_table.html:263
+#: federation/templates/players/players_table.html:264
+#: federation/templates/seasons/players_list.html:4
 msgid "Athletes per page"
 msgstr "Спортсменів на сторінку"
 
@@ -1883,108 +2308,364 @@ msgstr "Спортсменів на сторінку"
 msgid "all"
 msgstr "усіх"
 
-#: federation/templates/players/players_table.html:19
-#: federation/templates/players/players_table.html:37
+#: federation/templates/players/players_table.html:13
+msgid ""
+"Rating points are earned from tournament results. More points means a higher "
+"place in the official rating."
+msgstr ""
+"Рейтингові бали нараховуються за результати змагань. Більше балів означає "
+"вище місце в офіційному рейтингу."
+
+#: federation/templates/players/players_table.html:14
+msgid ""
+"Power summarizes an athlete's strongest recent rating results. It is used to "
+"estimate how strong teams and tournaments are."
+msgstr ""
+"Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її "
+"використовують, щоб оцінювати силу команд і змагань."
+
+#: federation/templates/players/players_table.html:15
+msgid ""
+"License shows whether the athlete currently has an active federation license "
+"and displays the license number when available."
+msgstr ""
+"Ліцензія показує, чи має спортсмен активну ліцензію федерації, і відображає "
+"її номер, якщо він доступний."
+
+#: federation/templates/players/players_table.html:22
+#: federation/templates/players/players_table.html:64
+#: federation/templates/seasons/players_list.html:16
+msgid "Ranking"
+msgstr "Рейтинг"
+
+#: federation/templates/players/players_table.html:23
+#: federation/templates/players/players_table.html:70
+#: federation/templates/players/players_table.html:208
 msgid "Athlete"
 msgstr "Спортсмен"
 
-#: federation/templates/players/players_table.html:63
-#: federation/templates/seasons/players_list.html:53
-msgid "Show athlete"
-msgstr "Показати спортсмена"
+#: federation/templates/players/players_table.html:218
+#: federation/templates/seasons/players_list.html:5
+msgid "Athlete pagination"
+msgstr "Пагінація спортсменів"
 
-#: federation/templates/players/players_table.html:82
-#: federation/templates/seasons/players_list.html:71
-msgid "Show _MENU_ athletes per page"
-msgstr "Показати _MENU_ спортсменів на сторінку"
-
-#: federation/templates/players/players_table.html:83
-#: federation/templates/seasons/players_list.html:72
-msgid "No athletes found"
-msgstr "Спортсменів не знайдено"
-
-#: federation/templates/players/players_table.html:84
-#: federation/templates/seasons/players_list.html:73
-msgid "Showing _START_ to _END_ of _TOTAL_ athletes"
-msgstr "Показано _START_ - _END_ з _TOTAL_ спортсменів"
-
-#: federation/templates/players/players_table.html:85
-#: federation/templates/seasons/players_list.html:74
-msgid "Showing 0 of 0 athletes"
-msgstr "Показано 0 з 0 спортсменів"
-
-#: federation/templates/players/players_table.html:86
-#: federation/templates/seasons/players_list.html:75
-msgid "(filtered from _MAX_ athletes)"
-msgstr "(відфільтровано з _MAX_ спортсменів)"
-
-#: federation/templates/players/players_table.html:87
-#: federation/templates/seasons/players_list.html:76
-#: federation/templates/tournaments/tournaments_table.html:106
-msgid "Search:"
-msgstr "Пошук:"
-
-#: federation/templates/register/player.html:10
-#: federation/views/register.py:117
+#: federation/templates/register/player.html:14
+#: federation/views/register.py:133
 msgid "Player registration"
 msgstr "Реєстрація спортсмена"
 
-#: federation/templates/register/player.html:21
-#: federation/templates/register/team.html:38
-msgid "Cannot find a player?"
-msgstr "Не можете знайти спортсмена?"
+#: federation/templates/register/player.html:15
+msgid "Fill in details to add a new player"
+msgstr "Заповніть дані для додавання нового гравця"
 
-#: federation/templates/register/player.html:26
-#: federation/templates/register/team.html:44
-msgid "Please do not add duplicate or non-existent players. First, try searching for the player using both Cyrillic and Latin spelling."
-msgstr "Велике прохання не додавати дублікатів або неіснуючих спортсменів. Спершу спробуйте знайти спортсмена, написавши його дані кирилицею та латиницею."
+#: federation/templates/register/player.html:56
+msgid "Required for Ukrainian players and used in protocols."
+msgstr "Обов'язкове для українських гравців — використовується у протоколах."
 
-#: federation/templates/register/team.html:10 federation/views/register.py:61
-msgid "Team registration"
-msgstr "Реєстрація команди"
+#: federation/templates/register/player.html:66
+msgid "Open calendar"
+msgstr "Відкрити календар"
 
-#: federation/templates/register/team.html:22
-msgid "Registration for this competition is closed."
-msgstr "Реєстрацію на змагання закрито."
+#: federation/templates/register/player.html:71
+msgid "Previous month"
+msgstr "Попередній місяць"
 
-#: federation/templates/register/team.html:42
-#, python-format
-msgid "Not all athletes may appear in search results. If you cannot find an athlete, <a target=\"_blank\" href=\"%(register_player_url)s\" class=\"btn btn-sm btn-success\">add them to the portal</a>."
-msgstr "Не всі спортсмени можуть бути присутні у результатах пошуку. Якщо ви не можете знайти спортсмена, <a target=\"_blank\" href=\"%(register_player_url)s\" class=\"btn btn-sm btn-success\">додайте його на портал</a>."
+#: federation/templates/register/player.html:75
+#: federation/templates/tournaments/calendar.html:32
+msgid "Month"
+msgstr "Місяць"
 
-#: federation/templates/register/team.html:58
-msgid "character"
-msgstr "літеру"
+#: federation/templates/register/player.html:78
+msgid "Next month"
+msgstr "Наступний місяць"
 
-#: federation/templates/register/team.html:59
-#: federation/templates/register/team.html:60
-msgid "characters"
-msgstr "літери"
+#: federation/templates/register/player.html:85
+msgid "Clear"
+msgstr "Очистити"
 
-#: federation/templates/register/team.html:70
-msgid "Please enter"
-msgstr "Будь ласка, введіть"
+#: federation/templates/register/player.html:113
+msgid "Only for players who already have a federation license."
+msgstr "Лише для гравців з ліцензією федерації."
 
-#: federation/templates/register/team.html:70
-msgid "or more characters"
-msgstr "або більше літер"
+#: federation/templates/register/player.html:123
+msgid "Access to personal account (optional fields)."
+msgstr "Доступ до особистого кабінету (необов'язкові поля)."
 
-#: federation/templates/register/team.html:74
-msgid "Please delete"
-msgstr "Будь ласка, видаліть"
+#: federation/templates/register/player.html:152
+msgid ""
+"Email and password allow the player to sign in to the account, register for "
+"competitions, and manage their profile."
+msgstr ""
+"Email і пароль дають змогу гравцю увійти до кабінету, реєструватися на "
+"змагання й керувати профілем."
 
-#: federation/templates/register/team.html:78
-msgid "No athletes found. Enter a first or last name."
-msgstr "Спортсменів не знайдено. Введіть ім'я або прізвище."
+#: federation/templates/register/player.html:160
+#: federation/templates/register/team.html:108
+#: federation/templates/register/team.html:119
+msgid "Register player"
+msgstr "Зареєструвати спортсмена"
 
-#: federation/templates/register/team.html:81
+#: federation/templates/register/player.html:166
+msgid "Player database check"
+msgstr "Перевірка бази спортсменів"
+
+#: federation/templates/register/player.html:172
+msgid "First check the database"
+msgstr "Спершу перевірте базу"
+
+#: federation/templates/register/player.html:173
+msgid ""
+"To avoid creating a duplicate, try finding the player. Search in Cyrillic "
+"and Latin."
+msgstr ""
+"Щоб не створити дублікат — спробуйте знайти спортсмена. Шукайте кирилицею і "
+"латиницею."
+
+#: federation/templates/register/player.html:178
+msgid "First or last name"
+msgstr "Ім'я або прізвище"
+
+#: federation/templates/register/player.html:185
+msgid "e.g. Kozak / Козак"
+msgstr "напр. Козак / Kozak"
+
+#: federation/templates/register/player.html:194
+msgid ""
+"Not found? Then fill in the registration form. After verification, the data "
+"will appear in the federation database."
+msgstr ""
+"Не знайшли? Тоді заповніть реєстраційну форму — після перевірки дані "
+"з'являться в базі федерації."
+
+#: federation/templates/register/player.html:212
+msgid "January"
+msgstr "Січень"
+
+#: federation/templates/register/player.html:213
+msgid "February"
+msgstr "Лютий"
+
+#: federation/templates/register/player.html:214
+msgid "March"
+msgstr "Березень"
+
+#: federation/templates/register/player.html:215
+msgid "April"
+msgstr "Квітень"
+
+#: federation/templates/register/player.html:216
+msgid "May"
+msgstr "Травень"
+
+#: federation/templates/register/player.html:217
+msgid "June"
+msgstr "Червень"
+
+#: federation/templates/register/player.html:218
+msgid "July"
+msgstr "Липень"
+
+#: federation/templates/register/player.html:219
+msgid "August"
+msgstr "Серпень"
+
+#: federation/templates/register/player.html:220
+msgid "September"
+msgstr "Вересень"
+
+#: federation/templates/register/player.html:221
+msgid "October"
+msgstr "Жовтень"
+
+#: federation/templates/register/player.html:222
+msgid "November"
+msgstr "Листопад"
+
+#: federation/templates/register/player.html:223
+msgid "December"
+msgstr "Грудень"
+
+#: federation/templates/register/player.html:226
+msgid "Mon"
+msgstr "Пн"
+
+#: federation/templates/register/player.html:227
+msgid "Tue"
+msgstr "Вт"
+
+#: federation/templates/register/player.html:228
+msgid "Wed"
+msgstr "Ср"
+
+#: federation/templates/register/player.html:229
+msgid "Thu"
+msgstr "Чт"
+
+#: federation/templates/register/player.html:230
+msgid "Fri"
+msgstr "Пт"
+
+#: federation/templates/register/player.html:231
+msgid "Sat"
+msgstr "Сб"
+
+#: federation/templates/register/player.html:232
+msgid "Sun"
+msgstr "Нд"
+
+#: federation/templates/register/player.html:517
+msgid "Found in the database"
+msgstr "Знайдено в базі"
+
+#: federation/templates/register/player.html:518
+msgid "Nothing found. Try another spelling or register a new player."
+msgstr ""
+"Нічого не знайдено. Спробуйте інше написання або зареєструйте нового "
+"спортсмена."
+
+#: federation/templates/register/player.html:519
+#: federation/templates/register/team.html:173
 msgid "Searching..."
 msgstr "Пошук…"
 
-#: federation/templates/seasons/players_list.html:6
+#: federation/templates/register/player.html:520
+msgid "Could not check the database. Try again."
+msgstr "Не вдалося перевірити базу. Спробуйте ще раз."
+
+#: federation/templates/register/player.html:521
+msgid "Open profile"
+msgstr "Відкрити профіль"
+
+#: federation/templates/register/team.html:17
+#: federation/templates/register/team.html:29 federation/views/register.py:72
+msgid "Team registration"
+msgstr "Реєстрація команди"
+
+#: federation/templates/register/team.html:30
+#, python-format
+msgid "Choose the roster for this competition. Team format: %(team_size)s."
+msgstr "Оберіть склад для цього змагання. Формат команди: %(team_size)s."
+
+#: federation/templates/register/team.html:48
+msgid "Choose the captain first. Reserve player fields can be left empty."
+msgstr ""
+"Спочатку оберіть капітана. Поля для запасних гравців можна залишити "
+"порожніми."
+
+#: federation/templates/register/team.html:50
+msgid "Search for an athlete by first or last name in the federation database."
+msgstr "Шукайте спортсмена за ім'ям або прізвищем у базі федерації."
+
+#: federation/templates/register/team.html:86 federation/views/register.py:53
+msgid "Registration for this competition is closed."
+msgstr "Реєстрацію на змагання закрито."
+
+#: federation/templates/register/team.html:90
+msgid "Back to competition"
+msgstr "Повернутися до змагання"
+
+#: federation/templates/register/team.html:95
+msgid "Registration tips"
+msgstr "Підказки для реєстрації"
+
+#: federation/templates/register/team.html:101
+msgid "Check the athlete in the database first"
+msgstr "Спочатку перевірте спортсмена в базі"
+
+#: federation/templates/register/team.html:102
+msgid ""
+"Before creating a new athlete, try searching in both Cyrillic and Latin "
+"spelling."
+msgstr ""
+"Перш ніж створювати нового спортсмена, спробуйте пошук і кирилицею, і "
+"латиницею."
+
+#: federation/templates/register/team.html:109
+msgid "Use this block only when the athlete is missing from search results."
+msgstr ""
+"Використовуйте цей блок лише тоді, коли спортсмена немає в результатах "
+"пошуку."
+
+#: federation/templates/register/team.html:124
+msgid ""
+"Do not create duplicate or non-existent athletes. Add a new athlete only "
+"after carefully checking the database."
+msgstr ""
+"Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового "
+"спортсмена лише після уважної перевірки бази."
+
+#: federation/templates/register/team.html:137
+msgid "character"
+msgstr "літеру"
+
+#: federation/templates/register/team.html:138
+#: federation/templates/register/team.html:139
+msgid "characters"
+msgstr "літери"
+
+#: federation/templates/register/team.html:162
+msgid "Please enter"
+msgstr "Будь ласка, введіть"
+
+#: federation/templates/register/team.html:162
+msgid "or more characters"
+msgstr "або більше літер"
+
+#: federation/templates/register/team.html:166
+msgid "Please delete"
+msgstr "Будь ласка, видаліть"
+
+#: federation/templates/register/team.html:170
+msgid "No athletes found. Enter a first or last name."
+msgstr "Спортсменів не знайдено. Введіть ім'я або прізвище."
+
+#: federation/templates/seasons/players_list.html:9
 #, python-format
 msgid "Year: %(year)s"
 msgstr "Рік: %(year)s"
+
+#: federation/templates/seasons/players_list.html:82
+msgid "No athletes found"
+msgstr "Спортсменів не знайдено"
+
+#: federation/templates/seasons/players_list.html:83
+#: federation/views/players.py:258
+msgid "Showing _START_ to _END_ of _TOTAL_ athletes"
+msgstr "Показано _START_ - _END_ з _TOTAL_ спортсменів"
+
+#: federation/templates/seasons/players_list.html:84
+#: federation/views/players.py:255
+msgid "Showing 0 of 0 athletes"
+msgstr "Показано 0 з 0 спортсменів"
+
+#: federation/templates/seasons/players_list.html:85
+msgid "(filtered from _MAX_ athletes)"
+msgstr "(відфільтровано з _MAX_ спортсменів)"
+
+#: federation/templates/seasons/players_list.html:86
+msgid "Search:"
+msgstr "Пошук:"
+
+#: federation/templates/seasons/seasons.html:13
+#, python-format
+msgid "%(year)s season rating"
+msgstr "Рейтинг сезону %(year)s"
+
+#: federation/templates/seasons/seasons.html:19
+msgid "Historical athlete ranking"
+msgstr "Історичний рейтинг спортсменів"
+
+#: federation/templates/seasons/seasons.html:20
+msgid ""
+"Season rating uses tournament results from the selected calendar year: "
+"January 1 through December 31."
+msgstr ""
+"Рейтинг сезону використовує результати турнірів за обраний календарний рік: "
+"з 1 січня до 31 грудня."
+
+#: federation/templates/seasons/seasons.html:27
+msgid "Seasons"
+msgstr "Сезони"
 
 #: federation/templates/statistics/statistics.html:33
 msgid "Ukrainian Petanque Federation portal statistics"
@@ -1999,8 +2680,9 @@ msgid "Countries"
 msgstr "Країни"
 
 #: federation/templates/statistics/statistics.html:46
-#: federation/templates/tournaments/tournament.html:25
-#: federation/templates/tournaments/tournament_summary.html:57
+#: federation/templates/tournaments/tournament.html:24
+#: federation/templates/tournaments/tournament_summary.html:184
+#: federation/templates/tournaments/tournament_teams.html:251
 msgid "Teams"
 msgstr "Команди"
 
@@ -2036,12 +2718,6 @@ msgstr "Середня кількість спортсменів"
 msgid "Organizers"
 msgstr "Організатори"
 
-#: federation/templates/statistics/statistics.html:115
-#: federation/templates/tournaments/tournament_protocol.html:90
-#: federation/templates/tournaments/tournaments_table.html:13
-msgid "Organizer"
-msgstr "Організатор"
-
 #: federation/templates/statistics/statistics.html:134
 msgid "Disciplines (Ukraine)"
 msgstr "Дисципліни (Україна)"
@@ -2054,13 +2730,25 @@ msgstr "Дисципліна"
 msgid "Venues (Ukraine)"
 msgstr "Місця проведення (Україна)"
 
+#: federation/templates/tournaments/_insurance_warning.html:4
+msgid "Insurance is missing or expired"
+msgstr "Страхування відсутнє або прострочене"
+
+#: federation/templates/tournaments/_ranking_place.html:5
+#: federation/templates/tournaments/_ranking_place.html:39
+#: federation/templatetags/app_filters.py:579
+#: federation/templatetags/app_filters.py:620
+msgid "Place in competition"
+msgstr "Місце у змаганнях"
+
+#: federation/templates/tournaments/_ranking_place.html:6
+#: federation/templatetags/app_filters.py:622
+msgid "Place in competition (max). Leave 0 if not needed"
+msgstr "Місце у змаганнях (max). Залишити 0, якщо не треба"
+
 #: federation/templates/tournaments/calendar.html:31
 msgid "Today"
 msgstr "Сьогодні"
-
-#: federation/templates/tournaments/calendar.html:32
-msgid "Month"
-msgstr "Місяць"
 
 #: federation/templates/tournaments/calendar.html:33
 msgid "Week"
@@ -2074,88 +2762,56 @@ msgstr "День"
 msgid "List"
 msgstr "Список"
 
-#: federation/templates/tournaments/player_future_tournaments.html:10
-#: federation/templates/tournaments/player_past_away_tournaments.html:10
-#: federation/templates/tournaments/player_past_tournaments.html:10
-msgid "Team"
-msgstr "Команда"
-
-#: federation/templates/tournaments/player_future_tournaments.html:54
-#: federation/templates/tournaments/player_past_away_tournaments.html:55
-#: federation/templates/tournaments/player_past_tournaments.html:67
-#: federation/templates/tournaments/tournaments_table.html:101
-msgid "Show _MENU_ competitions per page"
-msgstr "Показати _MENU_ змагань на сторінку"
-
-#: federation/templates/tournaments/player_future_tournaments.html:55
-#: federation/templates/tournaments/player_past_away_tournaments.html:56
-#: federation/templates/tournaments/player_past_tournaments.html:68
-#: federation/templates/tournaments/tournaments_table.html:102
-msgid "No competitions found"
-msgstr "Змагань не знайдено"
-
-#: federation/templates/tournaments/player_future_tournaments.html:56
-#: federation/templates/tournaments/player_past_away_tournaments.html:57
-#: federation/templates/tournaments/player_past_tournaments.html:69
-#: federation/templates/tournaments/tournaments_table.html:103
-msgid "Showing _START_ to _END_ of _TOTAL_ competitions"
-msgstr "Показано _START_ - _END_ з _TOTAL_ змагань"
-
-#: federation/templates/tournaments/player_future_tournaments.html:57
-#: federation/templates/tournaments/player_past_away_tournaments.html:58
-#: federation/templates/tournaments/player_past_tournaments.html:70
-#: federation/templates/tournaments/tournaments_table.html:104
-msgid "Showing 0 of 0 competitions"
-msgstr "Показано 0 з 0 змагань"
-
-#: federation/templates/tournaments/player_future_tournaments.html:58
-#: federation/templates/tournaments/player_past_away_tournaments.html:59
-#: federation/templates/tournaments/player_past_tournaments.html:71
-#: federation/templates/tournaments/tournaments_table.html:105
+#: federation/templates/tournaments/player_future_tournaments.html:69
+#: federation/templates/tournaments/player_past_away_tournaments.html:70
+#: federation/templates/tournaments/player_past_tournaments.html:82
 msgid "(filtered from _MAX_ competitions)"
 msgstr "(відфільтровано з _MAX_ змагань)"
 
-#: federation/templates/tournaments/player_past_tournaments.html:42
-#: federation/templates/tournaments/pure_teams_list.html:40
-#: federation/templates/tournaments/tournament_teams.html:33
-msgid "Points earned for the competition"
-msgstr "Пункти отримані за змагання"
+#: federation/templates/tournaments/player_past_away_tournaments.html:36
+#: federation/templates/tournaments/player_past_tournaments.html:36
+msgid "Number of teams"
+msgstr "Кількість команд"
 
 #: federation/templates/tournaments/pure_teams_list.html:11
 msgid "Competition"
 msgstr "Змагання"
 
 #: federation/templates/tournaments/pure_teams_list.html:21
-#: federation/templates/tournaments/tournament_teams.html:10
 msgid "Score"
 msgstr "Пункти"
 
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Rating earned"
-msgstr "Рейтингові бали"
+#: federation/templates/tournaments/pure_teams_list.html:40
+#: federation/templates/tournaments/tournament_teams.html:4
+msgid "Points earned for the competition"
+msgstr "Пункти отримані за змагання"
 
-#: federation/templates/tournaments/tournament_teams.html
-msgid "More details"
-msgstr "Детальніше"
+#: federation/templates/tournaments/tournament.html:24
+#: federation/templates/tournaments/tournament_teams.html:251
+msgid "Participants"
+msgstr "Учасники"
 
-#: federation/templates/tournaments/tournament_delegations.html:7
-msgid "Organizers, delegates, and arbiters"
-msgstr "Організатори, делегати та арбітри"
+#: federation/templates/tournaments/tournament.html:32
+#: federation/templatetags/app_filters.py:822
+msgid "Participant power"
+msgstr "Сила учасника"
 
-#: federation/templates/tournaments/tournament_delegations.html:15
+#: federation/templates/tournaments/tournament_delegations.html:3
 msgid "Main organizer"
 msgstr "Головний організатор"
 
-#: federation/templates/tournaments/tournament_delegations.html:27
-#: federation/templates/tournaments/tournament_protocol.html:117
-#: federation/templates/tournaments/tournament_protocol.html:207
-msgid "UPF delegate"
-msgstr "Делегат ФПУ"
-
-#: federation/templates/tournaments/tournament_delegations.html:43
+#: federation/templates/tournaments/tournament_delegations.html:5
 #: federation/templates/tournaments/tournament_protocol.html:127
 msgid "Arbiter"
 msgstr "Арбітр"
+
+#: federation/templates/tournaments/tournament_delegations.html:9
+msgid "Organizers and arbiters"
+msgstr "Організатори та арбітри"
+
+#: federation/templates/tournaments/tournament_delegations.html:29
+msgid "No organizers or arbiters are specified."
+msgstr "Організаторів або арбітрів не вказано."
 
 #: federation/templates/tournaments/tournament_protocol.html:54
 msgid "Final competition protocol"
@@ -2186,6 +2842,11 @@ msgstr "до"
 msgid "Head organizer"
 msgstr "Головний організатор"
 
+#: federation/templates/tournaments/tournament_protocol.html:117
+#: federation/templates/tournaments/tournament_protocol.html:207
+msgid "UPF delegate"
+msgstr "Делегат ФПУ"
+
 #: federation/templates/tournaments/tournament_protocol.html:142
 msgid "Total number of athletes"
 msgstr "Загальна кількість спортсменів"
@@ -2199,16 +2860,24 @@ msgid "Team (athletes)"
 msgstr "Команда (спортсмени)"
 
 #: federation/templates/tournaments/tournament_protocol.html:173
-msgid "Attention! The full results list must be attached to the protocol. The list is available at:"
-msgstr "Увага! Повний список результатів повинен бути доданий до протоколу! Список знаходиться за посиланням:"
+msgid ""
+"Attention! The full results list must be attached to the protocol. The list "
+"is available at:"
+msgstr ""
+"Увага! Повний список результатів повинен бути доданий до протоколу! Список "
+"знаходиться за посиланням:"
 
 #: federation/templates/tournaments/tournament_protocol.html:182
 msgid "Notes and remarks"
 msgstr "Нотатки та зауваження"
 
 #: federation/templates/tournaments/tournament_protocol.html:185
-msgid "Notes about disciplinary and game remarks, disqualifications, injuries, and other incidents."
-msgstr "Нотатки щодо дисциплінарних та ігрових зауважень, дискваліфікацій, травм та інших випадків."
+msgid ""
+"Notes about disciplinary and game remarks, disqualifications, injuries, and "
+"other incidents."
+msgstr ""
+"Нотатки щодо дисциплінарних та ігрових зауважень, дискваліфікацій, травм та "
+"інших випадків."
 
 #: federation/templates/tournaments/tournament_protocol.html:192
 msgid "None."
@@ -2229,293 +2898,425 @@ msgstr "Особа, що опрацювала протокол"
 msgid "date, signature"
 msgstr "дата, підпис"
 
-#: federation/templates/tournaments/tournament_summary.html:7
-#, python-format
-msgid "Competition: %(name)s"
-msgstr "Змагання: %(name)s"
-
-#: federation/templates/tournaments/tournament_summary.html:17
-msgid "Organizer club"
-msgstr "Клуб-організатор"
-
-#: federation/templates/tournaments/tournament_summary.html:23
-#: federation/templates/tournaments/tournaments_table.html:11
-msgid "Type"
-msgstr "Тип"
-
-#: federation/templates/tournaments/tournament_summary.html:41
-msgid "Additional actions"
-msgstr "Додаткові дії"
-
-#: federation/templates/tournaments/tournament_summary.html:46
-#: federation/templates/tournaments/tournament_summary.html:47
-msgid "Final protocol"
-msgstr "Підсумковий протокол"
-
-#: federation/templates/tournaments/tournament_summary.html:52
-msgid "Export"
-msgstr "Експорт"
-
-#: federation/templates/tournaments/tournament_summary.html:55
-msgid "For printing"
-msgstr "До друку"
-
-#: federation/templates/tournaments/tournament_summary.html:62
-msgid "Teams (csv)"
-msgstr "Команди (csv)"
-
-#: federation/templates/tournaments/tournament_summary.html:65
-msgid "Teams (json)"
-msgstr "Команди (json)"
-
-#: federation/templates/tournaments/tournament_teams.html:56
-msgid "Are you sure you want to remove this team from the competition?"
-msgstr "Чи ви впевнені, що хочете видалити цю команду зі змагань?"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Are you sure you want to remove this participant from the competition?"
-msgstr "Чи ви впевнені, що хочете видалити цього учасника зі змагань?"
-
-#: federation/templates/tournaments/tournament_teams.html:60
-msgid "Remove team"
-msgstr "Видалити команду"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Remove participant"
-msgstr "Видалити учасника"
-
-#: federation/templates/tournaments/tournament_teams.html:74
-msgid "Save final places"
-msgstr "Зберегти підсумкові місця"
-
-#: federation/templates/tournaments/tournament_teams.html:94
-msgid "Show _MENU_ teams per page"
-msgstr "Показати _MENU_ команд на сторінку"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Show _MENU_ participants per page"
-msgstr "Показати _MENU_ учасників на сторінку"
-
-#: federation/templates/tournaments/tournament_teams.html:95
-msgid "No teams found"
-msgstr "Команд не знайдено"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "No participants found"
-msgstr "Учасників не знайдено"
-
-#: federation/templates/tournaments/tournament_teams.html:96
-msgid "Showing _START_ to _END_ of _TOTAL_ teams"
-msgstr "Показано _START_ - _END_ з _TOTAL_ команд"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Showing _START_ to _END_ of _TOTAL_ participants"
-msgstr "Показано _START_ - _END_ з _TOTAL_ учасників"
-
-#: federation/templates/tournaments/tournament_teams.html:97
-msgid "Showing 0 of 0 teams"
-msgstr "Показано 0 з 0 команд"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Showing 0 of 0 participants"
-msgstr "Показано 0 з 0 учасників"
-
-#: federation/templates/tournaments/tournament_teams.html:98
-msgid "(filtered from _MAX_ teams)"
-msgstr "(відфільтровано з _MAX_ команд)"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "(filtered from _MAX_ participants)"
-msgstr "(відфільтровано з _MAX_ учасників)"
-
-#: federation/templates/tournaments/tournament_teams.html:124
-msgid "Are you sure you want to overwrite the teams' final places?"
-msgstr "Ви впевнені, що хочете переписати підсумкові місця команд?"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Are you sure you want to overwrite the participants' final places?"
-msgstr "Ви впевнені, що хочете переписати підсумкові місця учасників?"
-
-#: federation/templatetags/app_filters.py:56
-msgid "Country not specified"
-msgstr "Країна не вказана"
-
-#: federation/templatetags/app_filters.py:225
-msgid "No license"
-msgstr "Без ліцензії"
-
-#: federation/templatetags/app_filters.py:248
-msgid "Arbiter category"
-msgstr "Категорія арбітра"
-
-#: federation/templatetags/app_filters.py:332
-msgid "National records"
-msgstr "Національні рекорди"
-
-#: federation/templatetags/app_filters.py:373
-msgid "Download"
-msgstr "Завантажити"
-
-#: federation/templatetags/app_filters.py:430
-#: federation/templatetags/app_filters.py:473
-msgid "Place in competition"
-msgstr "Місце у змаганнях"
-
-#: federation/templatetags/app_filters.py:474
-msgid "Place (max)"
-msgstr "Місце (max)"
-
-#: federation/templatetags/app_filters.py:475
-msgid "Place in competition (max). Leave 0 if not needed"
-msgstr "Місце у змаганнях (max). Залишити 0, якщо не треба"
-
-#: federation/templatetags/app_filters.py:585
-msgid "Competition is finished but not processed yet"
-msgstr "Змагання завершено, але ще не опрацьовано"
-
-#: federation/templatetags/app_filters.py:589
-msgid "Competition is in progress"
-msgstr "Змагання проходять зараз"
-
-#: federation/templates/tournaments/tournament_summary.html
+#: federation/templates/tournaments/tournament_summary.html:6
 msgid "Competition categories"
 msgstr "Категорії змагання"
 
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Competition status and actions"
-msgstr "Статус і дії змагання"
-
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Competition summary"
-msgstr "Підсумок змагання"
-
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Competition information"
-msgstr "Інформація про змагання"
-
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Registered"
-msgstr "Зареєстровано"
-
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Team size"
-msgstr "Склад команди"
-
-#: federation/templates/tournaments/tournament_summary.html
+#: federation/templates/tournaments/tournament_summary.html:24
 msgid "Ukrainian league"
 msgstr "Українська ліга"
 
-#: federation/templates/tournaments/tournament_delegations.html
-msgid "Organizers and arbiters"
-msgstr "Організатори та арбітри"
+#: federation/templates/tournaments/tournament_summary.html:27
+msgid "Inclusive"
+msgstr "Інклюзивний"
 
-#: federation/templates/tournaments/tournament_delegations.html
-msgid "No organizers or arbiters are specified."
-msgstr "Організаторів або арбітрів не вказано."
+#: federation/templates/tournaments/tournament_summary.html:44
+msgid "Competition start"
+msgstr "Початок змагання"
 
-#: federation/templates/tournaments/tournament_summary.html
+#: federation/templates/tournaments/tournament_summary.html:59
+msgid "Competition summary"
+msgstr "Підсумок змагання"
+
+#: federation/templates/tournaments/tournament_summary.html:92
+#: federation/templates/tournaments/tournament_teams.html:75
+#: federation/templates/tournaments/tournament_teams.html:226
+#: federation/templates/tournaments/tournament_teams.html:393
+msgid "Registered"
+msgstr "Зареєстровано"
+
+#: federation/templates/tournaments/tournament_summary.html:101
+#: federation/templatetags/app_filters.py:434 federation/tests.py:338
+msgid "Competition power"
+msgstr "Сила змагань"
+
+#: federation/templates/tournaments/tournament_summary.html:113
+msgid "Competition information"
+msgstr "Інформація про змагання"
+
+#: federation/templates/tournaments/tournament_summary.html:116
 msgid "Participation"
 msgstr "Участь"
 
-#: federation/templates/tournaments/tournament_summary.html
-msgid "Schedule"
-msgstr "Розклад"
+#: federation/templates/tournaments/tournament_summary.html:131
+msgid "Team size"
+msgstr "Склад команди"
 
-#: federation/templates/tournaments/tournament_summary.html
+#: federation/templates/tournaments/tournament_summary.html:144
+msgid "Additional information"
+msgstr "Додаткова інформація"
+
+#: federation/templates/tournaments/tournament_summary.html:177
+msgid "Export"
+msgstr "Експорт"
+
+#: federation/templates/tournaments/tournament_summary.html:180
+msgid "For printing"
+msgstr "До друку"
+
+#: federation/templates/tournaments/tournament_summary.html:192
+msgid "Teams (csv)"
+msgstr "Команди (csv)"
+
+#: federation/templates/tournaments/tournament_summary.html:198
+msgid "Teams (json)"
+msgstr "Команди (json)"
+
+#: federation/templates/tournaments/tournament_summary.html:224
 msgid "No additional notes."
 msgstr "Додаткових приміток немає."
 
-#: federation/templates/tournaments/tournament_teams.html
-msgid "No athletes"
-msgstr "Немає спортсменів"
+#: federation/templates/tournaments/tournament_teams.html:5
+msgid ""
+"Team power in this tournament is calculated from the power of the players in "
+"this team."
+msgstr ""
+"Сила команди у цьому змаганні розраховується з показників сили гравців цієї "
+"команди."
 
-#: federation/views/tournaments.py
-#, python-format
-msgid "%(min)d-%(max)d players"
-msgstr "%(min)d-%(max)d гравців"
+#: federation/templates/tournaments/tournament_teams.html:6
+#: federation/templatetags/app_filters.py:819
+msgid ""
+"Participant power in this tournament is calculated from the participant's "
+"current power."
+msgstr ""
+"Сила учасника у цьому змаганні розраховується з його поточного показника "
+"сили."
 
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Participant"
-msgstr "Учасник"
-
-#: federation/templates/tournaments/tournament.html
-msgid "Participants"
-msgstr "Учасники"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Participant power"
-msgstr "Сила учасника"
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Team power in this tournament is calculated from the power of the players in this team."
-msgstr "Сила команди у цьому змаганні розраховується з показників сили гравців цієї команди."
-
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Participant power in this tournament is calculated from the participant's current power."
-msgstr "Сила учасника у цьому змаганні розраховується з його поточного показника сили."
-
-#: federation/templates/tournaments/tournament_teams.html
+#: federation/templates/tournaments/tournament_teams.html:7
 msgid "Date when the team registered for this competition."
 msgstr "Дата, коли команда зареєструвалася на це змагання."
 
-#: federation/templates/tournaments/tournament_teams.html
+#: federation/templates/tournaments/tournament_teams.html:8
 msgid "Date when the participant registered for this competition."
 msgstr "Дата, коли учасник зареєструвався на це змагання."
 
-#: federation/templates/tournaments/tournament_teams.html
+#: federation/templates/tournaments/tournament_teams.html:9
 msgid "Teams per page"
 msgstr "Команд на сторінку"
 
-#: federation/templates/tournaments/tournament_teams.html
+#: federation/templates/tournaments/tournament_teams.html:10
 msgid "Participants per page"
 msgstr "Учасників на сторінку"
 
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Team pagination"
-msgstr "Пагінація команд"
-
-#: federation/templates/tournaments/tournament_teams.html
+#: federation/templates/tournaments/tournament_teams.html:12
 msgid "Participant pagination"
 msgstr "Пагінація учасників"
 
-#: federation/templates/tournaments/player_future_tournaments.html
-#: federation/templates/tournaments/player_past_away_tournaments.html
-#: federation/templates/tournaments/player_past_tournaments.html
-msgid "Competitions per page"
-msgstr "Змагань на сторінку"
+#: federation/templates/tournaments/tournament_teams.html:14
+msgid "Team pagination"
+msgstr "Пагінація команд"
 
-#: federation/templates/tournaments/player_future_tournaments.html
-#: federation/templates/tournaments/player_past_away_tournaments.html
-#: federation/templates/tournaments/player_past_tournaments.html
-msgid "Competition pagination"
-msgstr "Пагінація змагань"
+#: federation/templates/tournaments/tournament_teams.html:43
+#: federation/templates/tournaments/tournament_teams.html:91
+#: federation/templates/tournaments/tournament_teams.html:274
+msgid "Participant"
+msgstr "Учасник"
 
-#: federation/templates/players/players_table.html
-#: federation/templates/seasons/players_list.html
-msgid "Athlete pagination"
-msgstr "Пагінація спортсменів"
+#: federation/templates/tournaments/tournament_teams.html:58
+#: federation/templates/tournaments/tournament_teams.html:196
+#: federation/templates/tournaments/tournament_teams.html:357
+msgid "Rating earned"
+msgstr "Рейтингові бали"
 
-#: federation/templates/clubs/clubs_table.html
-#: federation/templates/players/players_table.html
-#: federation/templates/tournaments/tournament_teams.html
-msgid "Pages"
+#: federation/templates/tournaments/tournament_teams.html:190
+#: federation/templates/tournaments/tournament_teams.html:347
+msgid "No teammates"
+msgstr "Без напарників"
+
+#: federation/templates/tournaments/tournament_teams.html:234
+#: federation/templates/tournaments/tournament_teams.html:261
+msgid "Are you sure you want to remove this participant from the competition?"
+msgstr "Чи ви впевнені, що хочете видалити цього учасника зі змагань?"
+
+#: federation/templates/tournaments/tournament_teams.html:234
+#: federation/templates/tournaments/tournament_teams.html:261
+msgid "Are you sure you want to remove this team from the competition?"
+msgstr "Чи ви впевнені, що хочете видалити цю команду зі змагань?"
+
+#: federation/templates/tournaments/tournament_teams.html:237
+#: federation/templates/tournaments/tournament_teams.html:239
+#: federation/templates/tournaments/tournament_teams.html:264
+#: federation/templates/tournaments/tournament_teams.html:266
+msgid "Remove participant"
+msgstr "Видалити учасника"
+
+#: federation/templates/tournaments/tournament_teams.html:237
+#: federation/templates/tournaments/tournament_teams.html:239
+#: federation/templates/tournaments/tournament_teams.html:264
+#: federation/templates/tournaments/tournament_teams.html:266
+msgid "Remove team"
+msgstr "Видалити команду"
+
+#: federation/templates/tournaments/tournament_teams.html:418
+msgid "Save final places"
+msgstr "Зберегти підсумкові місця"
+
+#: federation/templates/tournaments/tournament_teams.html:547
+msgid "No participants found"
+msgstr "Учасників не знайдено"
+
+#: federation/templates/tournaments/tournament_teams.html:547
+msgid "No teams found"
+msgstr "Команд не знайдено"
+
+#: federation/templates/tournaments/tournament_teams.html:548
+msgid "Showing _START_ to _END_ of _TOTAL_ participants"
+msgstr "Показано _START_ - _END_ з _TOTAL_ учасників"
+
+#: federation/templates/tournaments/tournament_teams.html:548
+msgid "Showing _START_ to _END_ of _TOTAL_ teams"
+msgstr "Показано _START_ - _END_ з _TOTAL_ команд"
+
+#: federation/templates/tournaments/tournament_teams.html:549
+msgid "Showing 0 of 0 participants"
+msgstr "Показано 0 з 0 учасників"
+
+#: federation/templates/tournaments/tournament_teams.html:549
+msgid "Showing 0 of 0 teams"
+msgstr "Показано 0 з 0 команд"
+
+#: federation/templates/tournaments/tournament_teams.html:550
+msgid "(filtered from _MAX_ participants)"
+msgstr "(відфільтровано з _MAX_ учасників)"
+
+#: federation/templates/tournaments/tournament_teams.html:550
+msgid "(filtered from _MAX_ teams)"
+msgstr "(відфільтровано з _MAX_ команд)"
+
+#: federation/templates/tournaments/tournament_teams.html:574
+msgid "Are you sure you want to overwrite the participants' final places?"
+msgstr "Ви впевнені, що хочете переписати підсумкові місця учасників?"
+
+#: federation/templates/tournaments/tournament_teams.html:574
+msgid "Are you sure you want to overwrite the teams' final places?"
+msgstr "Ви впевнені, що хочете переписати підсумкові місця команд?"
+
+#: federation/templates/tournaments/tournaments.html:10
+msgid "Турніри"
+msgstr "Турніри"
+
+#: federation/templates/tournaments/tournaments.html:14
+msgid "Додати турнір"
+msgstr "Додати турнір"
+
+#: federation/templates/tournaments/tournaments.html:20
+msgid "Період турнірів"
+msgstr "Період турнірів"
+
+#: federation/templates/tournaments/tournaments.html:56
+msgid "Ranked only"
+msgstr "Лише рейтингові"
+
+#: federation/templates/tournaments/tournaments.html:87
+msgid "Закордонні"
+msgstr "Закордонні"
+
+#: federation/templates/tournaments/tournaments.html:109
+msgid "Пошук"
+msgstr "Пошук"
+
+#: federation/templates/tournaments/tournaments.html:111
+msgid "Пошук за назвою, містом або клубом..."
+msgstr "Пошук за назвою, містом або клубом..."
+
+#: federation/templates/tournaments/tournaments.html:115
+#: federation/templates/tournaments/tournaments.html:118
+#: federation/templates/tournaments/tournaments_table.html:16
+#: federation/templates/tournaments/tournaments_table.html:49
+msgid "Формат"
+msgstr "Формат"
+
+#: federation/templates/tournaments/tournaments.html:126
+#: federation/templates/tournaments/tournaments.html:129
+msgid "Стать / категорія"
+msgstr "Стать / категорія"
+
+#: federation/templates/tournaments/tournaments.html:137
+#: federation/templates/tournaments/tournaments.html:140
+#: federation/templates/tournaments/tournaments_table.html:17
+#: federation/templates/tournaments/tournaments_table.html:60
+msgid "Місце"
+msgstr "Місце"
+
+#: federation/templates/tournaments/tournaments_table.html:10
+msgid "Сортувати за датою"
+msgstr "Сортувати за датою"
+
+#: federation/templates/tournaments/tournaments_table.html:11
+#: federation/templates/tournaments/tournaments_table.html:33
+msgid "Дата"
+msgstr "Дата"
+
+#: federation/templates/tournaments/tournaments_table.html:15
+#: federation/templates/tournaments/tournaments_table.html:42
+msgid "Назва"
+msgstr "Назва"
+
+#: federation/templates/tournaments/tournaments_table.html:21
+#: federation/templates/tournaments/tournaments_table.html:88
+msgid "Сила"
+msgstr "Сила"
+
+#: federation/templates/tournaments/tournaments_table.html:25
+#: federation/templates/tournaments/tournaments_table.html:98
+msgid "Статус"
+msgstr "Статус"
+
+#: federation/templates/tournaments/tournaments_table.html:26
+#: federation/templates/tournaments/tournaments_table.html:107
+msgid "Дії"
+msgstr "Дії"
+
+#: federation/templates/tournaments/tournaments_table.html:110
+#: federation/templates/tournaments/tournaments_table.html:218
+#: federation/templates/tournaments/tournaments_table.html:315
+msgid "Взяти участь"
+msgstr "Взяти участь"
+
+#: federation/templates/tournaments/tournaments_table.html:115
+#: federation/templates/tournaments/tournaments_table.html:223
+#: federation/templates/tournaments/tournaments_table.html:320
+msgid "Результати"
+msgstr "Результати"
+
+#: federation/templates/tournaments/tournaments_table.html:118
+#: federation/templates/tournaments/tournaments_table.html:226
+#: federation/templates/tournaments/tournaments_table.html:323
+msgid "Деталі"
+msgstr "Деталі"
+
+#: federation/templates/tournaments/tournaments_table.html:137
+#: federation/templates/tournaments/tournaments_table.html:235
+msgid "Список турнірів"
+msgstr "Список турнірів"
+
+#: federation/templates/tournaments/tournaments_table.html:331
+msgid "Пагінація турнірів"
+msgstr "Пагінація турнірів"
+
+#: federation/templates/tournaments/tournaments_table.html:334
+msgid "Сторінки"
 msgstr "Сторінки"
 
-#: federation/templatetags/app_filters.py:608
-msgid "Competition protocol"
-msgstr "Протокол змагань"
+#: federation/templates/tournaments/tournaments_table.html:335
+msgid "Перша сторінка"
+msgstr "Перша сторінка"
 
-#: federation/templatetags/app_filters.py:625
-#: federation/templatetags/app_filters.py:654
-#: federation/templatetags/app_filters.py:684
+#: federation/templates/tournaments/tournaments_table.html:338
+msgid "Попередня сторінка"
+msgstr "Попередня сторінка"
+
+#: federation/templates/tournaments/tournaments_table.html:348
+msgid "Наступна сторінка"
+msgstr "Наступна сторінка"
+
+#: federation/templates/tournaments/tournaments_table.html:351
+msgid "Остання сторінка"
+msgstr "Остання сторінка"
+
+#: federation/templates/tournaments/tournaments_table.html:357
+msgid "Показувати:"
+msgstr "Показувати:"
+
+#: federation/templatetags/app_filters.py:64
+msgid "Country not specified"
+msgstr "Країна не вказана"
+
+#: federation/templatetags/app_filters.py:459
+msgid "Download"
+msgstr "Завантажити"
+
+#: federation/templatetags/app_filters.py:621
+msgid "Place (max)"
+msgstr "Місце (max)"
+
+#: federation/templatetags/app_filters.py:919
+msgid "Competition is finished but not processed yet"
+msgstr "Змагання завершено, але ще не опрацьовано"
+
+#: federation/templatetags/app_filters.py:923
+msgid "Competition is in progress"
+msgstr "Змагання проходять зараз"
+
+#: federation/templatetags/app_filters.py:959
+#: federation/templatetags/app_filters.py:988
+#: federation/templatetags/app_filters.py:1018
 #, python-format
 msgid "Registration is open until %(date)s"
 msgstr "Зареєструватись на змагання можна до %(date)s"
 
-#: federation/templatetags/app_filters.py:640
-#: federation/templatetags/app_filters.py:699
-msgid "Register"
-msgstr "Реєстрація"
+#: federation/utils/autocaptcha.py:44
+msgid "Automatic verification is unavailable. Please try again later."
+msgstr "Автоматична перевірка тимчасово недоступна. Спробуйте ще раз пізніше."
+
+#: federation/utils/autocaptcha.py:50 federation/utils/autocaptcha.py:78
+#: federation/utils/autocaptcha.py:84 federation/utils/autocaptcha.py:92
+msgid "Automatic verification failed. Please reload the page and try again."
+msgstr ""
+"Автоматична перевірка не пройдена. Оновіть сторінку та спробуйте ще раз."
+
+#: federation/utils/autocaptcha.py:72
+msgid "Automatic verification failed. Please try again later."
+msgstr "Автоматична перевірка не вдалася. Спробуйте ще раз пізніше."
+
+#: federation/utils/autocaptcha.py:98
+msgid ""
+"Automatic verification rejected this registration. Please try again later."
+msgstr ""
+"Автоматична перевірка відхилила цю реєстрацію. Спробуйте ще раз пізніше."
+
+#: federation/validators.py:12
+#, python-format
+msgid ""
+"File size must not exceed %(max_size)s. Current file size: %(current_size)s."
+msgstr ""
+"Розмір файлу не повинен перевищувати %(max_size)s. Поточний розмір файлу: "
+"%(current_size)s."
+
+#: federation/validators.py:29
+#, python-format
+msgid ""
+"Image dimensions must not exceed %(max)s×%(max)s px. Current dimensions: "
+"%(width)s×%(height)s px."
+msgstr ""
+"Розміри зображення не повинні перевищувати %(max)s×%(max)s пікселів. Поточні "
+"розміри: %(width)s×%(height)s пікселів."
+
+#: federation/validators.py:43
+#, python-format
+msgid "Unsupported image format \"%(format)s\". Allowed formats: %(allowed)s."
+msgstr ""
+"Непідтримуваний формат зображення \"%(format)s\". Дозволені формати: "
+"%(allowed)s."
+
+#: federation/views/clubs.py:24
+msgid "Rating first"
+msgstr "Спочатку рейтинг"
+
+#: federation/views/clubs.py:25
+msgid "Most athletes"
+msgstr "Найбільше спортсменів"
+
+#: federation/views/clubs.py:26
+msgid "Best average"
+msgstr "Найкращий середній бал"
+
+#: federation/views/clubs.py:27
+msgid "Name A-Z"
+msgstr "Назва А-Я"
+
+#: federation/views/clubs.py:28
+msgid "Newest clubs"
+msgstr "Найновіші клуби"
+
+#: federation/views/clubs.py:235
+msgid "Showing 0 of 0 clubs"
+msgstr "Показано 0 з 0 клубів"
+
+#: federation/views/clubs.py:238
+msgid "Showing _START_ to _END_ of _TOTAL_ clubs"
+msgstr "Показано _START_ - _END_ з _TOTAL_ клубів"
 
 #: federation/views/email_confirm.py:39 federation/views/email_confirm.py:94
 msgid "This email is already used by another user."
@@ -2525,476 +3326,406 @@ msgstr "Цей email вже використовується іншим кори
 msgid "Email sent. Check your inbox."
 msgstr "Лист надіслано! Перевірте пошту."
 
-#: federation/views/national_teams.py:19
-msgid "National Teams of Ukraine"
-msgstr "Національні збірні України"
+#: federation/views/password_reset.py:15
+msgid "your.email@example.com"
+msgstr "ваш.email@example.com"
 
-#: federation/views/profile.py:30
+#: federation/views/profile.py:39
 msgid "Profile updated."
 msgstr "Профiль змiнено."
 
-#: federation/views/profile.py:37
+#: federation/views/profile.py:48
 msgid "Password changed."
 msgstr "Пароль змiнено."
 
-#: federation/views/register.py:51
+#: federation/views/register.py:61
 msgid "Team registered."
 msgstr "Команду зареєстровано."
 
-#: federation/views/register.py:101
+#: federation/views/register.py:115
 msgid "Registration successful. Check your inbox to confirm your email."
 msgstr "Реєстрація успішна! Перевірте пошту для підтвердження email."
 
-#: federation/views/register.py:105
+#: federation/views/register.py:119
 msgid "Registration successful!"
 msgstr "Реєстрація успішна!"
 
-#: federation/views/seasons.py:30
-msgid "Ranking for previous seasons"
-msgstr "Рейтинг за попередні сезони"
+#: federation/views/seasons.py:50
+msgid "Season rating"
+msgstr "Рейтинг сезону"
 
 #: federation/views/statistics.py:23
 #, python-format
 msgid "%(year)s"
 msgstr "%(year)s рік"
 
-#: federation/views/tournaments.py:46
-msgid "Notes saved."
-msgstr "Нотатки збережено."
-
-#: federation/views/tournaments.py:53
-msgid "Team removed."
-msgstr "Команду видалено."
-
-#: federation/views/tournaments.py:76
-msgid "Team places updated."
-msgstr "Місця команд оновлено."
-
-#: federation/templates/main_page.html:45
-#: federation/templates/main_page.html:53
-#: federation/templates/main_page.html:63
-#: federation/templates/main_page.html:72
-#: federation/templates/main_page.html:80
-#: federation/templates/main_page.html:90
-#: federation/templates/main_page.html:100
-#: federation/templates/main_page.html:110
-msgid "View all"
-msgstr "Переглянути всі"
-
-#: federation/templates/main_page/tournaments_list.html:16
-msgid "Competition details"
-msgstr "Деталі змагання"
-
-#: federation/templates/tournaments/tournaments.html:57
-msgid "Ranked only"
-msgstr "Лише рейтингові"
-
-#: federation/templatetags/app_filters.py
-msgid "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points."
-msgstr "Сила змагання впливає на те, скільки рейтингових балів дає результат. Вона оцінює силу складу змагання за найсильнішими командами, які грали; вища сила означає, що те саме місце дає більше рейтингових балів."
-
-#: federation/templates/players/players.html
-msgid "This table shows the official athlete rating. Points come from tournament results; power summarizes the athlete's strongest recent rating results and helps determine how strong teams and tournaments are."
-msgstr "Ця таблиця показує офіційний рейтинг спортсменів. Бали нараховуються за результати змагань; сила підсумовує найсильніші нещодавні рейтингові результати спортсмена і допомагає визначати силу команд та змагань."
-
-#: federation/templates/players/players_table.html
-msgid "Rating points are earned from tournament results. More points means a higher place in the official rating."
-msgstr "Рейтингові бали нараховуються за результати змагань. Більше балів означає вище місце в офіційному рейтингу."
-
-#: federation/templates/players/players_table.html
-msgid "Power summarizes an athlete's strongest recent rating results. It is used to estimate how strong teams and tournaments are."
-msgstr "Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її використовують, щоб оцінювати силу команд і змагань."
-
-#: federation/templates/players/players_table.html
-msgid "License shows whether the athlete currently has an active federation license and displays the license number when available."
-msgstr "Ліцензія показує, чи має спортсмен активну ліцензію федерації, і відображає її номер, якщо він доступний."
-
-#: federation/templates/players/player.html
-msgid "Official place in the current player rating among active licensed players. A lower place number means a higher rating."
-msgstr "Офіційне місце у поточному рейтингу серед спортсменів з активною ліцензією. Менший номер місця означає вищий рейтинг."
-
-#: federation/templates/players/player.html
-msgid "Power summarizes the player's strongest recent rating results. It is used to estimate team and tournament strength."
-msgstr "Сила підсумовує найсильніші нещодавні рейтингові результати спортсмена. Її використовують для оцінки сили команд і змагань."
-
-#: federation/templates/players/player.html
-msgid "Finished competitions in the current year that count toward the rating."
-msgstr "Завершені змагання поточного року, які враховуються у рейтингу."
-
-#: federation/templates/players/player.html
-msgid "International competitions this player played in during the current year."
-msgstr "Закордонні змагання, у яких спортсмен грав протягом поточного року."
-
-#: federation/templates/players/player.html
-msgid "All competitions this player played in during the current year, including rating, B, and international competitions."
-msgstr "Усі змагання, у яких спортсмен грав протягом поточного року, включно з рейтинговими, B-турнірами та закордонними змаганнями."
-
-#: federation/templates/players/player.html
-msgid "This year competitions"
-msgstr "Змагання цього року"
-
-#: federation/templates/players/player.html
-msgid "Current rating points earned from the player's strongest recent rating tournament results."
-msgstr "Поточні рейтингові бали, набрані за найсильніші нещодавні результати спортсмена у рейтингових змаганнях."
-
-#: federation/templates/players/player.html
-msgid "Rating this year"
-msgstr "Рейтингові цього року"
-
-#: federation/templates/players/player.html
-msgid "International this year"
-msgstr "Закордонні цього року"
-
-#: federation/templates/players/player.html
-msgid "Players"
-msgstr "Спортсмени"
-
-#: federation/templates/players/player.html
-msgid "Player profile"
-msgstr "Профіль спортсмена"
-
-#: federation/templates/players/player.html
-msgid "Details"
-msgstr "Деталі"
-
-#: federation/templates/players/player.html
-msgid "Player statistics"
-msgstr "Статистика спортсмена"
-
-#: federation/templates/players/player.html
-msgid "National team player"
-msgstr "Гравець збірної"
-
-#: federation/templates/players/player.html
-msgid "Member since"
-msgstr "У клубі з"
-
-#: federation/templates/players/player.html
-msgid "Tournaments"
-msgstr "Змагання"
-
-#: federation/templates/players/player.html
-#: federation/templatetags/app_filters.py
-msgid "Team power in this tournament is calculated from the power of the players in this player's team."
-msgstr "Сила команди у цьому змаганні розраховується з показників сили гравців у команді цього спортсмена."
-
-#: federation/templates/players/player.html
-msgid "Rating points earned by this player's team in this tournament."
-msgstr "Рейтингові бали, які команда цього спортсмена набрала у цьому змаганні."
-
-#: federation/templates/players/player.html
-msgid "Power column team"
-msgstr "Команди"
-
-#: federation/templates/players/player.html
-msgid "Power column tournament"
-msgstr "Турніру"
-
-#: federation/templates/players/player.html
-msgid "Sort tournaments"
-msgstr "Сортування змагань"
-
-#: federation/templates/players/player.html
-msgid "Sort"
-msgstr "Сортувати"
-
-#: federation/templates/players/player.html
-msgid "Sort by date"
-msgstr "Сортувати за датою"
-
-#: federation/templates/players/player.html
-msgid "Sort by place"
-msgstr "Сортувати за місцем"
-
-#: federation/templates/players/player.html
-msgid "Sort by points"
-msgstr "Сортувати за балами"
-
-#: federation/templates/seasons/seasons.html
-#, python-format
-msgid "%(year)s season rating"
-msgstr "Рейтинг сезону %(year)s"
-
-#: federation/templates/seasons/seasons.html
-msgid "Historical athlete ranking"
-msgstr "Історичний рейтинг спортсменів"
-
-#: federation/templates/seasons/seasons.html
-msgid "Season rating uses tournament results from the selected calendar year: January 1 through December 31."
-msgstr "Рейтинг сезону використовує результати турнірів за обраний календарний рік: з 1 січня до 31 грудня."
-
-#: federation/templates/seasons/seasons.html
-msgid "Seasons"
-msgstr "Сезони"
-
-#: federation/views/seasons.py
-msgid "Season rating"
-msgstr "Рейтинг сезону"
-
-#: federation/views/title_registry.py
+#: federation/views/title_registry.py:47
 msgid "Registry of arbiters of the Petanque Federation of Ukraine"
 msgstr "Реєстр арбітрів Федерації петанку України"
 
-#: federation/views/title_registry.py
-msgid "Registry of coaches and instructors of the Petanque Federation of Ukraine"
+#: federation/views/title_registry.py:53
+msgid ""
+"Registry of coaches and instructors of the Petanque Federation of Ukraine"
 msgstr "Реєстр тренерів та інструкторів Федерації петанку України"
 
-#: federation/views/title_registry.py
+#: federation/views/title_registry.py:59
 msgid "Players with sports titles"
 msgstr "Гравці зі спортивними званнями"
 
-#: federation/views/title_registry.py
+#: federation/views/title_registry.py:60
 msgid "Titles"
 msgstr "Звання"
 
-#: federation/views/title_registry.py
+#: federation/views/title_registry.py:64
+msgid "National Teams of Ukraine"
+msgstr "Національні збірні України"
+
+#: federation/views/title_registry.py:65
 msgid "Players of the Ukrainian national petanque team"
 msgstr "Гравці національної збірної України з петанку"
 
-#: federation/templates/clubs/club.html
-msgid "Club links"
-msgstr "Посилання клубу"
-
-#: federation/templates/clubs/club.html
-msgid "Website"
-msgstr "Вебсайт"
-
-#: federation/templates/clubs/club.html
-msgid "Club summary"
-msgstr "Коротко про клуб"
-
-#: federation/templates/clubs/club.html
-msgid "Club rating"
-msgstr "Рейтинг клубу"
-
-#: federation/templates/clubs/club.html
-msgid "Club president"
-msgstr "Президент клубу"
-
-#: federation/templates/clubs/club.html
-msgid "President is not specified."
-msgstr "Президента не вказано."
-
-#: federation/templates/clubs/club.html
-msgid "Club indicators"
-msgstr "Показники клубу"
-
-#: federation/templates/clubs/club.html
-msgid "Place in Ukrainian club rating"
-msgstr "Місце у рейтингу клубів України"
-
-#: federation/templates/clubs/club.html
-msgid "Average athlete rating"
-msgstr "Середній рейтинг спортсменів"
-
-#: federation/templates/clubs/club.html
-msgid "Average athlete power"
-msgstr "Середня сила спортсменів"
-
-#: federation/templates/clubs/club.html
-msgid "National team athletes"
+#: federation/views/title_registry.py:138
+msgid "National team players"
 msgstr "Гравці збірної"
 
-#: federation/templates/clubs/club.html
-msgid "Candidates for Master of Sports"
-msgstr "Кандидати у майстри спорту"
+#: federation/views/tournaments.py:116
+msgid "Тет-а-тет"
+msgstr "Тет-а-тет"
 
-#: federation/templates/clubs/club.html
-msgid "Club athletes"
-msgstr "Спортсмени клубу"
+#: federation/views/tournaments.py:117
+msgid "Дуплети"
+msgstr "Дуплети"
 
-#: federation/templates/clubs/club.html
-msgid "athletes in club"
-msgstr "спортсменів у клубі"
+#: federation/views/tournaments.py:118
+msgid "Триплети"
+msgstr "Триплети"
 
-#: federation/templates/clubs/club.html
-msgid "Search athlete..."
-msgstr "Пошук спортсмена..."
+#: federation/views/tournaments.py:119
+msgid "Тир"
+msgstr "Тир"
 
-#: federation/templates/clubs/club.html
-msgid "Search athlete"
-msgstr "Пошук спортсмена"
+#: federation/views/tournaments.py:120
+msgid "Клуби"
+msgstr "Клуби"
 
-#: federation/templates/clubs/club.html
-msgid "Sort athletes"
-msgstr "Сортування спортсменів"
+#: federation/views/tournaments.py:121 federation/views/tournaments.py:449
+msgid "Супермеле"
+msgstr "Супермеле"
 
-#: federation/templates/clubs/club.html
-msgid "Sort: rating place"
-msgstr "Сортування: місце в рейтингу"
+#: federation/views/tournaments.py:124
+msgid "Чоловіки"
+msgstr "Чоловіки"
 
-#: federation/templates/clubs/club.html
-msgid "Sort: points"
-msgstr "Сортування: бали"
+#: federation/views/tournaments.py:125
+msgid "Жінки"
+msgstr "Жінки"
 
-#: federation/templates/clubs/club.html
-msgid "Sort: power"
-msgstr "Сортування: сила"
+#: federation/views/tournaments.py:126 federation/views/tournaments.py:503
+msgid "Змішані"
+msgstr "Змішані"
 
-#: federation/templates/clubs/club.html
-msgid "Sort: name"
-msgstr "Сортування: ім'я"
+#: federation/views/tournaments.py:127
+msgid "Юніори"
+msgstr "Юніори"
 
-#: federation/templates/clubs/club.html
-msgid "No athletes match the selected filters."
-msgstr "За вибраними фільтрами спортсменів не знайдено."
+#: federation/views/tournaments.py:128 federation/views/tournaments.py:505
+msgid "Ветерани 55+"
+msgstr "Ветерани 55+"
 
-#: federation/player_change_log_admin.py
-msgid "changed field"
-msgstr "зміненим полем"
+#: federation/views/tournaments.py:129
+msgid "Відкриті"
+msgstr "Відкриті"
 
-#: federation/player_change_log_admin.py
-msgid "changed by"
-msgstr "ким змінено"
+#: federation/views/tournaments.py:132
+msgid "Реєстрація відкрита"
+msgstr "Реєстрація відкрита"
 
-#: federation/player_change_log_admin.py
-msgid "Changed by"
-msgstr "Змінено користувачем"
+#: federation/views/tournaments.py:133
+msgid "Реєстрація закрита"
+msgstr "Реєстрація закрита"
 
-#: federation/player_change_log_admin.py
-msgid "Changed fields"
-msgstr "Змінені поля"
+#: federation/views/tournaments.py:134
+msgid "Реєстрація недоступна"
+msgstr "Реєстрація недоступна"
 
-#: federation/audit.py federation/player_change_log_admin.py
-msgid "Team places"
-msgstr "Місця команд"
+#: federation/views/tournaments.py:135
+msgid "Триває"
+msgstr "Триває"
 
-#: federation/player_change_log_admin.py
-msgid "content type"
-msgstr "типом вмісту"
+#: federation/views/tournaments.py:136
+msgid "Завершено"
+msgstr "Завершено"
 
-#: federation/player_change_log_admin.py
-msgid "journal action"
-msgstr "дією"
-
-#: federation/player_change_log_admin.py
-msgid "journal action time"
-msgstr "часом дії"
-
-msgid "Show counts"
-msgstr "Показати кількість"
-
-msgid "Hide counts"
-msgstr "Сховати кількість"
-
-#: federation/player_change_log_admin.py
-msgid "Content type"
-msgstr "Тип вмісту"
-
-#: federation/player_change_log_admin.py
-msgid "Object"
-msgstr "Об'єкт"
-
-#: federation/player_change_log_admin.py
-msgid "Reverted"
+#: federation/views/tournaments.py:137
+msgid "Скасовано"
 msgstr "Скасовано"
 
-#: federation/player_change_log_admin.py
-msgid "Reverted \"%(object)s\" - %(changes)s"
-msgstr "Скасовано зміну для \"%(object)s\" - %(changes)s"
+#: federation/views/tournaments.py:194
+msgid "Майбутні"
+msgstr "Майбутні"
 
-#: federation/player_change_log_admin.py federation/templates/admin/audit_log/change_form.html
-msgid "Revert change"
-msgstr "Скасувати зміну"
+#: federation/views/tournaments.py:195
+msgid "Теперішні"
+msgstr "Теперішні"
 
-#: federation/player_change_log_admin.py
-msgid "You do not have permission to revert this change."
-msgstr "У вас немає прав, щоб скасувати цю зміну."
+#: federation/views/tournaments.py:196
+msgid "Минулі"
+msgstr "Минулі"
 
-#: federation/audit.py
-msgid "This action is available only for change entries."
-msgstr "Ця дія доступна лише для записів про зміни."
-
-#: federation/audit.py
-msgid "This change cannot be reverted from the log."
-msgstr "Цю зміну не можна скасувати з журналу."
-
-#: federation/audit.py
-msgid "This log entry does not contain enough data to revert the change."
-msgstr "У цьому записі журналу недостатньо даних, щоб скасувати зміну."
-
-#: federation/audit.py
-msgid "The object no longer exists."
-msgstr "Об'єкт більше не існує."
-
-#: federation/audit.py
-msgid "The object has changed since this log entry was created. Revert the latest related change first."
-msgstr "Об'єкт було змінено після створення цього запису журналу. Спочатку скасуйте найновішу пов'язану зміну."
-
-#: federation/player_change_log_admin.py
-msgid "Change reverted."
-msgstr "Зміну скасовано."
-
-#: federation/player_change_log_admin.py
-msgid "Open revert log entry"
-msgstr "Відкрити запис про скасування"
-
-#: federation/forms/registration_team_form.py
-#: federation/templates/register/team.html
-msgid "Search athlete by first or last name"
-msgstr "Пошук спортсмена за ім'ям або прізвищем"
-
-#: federation/forms/registration_team_form.py:61
-msgid "Search coach by first or last name"
-msgstr "Пошук тренера за ім'ям або прізвищем"
-
-#: federation/templates/register/team.html
+#: federation/views/tournaments.py:421
 #, python-format
-msgid "Choose the roster for this competition. Team format: %(team_size)s."
-msgstr "Оберіть склад для цього змагання. Формат команди: %(team_size)s."
+msgid "%(min)d-%(max)d players"
+msgstr "%(min)d-%(max)d гравців"
 
-#: federation/templates/register/team.html
-msgid "Choose the captain first. Reserve player fields can be left empty."
-msgstr "Спочатку оберіть капітана. Поля для запасних гравців можна залишити порожніми."
+#: federation/views/tournaments.py:429 federation/views/tournaments.py:457
+#, python-format
+msgid "%(count)d player"
+msgid_plural "%(count)d players"
+msgstr[0] "%(count)d гравець"
+msgstr[1] "%(count)d гравці"
+msgstr[2] "%(count)d гравців"
 
-#: federation/templates/register/team.html
-msgid "Search for an athlete by first or last name in the federation database."
-msgstr "Шукайте спортсмена за ім'ям або прізвищем у базі федерації."
+#: federation/views/tournaments.py:461
+#, python-format
+msgid "%(count)d team"
+msgid_plural "%(count)d teams"
+msgstr[0] "%(count)d команда"
+msgstr[1] "%(count)d команди"
+msgstr[2] "%(count)d команд"
 
-#: federation/templates/register/team.html
-msgid "Back to competition"
-msgstr "Повернутися до змагання"
+#: federation/views/tournaments.py:537
+msgid "Закритий"
+msgstr "Закритий"
 
-#: federation/templates/register/team.html
-msgid "Registration tips"
-msgstr "Підказки для реєстрації"
+#: federation/views/tournaments.py:538
+msgid "Відкритий"
+msgstr "Відкритий"
 
-#: federation/templates/register/team.html
-msgid "Check the athlete in the database first"
-msgstr "Спочатку перевірте спортсмена в базі"
+#: federation/views/tournaments.py:641
+msgid "Без клубу"
+msgstr "Без клубу"
 
-#: federation/templates/register/team.html
-msgid "Before creating a new athlete, try searching in both Cyrillic and Latin spelling."
-msgstr "Перш ніж створювати нового спортсмена, спробуйте пошук і кирилицею, і латиницею."
+#: federation/views/tournaments.py:700
+msgid "до"
+msgstr "до"
 
-#: federation/templates/register/team.html
-msgid "Use this block only when the athlete is missing from search results."
-msgstr "Використовуйте цей блок лише тоді, коли спортсмена немає в результатах пошуку."
+#: federation/views/tournaments.py:706
+msgid "результати доступні"
+msgstr "результати доступні"
 
-#: federation/templates/register/team.html
-msgid "Do not create duplicate or non-existent athletes. Add a new athlete only after carefully checking the database."
-msgstr "Не створюйте дублікати або неіснуючих спортсменів. Додавайте нового спортсмена лише після уважної перевірки бази."
+#: federation/views/tournaments.py:881
+msgid "Показано 0 з 0 турнірів"
+msgstr "Показано 0 з 0 турнірів"
 
-#: federation/models/player.py
-msgid "Insurance valid until"
-msgstr "Страхування дійсне до"
+#: federation/views/tournaments.py:883
+#, python-format
+msgid "Показано %(start)s–%(end)s з %(total)s турнірів"
+msgstr "Показано %(start)s–%(end)s з %(total)s турнірів"
 
-#: federation/models/tournament.py
-msgid "Insurance required"
-msgstr "Необхідне страхування"
+#: federation/views/tournaments.py:893
+msgid "Змагання не знайдено"
+msgstr "Змагання не знайдено"
 
-#: federation/templates/tournaments/_insurance_warning.html
-msgid "Insurance is missing or expired"
-msgstr "Страхування відсутнє або прострочене"
+#: federation/views/tournaments.py:894
+msgid "Спробуйте змінити фільтри або очистити пошук."
+msgstr "Спробуйте змінити фільтри або очистити пошук."
 
-#: federation/templates/forms/profile/insurance_status.html
-msgid "Valid until"
-msgstr "Дійсне до"
+#: federation/views/tournaments.py:899
+msgid "Наразі немає майбутніх турнірів"
+msgstr "Наразі немає майбутніх турнірів"
 
-#: federation/templates/forms/profile/insurance_status.html
-msgid "Expired"
-msgstr "Прострочено"
+#: federation/views/tournaments.py:900
+msgid "Перегляньте минулі змагання або змініть фільтри."
+msgstr "Перегляньте минулі змагання або змініть фільтри."
 
-#: federation/templates/forms/profile/insurance_status.html
-msgid "No insurance on file"
-msgstr "Страхування відсутнє"
+#: federation/views/tournaments.py:905
+msgid "Зараз немає турнірів, що тривають"
+msgstr "Зараз немає турнірів, що тривають"
+
+#: federation/views/tournaments.py:906
+msgid "Перегляньте майбутні або минулі змагання."
+msgstr "Перегляньте майбутні або минулі змагання."
+
+#: federation/views/tournaments.py:910
+msgid "Минулі турніри не знайдено"
+msgstr "Минулі турніри не знайдено"
+
+#: federation/views/tournaments.py:911
+msgid "Спробуйте змінити фільтри."
+msgstr "Спробуйте змінити фільтри."
+
+#: federation/views/tournaments.py:935 federation/views/tournaments.py:944
+msgid "Notes saved."
+msgstr "Нотатки збережено."
+
+#: federation/views/tournaments.py:951
+msgid "Team removed."
+msgstr "Команду видалено."
+
+#: federation/views/tournaments.py:990
+msgid "Team places updated."
+msgstr "Місця команд оновлено."
+
+#~ msgid "Optional. You can leave this field empty."
+#~ msgstr "Необов'язково. Це поле можна залишити порожнім."
+
+#, python-format
+#~ msgid ""
+#~ "Please keep filesize under %(max_size)s. Current filesize %(current_size)s"
+#~ msgstr ""
+#~ "Будь ласка, завантажте файл розміром до %(max_size)s. Поточний розмір "
+#~ "файлу %(current_size)s"
+
+#~ msgid "File type is not supported"
+#~ msgstr "Тип файлу не підтримується"
+
+#~ msgid "Additional verification"
+#~ msgstr "Додаткова перевірка"
+
+#~ msgid "Email is required when password is provided"
+#~ msgstr "Email обов'язковий, якщо вказано пароль"
+
+#~ msgid "Email is required for players from Ukraine"
+#~ msgstr "Email обов'язковий для гравців з України"
+
+#~ msgid "Female"
+#~ msgstr "Жіноча"
+
+#~ msgid "Male"
+#~ msgstr "Чоловіча"
+
+#~ msgid "Total rating points in the club"
+#~ msgstr "Загальна кількість рейтингових пунктів у клубі"
+
+#~ msgid "Show _MENU_ clubs per page"
+#~ msgstr "Показати _MENU_ клубів на сторінку"
+
+#~ msgid "(filtered from _MAX_ clubs)"
+#~ msgstr "(відфільтровано з _MAX_ клубів)"
+
+#~ msgid "First"
+#~ msgstr "Початок"
+
+#~ msgid "Last"
+#~ msgstr "Кінець"
+
+#~ msgid "official portal"
+#~ msgstr "офіційний портал"
+
+#~ msgid ""
+#~ "Welcome to the official portal of the Ukrainian Petanque Federation. Here "
+#~ "you will find current information about the federation, competitions, "
+#~ "athletes, clubs, and more. Learn about upcoming competitions and join the "
+#~ "world of petanque!"
+#~ msgstr ""
+#~ "Ласкаво просимо до офіційного порталу Федерації Петанку України! Тут ви "
+#~ "знайдете актуальну інформацію щодо роботи та структури Федерації, "
+#~ "змагань, спортсменів, клубів та ін. Дізнайся більше про найближчі "
+#~ "змагання та приєднуйся до світу петанку!"
+
+#~ msgid "Nearest upcoming"
+#~ msgstr "Найближчі"
+
+#~ msgid "Federation Telegram chat"
+#~ msgstr "Telegram чат федерації"
+
+#~ msgid "Athlete information"
+#~ msgstr "Інформація про спортсмена"
+
+#~ msgid "Ukrainian"
+#~ msgstr "Українські"
+
+#~ msgid "International"
+#~ msgstr "Іноземні"
+
+#~ msgid "Rankings are based on current official federation rating metrics."
+#~ msgstr ""
+#~ "Рейтинг базується на поточних офіційних рейтингових показниках Федерації."
+
+#~ msgid "Search by name, club, license, sex, age, points..."
+#~ msgstr "Пошук за ім'ям, клубом, ліцензією, статтю, віком, балами..."
+
+#~ msgid "Show _MENU_ athletes per page"
+#~ msgstr "Показати _MENU_ спортсменів на сторінку"
+
+#~ msgid "Cannot find a player?"
+#~ msgstr "Не можете знайти спортсмена?"
+
+#~ msgid ""
+#~ "Please do not add duplicate or non-existent players. First, try searching "
+#~ "for the player using both Cyrillic and Latin spelling."
+#~ msgstr ""
+#~ "Велике прохання не додавати дублікатів або неіснуючих спортсменів. Спершу "
+#~ "спробуйте знайти спортсмена, написавши його дані кирилицею та латиницею."
+
+#, python-format
+#~ msgid ""
+#~ "Not all athletes may appear in search results. If you cannot find an "
+#~ "athlete, <a target=\"_blank\" href=\"%(register_player_url)s\" "
+#~ "class=\"btn btn-sm btn-success\">add them to the portal</a>."
+#~ msgstr ""
+#~ "Не всі спортсмени можуть бути присутні у результатах пошуку. Якщо ви не "
+#~ "можете знайти спортсмена, <a target=\"_blank\" "
+#~ "href=\"%(register_player_url)s\" class=\"btn btn-sm btn-success\">додайте "
+#~ "його на портал</a>."
+
+#~ msgid "Show _MENU_ competitions per page"
+#~ msgstr "Показати _MENU_ змагань на сторінку"
+
+#~ msgid "More details"
+#~ msgstr "Детальніше"
+
+#~ msgid "Organizers, delegates, and arbiters"
+#~ msgstr "Організатори, делегати та арбітри"
+
+#, python-format
+#~ msgid "Competition: %(name)s"
+#~ msgstr "Змагання: %(name)s"
+
+#~ msgid "Organizer club"
+#~ msgstr "Клуб-організатор"
+
+#~ msgid "Type"
+#~ msgstr "Тип"
+
+#~ msgid "Additional actions"
+#~ msgstr "Додаткові дії"
+
+#~ msgid "Final protocol"
+#~ msgstr "Підсумковий протокол"
+
+#~ msgid "Show _MENU_ teams per page"
+#~ msgstr "Показати _MENU_ команд на сторінку"
+
+#~ msgid "Show _MENU_ participants per page"
+#~ msgstr "Показати _MENU_ учасників на сторінку"
+
+#~ msgid "Arbiter category"
+#~ msgstr "Категорія арбітра"
+
+#~ msgid "National records"
+#~ msgstr "Національні рекорди"
+
+#~ msgid "Competition status and actions"
+#~ msgstr "Статус і дії змагання"
+
+#~ msgid "Schedule"
+#~ msgstr "Розклад"
+
+#~ msgid "No athletes"
+#~ msgstr "Немає спортсменів"
+
+#~ msgid "Competition protocol"
+#~ msgstr "Протокол змагань"
+
+#~ msgid "Ranking for previous seasons"
+#~ msgstr "Рейтинг за попередні сезони"
+
+#~ msgid "View all"
+#~ msgstr "Переглянути всі"
+
+#~ msgid "Member since"
+#~ msgstr "У клубі з"
+
+#~ msgid "Club rating"
+#~ msgstr "Рейтинг клубу"
