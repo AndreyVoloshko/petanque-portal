@@ -1,3 +1,4 @@
+import csv
 import datetime
 import json
 import re
@@ -1730,6 +1731,112 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'tournament-team-coach-cell')
         self.assertContains(response, coach.get_name())
+
+
+class TournamentTeamExportCsvTests(TestCase):
+    def create_club(self, name, short_name):
+        return Club.objects.create(
+            name=name,
+            short_name=short_name,
+            address='Kyiv',
+        )
+
+    def create_player(self, username, club=None, gender='M'):
+        user = User.objects.create_user(username=username)
+        return Player.objects.create(
+            user=user,
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender=gender,
+            current_club=club,
+        )
+
+    def create_tournament(self, players_per_team=2):
+        return Tournament.objects.create(
+            name='Export Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            number_of_players_in_team_min=players_per_team,
+            number_of_players_in_team_max=players_per_team,
+            format='swiko',
+        )
+
+    def create_team_membership(self, tournament, players, name, place_min):
+        team = Team.objects.create(name=name)
+        for index, player in enumerate(players):
+            PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=index == 0)
+
+        return TeamTournamentMembership.objects.create(
+            tournament=tournament,
+            team=team,
+            place_min=place_min,
+        )
+
+    def get_csv_rows(self, response):
+        content = response.content.decode('utf-8')
+        return list(csv.reader(content.splitlines(), delimiter=';'))
+
+    def test_csv_export_header_rows(self):
+        club = self.create_club('Kyiv Petanque Club', 'KPC')
+        first = self.create_player('first', club=club)
+        second = self.create_player('second', club=club)
+        tournament = self.create_tournament(players_per_team=2)
+        self.create_team_membership(tournament, [first, second], 'Kyiv Pair', place_min=1)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'csv'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv;charset=utf-8')
+        rows = self.get_csv_rows(response)
+        self.assertEqual(rows[0], [str(tournament.number_of_players_in_team_min)])
+        self.assertEqual(rows[1], [
+            'LASTNAME1', 'FIRSTNAME1', 'GENDER1', 'CLUB1',
+            'LASTNAME2', 'FIRSTNAME2', 'GENDER2', 'CLUB2',
+            'NAME', 'SEED', 'STATUS', 'RANK',
+        ])
+
+    def test_csv_export_emits_one_row_per_team_with_player_fields(self):
+        club = self.create_club('Kyiv Petanque Club', 'KPC')
+        other_club = self.create_club('Lviv Petanque Club', 'LPC')
+        first = self.create_player('first', club=club, gender='M')
+        second = self.create_player('second', club=other_club, gender='F')
+        third = self.create_player('third', club=club, gender='M')
+        fourth = self.create_player('fourth', club=None, gender='F')
+        tournament = self.create_tournament(players_per_team=2)
+        self.create_team_membership(tournament, [first, second], 'Kyiv Pair', place_min=1)
+        self.create_team_membership(tournament, [third, fourth], 'Mixed Pair', place_min=2)
+
+        response = self.client.get('/tournament/team_export/{}'.format(tournament.pk), {'format': 'csv'})
+
+        rows = self.get_csv_rows(response)
+        data_rows = rows[2:]
+        self.assertEqual(len(data_rows), 2)
+
+        rows_by_team_name = {row[8]: row for row in data_rows}
+        self.assertEqual(set(rows_by_team_name.keys()), {'Kyiv Pair', 'Mixed Pair'})
+
+        kyiv_row = rows_by_team_name['Kyiv Pair']
+        self.assertEqual(
+            {tuple(kyiv_row[0:4]), tuple(kyiv_row[4:8])},
+            {
+                (first.name, first.surname, first.gender, club.name),
+                (second.name, second.surname, second.gender, other_club.name),
+            },
+        )
+        self.assertEqual(kyiv_row[9], '0')
+        self.assertEqual(kyiv_row[10], '')
+        self.assertEqual(kyiv_row[11], '')
+
+        mixed_row = rows_by_team_name['Mixed Pair']
+        self.assertEqual(
+            {tuple(mixed_row[0:4]), tuple(mixed_row[4:8])},
+            {
+                (third.name, third.surname, third.gender, club.name),
+                (fourth.name, fourth.surname, fourth.gender, ''),
+            },
+        )
 
 
 class OptionalRegistrationEmailTests(TestCase):
