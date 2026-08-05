@@ -10640,6 +10640,11 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-teams-table.is-single-player-format
+    .tournament-team-coach-col {
+    width: 6rem;
+  }
+
+  .tournament-detail-teams-table.is-single-player-format
     .tournament-team-actions-col,
   .tournament-detail-teams-table.is-single-player-format.is-processing-finished
     .tournament-team-actions-col {
