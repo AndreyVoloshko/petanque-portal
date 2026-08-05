@@ -376,6 +376,7 @@ msgid "Notes"
 msgstr "Нотатки"
 
 #: federation/models/department.py:32
+#: federation/models/tournament.py:608
 #: federation/templates/tournaments/tournament_protocol.html:106
 msgid "Role"
 msgstr "Роль"
@@ -1888,6 +1889,7 @@ msgstr "Попередні змагання"
 msgid "Competition details"
 msgstr "Деталі змагання"
 
+#: federation/models/tournament.py:604
 #: federation/templates/main_page/tournaments_list.html:44
 #: federation/templates/statistics/statistics.html:115
 #: federation/templates/tournaments/tournament_protocol.html:90
