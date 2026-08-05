@@ -1971,6 +1971,38 @@ class TeamRegistrationRedesignTests(TestCase):
 
         self.assertEqual(team.get_capitan(), capitan)
 
+    def test_team_registration_form_rejects_non_numeric_player_id(self):
+        start_date = (timezone.now() + timedelta(days=30)).date()
+        tournament = Tournament.objects.create(
+            name='International Cup',
+            category='away',
+            place='Польща',
+            start_date=start_date,
+            start_time=datetime.time(10, 0),
+            date_registration_stop=timezone.now() + timedelta(days=29),
+            number_of_players_in_team_min=2,
+            number_of_players_in_team_max=2,
+            teams_limit=100,
+            format='swiko',
+        )
+        teammate = Player.objects.create(
+            user=User.objects.create_user(username='team-player-nonnumeric'),
+            name='Team',
+            surname='Player',
+            birth_date=date(1991, 1, 1),
+            gender='M',
+        )
+
+        form = RegistrationTeamForm(
+            data={
+                'players[1]': 'abc',
+                'players[2]': str(teammate.pk),
+            },
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
 
 class TeamRegistrationFormCoachTests(TestCase):
     def create_tournament(self):
@@ -2040,6 +2072,18 @@ class TeamRegistrationFormCoachTests(TestCase):
 
         form = RegistrationTeamForm(
             data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': '999999'},
+            tournament=tournament,
+        )
+
+        self.assertFalse(form.is_valid())
+
+    def test_coach_field_rejects_non_numeric_id(self):
+        tournament = self.create_tournament()
+        first = self.create_player('coach-form-ninth')
+        second = self.create_player('coach-form-tenth')
+
+        form = RegistrationTeamForm(
+            data={'players[1]': str(first.pk), 'players[2]': str(second.pk), 'coach': 'abc'},
             tournament=tournament,
         )
 
