@@ -772,22 +772,21 @@ class PlayerProfileFormTests(TestCase):
         self.client.login(username='badge-stale-check-player', password='Pass1234!')
         new_date = timezone.localdate() + timedelta(days=90)
 
-        with override('en'):
-            response = self.client.post('/profile/', {
-                'name': '',
-                'surname': 'Valid',
-                'second_name': '',
-                'birth_date': '1990-01-01',
-                'current_club': '',
-                'country': 'UA',
-                'gender': 'M',
-                'facebook': '',
-                'twitter': '',
-                'instagram': '',
-                'website': '',
-                'email': user.email,
-                'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
-            })
+        response = self.client.post('/profile/', {
+            'name': '',
+            'surname': 'Valid',
+            'second_name': '',
+            'birth_date': '1990-01-01',
+            'current_club': '',
+            'country': 'UA',
+            'gender': 'M',
+            'facebook': '',
+            'twitter': '',
+            'instagram': '',
+            'website': '',
+            'email': user.email,
+            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
+        })
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, new_date.strftime('%d.%m.%Y'))
@@ -797,9 +796,9 @@ class PlayerProfileFormTests(TestCase):
         valid_until = timezone.localdate() + timedelta(days=30)
         self.create_player_with_insurance('badge-uk-player', valid_until)
         self.client.login(username='badge-uk-player', password='Pass1234!')
+        self.client.cookies['django_language'] = 'uk'
 
-        with override('uk'):
-            response = self.client.get('/profile/')
+        response = self.client.get('/profile/')
 
         self.assertContains(response, 'Дійсне до')
 
