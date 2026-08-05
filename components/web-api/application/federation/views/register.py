@@ -56,10 +56,7 @@ def register_team(request, tournament_id):
         elif team_registration_form.is_valid():
             player_ids = list(reversed(team_registration_form.verified_player_ids))
             team = Team.get_or_create_for_players(player_ids=player_ids)
-            coach = None
-            if team_registration_form.verified_coach_id:
-                coach = Player.objects.get(pk=team_registration_form.verified_coach_id)
-            tournament.add_team(team, coach=coach)
+            tournament.add_team(team, coach_id=team_registration_form.verified_coach_id)
             tournament.recalculate_power_on_registration()
             messages.success(request, _('Team registered.'), extra_tags='success')
             return redirect('tournament', id=tournament.pk)
