@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError, transaction
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.middleware.locale import LocaleMiddleware
@@ -39,6 +40,8 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    OrganizerTournamentMembership,
+    OrganizerTournamentMembershipInline,
     TeamsTournamentMembershipInline,
     TeamTournamentMembership,
     Tournament,
@@ -476,6 +479,59 @@ class TeamTournamentMembershipCoachFieldTests(TestCase):
 
         membership.refresh_from_db()
         self.assertIsNone(membership.coach)
+
+
+class OrganizerTournamentMembershipTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Organizer Membership Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_role_defaults_to_organizer(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-default-role')
+
+        membership = OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        self.assertEqual(membership.role, 'organizer')
+
+    def test_duplicate_organizer_on_same_tournament_raises_integrity_error(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-duplicate-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+    def test_deleting_organizer_player_deletes_the_membership(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('membership-deleted-organizer')
+        membership = OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+
+        organizer.delete()
+
+        self.assertFalse(OrganizerTournamentMembership.objects.filter(pk=membership.pk).exists())
+
+    def test_co_organizer_membership_does_not_grant_tournament_admin_access(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('membership-permission-check')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        self.assertFalse(tournament.is_user_has_admin_access_to_tournament(co_organizer.user))
 
 
 class SeasonSnapshotGenerationTests(TestCase):
@@ -1261,6 +1317,47 @@ class TeamTournamentMembershipCoachAdminTests(TestCase):
         self.assertContains(response, 'id="id_teamtournamentmembership_set-0-coach"')
 
 
+class OrganizerTournamentMembershipAdminTests(TestCase):
+    def create_admin(self):
+        return User.objects.create_superuser(
+            username='organizer-membership-admin',
+            email='organizer-membership-admin@example.com',
+            password='AdminPass123!',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Admin Organizer Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_organizer_is_an_autocomplete_field_on_the_inline(self):
+        self.assertIn('organizer', OrganizerTournamentMembershipInline.autocomplete_fields)
+
+    def test_organizer_inline_is_registered_before_arbiter_and_team_inlines(self):
+        self.assertEqual(ArbiterTeamTournamentAdminInline.inlines[0], OrganizerTournamentMembershipInline)
+
+    def test_tournament_change_page_renders_organizer_autocomplete_for_existing_row(self):
+        tournament = self.create_tournament()
+        organizer = Player.objects.create(
+            user=User.objects.create_user(username='admin-inline-co-organizer'),
+            name='Admin-Inline',
+            surname='Organizer',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+        self.client.force_login(self.create_admin())
+
+        response = self.client.get('/admin/federation/tournament/{}/change/'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_organizertournamentmembership_set-0-organizer"')
+
+
 class PlayerTournamentListTests(TestCase):
     def create_player(self, username='player-page', insurance_expiration_date=None):
         user = User.objects.create_user(username=username)
@@ -1815,6 +1912,73 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'tournament-team-coach-cell')
         self.assertContains(response, coach.get_name())
+
+
+class TournamentDelegationsOrganizerDisplayTests(TestCase):
+    def create_player(self, username):
+        return Player.objects.create(
+            user=User.objects.create_user(username=username),
+            name=username.title(),
+            surname='Player',
+            birth_date=date(1990, 1, 1),
+            gender='M',
+        )
+
+    def create_tournament(self):
+        return Tournament.objects.create(
+            name='Delegations Organizer Cup',
+            category='open',
+            place='Kyiv',
+            start_date=date(2026, 6, 1),
+            format='swiko',
+        )
+
+    def test_tournament_page_shows_co_organizer_card_without_main_organizer(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('delegations-co-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-person-card-organizer')
+        self.assertContains(response, co_organizer.get_name())
+        self.assertContains(response, '/player/{}'.format(co_organizer.pk))
+        self.assertNotContains(response, 'tournament-detail-empty-card')
+
+    def test_tournament_page_shows_both_main_organizer_and_co_organizer(self):
+        tournament = self.create_tournament()
+        main_organizer = self.create_player('delegations-main-organizer')
+        co_organizer = self.create_player('delegations-second-co-organizer')
+        tournament.main_organizer = main_organizer
+        tournament.save(update_fields=['main_organizer'])
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, main_organizer.get_name())
+        self.assertContains(response, co_organizer.get_name())
+        self.assertContains(response, 'tournament-person-card-organizer', count=2)
+
+    def test_tournament_page_empty_state_unaffected_without_any_organizers_or_arbiters(self):
+        tournament = self.create_tournament()
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-detail-empty-card')
+
+    def test_organizer_role_label_uses_get_role_display(self):
+        tournament = self.create_tournament()
+        co_organizer = self.create_player('delegations-role-label-organizer')
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+
+        with override('uk'):
+            response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Організатор')
 
 
 class TournamentTeamExportCsvTests(TestCase):

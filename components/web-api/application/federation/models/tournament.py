@@ -598,6 +598,31 @@ class ArbiterTournamentMembership(models.Model):
         verbose_name_plural = 'Арбітри турніру'
 
 
+# Organizers to Tournaments relation
+class OrganizerTournamentMembership(models.Model):
+    ROLES = (
+        ('organizer', _('Organizer')),
+    )
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, verbose_name="Турнір", null=True)
+    organizer = models.ForeignKey(Player, on_delete=models.CASCADE, verbose_name="Організатор", null=True)
+    role = models.CharField(_('Role'), max_length=50, choices=ROLES, default='organizer')
+
+    class Meta:
+        unique_together = ('tournament', 'organizer')
+        verbose_name = 'Організатор турніру'
+        verbose_name_plural = 'Організатори турніру'
+
+
+class OrganizerTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
+    model = OrganizerTournamentMembership
+    extra = 0
+    autocomplete_fields = ['organizer']
+
+    class Meta:
+        verbose_name = 'Організатори турніру'
+        verbose_name_plural = 'Організатори турніру'
+
+
 # Classes for admin
 class ArbiterTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.TabularInline):
     model = ArbiterTournamentMembership
@@ -621,7 +646,7 @@ class TeamsTournamentMembershipInline(RestrictedRelatedWidgetAdminMixin, admin.T
 
 
 class ArbiterTeamTournamentAdminInline(RestrictedRelatedWidgetAdminMixin, RevertibleAuditAdminMixin, admin.ModelAdmin):
-    inlines = (ArbiterTournamentMembershipInline,TeamsTournamentMembershipInline,)
+    inlines = (OrganizerTournamentMembershipInline, ArbiterTournamentMembershipInline, TeamsTournamentMembershipInline,)
     search_fields = (
         'id',
         'name',
