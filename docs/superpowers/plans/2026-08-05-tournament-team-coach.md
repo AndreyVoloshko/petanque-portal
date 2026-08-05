@@ -318,7 +318,7 @@ git commit -m "feat(registration): add optional coach field to team registration
 
 **Interfaces:**
 - Consumes: Task 1's `TeamTournamentMembership.coach`; Task 2's `RegistrationTeamForm.verified_coach_id`.
-- Produces: `Tournament.add_team(self, team, coach=None)` — the only existing caller (`register.py:59`) is updated in this task; no other callers exist in the codebase.
+- Produces: `Tournament.add_team(self, team, coach_id=None)` — the only existing caller (`register.py:59`) is updated in this task; no other callers exist in the codebase. (Originally specified as `coach=None` taking a `Player` instance; revised during Task 3's review to take a raw `coach_id` instead, since a caller with an already-validated id doesn't need to re-fetch the `Player` row just to hand it back to the ORM — see Step 3/4 below.)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -401,10 +401,12 @@ In `federation/models/tournament.py`, modify (currently lines 109-111):
     '''
         add team to current tournament
     '''
-    def add_team(self, team, coach=None):
-        new_team = TeamTournamentMembership(tournament=self, team=team, coach=coach)
+    def add_team(self, team, coach_id=None):
+        new_team = TeamTournamentMembership(tournament=self, team=team, coach_id=coach_id)
         new_team.save()
 ```
+
+(Takes a raw `coach_id`, not a `Player` instance — the caller already has a validated id via `verified_coach_id` and Django's FK `<field>_id` kwarg accepts it directly, with no extra DB fetch needed. See the note below Step 4.)
 
 - [ ] **Step 4: Update `register_team`**
 
@@ -414,16 +416,13 @@ In `federation/views/register.py`, modify the success branch (currently lines 56
         elif team_registration_form.is_valid():
             player_ids = list(reversed(team_registration_form.verified_player_ids))
             team = Team.get_or_create_for_players(player_ids=player_ids)
-            coach = None
-            if team_registration_form.verified_coach_id:
-                coach = Player.objects.get(pk=team_registration_form.verified_coach_id)
-            tournament.add_team(team, coach=coach)
+            tournament.add_team(team, coach_id=team_registration_form.verified_coach_id)
             tournament.recalculate_power_on_registration()
             messages.success(request, _('Team registered.'), extra_tags='success')
             return redirect('tournament', id=tournament.pk)
 ```
 
-(`Player` is already imported at the top of `register.py`.)
+**Note (revised during Task 3's review):** the original version of this step re-fetched the coach via `Player.objects.get(pk=team_registration_form.verified_coach_id)` before passing it to `add_team`. That re-fetch was an unhandled, redundant DB read of a row the form had already validated moments earlier — in the (narrow, low-probability) window where that exact `Player` was deleted between the form's check and this fetch, it would raise an uncaught `Player.DoesNotExist` and crash the request with a 500. Passing `coach_id` straight through removes the redundant fetch entirely, so there's nothing left to race: `TeamTournamentMembership.coach` is a nullable `ForeignKey(Player, on_delete=SET_NULL)`, so a stale id would fail at the DB FK-constraint level (an essentially-impossible case, since the form validated it a moment before) rather than as an unhandled Python exception on an ordinary request path.
 
 - [ ] **Step 5: Render the coach field in the template**
 
@@ -618,7 +617,7 @@ class TournamentPageCoachDisplayTests(TestCase):
         second = self.create_player('display-player-two')
         tournament = self.create_tournament()
         team = self.create_team('Coached Pair', [first, second])
-        tournament.add_team(team, coach=coach)
+        tournament.add_team(team, coach_id=coach.pk)
 
         response = self.client.get('/tournament/{}'.format(tournament.pk))
 
