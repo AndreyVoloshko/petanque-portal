@@ -129,3 +129,15 @@ itself needs no new translation (reused from the model, see Design §1).
 - No document upload / proof-of-insurance attachment — just the date field.
 - No live-as-you-type badge update; badge reflects the persisted value after save.
 - No change to the public player detail page.
+
+## Post-merge revision (superseded)
+
+After this design shipped (PR #15), the direction changed: self-service editing was reverted.
+`insurance_expiration_date` is admin-only again — removed from `PlayerForm` entirely, same
+treatment as `licence_number`/`is_licence_active`. The status badge (§2) is the only surviving
+piece of this design; it's kept and now sits directly under the avatar rather than beside an
+editable input, since there's no longer an adjacent field for it to label. Design §1 (form
+field) and most of §3–§6 (audit registration for self-service edits, translations tied to the
+editable-field flow) as originally written describe capability that no longer exists on the
+profile page — the audit-trail registration itself is kept, but only serves admin-side edits
+now. See PR #17 for the reverting change.

@@ -128,34 +128,40 @@ class PlayerProfileAuditLogTests(TestCase):
         values = extract_changed_field_values(LogEntry.objects.get().change_message)
         self.assertEqual(values['country'], {'old': 'UA', 'new': 'FR'})
 
-    def test_profile_insurance_expiration_date_change_creates_player_log_entry(self):
-        user, player = self.create_player()
+    def test_admin_insurance_expiration_date_change_is_logged_and_revertable(self):
+        admin_user = User.objects.create_superuser(
+            username='insurance-admin',
+            email='insurance-admin@example.com',
+            password='AdminPass123!',
+        )
+        _player_user, player = self.create_player()
         new_date = timezone.localdate() + timedelta(days=200)
-        self.client.login(username=user.username, password='OldPass123!')
+        player_before = Player.objects.select_related('user').get(pk=player.pk)
+        player.insurance_expiration_date = new_date
+        player.save()
 
-        response = self.client.post('/profile/', {
-            'name': player.name,
-            'surname': player.surname,
-            'second_name': '',
-            'birth_date': '1990-01-01',
-            'current_club': str(player.current_club_id),
-            'country': 'UA',
-            'gender': player.gender,
-            'facebook': '',
-            'twitter': '',
-            'instagram': '',
-            'website': '',
-            'email': user.email,
-            'insurance_expiration_date': new_date.strftime('%Y-%m-%d'),
-        })
+        field_values = capture_player_change_values(
+            player_before,
+            player,
+            [PLAYER_CHANGE_FIELD_INSURANCE_EXPIRATION_DATE],
+        )
+        self.assertEqual(
+            field_values['insurance_expiration_date'],
+            {'old': None, 'new': new_date.isoformat()},
+        )
+        original_log_entry = log_player_change(
+            admin_user,
+            player,
+            [PLAYER_CHANGE_FIELD_INSURANCE_EXPIRATION_DATE],
+            field_values=field_values,
+        )
+        self.client.force_login(admin_user)
 
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/admin/admin/logentry/{}/revert/'.format(original_log_entry.pk))
+
+        self.assertEqual(response.status_code, 302)
         player.refresh_from_db()
-        self.assertEqual(player.insurance_expiration_date, new_date)
-        log_entry = LogEntry.objects.get()
-        self.assertIn(PLAYER_CHANGE_FIELD_INSURANCE_EXPIRATION_DATE, self.get_changed_fields(log_entry))
-        values = extract_changed_field_values(log_entry.change_message)
-        self.assertEqual(values['insurance_expiration_date'], {'old': None, 'new': new_date.isoformat()})
+        self.assertIsNone(player.insurance_expiration_date)
 
     def test_password_change_creates_player_log_entry(self):
         user, player = self.create_player()
