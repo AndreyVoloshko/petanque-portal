@@ -13,7 +13,7 @@ from urllib.parse import parse_qs
 from django import forms as django_forms
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from django.contrib.admin.sites import AdminSite
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -46,7 +46,6 @@ from federation.models.tournament import (
     TeamTournamentMembership,
     Tournament,
 )
-from federation.permissions import can_create_tournament
 from federation.services.season_snapshots import generate_season_rating_snapshot
 from federation.storage import StaticStorage
 from federation.templatetags.app_filters import (
@@ -3318,56 +3317,71 @@ class TournamentListingPageTests(TestCase):
         self.assertNotContains(response, 'Змагання не знайдено')
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
 
-    def test_create_button_is_visible_only_for_allowlisted_superuser(self):
+    def test_create_button_is_visible_for_superuser(self):
         self.create_tournament('Future Cup')
-        allowed = User.objects.create_superuser(
-            id=1,
-            username='andreyvoloshko',
-            email='andreyvoloshko@gmail.com',
+        User.objects.create_superuser(
+            username='any-superuser',
+            email='any-superuser@example.com',
             password='secret',
         )
 
-        self.client.login(username='andreyvoloshko', password='secret')
+        self.client.login(username='any-superuser', password='secret')
         response = self.client.get('/tournaments/')
+
         self.assertContains(response, 'Додати турнір')
 
-        self.client.logout()
-        User.objects.create_superuser(
-            id=999,
-            username='not-allowlisted',
-            email='other@example.com',
+    def test_create_button_is_visible_for_non_superuser_with_explicit_permission(self):
+        self.create_tournament('Future Cup')
+        user = User.objects.create_user(
+            username='granted-organizer',
+            email='granted-organizer@example.com',
+            password='secret',
+        )
+        permission = Permission.objects.get(content_type__app_label='federation', codename='add_tournament')
+        user.user_permissions.add(permission)
+
+        self.client.login(username='granted-organizer', password='secret')
+        response = self.client.get('/tournaments/')
+
+        self.assertContains(response, 'Додати турнір')
+
+    def test_create_button_is_hidden_for_plain_authenticated_user(self):
+        self.create_tournament('Future Cup')
+        User.objects.create_user(
+            username='plain-user',
+            email='plain-user@example.com',
             password='secret',
         )
 
-        self.client.login(username='not-allowlisted', password='secret')
+        self.client.login(username='plain-user', password='secret')
         response = self.client.get('/tournaments/')
+
         self.assertNotContains(response, 'Додати турнір')
 
-    def test_permission_helper_requires_active_allowlisted_superuser(self):
-        self.assertTrue(can_create_tournament(User(
-            id=1,
-            username='andreyvoloshko',
-            is_active=True,
-            is_superuser=True,
-        )))
-        self.assertFalse(can_create_tournament(User(
-            id=1,
-            username='andreyvoloshko',
-            is_active=True,
-            is_superuser=False,
-        )))
-        self.assertFalse(can_create_tournament(User(
-            id=65,
-            username='wrong-user',
-            is_active=True,
-            is_superuser=True,
-        )))
-        self.assertFalse(can_create_tournament(User(
-            id=1839,
-            username='admin',
-            is_active=False,
-            is_superuser=True,
-        )))
+    def test_admin_add_view_allows_user_with_permission(self):
+        User.objects.create_superuser(
+            username='admin-add-superuser',
+            email='admin-add-superuser@example.com',
+            password='secret',
+        )
+        self.client.login(username='admin-add-superuser', password='secret')
+
+        response = self.client.get('/admin/federation/tournament/add/')
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_add_view_forbidden_without_permission(self):
+        User.objects.create_user(
+            username='admin-add-plain-staff',
+            email='admin-add-plain-staff@example.com',
+            password='secret',
+            is_staff=True,
+        )
+        self.client.login(username='admin-add-plain-staff', password='secret')
+
+        response = self.client.get('/admin/federation/tournament/add/')
+
+        self.assertEqual(response.status_code, 403)
 
 
 def _make_uploaded_image(width, height, image_format='JPEG', file_name='test.jpg',

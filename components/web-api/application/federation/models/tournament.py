@@ -15,7 +15,6 @@ from django.conf import settings
 from federation.admin_actions.tournament import recalculate_power, recalculate_ratings, finish_processing, erase_rating_points_and_powers, mark_as_ready_for_processing, full_power_and_rating_processing, erase_registration_dates
 from federation.admin_mixins import RestrictedRelatedWidgetAdminMixin
 from federation.audit_admin import RevertibleAuditAdminMixin
-from federation.permissions import can_create_tournament
 from federation.utils.tournament_names import get_tournament_display_name
 
 
@@ -695,6 +694,3 @@ class ArbiterTeamTournamentAdminInline(RestrictedRelatedWidgetAdminMixin, Revert
         tournament = form.instance
         if team_memberships_changed and not tournament.is_processing_closed():
             tournament.recalculate_power_for_current_state()
-
-    def has_add_permission(self, request):
-        return can_create_tournament(request.user)
