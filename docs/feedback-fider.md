@@ -30,7 +30,7 @@ The UI language is set via `LOCALE=uk` in `docker-compose.yml`.
 
 1. **DNS:** add an `A` record `feedback.petanque.org.ua` pointing to the server IP.
 2. **Secret:** add `"fider_jwt_secret": "<long random string>"` to the `APP_CREDENTIALS`
-   JSON in `/root/app/portal/.env` (generate with `openssl rand -hex 32`).
+   JSON in `/root/apps/portal/.env` (generate with `openssl rand -hex 32`).
 3. **Database:** create the fider database once:
    ```bash
    docker compose -p petanque-portal exec petanque_portal_db \

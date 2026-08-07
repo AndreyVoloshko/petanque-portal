@@ -10,16 +10,16 @@ passes. The same test job also runs on every pull request. The deploy step
 SSHes in and runs the same steps as the old manual process:
 
 ```
-sudo bash -c 'cd /root/app/portal && git pull && bash deploy/remote_run.sh'
+sudo bash -c 'cd /root/apps/portal && git pull && bash deploy/remote_run.sh'
 ```
 
-The checkout lives under **root's** home directory (`/root/app/portal`), not the
+The checkout lives under **root's** home directory (`/root/apps/portal`), not the
 SSH login user's — because the old manual process ran `sudo su` (becoming root)
-before `cd ~/app/portal`, so `~` resolved to `/root`. The workflow runs the
+before `cd ~/apps/portal`, so `~` resolved to `/root`. The workflow runs the
 whole sequence inside one `sudo bash -c '...'` shell so both `git pull` and
 `remote_run.sh` (which sources `.env` via a relative path) execute with the
 correct working directory. Two separate `sudo` invocations don't work here:
-`remote_run.sh` needs to actually run *from* `/root/app/portal`, not just be
+`remote_run.sh` needs to actually run *from* `/root/apps/portal`, not just be
 invoked by absolute path.
 
 ## Triggering a deploy manually
@@ -67,24 +67,24 @@ these values or paste them into chat/AI tooling.
    SSH into the server, then `sudo visudo -f /etc/sudoers.d/deploy` and add
    (confirm the real path to `git` on the server first with `which git`):
    ```
-   admin ALL=(root) NOPASSWD: /bin/bash -c "cd /root/app/portal && git pull && bash deploy/remote_run.sh"
+   admin ALL=(root) NOPASSWD: /bin/bash -c "cd /root/apps/portal && git pull && bash deploy/remote_run.sh"
    ```
    The workflow invokes this exact `bash -c "..."` string, so the sudoers
    entry must match it literally — verify with `sudo -l -U admin` or by
    running the exact command as `admin` and confirming it doesn't prompt for
    a password. Do not grant blanket `NOPASSWD: ALL` — scope it to just this
    one command.
-5. Confirm `/root/app/portal` on the server has its git remote pointed at
+5. Confirm `/root/apps/portal` on the server has its git remote pointed at
    GitHub, not Bitbucket (requires `sudo`, since the checkout is under root's
    home):
    ```bash
    ssh -i ~/Work/petanque/ssh/thatsit-keypair1.pem -p 22 admin@52.59.170.52 \
-     "sudo git -C /root/app/portal remote -v"
+     "sudo git -C /root/apps/portal remote -v"
    ```
    If it still points at `bitbucket.org`, update it:
    ```bash
    ssh -i ~/Work/petanque/ssh/thatsit-keypair1.pem -p 22 admin@52.59.170.52 \
-     "sudo git -C /root/app/portal remote set-url origin git@github.com:andreyvoloshko/petanque-portal.git"
+     "sudo git -C /root/apps/portal remote set-url origin git@github.com:andreyvoloshko/petanque-portal.git"
    ```
    The server also needs the GitHub deploy key (or a separate read key) able
    to `git pull` from the GitHub repo — add a deploy key under repo Settings
@@ -109,7 +109,7 @@ The manual process still works if the workflow needs to be bypassed:
 ```bash
 ssh -i ~/Work/petanque/ssh/thatsit-keypair1.pem -o 'IdentitiesOnly yes' -p 22 admin@52.59.170.52
 sudo su
-cd ~/app/portal/
+cd ~/apps/portal/
 git pull
 bash deploy/remote_run.sh
 ```
