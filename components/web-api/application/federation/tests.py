@@ -3384,6 +3384,52 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
 
+class TournamentCreatePermissionMigrationTests(TestCase):
+    def _run_migration(self):
+        from django.apps import apps as global_apps
+        from django.db import connection
+        from django.db.migrations.loader import MigrationLoader
+
+        loader = MigrationLoader(connection)
+        migration = None
+        for (app_label, name), candidate in loader.disk_migrations.items():
+            if app_label == 'federation' and name.endswith('grant_tournament_creation_permission'):
+                migration = candidate
+                break
+        self.assertIsNotNone(migration, 'migration grant_tournament_creation_permission not found on disk')
+
+        forwards = migration.operations[0].code
+        forwards(global_apps, None)
+
+    def test_grants_permission_to_matching_allowlisted_users(self):
+        allowlist = [
+            (1, 'andreyvoloshko'),
+            (65, 'andriikamenev'),
+            (84, 'olenakolodiy'),
+            (1084, 'vsevolodprahnіtskij'),
+            (1839, 'admin'),
+        ]
+        for user_id, username in allowlist:
+            User.objects.create_user(id=user_id, username=username)
+
+        self._run_migration()
+
+        for user_id, username in allowlist:
+            user = User.objects.get(id=user_id)
+            self.assertTrue(user.has_perm('federation.add_tournament'))
+
+    def test_skips_user_whose_username_no_longer_matches(self):
+        User.objects.create_user(id=65, username='someone-else-now')
+
+        self._run_migration()
+
+        user = User.objects.get(id=65)
+        self.assertFalse(user.has_perm('federation.add_tournament'))
+
+    def test_skips_missing_user_ids_without_error(self):
+        self._run_migration()
+
+
 def _make_uploaded_image(width, height, image_format='JPEG', file_name='test.jpg',
                           content_type='image/jpeg'):
     buffer = BytesIO()
