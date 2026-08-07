@@ -25,7 +25,6 @@ from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
 )
-from federation.permissions import can_create_tournament
 from federation.utils.rankings import rating_rank_map
 from federation.utils.tournament_names import get_tournament_card_metadata
 
@@ -94,7 +93,7 @@ def tournaments(request, date_filter=None, type_filter=None):
         'active_filters': active_filters,
         'has_active_secondary_filters': _has_active_secondary_filters(filters),
         'reset_url': _reset_url(filters),
-        'can_create_tournament': can_create_tournament(request.user),
+        'can_create_tournament': request.user.has_perm('federation.add_tournament'),
         'admin_add_url': reverse('admin:federation_tournament_add'),
         'empty_state': _empty_state(filters),
     })
