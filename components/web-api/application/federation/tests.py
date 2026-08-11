@@ -1912,6 +1912,67 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertContains(response, 'tournament-team-coach-cell')
         self.assertContains(response, coach.get_name())
 
+    def test_tournament_page_puts_coach_column_after_athletes_column(self):
+        coach = self.create_player('column-order-coach')
+        first = self.create_player('column-order-player-one')
+        second = self.create_player('column-order-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Column Order Pair', [first, second])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+        html = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertLess(
+            html.index('<th class="tournament-team-athletes-col">'),
+            html.index('<th class="tournament-team-coach-col">'),
+        )
+        self.assertLess(
+            html.index('<td class="tournament-team-athletes-cell"'),
+            html.index('<td class="tournament-team-coach-cell"'),
+        )
+
+    def test_tournament_page_mobile_card_shows_coach_below_roster_as_meta_line(self):
+        coach = self.create_player('meta-line-coach')
+        first = self.create_player('meta-line-player-one')
+        second = self.create_player('meta-line-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('Meta Line Pair', [first, second])
+        tournament.add_team(team, coach_id=coach.pk)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+        html = response.content.decode()
+
+        meta_line = re.search(
+            r'<p class="tournament-team-mobile-meta">(.*?)</p>',
+            html,
+            re.S,
+        ).group(1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('tournament-team-mobile-meta-label', meta_line)
+        self.assertIn('class="tournament-team-captain-name"', meta_line)
+        self.assertIn(coach.get_name(), meta_line)
+        self.assertIn('/player/{}'.format(coach.pk), meta_line)
+        self.assertLess(
+            html.index('tournament-team-mobile-roster'),
+            html.index('tournament-team-mobile-meta'),
+        )
+
+    def test_tournament_page_mobile_card_omits_coach_meta_line_when_no_coach(self):
+        first = self.create_player('no-meta-line-player-one')
+        second = self.create_player('no-meta-line-player-two')
+        tournament = self.create_tournament()
+        team = self.create_team('No Meta Line Pair', [first, second])
+        tournament.add_team(team)
+
+        response = self.client.get('/tournament/{}'.format(tournament.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tournament-team-mobile-roster')
+        self.assertNotContains(response, 'tournament-team-mobile-meta')
+
 
 class TournamentDelegationsOrganizerDisplayTests(TestCase):
     def create_player(self, username):
@@ -2835,8 +2896,9 @@ class TournamentListingPageTests(TestCase):
             html,
             re.S,
         ).group(1)
-        mobile_captain_section = re.search(
-            r'<section class="tournament-team-mobile-people">\s*<h3>.*?</h3>(.*?)</section>',
+        mobile_roster_section = re.search(
+            r'<section class="tournament-team-mobile-people tournament-team-mobile-roster">'
+            r'\s*<h3>.*?</h3>(.*?)</section>',
             html,
             re.S,
         ).group(1)
@@ -2846,10 +2908,18 @@ class TournamentListingPageTests(TestCase):
         self.assertIn(captain.get_name(), captain_cell)
         self.assertNotIn('tournament-team-player-avatar', captain_cell)
         self.assertNotIn('flag-icon', captain_cell)
-        self.assertIn('class="tournament-team-captain-name"', mobile_captain_section)
-        self.assertIn(captain.get_name(), mobile_captain_section)
-        self.assertNotIn('tournament-team-player-avatar', mobile_captain_section)
-        self.assertNotIn('flag-icon', mobile_captain_section)
+        self.assertIn(captain.get_name(), mobile_roster_section)
+        self.assertIn(teammate.get_name(), mobile_roster_section)
+        self.assertIn('tournament-team-player is-captain', mobile_roster_section)
+        self.assertEqual(mobile_roster_section.count('tournament-team-captain-badge'), 1)
+        captain_badge = re.search(
+            r'<span class="tournament-team-captain-badge".*?</span>',
+            mobile_roster_section,
+            re.S,
+        ).group(0)
+        self.assertIn('data-bs-toggle="tooltip"', captain_badge)
+        self.assertIn('aria-label=', captain_badge)
+        self.assertIn('bi bi-star-fill', captain_badge)
         self.assertIn(captain.get_name(), athletes_cell)
         self.assertIn(teammate.get_name(), athletes_cell)
         self.assertContains(response, 'data-tournament-team-sort="place"')
