@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   petanque_portal_web_api:
     build:
@@ -11,6 +17,7 @@ services:
      - petanque_uploaded_files:/application/media/images/
     depends_on:
      - petanque_portal_db
+    logging: *default-logging
 
   petanque_portal_nginx:
     build:
@@ -25,6 +32,7 @@ services:
      - ./data/certbot/www:/var/www/certbot
     depends_on:
      - petanque_portal_web_api
+    logging: *default-logging
 
   petanque_portal_db:
     image: postgres:17
@@ -35,12 +43,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-petanque_portal}
     volumes:
      - petanque_db:/var/lib/postgresql/data
+    logging: *default-logging
 
   petanque_portal_adminer:
     image: adminer
     restart: always
     ports:
       - 60103:8080
+    logging: *default-logging
 
   petanque_feedback_fider:
     build:
@@ -60,6 +70,7 @@ services:
       EMAIL_SMTP_PASSWORD: ${FIDER_SMTP_PASSWORD}
     depends_on:
       - petanque_portal_db
+    logging: *default-logging
 
   certbot:
     image: certbot/certbot
@@ -69,6 +80,7 @@ services:
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+    logging: *default-logging
 
 
 volumes:
