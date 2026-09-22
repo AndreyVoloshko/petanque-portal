@@ -2,7 +2,6 @@ import re
 
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import login
 from django.db import transaction
 from federation.models.tournament import Tournament, ArbiterTournamentMembership, TeamTournamentMembership
 from federation.forms.registration_team_form import RegistrationTeamForm
@@ -118,8 +117,7 @@ def register_player(request):
                 else:
                     messages.success(request, _('Registration successful!'), extra_tags='success')
 
-                login(request, user)
-                return redirect('profile')
+                return redirect('player', id=player.pk)
             except Exception as e:
                 messages.error(request, str(e), extra_tags='danger')
         else:
