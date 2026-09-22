@@ -2248,6 +2248,16 @@ class PlayerRegistrationRedesignTests(TestCase):
         player = Player.objects.get(name='No', surname='Password')
         self.assertFalse(player.user.has_usable_password())
 
+    def test_player_registration_does_not_log_in_new_user(self):
+        admin = User.objects.create_superuser(username='registering-admin', password='Pass1234!')
+        self.client.force_login(admin)
+
+        response = self.client.post('/register/player/', self.registration_data(name='Added', surname='ByAdmin'))
+
+        player = Player.objects.get(name='Added', surname='ByAdmin')
+        self.assertRedirects(response, '/player/{}'.format(player.pk), fetch_redirect_response=False)
+        self.assertEqual(int(self.client.session['_auth_user_id']), admin.pk)
+
     def test_non_ukrainian_registration_ignores_optional_account_fields(self):
         form = RegistrationPlayerForm(data=self.registration_data(
             country='PL',
