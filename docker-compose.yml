@@ -76,6 +76,7 @@ services:
 
   certbot:
     image: certbot/certbot
+    restart: always
     depends_on:
       - petanque_portal_nginx
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
