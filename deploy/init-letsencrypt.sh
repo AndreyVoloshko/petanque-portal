@@ -1,5 +1,7 @@
 #!/bin/bash
-domains=(portal.petanque.org.ua feedback.petanque.org.ua)
+# petanque.org.ua validates only once its DNS points at this host, so expand
+# the certificate after the DNS switch, not before.
+domains=(portal.petanque.org.ua feedback.petanque.org.ua petanque.org.ua www.petanque.org.ua)
 email="andreyvoloshko@gmail.com"
 webroot="/var/www/certbot"
 
