@@ -22,3 +22,11 @@ export FIDER_EMAIL_NOREPLY=$(python3 -c "import json,os; c=json.loads(os.environ
 docker compose -p "petanque-portal" --profile feedback build
 docker compose -p "petanque-portal" run --rm --no-deps --entrypoint python petanque_portal_web_api manage.py collectstatic --noinput
 docker compose -p "petanque-portal" --profile feedback up -d
+
+# Every deploy builds images on this host, and nothing removed the leftovers:
+# build cache reached 8.6 GB on a 20 GB disk. Keep a week of cache so routine
+# deploys stay fast; drop images the rebuild left untagged. Cleanup failures
+# must not fail an otherwise successful deploy.
+docker builder prune -af --filter until=168h || echo "build cache prune failed (non-fatal)" >&2
+docker image prune -f || echo "image prune failed (non-fatal)" >&2
+df -h / | tail -1
