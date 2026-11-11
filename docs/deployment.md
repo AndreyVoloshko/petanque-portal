@@ -95,6 +95,24 @@ these values or paste them into chat/AI tooling.
    `admin`'s) — otherwise the first automated pull fails on host-key
    verification or authentication.
 
+## Other stacks on this host
+
+The FPU website (`petanque.org.ua`, repo `nemo15/petanque-site`) runs on the
+same server as its own compose project (`fpu-site`, checked out at
+`/root/apps/fpu-site`) with its own database and release pipeline. The portal
+stack owns the shared edge: its nginx and certbot serve `petanque.org.ua` too,
+and the site deploys no nginx or certbot of its own.
+
+- The portal creates the `petanque_shared` network. Only
+  `petanque_portal_nginx` joins it on the portal side and only `fpu_site` on
+  the site side, so neither stack can reach the other's database.
+- nginx resolves `fpu_site:3000` per request (`resolver 127.0.0.11`), so the
+  portal starts and serves normally while the site is down or redeploying.
+- The site's release refuses to run if `petanque_shared` does not exist, so
+  deploy the portal first when setting up a fresh host.
+- `docker compose down` here leaves the network in place while `fpu_site` is
+  still attached (Docker reports it as in use); that's expected.
+
 ## Failure handling
 
 `remote_run.sh` already has `set -e`, so a failed build/collectstatic/up
