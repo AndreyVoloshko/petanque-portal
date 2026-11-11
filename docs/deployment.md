@@ -99,7 +99,7 @@ these values or paste them into chat/AI tooling.
 
 The FPU website (`petanque.org.ua`, repo `nemo15/petanque-site`) runs on the
 same server as its own compose project (`fpu-site`, checked out at
-`/root/apps/fpu-site`) with its own database and release pipeline. The portal
+`/root/apps/site`) with its own database and release pipeline. The portal
 stack owns the shared edge: its nginx and certbot serve `petanque.org.ua` too,
 and the site deploys no nginx or certbot of its own.
 
