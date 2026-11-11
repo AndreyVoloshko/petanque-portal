@@ -32,6 +32,9 @@ services:
      - petanque_uploaded_files:/application/media/images/
      - ./data/certbot/conf:/etc/letsencrypt
      - ./data/certbot/www:/var/www/certbot
+    networks:
+     - default
+     - shared
     depends_on:
      - petanque_portal_web_api
     logging: *default-logging
@@ -89,3 +92,11 @@ services:
 volumes:
   petanque_db:
   petanque_uploaded_files:
+
+networks:
+  # Joined by other compose projects on this host (the FPU site's `fpu_site`)
+  # so nginx can proxy to them. Only nginx is attached here; the portal's
+  # database, app and adminer stay on `default`, out of reach of those stacks.
+  # The fixed name keeps it independent of the `-p` project name.
+  shared:
+    name: petanque_shared
