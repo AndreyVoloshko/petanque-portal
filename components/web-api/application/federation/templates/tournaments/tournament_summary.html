@@ -159,7 +159,9 @@
                         <span>{% trans "Register" %}</span>
                     </a>
                 {% endif %}
-                {% if row.show_results_action %}
+                {% if row.draw_results_url %}
+                    {% include "tournaments/_draw_results_action.html" with url=row.draw_results_url only %}
+                {% elif row.show_results_action %}
                     <a class="tournament-detail-action tournament-detail-action-results" href="{{ row.protocol_url }}">
                         <i class="bi bi-trophy" aria-hidden="true"></i>
                         <span>{% trans "Results" %}</span>

@@ -5808,6 +5808,41 @@ Tournaments classes
   pointer-events: none;
 }
 
+.tournament-draw-results {
+  align-items: center;
+  background: linear-gradient(180deg, #faf7ff, #f0e8ff);
+  border: 1px solid #d8c4fb;
+  border-radius: 10px;
+  color: #4a218e;
+  display: inline-flex;
+  font-size: 0.86rem;
+  font-weight: 750;
+  gap: 0.35rem;
+  justify-content: center;
+  line-height: 1.15;
+  min-height: 2.35rem;
+  padding: 0.36rem 0.55rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tournament-draw-results img {
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.tournament-draw-results:hover,
+.tournament-draw-results:focus-visible {
+  background: #ede2ff;
+  border-color: #ac87eb;
+  color: #3a166f;
+}
+
+.tournament-draw-results:focus-visible {
+  outline: 2px solid #7137c8;
+  outline-offset: 2px;
+}
+
 .tournaments-pagination {
   align-items: center;
   border-top: 1px solid #e5ecf4;
@@ -10823,6 +10858,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-action,
+  .tournament-detail-actions .tournament-draw-results,
   .tournament-detail-export {
     flex: 1 1 12rem;
   }

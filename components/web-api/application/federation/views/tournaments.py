@@ -30,6 +30,8 @@ from federation.utils.tournament_names import get_tournament_card_metadata
 
 
 _SPACES_RE = re.compile(r'\s+')
+_DRAW_REF_PATTERN = r'^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$'
+_DRAW_RESULTS_PAGE = 'https://andrewkameniev.github.io/petanque-draw/#/tournament'
 DEFAULT_TOURNAMENTS_PAGE_SIZE = 50
 TABLET_TOURNAMENTS_PAGE_SIZE = 30
 MOBILE_TOURNAMENTS_PAGE_SIZE = 25
@@ -267,9 +269,12 @@ def _truthy(value):
 
 
 def _get_tournaments_queryset(filters):
+    queryset = Tournament.public_queryset()
+    if filters['period'] == 'past':
+        # A linked Draw archive supplies results even when Portal processing is still open.
+        queryset |= Tournament.objects.filter(petanque_draw_id__regex=_DRAW_REF_PATTERN)
     queryset = (
-        Tournament.public_queryset()
-        .select_related('organizer_club')
+        queryset.select_related('organizer_club')
         .annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True))
     )
     queryset = _apply_rating_filter(queryset, filters['rating_type'])
@@ -339,7 +344,10 @@ def _build_tournament_row(tournament):
     metadata = get_tournament_card_metadata(tournament)
     format_label = _display_format_label(metadata.get('format'))
     audience_tags = [_display_category_label(tag) for tag in metadata.get('audience_tags', [])]
-    status = _tournament_status_data(tournament)
+    draw_ref = tournament.petanque_draw_id
+    has_draw_results = bool(re.fullmatch(_DRAW_REF_PATTERN, draw_ref))
+    draw_results_url = f'{_DRAW_RESULTS_PAGE}?{urlencode({"ref": draw_ref})}' if has_draw_results else ''
+    status = _tournament_status_data(tournament, has_draw_results)
     country_data = _display_country_data(tournament)
     place_label = _place_label(tournament, country_data)
     format_labels = metadata.get('format_tags') or [metadata.get('format')]
@@ -374,6 +382,7 @@ def _build_tournament_row(tournament):
         'detail_url': reverse('tournament', args=[tournament.pk]),
         'registration_url': reverse('register_team', args=[tournament.pk]),
         'protocol_url': reverse('tournament_protocol', args=[tournament.pk]),
+        'draw_results_url': draw_results_url,
         'show_results_action': tournament.is_processing_closed(),
     }
 
@@ -647,17 +656,17 @@ def _organizer_url(tournament):
     return reverse('club', args=[tournament.organizer_club.pk])
 
 
-def _tournament_status_data(tournament):
-    status_key = _tournament_status_key(tournament)
+def _tournament_status_data(tournament, has_draw_results):
+    status_key = _tournament_status_key(tournament, has_draw_results)
     return {
         'key': status_key,
         'label': STATUS_LABELS[status_key],
-        'note': _tournament_status_note(tournament, status_key),
+        'note': _tournament_status_note(tournament, status_key, has_draw_results),
     }
 
 
-def _tournament_status_key(tournament):
-    if _is_cancelled(tournament):
+def _tournament_status_key(tournament, has_draw_results):
+    if not has_draw_results and tournament.is_auto_cancelled():
         return 'cancelled'
 
     today = timezone.localdate()
@@ -688,11 +697,7 @@ def _is_finished_by_dates(tournament, today):
     return bool(tournament.start_date and tournament.start_date < today)
 
 
-def _is_cancelled(tournament):
-    return tournament.is_auto_cancelled()
-
-
-def _tournament_status_note(tournament, status_key):
+def _tournament_status_note(tournament, status_key, has_draw_results):
     if status_key in ('registration_open', 'registration_closed') and tournament.date_registration_stop:
         date_str = formats.date_format(tournament.date_registration_stop, 'SHORT_DATE_FORMAT')
         time_str = formats.time_format(tournament.date_registration_stop, 'H:i')
@@ -701,7 +706,7 @@ def _tournament_status_note(tournament, status_key):
     if status_key == 'ongoing':
         return _date_range_label(tournament)
 
-    if status_key == 'finished' and tournament.is_processing_closed():
+    if status_key == 'finished' and (has_draw_results or tournament.is_processing_closed()):
         return _('результати доступні')
 
     return ''
