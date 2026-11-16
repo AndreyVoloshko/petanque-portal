@@ -1,0 +1,1 @@
+{% if href %}<a class="portal-btn {{ css_class }}" href="{{ href }}" data-variant="{{ variant|default:'outline' }}">{% if icon %}<i class="bi {{ icon }}" aria-hidden="true"></i>{% endif %}{{ label }}</a>{% else %}<button class="portal-btn {{ css_class }}" type="submit" data-variant="{{ variant|default:'primary' }}">{{ label }}</button>{% endif %}

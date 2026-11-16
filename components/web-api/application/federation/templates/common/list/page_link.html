@@ -1,0 +1,3 @@
+<li>
+    <a class="portal-btn" href="{{ href }}{{ anchor }}"{% if label %} aria-label="{{ label }}"{% endif %}{% if number and number == current %} aria-current="page"{% endif %}>{% if icon %}<i class="bi {{ icon }}" aria-hidden="true"></i>{% else %}{{ number }}{% endif %}</a>
+</li>

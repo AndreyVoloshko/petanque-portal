@@ -1,0 +1,11 @@
+{% load i18n %}
+{% trans "Показувати:" as size_label %}
+{% trans "Apply page size" as apply_label %}
+<form class="portal-list-size" method="get" action="{{ action }}">
+    {% include "common/list/hidden_fields.html" with fields=active_filters exclude="per_page" only %}
+    <label for="list-page-size">{{ size_label }}</label>
+    <select class="portal-select" id="list-page-size" name="per_page">
+        {% for size in page_size_options %}<option value="{{ size }}"{% if page_size == size %} selected{% endif %}>{{ size }}</option>{% endfor %}
+    </select>
+    {% include "common/list/button.html" with label=apply_label variant="outline" only %}
+</form>

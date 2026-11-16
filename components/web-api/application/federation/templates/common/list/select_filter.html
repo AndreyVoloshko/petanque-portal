@@ -1,0 +1,9 @@
+<label class="portal-field">
+    <span class="visually-hidden">{{ label }}</span>
+    <select class="portal-select" name="{{ name }}">
+        <option value="">{{ label }}</option>
+        {% for value, text in options %}
+            <option value="{{ value }}"{% if selected == value %} selected{% endif %}>{{ text }}</option>
+        {% endfor %}
+    </select>
+</label>

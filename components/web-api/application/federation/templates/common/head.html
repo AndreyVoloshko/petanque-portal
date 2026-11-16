@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n vite_assets %}
 <html data-bs-theme="light">
     <head>
 
@@ -42,6 +42,7 @@
         <!-- jQuery UI JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
+        {% if not tournaments_pilot %}
         <!-- DataTables Bootstrap 5 integration -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
@@ -52,10 +53,15 @@
 
         <!-- FullCalendar CSS -->
         <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+        {% endif %}
         <!-- Custom Styles -->
         <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
-        <!-- FullCalendar JS -->
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        {% if not tournaments_pilot %}
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        {% else %}
+            {% vite_stylesheet "src/tournaments.css" %}
+            <noscript><style>#gdpr_warning { position: static; transform: none; margin: 4.5rem auto 0; }</style></noscript>
+        {% endif %}
 
         <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
     </head>

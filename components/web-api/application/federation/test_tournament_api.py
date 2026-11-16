@@ -232,7 +232,8 @@ class TournamentApiDrawIdTests(TournamentApiTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.refreshed().is_processing_closed())
         self.assertContains(self.client.get(detail_url), f'href="{draw_url}"', count=1)
-        self.assertContains(self.client.get(list_url), f'href="{draw_url}"', count=3)
+        # The desktop table and responsive cards each expose the Draw link.
+        self.assertContains(self.client.get(list_url), f'href="{draw_url}"', count=2)
 
         self.post(PRIMARY_URL, {'tournament_id': self.tournament.pk, 'petanque_draw_id': ''}, **AUTH)
         self.assertNotContains(self.client.get(detail_url), draw_url)

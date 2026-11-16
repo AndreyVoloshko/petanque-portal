@@ -78,16 +78,39 @@ def tournaments(request, date_filter=None, type_filter=None):
     page_title = _("Competitions")
     return render(request, 'tournaments/tournaments.html', {
         'page_title': page_title,
+        'tournaments_pilot': True,
         'filters': filters,
         'period_tabs': _get_period_tabs(filters),
         'format_options': FORMAT_OPTIONS,
         'category_options': CATEGORY_OPTIONS,
-        'place_options': filter_options['places'],
+        'place_options': [(place, place) for place in filter_options['places']],
+        'search_form_fields': {
+            key: value for key, value in active_filters.items()
+            if key not in ('q', 'format', 'category', 'place')
+        },
+        'toggle_forms': [
+            {
+                'fields': {k: v for k, v in active_filters.items() if k != 'type'},
+                'name': 'type',
+                'value': 'all' if filters['rating_type'] == 'rating' else 'rating',
+                'checked': filters['rating_type'] == 'rating',
+                'label': _("Ranked only"),
+                'icon': 'bi-award',
+            },
+            {
+                'fields': {k: v for k, v in active_filters.items() if k != 'foreign'},
+                'name': 'foreign',
+                'value': '0' if filters['foreign'] else '1',
+                'checked': filters['foreign'],
+                'label': _("Закордонні"),
+                'icon': 'bi-globe2',
+            },
+        ],
         'rows': page_rows,
         'show_strength': True,
         'page_obj': page_obj,
         'page_size': filters['page_size'],
-        'default_page_size': DEFAULT_TOURNAMENTS_PAGE_SIZE,
+        'page_size_options': sorted(TOURNAMENTS_PAGE_SIZE_OPTIONS),
         'pagination_pages': _pagination_pages(page_obj),
         'pagination_summary': _pagination_summary(page_obj),
         'pagination_urls': _pagination_urls(filters, page_obj),

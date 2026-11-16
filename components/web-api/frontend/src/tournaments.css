@@ -1,0 +1,78 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "../.generated/basecoat.css";
+@import "./theme.css";
+@import "./list.css";
+
+.tournaments-results-surface {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-radius);
+  scroll-margin-top: 5rem;
+}
+.tournaments-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.tournaments-table :is(th, td) { padding: .75rem; border-bottom: 1px solid var(--list-border); white-space: normal; }
+.tournaments-table th { background: var(--list-muted-surface); font-size: var(--list-type); overflow-wrap: anywhere; }
+.tournaments-table th:first-child { border-start-start-radius: var(--list-radius); }
+.tournaments-table th:last-child { border-start-end-radius: var(--list-radius); }
+.tournaments-table tbody tr:hover { background: var(--list-muted-surface); }
+.tournament-date-column { width: 10%; }
+.tournament-title-column { width: 24%; }
+.tournament-format-column { width: 14%; }
+.tournament-place-column { width: 17%; }
+.tournament-strength-column { width: 8%; }
+.tournament-status-column { width: 13%; }
+
+.pilot-date, .pilot-place { display: flex; align-items: baseline; gap: .4rem; }
+.pilot-date span, .pilot-team-count, .pilot-place, .pilot-status-note { color: var(--list-muted); font-size: var(--list-type); }
+.pilot-date time { font-weight: 750; }
+.pilot-date span, .pilot-team-count, .pilot-status-note { display: block; }
+.pilot-place a, .pilot-place span { overflow-wrap: anywhere; }
+.pilot-place .flag-icon { flex-shrink: 0; }
+.pilot-title { color: var(--list-text); font-weight: 800; overflow-wrap: anywhere; text-decoration: none; }
+.pilot-title:hover { text-decoration: underline; }
+
+.pilot-tags, .pilot-status, .pilot-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; }
+.pilot-actions :is(a, .portal-btn) { white-space: normal; }
+.portal-badge {
+  background: var(--list-muted-surface);
+  border-radius: var(--list-radius);
+  color: var(--list-muted);
+  font-size: .75rem;
+  font-weight: 750;
+  max-width: 100%;
+  padding: .2rem .55rem;
+}
+.portal-badge[data-tone="format"], .portal-badge[data-tone="ongoing"] { background: #e4f0ff; color: #09449b; }
+.portal-badge[data-tone="audience"] { background: #f2ebff; color: #5623a9; }
+.portal-badge[data-tone="open"], .portal-badge[data-tone="registration_open"] { background: #dcf4e7; color: #086038; }
+.portal-badge[data-tone="cancelled"] { background: #fce8e8; color: #982c27; }
+
+.tournaments-mobile-list, .tournaments-card-sort { display: none; }
+@media (max-width: 1400px) {
+  .tournaments-results-surface { background: transparent; border: 0; }
+  .tournaments-page .tournaments-table { display: none; }
+  .tournaments-card-sort { display: inline-flex; margin-bottom: .625rem; }
+  .tournaments-mobile-list { display: grid; gap: .75rem; }
+  .tournament-mobile-card {
+    background: var(--list-surface);
+    border: 1px solid var(--list-border);
+    border-radius: var(--list-radius);
+    display: grid;
+    gap: var(--list-space);
+    min-width: 0;
+    padding: .875rem;
+  }
+  .pilot-card-main { display: grid; gap: .35rem; min-width: 0; }
+  .pilot-card-main h2 { margin: 0; font-size: 1.05rem; }
+  .pilot-card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: var(--list-space); }
+  .portal-list-footer { margin-top: var(--list-space); background: var(--list-surface); border: 1px solid var(--list-border); border-radius: var(--list-radius); }
+}
+@media (min-width: 768px) and (max-width: 1400px) {
+  .tournament-mobile-card { grid-template-columns: minmax(9rem, .85fr) minmax(0, 2fr) minmax(9rem, 1fr); align-items: start; }
+  .pilot-card-meta { display: grid; }
+  .pilot-card-actions { justify-self: end; }
+}
+@media (max-width: 480px) {
+  .tournaments-page .tournament-period-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tournaments-page .tournament-period-tab { min-width: 0; }
+}

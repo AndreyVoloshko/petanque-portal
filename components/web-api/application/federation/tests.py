@@ -3310,15 +3310,16 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(future_tab['count'], 1)
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
 
-    def test_filter_form_auto_submits_without_apply_button(self):
+    def test_filter_form_offers_explicit_search_submission(self):
         self.create_tournament('Future Cup')
         self.client.cookies['django_language'] = 'en'
 
         response = self.client.get('/tournaments/', {'period': 'future'})
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'tournament-filter-submit')
-        self.assertNotContains(response, 'Apply')
+        self.assertContains(response, 'class="portal-btn tournament-search-button" type="submit"')
+        self.assertContains(response, '>Search</button>')
+        self.assertContains(response, 'name="q"')
 
     def test_tournament_name_has_full_name_tooltip(self):
         self.create_tournament('Full Cup (триплети, тур, чоловіки)', players_min=3)
@@ -3372,7 +3373,10 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(len(response.context['rows']), 5)
         self.assertContains(response, 'class="tournaments-mobile-list"')
         self.assertContains(response, 'per_page=5')
-        self.assertContains(response, 'tournaments-page-size-value">5</span>')
+        self.assertContains(response, '<option value="5" selected>5</option>')
+        self.assertNotContains(response, 'data-responsive-page-size')
+        self.assertNotContains(response, 'data-responsive-template-mount')
+        self.assertContains(response, 'type="submit"')
 
     def test_english_listing_localizes_labels_and_keeps_key_based_filters(self):
         self.create_tournament('Junior Triples Cup (юніори)', players_min=3)

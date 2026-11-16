@@ -1,0 +1,15 @@
+<div class="pilot-place">
+    <i class="bi {% if row.is_foreign %}bi-globe2{% else %}bi-geo-alt{% endif %}" aria-hidden="true"></i>
+    {% if row.tournament.place %}
+        <a target="_blank" rel="noopener" href="https://maps.google.com?q={{ row.tournament.place|urlencode }}">{{ row.place_label }}</a>
+    {% else %}
+        <span>{{ row.place_label }}</span>
+    {% endif %}
+    {% if row.country_code %}<span class="flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>{% endif %}
+</div>
+{% if not row.is_foreign %}
+    <div class="pilot-place">
+        <i class="bi bi-building" aria-hidden="true"></i>
+        {% if row.organizer_url %}<a href="{{ row.organizer_url }}">{{ row.organizer_label }}</a>{% else %}<span>{{ row.organizer_label }}</span>{% endif %}
+    </div>
+{% endif %}

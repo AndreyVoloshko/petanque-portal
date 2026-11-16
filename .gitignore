@@ -8,3 +8,6 @@ petanque-portal/
 __pycache__
 .claude/settings.local.json
 .superpowers/
+/components/web-api/frontend/node_modules/
+/components/web-api/frontend/.generated/
+/components/web-api/application/static/vite/

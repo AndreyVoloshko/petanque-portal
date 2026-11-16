@@ -1,0 +1,26 @@
+@theme inline {
+  --color-primary: var(--list-primary);
+  --color-primary-foreground: var(--list-on-primary);
+  --color-foreground: var(--list-text);
+  --color-muted: var(--list-muted-surface);
+  --color-muted-foreground: var(--list-muted);
+  --color-ring: var(--list-primary);
+  --color-destructive: #b42318;
+}
+
+.tournaments-page {
+  --list-primary: #0b55c6;
+  --list-on-primary: white;
+  --list-text: #172033;
+  --list-muted: #526079;
+  --list-muted-surface: #f4f7fb;
+  --list-surface: white;
+  --list-border: #dbe5ef;
+  --list-radius: 10px;
+  --list-space: .625rem;
+  --list-type: .875rem;
+  --list-control: 2.5rem;
+  color: var(--list-text);
+  font-family: inherit;
+  grid-template-columns: minmax(0, 1fr);
+}

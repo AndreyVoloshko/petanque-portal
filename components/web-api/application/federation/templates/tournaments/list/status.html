@@ -1,0 +1,5 @@
+<div class="pilot-status">
+    {% include "common/list/badge.html" with label=row.status.label tone=row.status.key only %}
+    {% include "tournaments/_insurance_required.html" with tournament=row.tournament only %}
+</div>
+{% if row.status.note %}<span class="pilot-status-note">{{ row.status.note }}</span>{% endif %}

@@ -90,22 +90,6 @@
         return 'desktop';
     }
 
-    function addResponsiveLayoutListener(callback) {
-        $.each(['mobile', 'tablet'], function(index, queryName) {
-            var media = window.matchMedia ? window.matchMedia(RESPONSIVE_QUERIES[queryName]) : null;
-
-            if (!media) {
-                return;
-            }
-
-            if (media.addEventListener) {
-                media.addEventListener('change', callback);
-            } else if (media.addListener) {
-                media.addListener(callback);
-            }
-        });
-    }
-
     function findWithSelf(root, selector) {
         var $root = root && root.jquery ? root : $(root || document);
 
@@ -369,60 +353,6 @@
         }
     }
 
-    function initResponsiveTemplateMount(mountElement) {
-        var $mount = $(mountElement);
-        var tabletTemplateId = $mount.data('tabletTemplate');
-        var mobileTemplateId = $mount.data('mobileTemplate');
-        var layoutClass = $mount.data('layoutClass');
-        var disableMobileTooltips = $mount.data('disableMobileTooltips') === true ||
-            $mount.data('disableMobileTooltips') === 'true';
-
-        function render() {
-            var layout = responsiveLayout();
-            var template;
-
-            if (layoutClass) {
-                $(document.documentElement).addClass(layoutClass);
-            }
-
-            if ($mount.data('portalLayout') === layout) {
-                return;
-            }
-
-            $mount.empty().data('portalLayout', layout);
-
-            if (layout === 'desktop') {
-                return;
-            }
-
-            template = document.getElementById(layout === 'mobile' ? mobileTemplateId : tabletTemplateId);
-            if (!template) {
-                return;
-            }
-
-            if (template.content) {
-                mountElement.appendChild(template.content.cloneNode(true));
-            } else {
-                $mount.html($(template).html());
-            }
-
-            if (layout === 'mobile' && disableMobileTooltips) {
-                disableTooltips($mount);
-            } else {
-                refreshTooltips($mount);
-            }
-        }
-
-        render();
-        addResponsiveLayoutListener(render);
-    }
-
-    function initResponsiveTemplateMounts() {
-        $('[data-responsive-template-mount]').each(function() {
-            initResponsiveTemplateMount(this);
-        });
-    }
-
     function submitClosestForm() {
         $(this).closest('form').trigger('submit');
     }
@@ -430,14 +360,13 @@
     function initAutoSubmitControls() {
         $(document).on(
             'change',
-            '.tournament-filter-form select, .players-filter-form select, .players-page-size-form select[name="' + PAGE_SIZE_PARAM + '"]',
+            '.players-filter-form select, .players-page-size-form select[name="' + PAGE_SIZE_PARAM + '"]',
             submitClosestForm
         );
-        $(document).on('change', '.tournament-toggle-form input[type="checkbox"]', submitClosestForm);
     }
 
     function initRowClicks() {
-        $(document).on('click', '.tournament-row-clickable, #players tbody tr.players-row', function(event) {
+        $(document).on('click', '#players tbody tr.players-row', function(event) {
             var href;
 
             if ($(event.target).closest('a, button, input, select').length) {
@@ -505,12 +434,10 @@
         }
 
         registerDataTableOrdering();
-        initResponsiveTemplateMounts();
         refreshTooltips(document);
         initAutoSubmitControls();
         initRowClicks();
         initTournamentNotesCards();
-        initScrollMemory('.tournaments-page-link', '.tournaments-results-surface', 'tournaments-table-scroll');
         initScrollMemory('.players-page-link', '.players-results-surface', 'players-table-scroll');
 
         $(document).on('click', '.players-column-help', function(event) {

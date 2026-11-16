@@ -3622,3 +3622,9 @@ msgstr "Team places updated."
 
 #~ msgid "View all"
 #~ msgstr "View all"
+
+msgid "Find tournaments"
+msgstr "Search"
+
+msgid "Apply page size"
+msgstr "Apply page size"
