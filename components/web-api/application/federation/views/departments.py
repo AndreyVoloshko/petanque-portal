@@ -1,4 +1,4 @@
-from django.db.models import Prefetch
+from django.db.models import Exists, OuterRef, Prefetch
 from django.shortcuts import render
 
 from federation.models.department import Department, PlayerDepartmentMembership
@@ -14,17 +14,17 @@ def departments(request):
     })
 
 
-def department_groups():
-    groups = []
+def public_departments():
     memberships = (
         PlayerDepartmentMembership.objects
         .filter(player__isnull=False)
         .select_related('player', 'player__current_club')
-        .order_by('order', 'player__surname', 'player__name')
+        .order_by('order', 'player__surname', 'player__name', 'pk')
     )
 
-    departments_list = (
+    return (
         Department.objects
+        .filter(Exists(memberships.filter(team_id=OuterRef('pk'))))
         .prefetch_related(
             Prefetch(
                 'playerdepartmentmembership_set',
@@ -32,20 +32,19 @@ def department_groups():
                 to_attr='ordered_memberships',
             )
         )
-        .order_by('order', 'name')
+        .order_by('order', 'name', 'pk')
     )
 
-    for department in departments_list:
-        if not department.ordered_memberships:
-            continue
 
+def department_groups():
+    groups = []
+    for department in public_departments():
         label = department.name
-        group_short_label = _short_label_from_text(label, 'ФПУ')
 
         groups.append({
             'key': f'department-{department.pk}',
             'label': label,
-            'short_label': group_short_label,
+            'short_label': department_badge(department),
             'items': [
                 {
                     'player': membership.player,
@@ -60,12 +59,12 @@ def department_groups():
     return groups
 
 
-def _short_label_from_text(text, fallback):
+def department_badge(department):
     words = [
         word.strip('.,()[]{}').upper()
-        for word in str(text).split()
+        for word in department.name.split()
         if word.strip('.,()[]{}')
     ]
     initials = ''.join(word[0] for word in words[:3] if word)
 
-    return initials or fallback
+    return initials or 'ФПУ'

@@ -2,13 +2,14 @@ import json
 from copy import copy
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
 from django.db.models import Q
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from federation.audit import (
     SYSTEM_AUDIT_TOURNAMENT_DRAW_USERNAME,
     SYSTEM_AUDIT_TOURNAMENT_RESULTS_USERNAME,
@@ -20,6 +21,68 @@ from federation.models.tournament import Tournament, TeamTournamentMembership
 from federation.models.player import Player
 from federation.models.club import Club
 from federation.utils.tournament_names import tournament_display_name_matches
+from federation.views.clubs import public_clubs_queryset
+from federation.views.departments import department_badge, public_departments
+
+
+def _public_media_url(request, field):
+    if not field:
+        return None
+
+    # These image fields declare S3 storage even in local filesystem setups.
+    url = field.url if settings.AWS_STORAGE_BUCKET_NAME else default_storage.url(field.name)
+    return request.build_absolute_uri(url)
+
+
+def _department_member(request, membership):
+    player = membership.player
+    club = player.current_club
+    return {
+        'name': player.get_name(),
+        'profile_path': reverse('player', kwargs={'id': player.pk}),
+        'portrait_url': _public_media_url(request, player.avatar),
+        'club_name': (club.short_name.strip() or None) if club else None,
+        'role': membership.role.strip() or None,
+        'role_note': (membership.description or '').strip() or None,
+    }
+
+
+@require_GET
+def departments_list(request):
+    data = [
+        {
+            'id': department.pk,
+            'badge': department_badge(department),
+            'name': department.name,
+            'members': [
+                _department_member(request, membership)
+                for membership in department.ordered_memberships
+            ],
+        }
+        for department in public_departments()
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@require_GET
+def clubs_list(request):
+    data = [
+        {
+            'id': club.pk,
+            'detail_path': reverse('club', kwargs={'id': club.pk}),
+            'short_name': club.short_name,
+            'name': club.name,
+            'city_id': club.city_id,
+            'city_name': (club.city.name or None) if club.city else None,
+            'country': (club.city.country.code or None) if club.city else None,
+            'address': club.address.strip() or None,
+            'athlete_count': club.players_count,
+            'logo_url': _public_media_url(request, club.logo),
+        }
+        for club in public_clubs_queryset()
+    ]
+    return JsonResponse(data, safe=False)
+
 
 def tournaments_list(request):
     start_date = parse_datetime(request.GET.get('start'))

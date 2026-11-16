@@ -17,7 +17,14 @@ from .views.coaches import coaches
 from .views.records import records
 from .views.sport_titles import sport_titles
 from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export
-from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list, update_tournament
+from .views.api import (
+    clubs_list,
+    departments_list,
+    players_clubs_and_tournaments_list,
+    players_list,
+    tournaments_list,
+    update_tournament,
+)
 from .views.documents import documents, document_download
 from .views.national_teams import national_teams
 from .views.seasons import seasons
@@ -80,6 +87,8 @@ urlpatterns = [
     re_path(r'^api/tournaments/list/$', tournaments_list, name='api_tournaments_list'),
     re_path(r'^api/players_clubs_and_tournaments/list/$', players_clubs_and_tournaments_list, name='api_players_clubs_and_tournaments_list'),
     re_path(r'^api/players_list/list/$', players_list, name='api_players_list'),
+    path('api/departments/list/', departments_list, name='api_departments_list'),
+    path('api/clubs/list/', clubs_list, name='api_clubs_list'),
     re_path(r'^api/tournament/$', update_tournament, name='api_update_tournament'),
     # Backward compatibility: the original results-only URL, same handler.
     re_path(r'^api/tournament/results/$', update_tournament, name='api_submit_tournament_results'),
