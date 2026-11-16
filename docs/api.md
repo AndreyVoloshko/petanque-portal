@@ -8,6 +8,101 @@ Endpoints that return JSON or CSV. All URLs are relative to the site root (e.g. 
 
 No authentication required.
 
+### `GET /api/departments/list/`
+
+Returns the complete public federation structure as a JSON array. There are no
+query parameters or pagination. Bodies are ordered by menu order, Ukrainian
+name, then ID; only bodies with at least one membership linked to a player
+appear. Members are ordered by page order, player surname, player given name,
+then membership ID. This matches `/departments/`.
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `id` | integer | Stable department ID |
+| `badge` | string | Text initials displayed on the structure page |
+| `name` | string | Ukrainian department name as stored in the portal |
+| `members` | array | Public membership records, in display order |
+| `members[].name` | string | Public player display name |
+| `members[].profile_path` | string | Portal relative path to the public player profile |
+| `members[].portrait_url` | string or `null` | Absolute public media URL, or `null` if no portrait is recorded |
+| `members[].club_name` | string or `null` | Current club's short name as shown on the structure page |
+| `members[].role` | string or `null` | Short role from this membership |
+| `members[].role_note` | string or `null` | Appointment or role note from this membership |
+
+The same player can appear in multiple bodies; keep the role and note from
+each membership. An absent note is `null`, even where the HTML page shows the
+body's name as a fallback. Use the profile link for licence details.
+
+Example response:
+
+```json
+[
+  {
+    "id": 4,
+    "badge": "ПФ",
+    "name": "Правління ФПУ",
+    "members": [
+      {
+        "name": "ШЕВЧЕНКО Олена",
+        "profile_path": "/player/621",
+        "portrait_url": "https://media.example.org/portraits/chair.png",
+        "club_name": "КПК",
+        "role": "Голова",
+        "role_note": "Обрана загальними зборами"
+      }
+    ]
+  }
+]
+```
+
+### `GET /api/clubs/list/`
+
+Returns every active club in one JSON array. There are no filters or pagination.
+The order matches the default `/clubs/` ranking: total current rating points
+from active licensed athletes (descending), current athlete count (descending),
+short name (ascending), then club ID (ascending). Grouping by city can preserve
+the array order for clubs within each city.
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `id` | integer | Stable club ID |
+| `detail_path` | string | Portal relative path to the public club page |
+| `short_name` | string | Short club name |
+| `name` | string | Full club name |
+| `city_id` | integer or `null` | Stable ID of the linked city; use it to group clubs that have a city |
+| `city_name` | string or `null` | Canonical name from the linked city record |
+| `country` | string or `null` | ISO 3166-1 alpha-2 country code from the linked city record |
+| `address` | string or `null` | Public address as plain text |
+| `athlete_count` | integer | All athletes currently assigned to the club, regardless of licence; `0` is valid |
+| `logo_url` | string or `null` | Absolute public media URL, or `null` if no logo is recorded |
+
+The portal stores city IDs, names and countries, but no WGS84 city-centre
+coordinates. The blog can resolve coordinates separately using this city data.
+Clubs with no city remain in the array. Neither endpoint includes a source
+update timestamp. Media URLs use the portal's configured public storage;
+the endpoints do not check whether a referenced file still exists.
+
+Example response:
+
+```json
+[
+  {
+    "id": 12,
+    "detail_path": "/club/12",
+    "short_name": "КПК",
+    "name": "Київський петанк клуб",
+    "city_id": 3,
+    "city_name": "Київ",
+    "country": "UA",
+    "address": null,
+    "athlete_count": 0,
+    "logo_url": null
+  }
+]
+```
+
+---
+
 ### `GET /api/tournaments/list/`
 
 Returns tournaments in a date range, formatted for FullCalendar.

@@ -92,6 +92,8 @@ See [Authentication, registration, and profile](features/authentication-registra
 | `/api/tournaments/list/` | GET, public | FullCalendar on `/calendar/` | `views/api.py:tournaments_list` |
 | `/api/players_clubs_and_tournaments/list/` | GET, public | Global navigation search | `views/api.py:players_clubs_and_tournaments_list` |
 | `/api/players_list/list/` | GET, public | Team registration Select2 and registration duplicate search | `views/api.py:players_list` |
+| `/api/departments/list/` | GET, public | Federation structure and memberships | `views/api.py:departments_list` |
+| `/api/clubs/list/` | GET, public | Ranked club directory | `views/api.py:clubs_list` |
 | `/api/tournament/results/` | POST, `Authorization` header API password | External result submitter | `views/api.py:submit_tournament_results` |
 
 Detailed request/response examples are in [API reference](api.md).
