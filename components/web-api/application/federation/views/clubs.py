@@ -30,11 +30,10 @@ CLUB_SORT_OPTIONS = (
 
 
 def clubs(request):
-    clubs_queryset = _clubs_queryset()
     club_filters = _get_club_filters(request)
+    clubs_queryset = public_clubs_queryset(club_filters['sort']).select_related('president')
     filter_options = _get_club_filter_options(clubs_queryset)
     clubs_queryset = _apply_club_filters(clubs_queryset, club_filters)
-    clubs_queryset = _order_clubs(clubs_queryset, club_filters['sort'])
 
     paginator = Paginator(clubs_queryset, club_filters['page_size'])
     page_obj = paginator.get_page(request.GET.get('page'))
@@ -56,13 +55,13 @@ def clubs(request):
     })
 
 
-def _clubs_queryset():
+def public_clubs_queryset(sort='rating'):
     rating_output = DecimalField(max_digits=19, decimal_places=4)
 
-    return (
+    queryset = (
         Club.objects
         .filter(is_active=True)
-        .select_related('city', 'president')
+        .select_related('city')
         .annotate(
             total_rating=Coalesce(
                 Sum('player__current_rating', filter=RATED_CLUB_PLAYER_FILTER),
@@ -77,6 +76,7 @@ def _clubs_queryset():
             players_count=Count('player', distinct=True),
         )
     )
+    return _order_clubs(queryset, sort)
 
 
 def _get_club_filters(request):
