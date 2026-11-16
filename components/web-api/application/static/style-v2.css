@@ -5756,56 +5756,39 @@ Tournaments classes
   color: #0f743f;
 }
 
-.tournament-action-results {
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-  border-radius: 8px;
-  color: #c2410c;
-  font-size: 15px;
-  font-weight: 600;
-  gap: 0.38rem;
+.tournament-draw-results {
+  align-items: center;
+  background: linear-gradient(180deg, #faf7ff, #f0e8ff);
+  border: 1px solid #d8c4fb;
+  border-radius: 10px;
+  color: #4a218e;
+  display: inline-flex;
+  font-size: 0.86rem;
+  font-weight: 750;
+  gap: 0.35rem;
+  justify-content: center;
   line-height: 1.15;
-  min-height: auto;
-  padding: 8px 12px;
-  transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    box-shadow 0.16s ease,
-    color 0.16s ease,
-    transform 0.16s ease;
+  min-height: 2.35rem;
+  padding: 0.36rem 0.55rem;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.tournament-action-results .bi {
-  color: currentColor;
+.tournament-draw-results img {
+  border-radius: 50%;
+  flex: 0 0 auto;
 }
 
-.tournament-action-results:hover,
-.tournament-action-results:focus {
-  background: #ffedd5;
-  border-color: #fb923c;
-  color: #9a3412;
-  transform: translateY(-1px);
+.tournament-draw-results:hover,
+.tournament-draw-results:focus-visible {
+  background: #ede2ff;
+  border-color: #ac87eb;
+  color: #3a166f;
 }
 
-.tournament-action-results:active {
-  background: #fed7aa;
-  border-color: #f97316;
-  color: #7c2d12;
-}
-
-.tournament-action-results:focus-visible {
-  outline: 2px solid #fb923c;
+.tournament-draw-results:focus-visible {
+  outline: 2px solid #7137c8;
   outline-offset: 2px;
-}
-
-.tournament-action-results.disabled,
-.tournament-action-results[aria-disabled="true"] {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #fdba74;
-  cursor: not-allowed;
-  opacity: 0.7;
-  pointer-events: none;
 }
 
 .tournaments-pagination {
@@ -8064,57 +8047,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
     color: #057536;
   }
 
-  .tournament-tablet-action-results {
-    background: #fff7ed;
-    border: 1px solid #fdba74;
-    border-radius: 8px;
-    color: #c2410c;
-    font-size: 0.78rem;
-    font-weight: 800;
-    gap: 0.38rem;
-    line-height: 1.15;
-    min-height: auto;
-    padding: 0.42rem 0.65rem;
-    transition:
-      background-color 0.16s ease,
-      border-color 0.16s ease,
-      box-shadow 0.16s ease,
-      color 0.16s ease,
-      transform 0.16s ease;
-  }
-
-  .tournament-tablet-action-results .bi {
-    color: currentColor;
-  }
-
-  .tournament-tablet-action-results:hover,
-  .tournament-tablet-action-results:focus {
-    background: #ffedd5;
-    border-color: #fb923c;
-    color: #9a3412;
-    transform: translateY(-1px);
-  }
-
-  .tournament-tablet-action-results:active {
-    background: #fed7aa;
-    border-color: #f97316;
-    color: #7c2d12;
-  }
-
-  .tournament-tablet-action-results:focus-visible {
-    outline: 2px solid #fb923c;
-    outline-offset: 2px;
-  }
-
-  .tournament-tablet-action-results.disabled,
-  .tournament-tablet-action-results[aria-disabled="true"] {
-    background: #fff7ed;
-    border-color: #fed7aa;
-    color: #fdba74;
-    cursor: not-allowed;
-    opacity: 0.7;
-    pointer-events: none;
-  }
 }
 
 @media (max-width: 767.98px) {
@@ -8416,39 +8348,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
     color: #057536;
   }
 
-  .tournament-mobile-action-results {
-    background: #fff7ed;
-    border: 1px solid #fdba74;
-    color: #c2410c;
-  }
-
-  .tournament-mobile-action-results:hover,
-  .tournament-mobile-action-results:focus {
-    background: #ffedd5;
-    border-color: #fb923c;
-    color: #9a3412;
-  }
-
-  .tournament-mobile-action-results:active {
-    background: #fed7aa;
-    border-color: #f97316;
-    color: #7c2d12;
-  }
-
-  .tournament-mobile-action-results:focus-visible {
-    outline: 2px solid #fb923c;
-    outline-offset: 2px;
-  }
-
-  .tournament-mobile-action-results.disabled,
-  .tournament-mobile-action-results[aria-disabled="true"] {
-    background: #fff7ed;
-    border-color: #fed7aa;
-    color: #fdba74;
-    opacity: 0.7;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
 }
 
 @supports (content-visibility: auto) {
@@ -8875,20 +8774,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
   background: #188c52;
   border-color: #188c52;
   color: #ffffff;
-}
-
-.tournament-detail-action-results {
-  background: #fff7ed;
-  border-color: #fdba74;
-  color: #c2410c;
-}
-
-.tournament-detail-action-results:hover,
-.tournament-detail-action-results:focus {
-  background: #ffedd5;
-  border-color: #fb923c;
-  color: #9a3412;
-  transform: translateY(-1px);
 }
 
 .tournament-detail-action-notes {
@@ -10823,6 +10708,7 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   }
 
   .tournament-detail-action,
+  .tournament-detail-actions .tournament-draw-results,
   .tournament-detail-export {
     flex: 1 1 12rem;
   }

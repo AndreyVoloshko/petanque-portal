@@ -127,21 +127,12 @@ player currently belongs to the same club.
 
 See [API reference](../api.md) for JSON and CSV details.
 
-## Final Protocol
+## Results
 
-**Route:** `GET /tournament/tournament_protocol/<id>`
-**View:** `views/tournaments.py:tournament_protocol`
-**Template:** `templates/tournaments/tournament_protocol.html`
+Tournament details and the past-tournaments list show a results button when the
+tournament has a valid Petanque Draw reference. It opens the public Draw results.
 
-The view redirects to tournament detail unless processing is closed. Blocks:
-
-- Federation/protocol heading.
-- Tournament identity, dates, organizer, and venue.
-- Organizer/delegate/arbiter roles.
-- Team/player totals.
-- Top four result rows and link to complete team list.
-- Final notes and incident area.
-- Signature placeholders.
+The old `/tournament/tournament_protocol/<id>` URL redirects to tournament details.
 
 ## Tournament Model And Relations
 

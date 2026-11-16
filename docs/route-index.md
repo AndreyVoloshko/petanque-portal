@@ -76,14 +76,14 @@ for old links, but query parameters are the primary current filtering interface.
 
 See [Authentication, registration, and profile](features/authentication-registration-profile.md).
 
-## Exports And Protocol
+## Tournament Exports And Redirects
 
 | Route | Output | Code |
 | --- | --- | --- |
 | `GET /tournament/team_export/<id>?format=html` | Print-oriented registered-team page | `views/tournaments.py:tournament_teams_export`; `templates/tournaments/pure_teams_list.html` |
 | same with `format=csv` | Semicolon-delimited external draw file | `views/tournaments.py:tournament_teams_export` |
 | same with `format=json` | Tournament/team/player JSON | `views/tournaments.py:tournament_teams_export`; documented in [API reference](api.md) |
-| `GET /tournament/tournament_protocol/<id>` | Printable final protocol; redirects until processing is closed | `views/tournaments.py:tournament_protocol`; `templates/tournaments/tournament_protocol.html` |
+| `GET /tournament/tournament_protocol/<id>` | Redirects to `/tournament/<id>` | `urls.py` |
 
 ## JSON/API Routes
 

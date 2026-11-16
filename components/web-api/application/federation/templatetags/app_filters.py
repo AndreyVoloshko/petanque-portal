@@ -932,21 +932,6 @@ def tournament_status(tournament):
 
 
 
-@register.filter(name="tournament_protocol")
-def tournament_protocol(tournament):
-    if not tournament.is_processing_closed():
-        return ''
-
-    return f'''
-        <a target="_blank" href="{reverse('tournament_protocol', args=[tournament.pk])}">
-            <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{_("Competition protocol")}">
-               <i class="bi bi-download"></i>
-            </span>
-        </a>
-    '''
-
-
-
 @register.filter(name="tournament_registration")
 def tournament_registration(tournament):
     button_class = ""
