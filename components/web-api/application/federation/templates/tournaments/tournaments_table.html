@@ -111,11 +111,6 @@
                                 {% endif %}
                                 {% if row.draw_results_url %}
                                     {% include "tournaments/_draw_results_action.html" with url=row.draw_results_url only %}
-                                {% elif row.show_results_action %}
-                                    <a class="tournament-action tournament-action-results" href="{{ row.protocol_url }}">
-                                        <i class="bi bi-trophy" aria-hidden="true"></i>
-                                        <span>{% trans "Результати" %}</span>
-                                    </a>
                                 {% endif %}
                                 <a class="tournament-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                             </div>
@@ -221,11 +216,6 @@
                             {% endif %}
                             {% if row.draw_results_url %}
                                 {% include "tournaments/_draw_results_action.html" with url=row.draw_results_url only %}
-                            {% elif row.show_results_action %}
-                                <a class="tournament-tablet-action tournament-tablet-action-results" href="{{ row.protocol_url }}">
-                                    <i class="bi bi-trophy" aria-hidden="true"></i>
-                                    <span>{% trans "Результати" %}</span>
-                                </a>
                             {% endif %}
                             <a class="tournament-tablet-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                         </div>
@@ -320,11 +310,6 @@
                             {% endif %}
                             {% if row.draw_results_url %}
                                 {% include "tournaments/_draw_results_action.html" with url=row.draw_results_url only %}
-                            {% elif row.show_results_action %}
-                                <a class="tournament-mobile-action tournament-mobile-action-results" href="{{ row.protocol_url }}">
-                                    <i class="bi bi-trophy" aria-hidden="true"></i>
-                                    <span>{% trans "Результати" %}</span>
-                                </a>
                             {% endif %}
                             <a class="tournament-mobile-action" href="{{ row.detail_url }}">{% trans "Деталі" %}</a>
                         </div>

@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
 from django.urls import re_path, path
+from django.views.generic import RedirectView
 from .views.login import application_login
 from .views.logout import application_logout
 from .views.main_page import main_page
@@ -15,7 +16,7 @@ from .views.arbiters import arbiters
 from .views.coaches import coaches
 from .views.records import records
 from .views.sport_titles import sport_titles
-from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export, tournament_protocol
+from .views.tournaments import tournaments, tournament, tournaments_calendar, tournament_teams_export
 from .views.api import tournaments_list, players_clubs_and_tournaments_list, players_list, update_tournament
 from .views.documents import documents, document_download
 from .views.national_teams import national_teams
@@ -67,7 +68,7 @@ urlpatterns = [
 
     re_path(r'^tournament/(?P<id>[0-9]+)$', tournament,        name='tournament'),
     re_path(r'^tournament/team_export/(?P<id>[0-9]+)$', tournament_teams_export, name='tournament_teams_export'),
-    re_path(r'^tournament/tournament_protocol/(?P<id>[0-9]+)$', tournament_protocol, name='tournament_protocol'),
+    re_path(r'^tournament/tournament_protocol/(?P<id>[0-9]+)$', RedirectView.as_view(pattern_name='tournament'), name='tournament_protocol'),
     re_path(r'^tournaments/$',                            tournaments, name='tournaments'),
     re_path(r'^tournaments/(?P<date_filter>\w+)/?$',               tournaments, name='tournaments'),
     re_path(r'^tournaments/(?P<date_filter>\w+)/(?P<type_filter>\w+)/?$', tournaments, name='tournaments'),

@@ -238,6 +238,22 @@ class TournamentApiDrawIdTests(TournamentApiTestCase):
         self.assertNotContains(self.client.get(detail_url), draw_url)
         self.assertNotContains(self.client.get(list_url), f'href="{detail_url}"')
 
+    def test_processed_tournament_without_draw_ref_has_no_results_button(self):
+        self.tournament.start_date = timezone.localdate() - timedelta(days=60)
+        self.tournament.is_processing_finished = True
+        self.tournament.save(update_fields=['start_date', 'is_processing_finished'])
+        detail_url = reverse('tournament', args=[self.tournament.pk])
+        protocol_url = reverse('tournament_protocol', args=[self.tournament.pk])
+        list_url = reverse('tournaments') + '?period=past&q=Api+Cup'
+
+        listing = self.client.get(list_url)
+        self.assertContains(listing, f'href="{detail_url}"')
+        for response in (listing, self.client.get(detail_url)):
+            self.assertNotContains(response, 'class="tournament-draw-results"')
+            self.assertNotContains(response, protocol_url)
+
+        self.assertRedirects(self.client.get(protocol_url), detail_url, fetch_redirect_response=False)
+
     def test_non_string_draw_id_rejected(self):
         response = self.post(
             PRIMARY_URL, {'tournament_id': self.tournament.pk, 'petanque_draw_id': 123}, **AUTH,

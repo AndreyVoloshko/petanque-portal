@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse
 from federation.models.player import Player
 from federation.models.team import PlayerTeamMembership
@@ -345,7 +345,7 @@ def _build_tournament_row(tournament):
     format_label = _display_format_label(metadata.get('format'))
     audience_tags = [_display_category_label(tag) for tag in metadata.get('audience_tags', [])]
     draw_ref = tournament.petanque_draw_id
-    has_draw_results = bool(re.fullmatch(_DRAW_REF_PATTERN, draw_ref))
+    has_draw_results = _has_draw_results(tournament)
     draw_results_url = f'{_DRAW_RESULTS_PAGE}?{urlencode({"ref": draw_ref})}' if has_draw_results else ''
     status = _tournament_status_data(tournament, has_draw_results)
     country_data = _display_country_data(tournament)
@@ -381,9 +381,7 @@ def _build_tournament_row(tournament):
         'status': status,
         'detail_url': reverse('tournament', args=[tournament.pk]),
         'registration_url': reverse('register_team', args=[tournament.pk]),
-        'protocol_url': reverse('tournament_protocol', args=[tournament.pk]),
         'draw_results_url': draw_results_url,
-        'show_results_action': tournament.is_processing_closed(),
     }
 
 
@@ -656,8 +654,12 @@ def _organizer_url(tournament):
     return reverse('club', args=[tournament.organizer_club.pk])
 
 
+def _has_draw_results(tournament):
+    return bool(re.fullmatch(_DRAW_REF_PATTERN, tournament.petanque_draw_id))
+
+
 def _tournament_status_data(tournament, has_draw_results):
-    status_key = _tournament_status_key(tournament, has_draw_results)
+    status_key = _tournament_status_key(tournament)
     return {
         'key': status_key,
         'label': STATUS_LABELS[status_key],
@@ -665,8 +667,8 @@ def _tournament_status_data(tournament, has_draw_results):
     }
 
 
-def _tournament_status_key(tournament, has_draw_results):
-    if not has_draw_results and tournament.is_auto_cancelled():
+def _tournament_status_key(tournament):
+    if tournament.is_auto_cancelled() and not _has_draw_results(tournament):
         return 'cancelled'
 
     today = timezone.localdate()
@@ -1289,31 +1291,6 @@ def _player_has_export_rating_place(player, player_rating_field):
         return player.is_inclusive
 
     return player.is_licence_active and player.licence_number
-
-
-def tournament_protocol(request, id):
-    tournament = get_object_or_404(Tournament, pk=id)
-
-    if not tournament.is_processing_closed():
-        return redirect('tournament', id=tournament.pk)
-
-    # if tournament.country != settings.CURRENT_COUNTRY:
-    #     return redirect('tournament', id=tournament.pk)
-
-    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament)
-    teams = TeamTournamentMembership.objects.filter(tournament=tournament).order_by('place_min')
-
-    players_count = 0
-    for team in teams:
-        players_count += team.team.players.count()
-
-    return render(request, 'tournaments/tournament_protocol.html', {
-        'tournament': tournament,
-        'arbiters': arbiters,
-        'teams_count': len(teams),
-        'teams': teams[:4],
-        'players_count': players_count
-    })
 
 
 def _encode_row(values):
