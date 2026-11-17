@@ -62,3 +62,20 @@ The ratings lists use the shared athlete card at both phone and tablet widths. B
 Compared with `b17efd9`, authored CSS across `style-v2.css` and the CSS sources in `frontend/src` fell from 13,505 to 13,148 lines. That is 357 fewer lines and 8,431 fewer uncompressed bytes. The source count excludes generated and vendor CSS.
 
 Chromium verified that tournament, rating, and club filters submit and preserve URL state with JavaScript disabled. Layout checks covered 320–1440 px and verified the tournament search button's keyboard reveal.
+
+## Final pilot measurements
+
+The final branch at `db95e43` used the same routes, data, widths, and three-run method as the CSS split baseline at `8629f95`.
+
+| Page | Width | Before | Final | Change |
+| --- | ---: | ---: | ---: | ---: |
+| Tournaments | 390 px | 97,257 B | 63,968 B | −34.2% |
+| Tournaments | 1440 px | 96,632 B | 63,948 B | −33.8% |
+| Player ratings | 390 px | 93,077 B | 64,472 B | −30.7% |
+| Player ratings | 1440 px | 93,011 B | 64,235 B | −30.9% |
+| Season ratings | 390 px | 93,094 B | 64,049 B | −31.2% |
+| Season ratings | 1440 px | 93,273 B | 64,260 B | −31.1% |
+| Home | 390 px | 93,737 B | 91,913 B | −1.9% |
+| Home | 1440 px | 94,061 B | 91,521 B | −2.7% |
+
+Across the full pilot, the measured authored sources went from 14,065 lines and 276,618 bytes at `8e49265` to 13,148 lines and 263,633 bytes. That is 917 lines and 12,985 uncompressed bytes removed, counting the legacy file and every authored frontend CSS file once. All 264 Django tests passed on the final runtime revision.
