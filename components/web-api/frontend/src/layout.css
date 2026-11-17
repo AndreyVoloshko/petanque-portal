@@ -48,6 +48,10 @@ body {
   width: 1.15rem;
 }
 
+.flag-icon {
+  background-size: cover;
+}
+
 a {
   color: var(--link-action);
   text-decoration: none;

@@ -59,7 +59,7 @@
 .pilot-country-flag {
   border-radius: 2px;
   box-shadow: 0 0 0 1px var(--list-shadow);
-  flex: 0 0 1.35em;
+  flex: none;
 }
 .pilot-title {
   color: var(--list-page-accent);
