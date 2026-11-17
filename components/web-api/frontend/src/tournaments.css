@@ -274,6 +274,34 @@
     margin-top: var(--list-space);
   }
 }
+@media (max-width: 767.98px) {
+  .pilot-card-meta .pilot-date {
+    align-items: flex-start;
+    gap: .62rem;
+  }
+
+  .pilot-card-meta .pilot-date .bi {
+    color: #526079;
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+  .pilot-card-meta .pilot-date .bi::before { display: block; }
+
+  .pilot-card-meta .pilot-date time,
+  .pilot-card-meta .pilot-date span {
+    line-height: 1.2;
+  }
+  .pilot-card-meta .pilot-date time {
+    font-size: .875rem;
+    font-weight: 600;
+  }
+  .pilot-card-meta .pilot-date span {
+    color: #65728a;
+    font-size: .8125rem;
+    font-weight: 500;
+    margin-top: .3rem;
+  }
+}
 @media (min-width: 768px) and (max-width: 1400px) {
   .tournament-mobile-card {
     align-items: start;
