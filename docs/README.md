@@ -48,6 +48,7 @@ flowchart TD
 - [API reference](api.md)
 - [Season rating snapshots](season-rating-snapshots.md)
 - [Audit index](audit/README.md)
+- [Tournament list frontend pilot](frontend-modernization-pilot.md)
 - [Tournament display-name behavior](tournament-display-name-review.md)
 
 ## Source Of Truth

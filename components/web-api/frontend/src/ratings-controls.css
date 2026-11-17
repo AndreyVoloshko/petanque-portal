@@ -1,0 +1,45 @@
+.players-column-heading {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.players-column-help {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--list-muted);
+  cursor: help;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.players-column-help:hover,
+.players-column-help:focus-visible {
+  color: var(--list-page-accent);
+}
+
+.players-results-surface {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-panel-radius);
+  box-shadow: 0 6px 18px var(--list-shadow);
+  overflow: hidden;
+  scroll-margin-top: 5rem;
+}
+
+.players-table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
+@media (max-width: 991.98px) {
+  .players-titlebar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

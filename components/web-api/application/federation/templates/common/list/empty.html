@@ -1,0 +1,7 @@
+<div class="portal-empty tournaments-empty-state d-flex flex-column align-items-center text-center">
+    <header>
+        <h2>{{ title }}</h2>
+        <p>{{ description }}</p>
+    </header>
+    {% if reset_url %}{% include "common/list/button.html" with href=reset_url label=reset_label icon="bi-arrow-counterclockwise" only %}{% endif %}
+</div>

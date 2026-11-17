@@ -46,7 +46,7 @@
 
                         <div class="title-registry-card-grid">
                             {% for entry in group.items %}
-                                {% include "players/_player_rating_card.html" with item=entry.player hide_rating_place=1 title_status_short=entry.title_short title_status_label=entry.title_label title_status_icon_class=entry.title_icon_class card_extra_class="title-registry-player-card" %}
+                                {% include "common/athlete_card.html" with item=entry.player hide_rating_place=1 title_status_short=entry.title_short title_status_label=entry.title_label title_status_icon_class=entry.title_icon_class card_extra_class="title-registry-player-card" %}
                             {% endfor %}
                         </div>
                     </section>

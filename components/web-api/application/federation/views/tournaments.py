@@ -21,26 +21,29 @@ from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.vary import vary_on_headers
 from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
 )
+from federation.utils.pagination import pagination_links
 from federation.utils.rankings import rating_rank_map
+from federation.utils.request_devices import is_phone_request
 from federation.utils.tournament_names import get_tournament_card_metadata
 
 
 _SPACES_RE = re.compile(r'\s+')
 _DRAW_REF_PATTERN = r'^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$'
 _DRAW_RESULTS_PAGE = 'https://andrewkameniev.github.io/petanque-draw/#/tournament'
-DEFAULT_TOURNAMENTS_PAGE_SIZE = 50
-TABLET_TOURNAMENTS_PAGE_SIZE = 30
-MOBILE_TOURNAMENTS_PAGE_SIZE = 25
+DEFAULT_TOURNAMENTS_PAGE_SIZE = 25
+MOBILE_TOURNAMENTS_PAGE_SIZE = 10
 TOURNAMENTS_PAGE_SIZE_PARAM = 'per_page'
 TOURNAMENTS_PAGE_SIZE_OPTIONS = {
     DEFAULT_TOURNAMENTS_PAGE_SIZE,
-    TABLET_TOURNAMENTS_PAGE_SIZE,
     MOBILE_TOURNAMENTS_PAGE_SIZE,
     5,
+    30,
+    50,
 }
 UK_FULL_MONTHS_GENITIVE = {
     1: 'Січня',
@@ -63,6 +66,7 @@ def _current_language():
     return 'uk' if language.startswith('uk') else 'en'
 
 
+@vary_on_headers("Sec-CH-UA-Mobile", "User-Agent")
 def tournaments(request, date_filter=None, type_filter=None):
     filters = _get_tournament_filters(request, date_filter, type_filter)
     queryset = _get_tournaments_queryset(filters)
@@ -78,19 +82,52 @@ def tournaments(request, date_filter=None, type_filter=None):
     page_title = _("Competitions")
     return render(request, 'tournaments/tournaments.html', {
         'page_title': page_title,
+        'tournaments_pilot': True,
         'filters': filters,
         'period_tabs': _get_period_tabs(filters),
-        'format_options': FORMAT_OPTIONS,
-        'category_options': CATEGORY_OPTIONS,
-        'place_options': filter_options['places'],
+        'filter_fields': (
+            {
+                'name': 'format', 'label': _("Формат"), 'placeholder': _("Формат"),
+                'icon': 'bi-globe', 'options': FORMAT_OPTIONS, 'selected': filters['format'],
+            },
+            {
+                'name': 'category', 'label': _("Стать / категорія"), 'placeholder': _("Стать / категорія"),
+                'icon': 'bi-person', 'options': CATEGORY_OPTIONS, 'selected': filters['category'],
+            },
+            {
+                'name': 'place', 'label': _("Місце"), 'placeholder': _("Місце"), 'icon': 'bi-geo-alt',
+                'options': [(place, place) for place in filter_options['places']], 'selected': filters['place'],
+            },
+        ),
+        'search_form_fields': {
+            key: value for key, value in active_filters.items()
+            if key not in ('q', 'format', 'category', 'place')
+        },
+        'toggle_forms': [
+            {
+                'fields': {k: v for k, v in active_filters.items() if k != 'type'},
+                'name': 'type',
+                'value': 'all' if filters['rating_type'] == 'rating' else 'rating',
+                'checked': filters['rating_type'] == 'rating',
+                'label': _("Ranked only"),
+                'icon': 'bi-award',
+            },
+            {
+                'fields': {k: v for k, v in active_filters.items() if k != 'foreign'},
+                'name': 'foreign',
+                'value': '0' if filters['foreign'] else '1',
+                'checked': filters['foreign'],
+                'label': _("Закордонні"),
+                'icon': 'bi-globe2',
+            },
+        ],
         'rows': page_rows,
         'show_strength': True,
         'page_obj': page_obj,
         'page_size': filters['page_size'],
-        'default_page_size': DEFAULT_TOURNAMENTS_PAGE_SIZE,
-        'pagination_pages': _pagination_pages(page_obj),
+        'page_size_options': sorted(TOURNAMENTS_PAGE_SIZE_OPTIONS),
         'pagination_summary': _pagination_summary(page_obj),
-        'pagination_urls': _pagination_urls(filters, page_obj),
+        **pagination_links(page_obj, reverse('tournaments'), active_filters),
         'sort_state': _get_sort_state(filters),
         'active_filters': active_filters,
         'has_active_secondary_filters': _has_active_secondary_filters(filters),
@@ -238,6 +275,7 @@ def _get_tournament_filters(request, date_filter, type_filter):
     if type_filter == 'away' and 'foreign' not in request.GET:
         foreign = True
 
+    page_size_override = _requested_page_size(request)
     return {
         'period': period,
         'rating_type': rating_type,
@@ -248,20 +286,21 @@ def _get_tournament_filters(request, date_filter, type_filter):
         'place': request.GET.get('place', '').strip(),
         'club': request.GET.get('club', '').strip(),
         'sort': sort,
-        'page_size': _get_page_size(request),
+        'page_size': page_size_override or _default_page_size(request),
+        'page_size_override': page_size_override,
     }
 
 
-def _get_page_size(request):
+def _requested_page_size(request):
     try:
-        page_size = int(request.GET.get(TOURNAMENTS_PAGE_SIZE_PARAM, DEFAULT_TOURNAMENTS_PAGE_SIZE))
-    except (TypeError, ValueError):
-        return DEFAULT_TOURNAMENTS_PAGE_SIZE
+        page_size = int(request.GET.get(TOURNAMENTS_PAGE_SIZE_PARAM, ''))
+    except ValueError:
+        return None
+    return page_size if page_size in TOURNAMENTS_PAGE_SIZE_OPTIONS else None
 
-    if page_size in TOURNAMENTS_PAGE_SIZE_OPTIONS:
-        return page_size
 
-    return DEFAULT_TOURNAMENTS_PAGE_SIZE
+def _default_page_size(request):
+    return MOBILE_TOURNAMENTS_PAGE_SIZE if is_phone_request(request) else DEFAULT_TOURNAMENTS_PAGE_SIZE
 
 
 def _truthy(value):
@@ -798,8 +837,8 @@ def _active_filter_params(filters):
     if filters.get('sort') and filters['sort'] != _default_sort(filters['period']):
         params['sort'] = filters['sort']
 
-    if filters.get('page_size') and filters['page_size'] != DEFAULT_TOURNAMENTS_PAGE_SIZE:
-        params[TOURNAMENTS_PAGE_SIZE_PARAM] = filters['page_size']
+    if filters['page_size_override'] is not None:
+        params[TOURNAMENTS_PAGE_SIZE_PARAM] = filters['page_size_override']
 
     return params
 
@@ -812,12 +851,8 @@ def _has_active_secondary_filters(filters):
     )
 
 
-def _url_for_filters(filters, page=None):
-    params = _active_filter_params(filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
+def _url_for_filters(filters):
+    query = urlencode(_active_filter_params(filters))
     if not query:
         return reverse('tournaments')
 
@@ -825,12 +860,12 @@ def _url_for_filters(filters, page=None):
 
 
 def _reset_url(filters):
-    if filters.get('page_size') == DEFAULT_TOURNAMENTS_PAGE_SIZE:
+    if filters['page_size_override'] is None:
         return reverse('tournaments')
 
     return '{}?{}'.format(
         reverse('tournaments'),
-        urlencode({TOURNAMENTS_PAGE_SIZE_PARAM: filters['page_size']}),
+        urlencode({TOURNAMENTS_PAGE_SIZE_PARAM: filters['page_size_override']}),
     )
 
 
@@ -843,42 +878,6 @@ def _get_sort_state(filters):
         'date_direction': direction,
         'date_url': _url_for_filters(next_filters),
     }
-
-
-def _pagination_pages(page_obj):
-    paginator = page_obj.paginator
-    current = page_obj.number
-    pages = []
-
-    for number in paginator.page_range:
-        if number == 1 or number == paginator.num_pages or abs(number - current) <= 1:
-            pages.append(number)
-        elif pages and pages[-1] != 'ellipsis':
-            pages.append('ellipsis')
-
-    return pages
-
-
-def _pagination_urls(filters, page_obj):
-    urls = {
-        'first': _url_for_filters(filters, 1),
-        'last': _url_for_filters(filters, page_obj.paginator.num_pages),
-        'previous': '',
-        'next': '',
-        'pages': {},
-    }
-
-    if page_obj.has_previous():
-        urls['previous'] = _url_for_filters(filters, page_obj.previous_page_number())
-
-    if page_obj.has_next():
-        urls['next'] = _url_for_filters(filters, page_obj.next_page_number())
-
-    for page in _pagination_pages(page_obj):
-        if page != 'ellipsis':
-            urls['pages'][page] = _url_for_filters(filters, page)
-
-    return urls
 
 
 def _pagination_summary(page_obj):

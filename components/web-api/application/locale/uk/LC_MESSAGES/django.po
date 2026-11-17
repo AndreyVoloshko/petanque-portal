@@ -3728,3 +3728,9 @@ msgstr "Місця команд оновлено."
 
 #~ msgid "Club rating"
 #~ msgstr "Рейтинг клубу"
+
+msgid "Find tournaments"
+msgstr "Знайти"
+
+msgid "Apply page size"
+msgstr "Застосувати розмір сторінки"

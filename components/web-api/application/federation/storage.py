@@ -8,6 +8,14 @@ class StaticStorage(ManifestFilesMixin, S3Boto3Storage):
     location = settings.STATICFILES_LOCATION
     manifest_strict = False
 
+    def post_process(self, paths, **options):
+        # collectstatic has already copied these; keep Vite's filenames and
+        # relative imports intact instead of applying Django's second hash.
+        return super().post_process(
+            {name: source for name, source in paths.items() if not name.startswith("vite/")},
+            **options,
+        )
+
 
 class MediaStorage(S3Boto3Storage):
     location = settings.MEDIAFILES_LOCATION

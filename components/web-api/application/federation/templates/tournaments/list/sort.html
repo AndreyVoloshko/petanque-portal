@@ -1,0 +1,5 @@
+{% load i18n %}
+<a class="btn align-items-center justify-content-center portal-btn tournament-date-sort {{ css_class }}" href="{{ sort_state.date_url }}" aria-label="{% trans "Сортувати за датою" %}">
+    {{ label }}
+    <i class="bi {% if sort_state.date_direction == 'asc' %}bi-arrow-up-short{% else %}bi-arrow-down-short{% endif %}" aria-hidden="true"></i>
+</a>

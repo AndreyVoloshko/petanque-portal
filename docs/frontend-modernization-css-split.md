@@ -1,0 +1,117 @@
+# CSS split for the frontend pilot
+
+The tournaments, player ratings, and season ratings pages use route stylesheets and shared Vite assets. The header, footer, page layout, and CSS tokens live in separate source files that compile into one shell asset. The shared list asset contains the table and pagination styles. The shared filter bar owns the select focus styles. Both lists extend the same Django table template and supply their own headers and rows.
+
+The athlete card is one Django template and one independently cached stylesheet. The home page, club details, title registries, and mobile ratings use it. Ratings place the cards beside the desktop table in the template and switch between them with CSS. The home page still uses the reduced legacy stylesheet for its other content.
+
+## CSS downloaded
+
+Baseline commit `8629f95`. The table uses the median of three Chromium loads per route and width. Each load used a fresh browser context with the HTTP cache disabled, the same seeded local data, Ukrainian locale, and a 900 px viewport height. The totals count successfully transferred stylesheet bytes from CDP `Network.loadingFinished.encodedDataLength`, including Bootstrap, icons, and other third-party CSS.
+
+| Route | Width | Before | After | Change |
+| --- | ---: | ---: | ---: | ---: |
+| `/tournaments/?period=past&per_page=5` | 390 px | 97,257 B | 64,085 B | −34.1% |
+| `/tournaments/?period=past&per_page=5` | 1440 px | 96,632 B | 64,115 B | −33.7% |
+| `/players/licence/?per_page=25` | 390 px | 93,077 B | 64,449 B | −30.8% |
+| `/players/licence/?per_page=25` | 1440 px | 93,011 B | 64,815 B | −30.3% |
+| `/seasons/2024?per_page=25` | 390 px | 93,094 B | 64,345 B | −30.9% |
+| `/seasons/2024?per_page=25` | 1440 px | 93,273 B | 64,777 B | −30.6% |
+| `/` | 390 px | 93,737 B | 94,225 B | +0.5% |
+| `/` | 1440 px | 94,061 B | 94,274 B | +0.2% |
+
+The three loads transferred the following byte counts.
+
+- `/tournaments/?period=past&per_page=5` at 390 px, 96635, 97257, 97275 → 64085, 64613, 64039. At 1440 px, 96524, 96632, 96933 → 64115, 64663, 63981.
+- `/players/licence/?per_page=25` at 390 px, 93613, 93077, 92929 → 64449, 64416, 65083. At 1440 px, 93011, 93005, 93334 → 64473, 64815, 65000.
+- `/seasons/2024?per_page=25` at 390 px, 93094, 93042, 93349 → 64625, 64345, 64243. At 1440 px, 93257, 93315, 93273 → 65002, 64777, 64719.
+- `/` at 390 px, 93699, 93737, 94060 → 94225, 94822, 93845. At 1440 px, 94108, 93681, 94061 → 93959, 94858, 94274.
+
+| Authored CSS scope | Before | After | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 12,822 lines / 253,317 B | 10,475 lines / 206,171 B | −2,347 lines / −47,146 B |
+| `style-v2.css` plus all authored CSS in `frontend/src` | 13,489 lines / 271,528 B | 13,505 lines / 272,064 B | +16 lines / +536 B |
+
+Desktop and phone CSS Coverage on the baseline helped locate styles the pilot and home page shared. Extraction moved those rules to their respective components. The combined source totals count each component file once. Measured cold CSS transfer on the home page was up by less than 1%. Its athlete card now shares the same cacheable URL as ratings.
+
+## Verification
+
+- The existing Docker image built all stylesheet entries. All 263 Django tests passed. A regression test checks that the three list routes load the shared shell and list assets and that the home page loads the athlete-card asset.
+- Chromium checks covered layout at 320, 390, 820, and 1440 px, including matching table and pagination styles and filter preservation during paging and page-size changes with JavaScript disabled.
+- Browser checks also covered the cookie banner, mobile navigation, autocomplete, athlete links, title registries, club pages, tournament sort, and the empty state.
+- Shared template and style owners are [the athlete card](../components/web-api/application/federation/templates/common/athlete_card.html), [the card stylesheet](../components/web-api/frontend/src/athlete-card.css), [the table template](../components/web-api/application/federation/templates/common/list/table.html), [the table stylesheet](../components/web-api/frontend/src/list-table.css), and [the shell tokens](../components/web-api/frontend/src/tokens.css).
+
+## Optional scripts
+
+The home page skips DataTables. Home, tournaments, and both ratings lists skip the Facebook SDK, which they had loaded without an embed. FullCalendar loads with the calendar template, where it renders the calendar and fetches events.
+
+The medians below use three Chromium loads per width with caching disabled. They compare `93baf58` with this follow-up. The tournament URL was `/tournaments/?period=past&per_page=5`.
+
+| Page | CSS transferred | JavaScript transferred | JavaScript change |
+| --- | ---: | ---: | ---: |
+| Home at 390 px | 94,538 B → 92,210 B | 312,277 B → 114,817 B | −63.2% |
+| Home at 1440 px | 94,396 B → 92,258 B | 312,407 B → 114,828 B | −63.2% |
+| Tournaments at 1440 px | 64,648 B → 64,594 B | 200,173 B → 114,819 B | −42.6% |
+
+
+## Shared filters and one athlete card layout
+
+Tournaments, player ratings, season ratings, and the club directory use the same filter form. The form uses Bootstrap inputs, selects, buttons, and grid utilities. Each view supplies its labels, choices, and preserved URL parameters. Tournament and rating searches submit with Enter on desktop, where the button appears on keyboard focus. On phones and tablets, the submit button sits beside the search field. The remaining filter CSS covers icons, focus, and layout. The tournament bundle no longer builds Basecoat text input and select styles.
+
+The ratings lists use the shared athlete card at both phone and tablet widths. Bootstrap's grid puts cards in one column below 768 px and two columns at wider card widths. The former ratings-specific card layout stylesheet was removed.
+
+Compared with `b17efd9`, authored CSS across `style-v2.css` and the CSS sources in `frontend/src` fell from 13,505 to 13,148 lines. That is 357 fewer lines and 8,431 fewer uncompressed bytes. The source count excludes generated and vendor CSS.
+
+Chromium verified that tournament, rating, and club filters submit and preserve URL state with JavaScript disabled. Layout checks covered 320–1440 px and verified the tournament search button's keyboard reveal.
+
+## Shared stylesheet measurements before the palette cleanup
+
+The comparison at `db95e43` used the same routes, data, widths, and three-run method as the CSS split baseline at `8629f95`.
+
+| Page | Width | Before | Final | Change |
+| --- | ---: | ---: | ---: | ---: |
+| Tournaments | 390 px | 97,257 B | 63,968 B | −34.2% |
+| Tournaments | 1440 px | 96,632 B | 63,948 B | −33.8% |
+| Player ratings | 390 px | 93,077 B | 64,472 B | −30.7% |
+| Player ratings | 1440 px | 93,011 B | 64,235 B | −30.9% |
+| Season ratings | 390 px | 93,094 B | 64,049 B | −31.2% |
+| Season ratings | 1440 px | 93,273 B | 64,260 B | −31.1% |
+| Home | 390 px | 93,737 B | 91,913 B | −1.9% |
+| Home | 1440 px | 94,061 B | 91,521 B | −2.7% |
+
+At this checkpoint, the measured authored sources went from 14,065 lines and 276,618 bytes at `8e49265` to 13,148 lines and 263,633 bytes. That is 917 lines and 12,985 uncompressed bytes removed, counting the legacy file and every authored frontend CSS file once. All 264 Django tests passed at this checkpoint.
+
+## Palette and spacing
+
+- Use the `--list-*` palette in [tokens.css](../components/web-api/frontend/src/tokens.css). Use `--list-text` for headings, `--list-ink` for body text, and `--list-muted` for metadata, secondary labels, and icons. Use the shared surface and border tokens for tables, filters, cards, and pagination.
+- Use the primary blue for interactive controls and the page accent for links and selected pagination. Use the semantic palette for tags, metrics, and awards. The rating and tournament badge variants use their named background, border, and text tokens from the visual references. Other badge variants use the default tint, and neutral tournament statuses share the muted tone.
+- Use `--space-1`, `--space-2`, `--space-3`, `--space-4`, `--space-6`, and `--space-8` for padding and gaps. At a 16 px root size these are 4, 8, 12, 16, 24, and 32 px. Let content and padding size cards and labels. Keep explicit sizes for avatars and interactive targets where the size serves a purpose.
+- Use Bootstrap for buttons and layout utilities. Vite compiles the shared styles and route CSS directly. The Basecoat and Tailwind build dependencies have been removed.
+
+The follow-up consolidated overlapping tournament breakpoints, desktop and mobile badge styles, and repeated athlete-card and rating rules. The Vite component styles used 163 distinct hex or RGB values outside the token file before this pass. They now take their colors from the shared palette. The legacy palette in the same token file still serves pages that load `style-v2.css`.
+
+| Measure | Before cleanup (`7379ca9`) | After cleanup | Change |
+| --- | ---: | ---: | ---: |
+| Authored CSS in `frontend/src` | 2,692 lines | 2,233 lines | −459 lines (17.1%) |
+| Authored CSS including `style-v2.css` | 13,148 lines / 263,633 B | 12,689 lines / 256,102 B | −459 lines / −7,531 B |
+| Compiled tournament entry | 16,299 B | 8,320 B | −49.0% |
+| Compiled tournament entry, gzip | 3,699 B | 1,989 B | −46.2% |
+| All compiled Vite CSS entries, gzip | 13,783 B | 11,236 B | −18.5% |
+
+The full pilot went from 14,065 to 12,689 authored CSS lines, a reduction of 1,376 lines (9.8%) and 20,516 bytes (7.4%). The compiled measurements sum each standalone stylesheet from the Vite manifest once, with gzip measured per file. Bootstrap, third-party CSS, and legacy CSS are outside the compiled Vite totals.
+
+### CSS transferred after the cleanup
+
+The same local URLs and three-run Chromium method were used for the new measurements. CDN and response sizes vary across runs. The baseline comparison is against `8629f95`.
+
+| Page | Width | Baseline | Before cleanup | After cleanup | Baseline change |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Tournaments | 390 px | 97,257 B | 63,968 B | 62,560 B | −35.7% |
+| Tournaments | 1440 px | 96,632 B | 63,948 B | 61,989 B | −35.9% |
+| Player ratings | 390 px | 93,077 B | 64,472 B | 63,725 B | −31.5% |
+| Player ratings | 1440 px | 93,011 B | 64,235 B | 63,738 B | −31.5% |
+| Season ratings | 390 px | 93,094 B | 64,049 B | 63,696 B | −31.6% |
+| Season ratings | 1440 px | 93,273 B | 64,260 B | 63,681 B | −31.7% |
+| Home | 390 px | 93,737 B | 91,913 B | 91,237 B | −2.7% |
+| Home | 1440 px | 94,061 B | 91,521 B | 91,598 B | −2.6% |
+
+Chromium verified filtering with JavaScript disabled, date sort at card and table widths, tournament switches, empty state, keyboard focus, and card layout from 320 to 1440 px. The Docker asset build and all 264 Django tests passed.

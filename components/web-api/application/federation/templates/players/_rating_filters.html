@@ -1,0 +1,5 @@
+{% load i18n %}
+{% trans "Search athletes" as query_label %}
+{% trans "Search by name or club..." as query_placeholder %}
+{% trans "Search" as submit_label %}
+{% include "common/list/filter_bar.html" with action=request.path|add:"#rating-results" query=player_filters.search search_label=query_label search_placeholder=query_placeholder fields=filter_fields per_page=player_filters.page_size_override submit_label=submit_label implicit_desktop_search=True only %}

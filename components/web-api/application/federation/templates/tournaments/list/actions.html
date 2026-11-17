@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="pilot-actions">
+    {% if row.status.key == "registration_open" %}
+        {% trans "Взяти участь" as registration_label %}
+        {% include "common/list/button.html" with href=row.registration_url label=registration_label variant="primary" only %}
+    {% endif %}
+    {% if row.draw_results_url %}{% include "tournaments/_draw_results_action.html" with url=row.draw_results_url only %}{% endif %}
+    {% trans "Деталі" as details_label %}
+    {% include "common/list/button.html" with href=row.detail_url label=details_label only %}
+</div>

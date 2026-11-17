@@ -1,18 +1,15 @@
 {% extends "common/page_base.html" %}
-{% load app_filters %}
 {% load i18n %}
 
 {% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-<section class="tournaments-page" aria-labelledby="tournaments-page-title" data-responsive-page-size>
+<section class="tournaments-page" aria-labelledby="tournaments-page-title">
     <div class="tournaments-titlebar">
         <h1 id="tournaments-page-title">{% trans "Турніри" %}</h1>
         {% if can_create_tournament %}
-            <a class="create-tournament-button" href="{{ admin_add_url }}">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                <span>{% trans "Додати турнір" %}</span>
-            </a>
+            {% trans "Додати турнір" as create_label %}
+            {% include "common/list/button.html" with href=admin_add_url label=create_label icon="bi-plus-lg" css_class="create-tournament-button" only %}
         {% endif %}
     </div>
 
@@ -28,129 +25,25 @@
         </nav>
 
         <div class="tournament-toggle-group">
-            <form class="tournament-toggle-form tournament-rating-form" method="get" action="{% url 'tournaments' %}">
-                <input type="hidden" name="period" value="{{ filters.period }}">
-                <input type="hidden" name="sort" value="{{ filters.sort }}">
-                {% if page_size != default_page_size %}
-                    <input type="hidden" name="per_page" value="{{ page_size }}">
-                {% endif %}
-                {% if filters.foreign %}
-                    <input type="hidden" name="foreign" value="1">
-                {% endif %}
-                {% if filters.search %}
-                    <input type="hidden" name="q" value="{{ filters.search }}">
-                {% endif %}
-                {% if filters.format %}
-                    <input type="hidden" name="format" value="{{ filters.format }}">
-                {% endif %}
-                {% if filters.category %}
-                    <input type="hidden" name="category" value="{{ filters.category }}">
-                {% endif %}
-                {% if filters.place %}
-                    <input type="hidden" name="place" value="{{ filters.place }}">
-                {% endif %}
-                <label class="tournament-toggle">
-                    <input type="checkbox" name="type" value="rating" {% if filters.rating_type == "rating" %}checked{% endif %}>
-                    <span class="tournament-toggle-label">
-                        <i class="bi bi-award" aria-hidden="true"></i>
-                        {% trans "Ranked only" %}
-                    </span>
-                    <span class="tournament-toggle-switch" aria-hidden="true"></span>
-                </label>
-            </form>
-
-            <form class="tournament-toggle-form tournament-foreign-form" method="get" action="{% url 'tournaments' %}">
-                <input type="hidden" name="period" value="{{ filters.period }}">
-                <input type="hidden" name="sort" value="{{ filters.sort }}">
-                {% if page_size != default_page_size %}
-                    <input type="hidden" name="per_page" value="{{ page_size }}">
-                {% endif %}
-                {% if filters.rating_type != "all" %}
-                    <input type="hidden" name="type" value="{{ filters.rating_type }}">
-                {% endif %}
-                {% if filters.search %}
-                    <input type="hidden" name="q" value="{{ filters.search }}">
-                {% endif %}
-                {% if filters.format %}
-                    <input type="hidden" name="format" value="{{ filters.format }}">
-                {% endif %}
-                {% if filters.category %}
-                    <input type="hidden" name="category" value="{{ filters.category }}">
-                {% endif %}
-                {% if filters.place %}
-                    <input type="hidden" name="place" value="{{ filters.place }}">
-                {% endif %}
-                <label class="tournament-toggle">
-                    <input type="checkbox" name="foreign" value="1" {% if filters.foreign %}checked{% endif %}>
-                    <span class="tournament-toggle-label">
-                        <i class="bi bi-globe2" aria-hidden="true"></i>
-                        {% trans "Закордонні" %}
-                    </span>
-                    <span class="tournament-toggle-switch" aria-hidden="true"></span>
-                </label>
-            </form>
+            {% for toggle in toggle_forms %}
+                <form class="tournament-toggle-form" method="get" action="{% url 'tournaments' %}">
+                    {% include "common/list/hidden_fields.html" with fields=toggle.fields only %}
+                    <button class="tournament-toggle" type="submit" role="switch" aria-checked="{{ toggle.checked|yesno:'true,false' }}" name="{{ toggle.name }}" value="{{ toggle.value }}">
+                        <span class="tournament-toggle-label"><i class="bi {{ toggle.icon }}" aria-hidden="true"></i> {{ toggle.label }}</span>
+                        <span class="tournament-toggle-switch" aria-hidden="true"></span>
+                    </button>
+                </form>
+            {% endfor %}
         </div>
     </div>
 
-    <form class="tournament-filter-form" method="get" action="{% url 'tournaments' %}">
-        <input type="hidden" name="period" value="{{ filters.period }}">
-        <input type="hidden" name="sort" value="{{ filters.sort }}">
-        {% if page_size != default_page_size %}
-            <input type="hidden" name="per_page" value="{{ page_size }}">
-        {% endif %}
-        {% if filters.rating_type != "all" %}
-            <input type="hidden" name="type" value="{{ filters.rating_type }}">
-        {% endif %}
-        {% if filters.foreign %}
-            <input type="hidden" name="foreign" value="1">
-        {% endif %}
-
-        <label class="tournament-filter-field tournament-filter-search">
-            <span class="visually-hidden">{% trans "Пошук" %}</span>
-            <i class="bi bi-search" aria-hidden="true"></i>
-            <input type="search" name="q" value="{{ filters.search }}" placeholder="{% trans "Пошук за назвою, містом або клубом..." %}">
-        </label>
-
-        <label class="tournament-filter-field">
-            <span class="visually-hidden">{% trans "Формат" %}</span>
-            <i class="bi bi-globe" aria-hidden="true"></i>
-            <select name="format">
-                <option value="">{% trans "Формат" %}</option>
-                {% for value,label in format_options %}
-                    <option value="{{ value }}" {% if filters.format == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label class="tournament-filter-field">
-            <span class="visually-hidden">{% trans "Стать / категорія" %}</span>
-            <i class="bi bi-person" aria-hidden="true"></i>
-            <select name="category">
-                <option value="">{% trans "Стать / категорія" %}</option>
-                {% for value,label in category_options %}
-                    <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label class="tournament-filter-field">
-            <span class="visually-hidden">{% trans "Місце" %}</span>
-            <i class="bi bi-geo-alt" aria-hidden="true"></i>
-            <select name="place">
-                <option value="">{% trans "Місце" %}</option>
-                {% for place in place_options %}
-                    <option value="{{ place }}" {% if filters.place == place %}selected{% endif %}>{{ place }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <a class="tournament-reset-button" href="{{ reset_url }}">
-            <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-            <span>{% trans "Скинути фільтри" %}</span>
-        </a>
-    </form>
+    {% url 'tournaments' as filter_action %}
+    {% trans "Пошук" as query_label %}
+    {% trans "Пошук за назвою, містом або клубом..." as query_placeholder %}
+    {% trans "Скинути фільтри" as reset_label %}
+    {% trans "Find tournaments" as find_label %}
+    {% include "common/list/filter_bar.html" with action=filter_action query=filters.search search_label=query_label search_placeholder=query_placeholder fields=filter_fields preserved_filters=search_form_fields submit_label=find_label reset_url=reset_url reset_label=reset_label implicit_desktop_search=True only %}
 
     {% include "tournaments/tournaments_table.html" %}
 </section>
-
 {% endblock %}

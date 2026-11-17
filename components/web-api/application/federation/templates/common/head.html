@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n vite_assets %}
 <html data-bs-theme="light">
     <head>
 
@@ -42,20 +42,40 @@
         <!-- jQuery UI JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
+        {% if not tournaments_pilot and not ratings_pilot and not portal_ui.home_page %}
         <!-- DataTables Bootstrap 5 integration -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
         <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-
-        <!-- FullCalendar CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-        <!-- Custom Styles -->
-        <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
-        <!-- FullCalendar JS -->
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        {% endif %}
+        {% vite_stylesheet "src/shell.css" %}
+        {% if not ratings_pilot %}
+            {% vite_stylesheet "src/tournament-badges.css" %}
+        {% endif %}
+        {% if ratings_pilot or portal_ui.athlete_card %}
+            {% vite_stylesheet "src/athlete-card.css" %}
+        {% endif %}
+        {% if ratings_pilot or portal_ui.rating_styles %}
+            {% vite_stylesheet "src/ratings-foundation.css" %}
+        {% endif %}
+        {% if tournaments_pilot or ratings_pilot %}
+            {% vite_stylesheet "src/list-ui.css" %}
+        {% endif %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
+            {% vite_stylesheet "src/filter-bar.css" %}
+        {% endif %}
+        {% if tournaments_pilot %}
+            {% vite_stylesheet "src/tournaments.css" %}
+        {% elif ratings_pilot %}
+            {% vite_stylesheet "src/ratings.css" %}
+        {% else %}
+            <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
+        {% endif %}
+        {% if tournaments_pilot or ratings_pilot %}
+            <noscript><style>#gdpr_warning { position: static; transform: none; margin: 4.5rem auto 0; }</style></noscript>
+        {% endif %}
 
         <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
     </head>

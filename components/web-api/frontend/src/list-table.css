@@ -1,0 +1,38 @@
+.portal-results {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-panel-radius);
+  box-shadow: 0 6px 18px var(--list-shadow);
+  scroll-margin-top: 5rem;
+}
+
+.portal-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.portal-table :is(th, td) {
+  border-bottom: 1px solid var(--list-border);
+  color: var(--list-ink);
+  padding: var(--space-4);
+  vertical-align: middle;
+}
+
+.portal-table th {
+  background: var(--list-field-surface);
+  font-size: .82rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.portal-table td { font-size: .9rem; }
+
+.portal-table :is(th, td):first-child { padding-inline-start: var(--space-6); }
+.portal-table th:first-child { border-start-start-radius: var(--list-panel-radius); }
+.portal-table th:last-child { border-start-end-radius: var(--list-panel-radius); }
+.portal-table tbody tr:last-child td { border-bottom: 0; }
+.portal-table tbody tr:hover { background: var(--list-muted-surface); }

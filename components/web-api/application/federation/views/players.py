@@ -1,6 +1,5 @@
 import datetime
 import json
-from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -13,15 +12,19 @@ from federation.models.tournament import TeamTournamentMembership
 from federation.models.tournament import Tournament
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.vary import vary_on_headers
 from federation.helpers.general import get_model
+from federation.utils.pagination import pagination_links
 from federation.utils.rankings import attach_rating_positions
+from federation.utils.request_devices import is_phone_request
 from federation.utils.tournament_names import get_tournament_card_metadata
 from federation.utils.tournament_names import get_tournament_display_name
 
 
 PLAYERS_PAGE_SIZE_PARAM = 'per_page'
 DEFAULT_PLAYERS_PAGE_SIZE = 50
-PLAYERS_PAGE_SIZE_OPTIONS = (25, 30, 50, 100)
+MOBILE_PLAYERS_PAGE_SIZE = 25
+PLAYERS_PAGE_SIZE_OPTIONS = (MOBILE_PLAYERS_PAGE_SIZE, 30, DEFAULT_PLAYERS_PAGE_SIZE, 100)
 PLAYER_AGE_CATEGORIES = {
     'JUN': (0, 18),
     'ESP': (19, 23),
@@ -30,6 +33,7 @@ PLAYER_AGE_CATEGORIES = {
 }
 
 
+@vary_on_headers("Sec-CH-UA-Mobile", "User-Agent")
 def players(request, licence_filter=None, rating_filter=None):
 
     players_objects = Player.objects.select_related('current_club', 'current_club__city')
@@ -50,7 +54,7 @@ def players(request, licence_filter=None, rating_filter=None):
         rating_power_field = 'current_power_inclusive'
 
     player_filters = _get_player_filters(request)
-    filter_options = _get_player_filter_options(players_objects)
+    filter_fields = _rating_filter_fields(players_objects, player_filters, "current_club")
     players_objects = _apply_player_filters(players_objects, player_filters)
     players_objects = _order_players(players_objects, rating_field)
 
@@ -63,8 +67,10 @@ def players(request, licence_filter=None, rating_filter=None):
         _player_ranking_queryset(licence_filter, rating_field),
     )
 
+    active_filters = _active_player_filter_params(player_filters)
     return render(request, 'players/players.html', {
         'players': page_players,
+        'ratings_pilot': True,
         'rating_filters': rating_field+","+str(licence_filter),
         'rating_field': rating_field,
         'rating_power_field': rating_power_field,
@@ -74,35 +80,36 @@ def players(request, licence_filter=None, rating_filter=None):
         'page_size': player_filters['page_size'],
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
-        'player_filter_options': filter_options,
-        'player_active_params': _active_player_filter_params(player_filters),
-        'player_pagination_pages': _pagination_pages(page_obj),
-        'player_pagination_summary': _player_pagination_summary(page_obj),
-        'player_pagination_urls': _player_pagination_urls(request, player_filters, page_obj),
-        'player_reset_url': _player_reset_url(request, player_filters),
+        'filter_fields': filter_fields,
+        'active_filters': active_filters,
+        'pagination_summary': _player_pagination_summary(page_obj),
+        **pagination_links(page_obj, request.path, active_filters),
     })
 
 
 def _get_player_filters(request):
+    page_size_override = _requested_player_page_size(request)
     return {
         'search': request.GET.get('q', '').strip(),
         'club': request.GET.get('club', '').strip(),
         'age': request.GET.get('age', '').strip(),
         'sex': request.GET.get('sex', '').strip(),
-        'page_size': _get_player_page_size(request),
+        'page_size': page_size_override or _default_player_page_size(request),
+        'page_size_override': page_size_override,
     }
 
 
-def _get_player_page_size(request):
+def _requested_player_page_size(request):
     try:
-        page_size = int(request.GET.get(PLAYERS_PAGE_SIZE_PARAM, DEFAULT_PLAYERS_PAGE_SIZE))
-    except (TypeError, ValueError):
-        return DEFAULT_PLAYERS_PAGE_SIZE
+        page_size = int(request.GET.get(PLAYERS_PAGE_SIZE_PARAM, ''))
+    except ValueError:
+        return None
 
-    if page_size in PLAYERS_PAGE_SIZE_OPTIONS:
-        return page_size
+    return page_size if page_size in PLAYERS_PAGE_SIZE_OPTIONS else None
 
-    return DEFAULT_PLAYERS_PAGE_SIZE
+
+def _default_player_page_size(request):
+    return MOBILE_PLAYERS_PAGE_SIZE if is_phone_request(request) else DEFAULT_PLAYERS_PAGE_SIZE
 
 
 def _apply_player_filters(queryset, player_filters):
@@ -156,23 +163,30 @@ def _player_ranking_queryset(licence_filter, rating_field):
     return Player.objects.all()
 
 
-def _get_player_filter_options(queryset):
+def _rating_filter_fields(queryset, filters, club_relation):
+    club_name = f'{club_relation}__short_name'
     clubs = (
-        queryset
-        .filter(current_club__isnull=False)
-        .values_list('current_club__short_name', flat=True)
+        queryset.filter(**{f'{club_relation}__isnull': False})
+        .values_list(club_name, flat=True)
         .distinct()
-        .order_by('current_club__short_name')
+        .order_by(club_name)
     )
 
-    return {
-        'clubs': [club for club in clubs if club],
-        'ages': PLAYER_AGE_CATEGORIES.keys(),
-        'sexes': (
-            ('M', _('Men')),
-            ('F', _('Women')),
-        ),
-    }
+    return (
+        {
+            'name': 'club', 'label': _("Club"), 'placeholder': _("All clubs"), 'icon': 'bi-building',
+            'options': [(club, club) for club in clubs if club], 'selected': filters['club'],
+        },
+        {
+            'name': 'age', 'label': _("Age"), 'placeholder': _("All age categories"), 'icon': 'bi-people',
+            'options': [(age, age) for age in PLAYER_AGE_CATEGORIES],
+            'selected': filters['age'],
+        },
+        {
+            'name': 'sex', 'label': _("Sex"), 'placeholder': _("All athletes"), 'icon': 'bi-gender-ambiguous',
+            'options': (('M', _("Men")), ('F', _("Women"))), 'selected': filters['sex'],
+        },
+    )
 
 
 def _player_age_category_key(player):
@@ -194,60 +208,10 @@ def _active_player_filter_params(player_filters):
         if value:
             params['q' if key == 'search' else key] = value
 
-    if player_filters.get('page_size') != DEFAULT_PLAYERS_PAGE_SIZE:
-        params[PLAYERS_PAGE_SIZE_PARAM] = player_filters['page_size']
+    if player_filters['page_size_override']:
+        params[PLAYERS_PAGE_SIZE_PARAM] = player_filters['page_size_override']
 
     return params
-
-
-def _player_url(request, player_filters, page=None):
-    params = _active_player_filter_params(player_filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
-    if not query:
-        return request.path
-
-    return '{}?{}'.format(request.path, query)
-
-
-def _player_reset_url(request, player_filters):
-    if player_filters.get('page_size') == DEFAULT_PLAYERS_PAGE_SIZE:
-        return request.path
-
-    return '{}?{}'.format(
-        request.path,
-        urlencode({PLAYERS_PAGE_SIZE_PARAM: player_filters['page_size']}),
-    )
-
-
-def _player_pagination_urls(request, player_filters, page_obj):
-    return {
-        'first': _player_url(request, player_filters, 1),
-        'previous': _player_url(request, player_filters, page_obj.previous_page_number()) if page_obj.has_previous() else '#',
-        'next': _player_url(request, player_filters, page_obj.next_page_number()) if page_obj.has_next() else '#',
-        'last': _player_url(request, player_filters, page_obj.paginator.num_pages),
-        'pages': {
-            page: _player_url(request, player_filters, page)
-            for page in _pagination_pages(page_obj)
-            if page != 'ellipsis'
-        },
-    }
-
-
-def _pagination_pages(page_obj):
-    current = page_obj.number
-    total = page_obj.paginator.num_pages
-    pages = []
-
-    for page in range(1, total + 1):
-        if page == 1 or page == total or abs(page - current) <= 1:
-            pages.append(page)
-        elif pages[-1] != 'ellipsis':
-            pages.append('ellipsis')
-
-    return pages
 
 
 def _player_pagination_summary(page_obj):

@@ -1,0 +1,46 @@
+{% extends "common/list/table.html" %}
+{% load app_filters i18n %}
+
+{% block table_class %}tournaments-table{% endblock %}
+
+{% block table_head %}
+    <tr>
+        {% trans "Дата" as date_label %}
+        <th scope="col" class="tournament-date-column" aria-sort="{% if sort_state.date_direction == 'asc' %}ascending{% else %}descending{% endif %}">
+            {% include "tournaments/list/sort.html" with label=date_label sort_state=sort_state only %}
+        </th>
+        <th scope="col" class="tournament-title-column">{% trans "Назва" %}</th>
+        <th scope="col" class="tournament-format-column">{% trans "Формат" %}</th>
+        <th scope="col" class="tournament-place-column">{% trans "Місце" %}</th>
+        {% if show_strength and not filters.foreign %}
+            <th scope="col" class="tournament-strength-column">
+                <span data-bs-toggle="tooltip" title="{% trans "Tournament power affects how many rating points results are worth. It estimates the strength of the tournament field from the strongest teams that played; higher power means the same place gives more rating points." %}">
+                    {% trans "Сила" %} <i class="bi bi-info-circle" aria-hidden="true"></i>
+                </span>
+            </th>
+        {% endif %}
+        <th scope="col" class="tournament-status-column">{% trans "Статус" %}</th>
+        <th scope="col">{% trans "Дії" %}</th>
+    </tr>
+{% endblock %}
+
+{% block table_rows %}
+    {% for row in rows %}
+        <tr>
+            <td>{% include "tournaments/list/date.html" with row=row only %}</td>
+            <td>
+                {% include "tournaments/list/title.html" with row=row only %}
+                {% include "tournaments/list/team_count.html" with row=row only %}
+            </td>
+            <td>
+                <div class="portal-tag-list">{% include "tournaments/_tags.html" with row=row only %}</div>
+            </td>
+            <td>{% include "tournaments/list/place.html" with row=row only %}</td>
+            {% if show_strength and not filters.foreign %}
+                <td>{{ row.tournament|tournament_power_badge|default:"—" }}</td>
+            {% endif %}
+            <td>{% include "tournaments/list/status.html" with row=row only %}</td>
+            <td>{% include "tournaments/list/actions.html" with row=row only %}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}

@@ -732,9 +732,8 @@ class SeasonSnapshotGenerationTests(TestCase):
         response = self.client.get('/seasons/2024')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="players-club-logo"')
-        self.assertContains(response, 'media/clubs/season-kpc.png')
-        self.assertContains(response, 'alt="KPC"')
+        self.assertContains(response, '<img class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/season-kpc.png" alt=""')
 
     def test_year_tabs_preserve_active_filters(self):
         player = self.create_player('filtered-player')
@@ -999,6 +998,26 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
 
+    def test_licensed_players_page_preserves_explicit_page_size_on_phones(self):
+        for index in range(55):
+            self.create_player(f'licensed-{index}', licence_number_value=f'{index:05d}')
+
+        response = self.client.get('/players/licence', HTTP_SEC_CH_UA_MOBILE='?1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['players']), 25)
+        self.assertIn('Sec-CH-UA-Mobile', response.headers['Vary'])
+        self.assertContains(response, 'href="/players/licence?page=2#rating-results"')
+
+        response = self.client.get(
+            '/players/licence',
+            {'per_page': '50'},
+            HTTP_USER_AGENT='Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X)',
+        )
+
+        self.assertEqual(len(response.context['players']), 50)
+        self.assertContains(response, 'href="/players/licence?per_page=50&amp;page=2#rating-results"')
+
     def test_licensed_players_page_shows_club_logo_in_table(self):
         club = Club.objects.create(
             name='Kyiv Petanque Club',
@@ -1011,9 +1030,8 @@ class PlayerLicenseListTests(TestCase):
         response = self.client.get('/players/licence')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="players-club-logo"')
-        self.assertContains(response, 'media/clubs/kpc.png')
-        self.assertContains(response, 'alt="KPC"')
+        self.assertContains(response, '<img class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/kpc.png" alt=""')
 
 
 class ClubListingPageTests(TestCase):
@@ -1027,9 +1045,10 @@ class ClubListingPageTests(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="tournament-reset-button clubs-reset-button"')
-        self.assertContains(response, 'href="/clubs/?per_page=50"')
-        self.assertContains(response, 'Скинути фільтри')
+        self.assertRegex(
+            response.content.decode(),
+            r'<a\b[^>]*href="/clubs/\?per_page=50"[^>]*>\s*(?:<i[^>]*></i>)?\s*Скинути фільтри\s*</a>',
+        )
 
 
 class ClubDetailPageTests(TestCase):
@@ -2720,6 +2739,25 @@ class StaticStorageTests(TestCase):
 
 @override_settings(CURRENT_COUNTRY='UA')
 class TournamentListingPageTests(TestCase):
+    def test_migrated_lists_load_shared_styles_without_the_legacy_stylesheet(self):
+        for route in ('/tournaments/', '/players/licence', '/seasons/2024'):
+            with self.subTest(route=route):
+                response = self.client.get(route)
+
+                self.assertContains(response, '/vite/assets/shell-')
+                self.assertContains(response, '/vite/assets/list-ui-')
+                self.assertNotContains(response, '/style-v2.css')
+                self.assertNotContains(response, 'facebook-jssdk')
+
+        home = self.client.get('/')
+        self.assertContains(home, '/vite/assets/athlete-card-')
+        self.assertNotContains(home, 'cdn.datatables.net')
+        self.assertNotContains(home, 'fullcalendar@')
+        self.assertNotContains(home, 'facebook-jssdk')
+
+    def test_calendar_loads_fullcalendar(self):
+        self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
+
     def create_tournament(
         self,
         name,
@@ -3310,15 +3348,16 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(future_tab['count'], 1)
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
 
-    def test_filter_form_auto_submits_without_apply_button(self):
+    def test_filter_form_offers_explicit_search_submission(self):
         self.create_tournament('Future Cup')
         self.client.cookies['django_language'] = 'en'
 
         response = self.client.get('/tournaments/', {'period': 'future'})
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, 'tournament-filter-submit')
-        self.assertNotContains(response, 'Apply')
+        self.assertContains(response, 'portal-filter-submit" type="submit"')
+        self.assertContains(response, '>Search</button>')
+        self.assertContains(response, 'name="q"')
 
     def test_tournament_name_has_full_name_tooltip(self):
         self.create_tournament('Full Cup (триплети, тур, чоловіки)', players_min=3)
@@ -3357,6 +3396,29 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, '1 player')
         self.assertNotContains(response, '1 team')
 
+    def test_default_tournament_page_size_for_desktop_and_phones(self):
+        for index in range(26):
+            self.create_tournament(f'Future Cup {index}')
+
+        for headers, expected_size in (
+            ({}, 25),
+            ({'HTTP_SEC_CH_UA_MOBILE': '?1'}, 10),
+            ({'HTTP_USER_AGENT': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)'}, 10),
+            ({'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; Android 15; Tablet)'}, 25),
+        ):
+            with self.subTest(headers=headers):
+                response = self.client.get('/tournaments/', **headers)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(len(response.context['rows']), expected_size)
+                self.assertNotIn('per_page', response.context['active_filters'])
+
+    def test_explicit_page_size_is_preserved_even_when_it_matches_a_device_default(self):
+        response = self.client.get('/tournaments/', {'per_page': '25'}, HTTP_SEC_CH_UA_MOBILE='?1')
+
+        self.assertEqual(response.context['page_size'], 25)
+        self.assertEqual(response.context['active_filters']['per_page'], 25)
+        self.assertEqual(response.context['reset_url'], '/tournaments/?per_page=25')
+
     def test_per_page_param_limits_tournament_listing_to_five_rows(self):
         for index in range(6):
             self.create_tournament('Future Cup {}'.format(index), start_offset=index + 1)
@@ -3372,7 +3434,10 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(len(response.context['rows']), 5)
         self.assertContains(response, 'class="tournaments-mobile-list"')
         self.assertContains(response, 'per_page=5')
-        self.assertContains(response, 'tournaments-page-size-value">5</span>')
+        self.assertContains(response, 'name="per_page" value="5" aria-current="true"')
+        self.assertNotContains(response, 'data-responsive-page-size')
+        self.assertNotContains(response, 'data-responsive-template-mount')
+        self.assertContains(response, 'type="submit"')
 
     def test_english_listing_localizes_labels_and_keeps_key_based_filters(self):
         self.create_tournament('Junior Triples Cup (юніори)', players_min=3)
@@ -3390,7 +3455,8 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, 'Future')
         self.assertContains(response, 'Juniors')
         self.assertContains(response, 'Triples')
-        self.assertContains(response, 'No club')
+        self.assertNotContains(response, 'No club')
+        self.assertNotContains(response, 'pilot-organizer')
         self.assertContains(response, '0 teams')
         self.assertContains(response, 'Junior Triples Cup')
         self.assertNotContains(response, 'Senior Doublets Cup')
