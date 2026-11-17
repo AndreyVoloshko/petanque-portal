@@ -122,7 +122,6 @@
   --list-warning: #9a4b00;
   --list-danger: #b42318;
   --list-violet: #5a35b4;
-  --list-pink: #a82667;
   --list-gold: #9a6900;
   --list-disabled: #a5b1c3;
   --list-field-surface: #fbfdff;
@@ -135,6 +134,36 @@
   --list-accent-border: color-mix(in srgb, var(--list-page-accent) 24%, var(--list-surface));
   --list-shadow: color-mix(in srgb, var(--list-text) 12%, transparent);
   --list-placeholder: linear-gradient(145deg, var(--list-muted-surface), var(--list-border));
+
+  --rating-rank-bg: #158553;
+  --rating-rank-border: #0f6f4d;
+  --rating-name-text: #0d3b66;
+  --rating-award-icon: #c18b00;
+  --rating-points-bg: #edf1ff;
+  --rating-points-border: #cfd8ff;
+  --rating-points-text: #3158d4;
+  --rating-power-bg: #dff3ff;
+  --rating-power-border: #adddf7;
+  --rating-power-text: #1670b7;
+  --rating-men-bg: #e8f1ff;
+  --rating-men-border: #c8dcff;
+  --rating-men-text: #1d5fc0;
+  --rating-women-bg: #fff0f8;
+  --rating-women-border: #f7c9df;
+  --rating-women-text: #c23a7a;
+  --rating-age-bg: #fff3dc;
+  --rating-age-border: #f3c982;
+  --rating-age-text: #ad5900;
+  --rating-license-bg: #edf1f5;
+  --rating-license-text: #334155;
+
+  --tournament-format-bg: #eef6ff;
+  --tournament-format-border: #d7e8ff;
+  --tournament-format-text: #0b58b7;
+  --tournament-open-bg: #effaf3;
+  --tournament-open-border: #b9e6c7;
+  --tournament-audience-bg: #f5f0ff;
+  --tournament-audience-border: #e5dbff;
 
   --space-1: .25rem;
   --space-2: .5rem;

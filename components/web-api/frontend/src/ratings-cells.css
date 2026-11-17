@@ -26,11 +26,11 @@
 }
 
 .players-sex-column {
-  width: 9%;
+  width: 10%;
 }
 
 .players-age-column {
-  width: 7.5%;
+  width: 6.5%;
 }
 
 .players-license-column {
@@ -65,8 +65,8 @@
 .players-license-badge,
 .players-no-club {
   align-items: center;
-  background: color-mix(in srgb, var(--badge-tone, var(--list-ink)) 8%, var(--list-surface)) !important;
-  border: 1px solid color-mix(in srgb, var(--badge-tone, var(--list-ink)) 24%, var(--list-surface));
+  background: var(--badge-bg, color-mix(in srgb, var(--badge-tone, var(--list-ink)) 8%, var(--list-surface))) !important;
+  border: 1px solid var(--badge-border, color-mix(in srgb, var(--badge-tone, var(--list-ink)) 24%, var(--list-surface)));
   border-radius: var(--space-2);
   color: var(--badge-tone, var(--list-ink)) !important;
   display: inline-flex !important;
@@ -109,8 +109,8 @@
 }
 
 .players-rank-badge {
-  background: var(--list-success) !important;
-  border-color: var(--list-success);
+  background: var(--badge-bg, var(--list-success)) !important;
+  border-color: var(--badge-border, var(--list-success));
   color: var(--list-surface) !important;
   font-weight: 800;
   min-width: 2.35rem;
@@ -144,19 +144,35 @@
   display: none;
 }
 
-.players-points-badge { --badge-tone: var(--list-primary); }
+.players-points-badge {
+  --badge-bg: var(--rating-points-bg);
+  --badge-border: var(--rating-points-border);
+  --badge-tone: var(--rating-points-text);
+}
 
-.players-power-badge { --badge-tone: var(--list-page-accent); }
+.players-power-badge {
+  --badge-bg: var(--rating-power-bg);
+  --badge-border: var(--rating-power-border);
+  --badge-tone: var(--rating-power-text);
+}
 
 .players-sex-badge {
-  --badge-tone: var(--list-primary);
+  --badge-bg: var(--rating-men-bg);
+  --badge-border: var(--rating-men-border);
+  --badge-tone: var(--rating-men-text);
   min-width: 3.5rem;
 }
 
-.players-sex-badge-f { --badge-tone: var(--list-pink); }
+.players-sex-badge-f {
+  --badge-bg: var(--rating-women-bg);
+  --badge-border: var(--rating-women-border);
+  --badge-tone: var(--rating-women-text);
+}
 
 .players-age-badge .badge {
-  --badge-tone: var(--list-warning);
+  --badge-bg: var(--rating-age-bg);
+  --badge-border: var(--rating-age-border);
+  --badge-tone: var(--rating-age-text);
   min-width: 3.5rem;
 }
 
@@ -187,7 +203,7 @@
 
 .players-athlete-link {
   align-items: center;
-  color: var(--list-page-accent);
+  color: var(--rating-name-text);
   display: inline-flex;
   gap: var(--space-3);
   max-width: 100%;
@@ -250,7 +266,7 @@
 }
 
 .players-athlete-title-badge {
-  color: var(--list-gold);
+  color: var(--rating-award-icon);
   display: inline-flex !important;
   flex: 0 0 auto;
   line-height: 1;
@@ -263,7 +279,7 @@
 
 .players-club-link {
   align-items: center;
-  color: var(--list-page-accent);
+  color: var(--link-action);
   display: inline-flex;
   font-weight: 750;
   gap: var(--space-2);
@@ -275,7 +291,7 @@
 
 .players-club-link:hover,
 .players-club-link:focus {
-  color: var(--list-primary);
+  color: var(--link-action-hover);
   text-decoration: none;
 }
 

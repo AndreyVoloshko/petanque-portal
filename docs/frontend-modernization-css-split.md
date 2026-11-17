@@ -83,7 +83,7 @@ At this checkpoint, the measured authored sources went from 14,065 lines and 276
 ## Palette and spacing
 
 - Use the `--list-*` palette in [tokens.css](../components/web-api/frontend/src/tokens.css). Use `--list-text` for headings, `--list-ink` for body text, and `--list-muted` for metadata, secondary labels, and icons. Use the shared surface and border tokens for tables, filters, cards, and pagination.
-- Use the primary blue for interactive controls and the page accent for links and selected pagination. Use the semantic success, warning, danger, violet, pink, and gold tones for tags, metrics, or awards. Badges derive their background and border from their tone. Neutral tournament statuses share the muted tone.
+- Use the primary blue for interactive controls and the page accent for links and selected pagination. Use the semantic palette for tags, metrics, and awards. The rating and tournament badge variants use their named background, border, and text tokens from the visual references. Other badge variants use the default tint, and neutral tournament statuses share the muted tone.
 - Use `--space-1`, `--space-2`, `--space-3`, `--space-4`, `--space-6`, and `--space-8` for padding and gaps. At a 16 px root size these are 4, 8, 12, 16, 24, and 32 px. Let content and padding size cards and labels. Keep explicit sizes for avatars and interactive targets where the size serves a purpose.
 - Use Bootstrap for buttons and layout utilities. Vite compiles the shared styles and route CSS directly. The Basecoat and Tailwind build dependencies have been removed.
 

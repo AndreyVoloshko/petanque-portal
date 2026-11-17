@@ -2,6 +2,28 @@
 
 .players-mobile-list { display: none; }
 
+.players-rating-page .players-row > td {
+  border-bottom-color: var(--portal-border-light-blue);
+  padding-block: var(--space-3);
+}
+
+.players-row :is(.players-rank-badge, .players-metric-badge, .players-sex-badge, .players-age-badge .badge, .players-license-badge, .players-no-club) {
+  font-size: .8rem;
+  font-weight: 800;
+  min-block-size: 1.75rem;
+}
+
+.players-row .players-rank-badge {
+  --badge-bg: var(--rating-rank-bg);
+  --badge-border: var(--rating-rank-border);
+}
+
+.players-row .players-license-badge:not(.players-license-badge-missing) {
+  --badge-bg: var(--rating-license-bg);
+  --badge-border: var(--portal-slate-200);
+  --badge-tone: var(--rating-license-text);
+}
+
 @media (1200px <= width <= 1480px) {
   .players-rating-page .players-table :is(th, td) {
     padding-inline: var(--space-2);

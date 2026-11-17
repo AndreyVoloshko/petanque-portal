@@ -95,8 +95,10 @@ These values describe the tournament pilot at 1440 and 390 px on `/tournaments/?
 | Tournament name | 14.4 px · 800 · `#1f5f8b` | 16 px · 800 · `#1f5f8b` |
 | Venue | 14.4 px · 400 · `#23304a` | 13 px · 400 · `#23304a` |
 | Participant count | 13 px · 600 · `#606e83` | 13 px · 600 · `#606e83` |
-| Format tag | 12 px · 700 · `#0b55c6` | 12 px · 700 · `#0b55c6` |
-| Finished status | 12 px · 700 · `#606e83` | 12 px · 700 · `#606e83` |
+| Format tag | 12 px · 800 · `#0b58b7` | 12 px · 800 · `#0b58b7` |
+| Open tag | 12 px · 800 · `#147a45` | 12 px · 800 · `#147a45` |
+| Tournament strength | 12.8 px · 700 · `#0f5f91` | 12.8 px · 700 · `#0f5f91` |
+| Finished status | 12 px · 800 · `#606e83` | 12 px · 800 · `#606e83` |
 | Filter select | 14 px · 600 · `#23304a` | 14 px · 600 · `#23304a` |
 | Details action | 14 px · 700 · `#23304a` | 14 px · 700 · `#23304a` |
 | Pagination link | 13.76 px · 800 · `#23304a` | 13.76 px · 800 · `#23304a` |

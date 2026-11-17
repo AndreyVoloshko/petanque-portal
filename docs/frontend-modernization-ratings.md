@@ -48,6 +48,8 @@ The pagination values in the table reflect the step 2 comparison. The current fo
 
 The table heading uses a `#fbfdff` background and 14.4 × 16 px padding. The selects use the same background on their wrappers, with 32 px of trailing space inside the select for the arrow. Select focus uses a soft blue-gray shadow and a slightly darker border. Page controls use white, `#dbe5ef` borders, and `#1f5f8b` for the current page. Page size now uses a disclosure styled like the pager.
 
+The desktop rows use 12.8 px, weight 800 text in badges with a 28 px minimum block size. Points use indigo, power uses cyan, and age uses amber. The badge backgrounds, borders, and text colors are defined in [tokens.css](../components/web-api/frontend/src/tokens.css). Check all badge columns from 1200 to 1480 px after updating typography.
+
 ## Lessons for the next migration
 
 1. Before changing a page, capture screenshots and computed styles at desktop and phone widths, using the same route, filters, language and data. Wait for fonts to load. Record font family, size, weight, line height, text color, background, padding, alignment and icon size for page headings, table headers, dates, tags, status badges, links, actions and form controls.
