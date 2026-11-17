@@ -1,9 +1,0 @@
-@theme inline {
-  --color-primary: var(--list-primary);
-  --color-primary-foreground: var(--list-on-primary);
-  --color-foreground: var(--list-text);
-  --color-muted: var(--list-muted-surface);
-  --color-muted-foreground: var(--list-muted);
-  --color-ring: var(--list-primary);
-  --color-destructive: #b42318;
-}

@@ -5,12 +5,12 @@
 .portal-filter-bar :is(.form-select, .form-control) {
   background-color: var(--list-field-surface);
   color: var(--list-ink);
-  padding-inline-start: 2rem;
+  padding-inline-start: var(--space-8);
 }
 
 .portal-filter-bar :is(.form-select, .form-control):focus {
   border-color: color-mix(in srgb, var(--list-page-accent) 45%, var(--list-border));
-  box-shadow: 0 0 0 3px rgb(31 95 139 / 10%), 0 2px 8px rgb(31 95 139 / 9%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--list-page-accent) 14%, transparent);
 }
 
 @media (width > 1050px) and (hover: hover) and (pointer: fine) {

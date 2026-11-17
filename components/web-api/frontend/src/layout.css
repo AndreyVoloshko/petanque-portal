@@ -2,7 +2,9 @@ html,
 body {
   height: 100%;
   min-height: 100vh;
-}body {
+}
+
+body {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,20 +14,18 @@ body {
 
 .portal-page-content {
   flex: 1 0 auto;
-  padding-bottom: 2rem;
+  padding-bottom: var(--space-8);
 }
 
 .portal-page-content-wide {
   max-width: none;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-inline: var(--space-6);
   width: 100%;
 }
 
 @media (max-width: 575.98px) {
   .portal-page-content-wide {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-inline: var(--space-2);
   }
 }
 

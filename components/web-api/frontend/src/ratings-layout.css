@@ -1,10 +1,10 @@
 .players-page {
   color: var(--list-text);
   display: grid;
-  gap: 1rem;
+  gap: var(--space-4);
   margin-left: 50%;
   min-width: 0;
-  padding-bottom: 1.5rem;
+  padding-bottom: var(--space-6);
   transform: translateX(-50%);
   width: min(1840px, calc(100vw - 3rem));
 }
@@ -12,7 +12,7 @@
 .players-titlebar {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   justify-content: space-between;
   min-width: 0;
 }
@@ -27,15 +27,14 @@
   display: flex;
   font-size: clamp(1.75rem, 3vw, 2.35rem);
   font-weight: 800;
-  gap: 0.62rem;
-  letter-spacing: 0;
+  gap: var(--space-2);
   line-height: 1.1;
   margin: 0;
 }
 
 .players-title-icon {
   align-items: center;
-  color: #8b96a7;
+  color: var(--list-muted);
   display: inline-flex;
   font-size: 1.4rem;
   line-height: 1;
@@ -48,51 +47,50 @@
   flex-wrap: wrap;
   font-size: 0.98rem;
   font-weight: 650;
-  gap: 0.35rem;
+  gap: var(--space-1);
   line-height: 1.4;
-  margin: 0.35rem 0 0;
+  margin: var(--space-1) 0 0;
 }
 
 .season-year-tabs {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .season-year-tab {
   align-items: center;
-  background: #ffffff;
+  background: var(--list-surface);
   border: 1px solid var(--list-border);
   border-radius: 8px;
-  color: #46546a;
+  color: var(--list-ink);
   display: inline-flex;
   font-size: 0.9rem;
   font-weight: 750;
   justify-content: center;
   line-height: 1;
-  min-height: 2.35rem;
-  min-width: 4.25rem;
-  padding: 0 0.78rem;
+  min-width: 4rem;
+  padding: var(--space-3);
   text-decoration: none;
 }
 
 .season-year-tab:hover,
 .season-year-tab:focus-visible {
-  border-color: #8fc7df;
-  color: #0d73a8;
+  border-color: var(--list-accent-border);
+  color: var(--list-page-accent);
   text-decoration: none;
 }
 
 .season-year-tab.is-active {
-  background: #102d4e;
-  border-color: #102d4e;
-  color: #ffffff;
+  background: var(--list-page-accent);
+  border-color: var(--list-page-accent);
+  color: var(--list-surface);
 }
 
 .players-page-info {
-  color: #6e7d92;
+  color: var(--list-muted);
   cursor: pointer;
   display: inline-flex !important;
   line-height: 1;
@@ -100,12 +98,11 @@
 
 .players-page-info:hover,
 .players-page-info:focus-visible {
-  color: #0d73a8;
+  color: var(--list-page-accent);
 }
 
 @media (max-width: 767.98px) {
   .players-page {
-    gap: 0.85rem;
     width: min(100%, calc(100vw - 1rem));
   }
 

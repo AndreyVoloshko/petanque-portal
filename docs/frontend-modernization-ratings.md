@@ -28,7 +28,7 @@ The code counts compare the same files at the baseline and after the change. Aut
 
 ## Typography reference
 
-Use this as the before-and-after reference for the Ukrainian ratings page at 1440 and 390 px. The declared family starts with **Source Sans Pro**, followed by the existing system and sans-serif fallbacks. Each cell lists font size, weight, text color and line height. Keep the measured weight even when the closest rendered weight depends on the available font.
+These values record the step 2 comparison for the Ukrainian ratings page at 1440 and 390 px. The later [palette cleanup](frontend-modernization-css-split.md#palette-and-spacing) standardizes shared colors, padding, and badge treatments. The declared family starts with **Source Sans Pro**, followed by the existing system and sans-serif fallbacks. Each cell lists font size, weight, text color and line height. Keep the measured weight even when the closest rendered weight depends on the available font.
 
 | Element | Desktop at 1440 px | Phone at 390 px |
 | --- | --- | --- |

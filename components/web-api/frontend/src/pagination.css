@@ -7,16 +7,16 @@
   display: grid;
   font-size: .86rem;
   font-weight: 650;
-  gap: 1rem;
+  gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr) auto minmax(7rem, auto);
-  padding: .85rem clamp(.55rem, 3vw, 1.65rem);
+  padding: .85rem clamp(var(--space-2), 3vw, var(--space-6));
 }
 
 .portal-list-footer p { margin: 0; }
 .portal-list-links, .portal-list-size {
   align-items: center;
   display: flex;
-  gap: .45rem;
+  gap: var(--space-2);
 }
 .portal-list-links {
   flex-wrap: wrap;
@@ -41,7 +41,7 @@
   justify-content: center;
   line-height: 1;
   min-inline-size: 2rem;
-  padding-inline: .55rem;
+  padding-inline: var(--space-2);
   text-decoration: none;
 }
 .portal-page-control {
@@ -52,16 +52,16 @@
   outline: 2px solid var(--list-primary);
   outline-offset: 2px;
 }
-.portal-page-control[aria-disabled="true"] { color: #a5b1c3; }
+.portal-page-control[aria-disabled="true"] { color: var(--list-disabled); }
 .portal-page-control:is(a, button, summary):hover {
-  background: #eaf4f8;
-  border-color: #b8d3de;
+  background: var(--list-accent-surface);
+  border-color: var(--list-accent-border);
   color: var(--list-page-accent);
 }
 .portal-page-control[aria-current]:is(a, button) {
   background: var(--list-page-accent);
-  border-color: #1a557d;
-  color: var(--list-on-primary);
+  border-color: var(--list-page-accent);
+  color: var(--list-surface);
 }
 .portal-list-size-options { position: relative; }
 .portal-list-size-options summary { cursor: pointer; list-style: none; }
@@ -70,28 +70,27 @@
   background: var(--list-surface);
   border: 1px solid var(--list-border);
   border-radius: var(--list-radius);
-  box-shadow: 0 6px 18px rgba(23, 32, 51, .12);
+  box-shadow: 0 6px 18px var(--list-shadow);
   display: flex;
-  gap: .35rem;
-  inset-block-end: calc(100% + .35rem);
+  gap: var(--space-1);
+  inset-block-end: calc(100% + var(--space-1));
   inset-inline-end: 0;
-  padding: .35rem;
+  padding: var(--space-1);
   position: absolute;
   z-index: 2;
 }
 
 @media (max-width: 1050px) {
   .portal-list-footer {
-    gap: .75rem;
+    gap: var(--space-3);
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
-    padding: .9rem .55rem;
+    padding: var(--space-4) var(--space-2);
   }
 }
 @media (max-width: 480px) {
-  .portal-list-links { gap: .3rem; }
+  .portal-list-links { gap: var(--space-1); }
   .portal-list-links :is(.portal-page-control, .portal-page-ellipsis) {
-    min-inline-size: 1.9rem;
-    padding-inline: .22rem;
+    padding-inline: var(--space-1);
   }
 }

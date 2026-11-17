@@ -63,9 +63,9 @@ Compared with `b17efd9`, authored CSS across `style-v2.css` and the CSS sources 
 
 Chromium verified that tournament, rating, and club filters submit and preserve URL state with JavaScript disabled. Layout checks covered 320–1440 px and verified the tournament search button's keyboard reveal.
 
-## Final pilot measurements
+## Shared stylesheet measurements before the palette cleanup
 
-The final branch at `db95e43` used the same routes, data, widths, and three-run method as the CSS split baseline at `8629f95`.
+The comparison at `db95e43` used the same routes, data, widths, and three-run method as the CSS split baseline at `8629f95`.
 
 | Page | Width | Before | Final | Change |
 | --- | ---: | ---: | ---: | ---: |
@@ -78,4 +78,40 @@ The final branch at `db95e43` used the same routes, data, widths, and three-run 
 | Home | 390 px | 93,737 B | 91,913 B | −1.9% |
 | Home | 1440 px | 94,061 B | 91,521 B | −2.7% |
 
-Across the full pilot, the measured authored sources went from 14,065 lines and 276,618 bytes at `8e49265` to 13,148 lines and 263,633 bytes. That is 917 lines and 12,985 uncompressed bytes removed, counting the legacy file and every authored frontend CSS file once. All 264 Django tests passed on the final runtime revision.
+At this checkpoint, the measured authored sources went from 14,065 lines and 276,618 bytes at `8e49265` to 13,148 lines and 263,633 bytes. That is 917 lines and 12,985 uncompressed bytes removed, counting the legacy file and every authored frontend CSS file once. All 264 Django tests passed at this checkpoint.
+
+## Palette and spacing
+
+- Use the `--list-*` palette in [tokens.css](../components/web-api/frontend/src/tokens.css). Use `--list-text` for headings, `--list-ink` for body text, and `--list-muted` for metadata, secondary labels, and icons. Use the shared surface and border tokens for tables, filters, cards, and pagination.
+- Use the primary blue for interactive controls and the page accent for links and selected pagination. Use the semantic success, warning, danger, violet, pink, and gold tones for tags, metrics, or awards. Badges derive their background and border from their tone. Neutral tournament statuses share the muted tone.
+- Use `--space-1`, `--space-2`, `--space-3`, `--space-4`, `--space-6`, and `--space-8` for padding and gaps. At a 16 px root size these are 4, 8, 12, 16, 24, and 32 px. Let content and padding size cards and labels. Keep explicit sizes for avatars and interactive targets where the size serves a purpose.
+- Use Bootstrap for buttons and layout utilities. Vite compiles the shared styles and route CSS directly. The Basecoat and Tailwind build dependencies have been removed.
+
+The follow-up consolidated overlapping tournament breakpoints, desktop and mobile badge styles, and repeated athlete-card and rating rules. The Vite component styles used 163 distinct hex or RGB values outside the token file before this pass. They now take their colors from the shared palette. The legacy palette in the same token file still serves pages that load `style-v2.css`.
+
+| Measure | Before cleanup (`7379ca9`) | After cleanup | Change |
+| --- | ---: | ---: | ---: |
+| Authored CSS in `frontend/src` | 2,692 lines | 2,233 lines | −459 lines (17.1%) |
+| Authored CSS including `style-v2.css` | 13,148 lines / 263,633 B | 12,689 lines / 256,102 B | −459 lines / −7,531 B |
+| Compiled tournament entry | 16,299 B | 8,320 B | −49.0% |
+| Compiled tournament entry, gzip | 3,699 B | 1,989 B | −46.2% |
+| All compiled Vite CSS entries, gzip | 13,783 B | 11,236 B | −18.5% |
+
+The full pilot went from 14,065 to 12,689 authored CSS lines, a reduction of 1,376 lines (9.8%) and 20,516 bytes (7.4%). The compiled measurements sum each standalone stylesheet from the Vite manifest once, with gzip measured per file. Bootstrap, third-party CSS, and legacy CSS are outside the compiled Vite totals.
+
+### CSS transferred after the cleanup
+
+The same local URLs and three-run Chromium method were used for the new measurements. CDN and response sizes vary across runs. The baseline comparison is against `8629f95`.
+
+| Page | Width | Baseline | Before cleanup | After cleanup | Baseline change |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Tournaments | 390 px | 97,257 B | 63,968 B | 62,560 B | −35.7% |
+| Tournaments | 1440 px | 96,632 B | 63,948 B | 61,989 B | −35.9% |
+| Player ratings | 390 px | 93,077 B | 64,472 B | 63,725 B | −31.5% |
+| Player ratings | 1440 px | 93,011 B | 64,235 B | 63,738 B | −31.5% |
+| Season ratings | 390 px | 93,094 B | 64,049 B | 63,696 B | −31.6% |
+| Season ratings | 1440 px | 93,273 B | 64,260 B | 63,681 B | −31.7% |
+| Home | 390 px | 93,737 B | 91,913 B | 91,237 B | −2.7% |
+| Home | 1440 px | 94,061 B | 91,521 B | 91,598 B | −2.6% |
+
+Chromium verified filtering with JavaScript disabled, date sort at card and table widths, tournament switches, empty state, keyboard focus, and card layout from 320 to 1440 px. The Docker asset build and all 264 Django tests passed.

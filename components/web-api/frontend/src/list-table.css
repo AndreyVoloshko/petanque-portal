@@ -2,7 +2,7 @@
   background: var(--list-surface);
   border: 1px solid var(--list-border);
   border-radius: var(--list-panel-radius);
-  box-shadow: 0 18px 42px rgba(23, 32, 51, .06);
+  box-shadow: 0 6px 18px var(--list-shadow);
   scroll-margin-top: 5rem;
 }
 
@@ -14,14 +14,14 @@
 }
 
 .portal-table :is(th, td) {
+  border-bottom: 1px solid var(--list-border);
   color: var(--list-ink);
-  padding: .9rem 1rem;
+  padding: var(--space-4);
   vertical-align: middle;
 }
 
 .portal-table th {
   background: var(--list-field-surface);
-  border-bottom: 1px solid var(--list-border);
   font-size: .82rem;
   font-weight: 800;
   line-height: 1.25;
@@ -29,14 +29,10 @@
   white-space: nowrap;
 }
 
-.portal-table td {
-  border-bottom: 1px solid #e5ecf4;
-  font-size: .9rem;
-}
+.portal-table td { font-size: .9rem; }
 
-.portal-table :is(th, td):first-child { padding-inline-start: 1.65rem; }
-.portal-table :is(th, td):last-child { padding-inline-end: 1.25rem; }
+.portal-table :is(th, td):first-child { padding-inline-start: var(--space-6); }
 .portal-table th:first-child { border-start-start-radius: var(--list-panel-radius); }
 .portal-table th:last-child { border-start-end-radius: var(--list-panel-radius); }
 .portal-table tbody tr:last-child td { border-bottom: 0; }
-.portal-table tbody tr:hover { background: #f8f9fa; }
+.portal-table tbody tr:hover { background: var(--list-muted-surface); }

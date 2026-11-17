@@ -114,17 +114,33 @@
   --club-hero-cyan-glow: rgba(14, 165, 233, 0.11);
 
   --list-primary: var(--portal-blue-700);
-  --list-on-primary: white;
   --list-text: #172033;
   --list-ink: var(--portal-slate-850);
-  --list-muted: #66748a;
+  --list-muted: #606e83;
   --list-page-accent: #1f5f8b;
+  --list-success: #147a45;
+  --list-warning: #9a4b00;
+  --list-danger: #b42318;
+  --list-violet: #5a35b4;
+  --list-pink: #a82667;
+  --list-gold: #9a6900;
+  --list-disabled: #a5b1c3;
   --list-field-surface: #fbfdff;
   --list-muted-surface: #f4f7fb;
   --list-surface: white;
   --list-border: var(--portal-border-control);
   --list-radius: 10px;
   --list-panel-radius: var(--radius-card);
-  --list-space: .625rem;
+  --list-accent-surface: color-mix(in srgb, var(--list-page-accent) 8%, var(--list-surface));
+  --list-accent-border: color-mix(in srgb, var(--list-page-accent) 24%, var(--list-surface));
+  --list-shadow: color-mix(in srgb, var(--list-text) 12%, transparent);
+  --list-placeholder: linear-gradient(145deg, var(--list-muted-surface), var(--list-border));
+
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
   --list-control: 38px;
 }

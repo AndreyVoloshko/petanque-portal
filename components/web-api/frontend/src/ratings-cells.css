@@ -4,7 +4,7 @@
 }
 
 .players-row:hover {
-  background: #f8fbfe;
+  background: var(--list-muted-surface);
 }
 
 .players-row.inactive {
@@ -53,8 +53,8 @@
 
 .players-action-column,
 .players-action-cell {
-  padding-left: 0.35rem !important;
-  padding-right: 0.8rem !important;
+  padding-left: var(--space-1) !important;
+  padding-right: var(--space-3) !important;
   text-align: right;
 }
 
@@ -65,16 +65,17 @@
 .players-license-badge,
 .players-no-club {
   align-items: center;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  background: color-mix(in srgb, var(--badge-tone, var(--list-ink)) 8%, var(--list-surface)) !important;
+  border: 1px solid color-mix(in srgb, var(--badge-tone, var(--list-ink)) 24%, var(--list-surface));
+  border-radius: var(--space-2);
+  color: var(--badge-tone, var(--list-ink)) !important;
   display: inline-flex !important;
   font-size: 0.8rem;
   font-weight: 800;
-  gap: 0.3rem;
+  gap: var(--space-1);
   justify-content: center;
   line-height: 1;
-  min-height: 1.75rem;
-  padding: 0.36rem 0.42rem;
+  padding: var(--space-1) var(--space-2);
   white-space: nowrap;
 }
 
@@ -108,10 +109,9 @@
 }
 
 .players-rank-badge {
-  background: #159464;
-  border-color: #0f6f4d;
-  box-shadow: none;
-  color: #ffffff;
+  background: var(--list-success) !important;
+  border-color: var(--list-success);
+  color: var(--list-surface) !important;
   min-width: 2.35rem;
 }
 
@@ -127,57 +127,26 @@
   font-variant-numeric: tabular-nums;
 }
 
-.players-metric-copy {
-  align-items: center;
-  display: inline-flex;
-  gap: 0.3rem;
-}
+.players-metric-copy,
+.players-sex-copy,
 
-.players-metric-label {
-  display: none;
-}
+.players-metric-label,
+.players-sex-label,
 
-.players-points-badge {
-  background: #edf1ff;
-  border-color: #cfd8ff;
-  color: #3158d4;
-}
+.players-points-badge { --badge-tone: var(--list-primary); }
 
-.players-power-badge {
-  background: #dff3ff;
-  border-color: #adddf7;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
-  color: #1670b7;
-}
+.players-power-badge { --badge-tone: var(--list-page-accent); }
 
 .players-sex-badge {
-  background: #e8f1ff !important;
-  border-color: #c8dcff !important;
-  color: #1d5fc0 !important;
+  --badge-tone: var(--list-primary);
   min-width: 3.5rem;
 }
 
-.players-sex-badge-f {
-  background: #fff0f8 !important;
-  border-color: #f7c9df !important;
-  color: #c23a7a !important;
-}
-
-.players-sex-copy {
-  align-items: center;
-  display: inline-flex;
-  gap: 0.3rem;
-}
-
-.players-sex-label {
-  display: none;
-}
+.players-sex-badge-f { --badge-tone: var(--list-pink); }
 
 .players-age-badge .badge {
-  background: #fff3dc !important;
-  border-color: #f3c982 !important;
-  color: #c96f00 !important;
-  min-width: 3.7rem;
+  --badge-tone: var(--list-warning);
+  min-width: 3.5rem;
 }
 
 .players-age-icon,
@@ -186,17 +155,8 @@
 }
 
 .players-license-badge {
-  background: #edf1f5;
-  border-color: #d9e0e8;
-  color: #334155;
   font-variant-numeric: tabular-nums;
   min-width: 5rem;
-}
-
-.players-license-copy {
-  align-items: center;
-  display: inline-flex;
-  gap: 0.3rem;
 }
 
 .players-license-badge i {
@@ -216,22 +176,14 @@
   line-height: 1;
 }
 
-.players-license-label {
-  display: none;
-}
-
 .players-license-badge-missing,
-.players-no-club {
-  background: #fff0f0;
-  border-color: #f7cdcd;
-  color: #b42318;
-}
+.players-no-club { --badge-tone: var(--list-danger); }
 
 .players-athlete-link {
   align-items: center;
-  color: #0d3b66;
+  color: var(--list-page-accent);
   display: inline-flex;
-  gap: 0.85rem;
+  gap: var(--space-3);
   max-width: 100%;
   min-width: 0;
   text-decoration: none;
@@ -239,23 +191,22 @@
 
 .players-athlete-link:hover,
 .players-athlete-link:focus {
-  color: #1677c2;
+  color: var(--list-primary);
   text-decoration: none;
 }
 
 .players-athlete-avatar {
   align-items: center;
-  background: linear-gradient(145deg, #eef4f8, #dce7ef);
-  border: 1px solid rgba(15, 45, 75, 0.08);
+  background: var(--list-placeholder);
+  border: 1px solid var(--list-border);
   border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
-  color: var(--portal-slate-300);
+  color: var(--list-disabled);
   display: inline-flex;
   flex: 0 0 auto;
-  height: 2.72rem;
   justify-content: center;
   overflow: hidden;
-  width: 2.72rem;
+  aspect-ratio: 1;
+  width: 2.75rem;
 }
 
 .players-athlete-avatar img {
@@ -287,7 +238,7 @@
   align-items: center;
   display: inline-flex;
   font-weight: 750;
-  gap: 0.35rem;
+  gap: var(--space-1);
   line-height: 1.2;
   min-width: 0;
   overflow: hidden;
@@ -296,7 +247,7 @@
 }
 
 .players-athlete-title-badge {
-  color: #d9a000;
+  color: var(--list-gold);
   display: inline-flex !important;
   flex: 0 0 auto;
   line-height: 1;
@@ -309,10 +260,10 @@
 
 .players-club-link {
   align-items: center;
-  color: #0f6f88;
+  color: var(--list-page-accent);
   display: inline-flex;
   font-weight: 750;
-  gap: 0.55rem;
+  gap: var(--space-2);
   line-height: 1.18;
   max-width: 100%;
   min-width: 0;
@@ -321,30 +272,29 @@
 
 .players-club-link:hover,
 .players-club-link:focus {
-  color: #0a5367;
+  color: var(--list-primary);
   text-decoration: none;
 }
 
 .players-club-logo {
   align-items: center;
-  background: var(--portal-placeholder-gradient);
-  border: 1px solid var(--portal-navy-a08);
+  background: var(--list-placeholder);
+  border: 1px solid var(--list-border);
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px var(--portal-white-a62);
-  color: var(--portal-slate-300);
+  color: var(--list-disabled);
   display: inline-flex;
   flex: 0 0 auto;
-  height: 2.2rem;
   justify-content: center;
   overflow: hidden;
-  width: 2.2rem;
+  aspect-ratio: 1;
+  width: 2.25rem;
 }
 
 .players-club-logo img {
   display: block;
   height: 100%;
   object-fit: contain;
-  padding: 0.16rem;
+  padding: var(--space-1);
   width: 100%;
 }
 
@@ -359,7 +309,7 @@
 
 .players-club-copy {
   display: grid;
-  gap: 0.14rem;
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -389,5 +339,5 @@
 
 .players-row-action:hover,
 .players-row-action:focus {
-  color: #1f5f8b;
+  color: var(--list-page-accent);
 }

@@ -1,7 +1,7 @@
 .players-column-heading {
   align-items: center;
   display: inline-flex;
-  gap: 0.28rem;
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -9,7 +9,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  color: #728196;
+  color: var(--list-muted);
   cursor: help;
   display: inline-flex;
   flex: 0 0 auto;
@@ -20,14 +20,14 @@
 
 .players-column-help:hover,
 .players-column-help:focus-visible {
-  color: #0d73a8;
+  color: var(--list-page-accent);
 }
 
 .players-results-surface {
-  background: #ffffff;
+  background: var(--list-surface);
   border: 1px solid var(--list-border);
-  border-radius: 14px;
-  box-shadow: 0 18px 42px rgba(23, 32, 51, 0.06);
+  border-radius: var(--list-panel-radius);
+  box-shadow: 0 6px 18px var(--list-shadow);
   overflow: hidden;
   scroll-margin-top: 5rem;
 }
