@@ -2740,6 +2740,18 @@ class StaticStorageTests(TestCase):
 
 @override_settings(CURRENT_COUNTRY='UA')
 class TournamentListingPageTests(TestCase):
+    def test_migrated_lists_load_shared_styles_without_the_legacy_stylesheet(self):
+        for route in ('/tournaments/', '/players/licence', '/seasons/2024'):
+            with self.subTest(route=route):
+                response = self.client.get(route)
+
+                self.assertContains(response, '/vite/assets/shell-')
+                self.assertContains(response, '/vite/assets/list-ui-')
+                self.assertNotContains(response, '/style-v2.css')
+
+        home = self.client.get('/')
+        self.assertContains(home, '/vite/assets/athlete-card-')
+
     def create_tournament(
         self,
         name,

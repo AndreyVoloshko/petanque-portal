@@ -1,9 +1,10 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "../.generated/basecoat.css";
 @import "./theme.css";
+@import "./tournament-controls.css";
 @import "./list.css";
-@import "./pagination.css";
-@import "./select-focus.css";
+
+.tournaments-page { grid-template-columns: minmax(0, 1fr); }
 
 .tournaments-page .create-tournament-button {
   background: #eaf4f8;
@@ -21,42 +22,6 @@
   .create-tournament-button { width: 100%; }
 }
 
-.tournaments-results-surface {
-  background: var(--list-surface);
-  border: 1px solid var(--list-border);
-  border-radius: var(--list-panel-radius);
-  box-shadow: 0 18px 42px rgba(23, 32, 51, .06);
-  scroll-margin-top: 5rem;
-}
-.tournaments-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-.tournaments-table :is(th, td) {
-  color: var(--list-ink);
-  padding: .9rem 1rem;
-  vertical-align: middle;
-}
-
-.tournaments-table th {
-  background: var(--list-field-surface);
-  border-bottom: 1px solid var(--list-border);
-  font-size: .82rem;
-  font-weight: 800;
-  line-height: 1.25;
-  text-align: start;
-  white-space: nowrap;
-}
-
-.tournaments-table td {
-  border-bottom: 1px solid #e5ecf4;
-  font-size: .9rem;
-  white-space: normal;
-}
-
-.tournaments-table :is(th, td):first-child { padding-inline-start: 2.5rem; }
-.tournaments-table th:last-child { padding-inline-end: 2.5rem; }
-.tournaments-table th:first-child { border-start-start-radius: var(--list-panel-radius); }
-.tournaments-table th:last-child { border-start-end-radius: var(--list-panel-radius); }
-.tournaments-table tbody tr:last-child td { border-bottom: 0; }
-.tournaments-table tbody tr:hover { background: #f8f9fa; }
 .tournament-date-column { width: 13.5rem; }
 .tournament-title-column { width: 23%; }
 .tournament-format-column { width: 16%; }

@@ -1,0 +1,90 @@
+html,
+body {
+  height: 100%;
+  min-height: 100vh;
+}body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.portal-page-content {
+  flex: 1 0 auto;
+  padding-bottom: 2rem;
+}
+
+.portal-page-content-wide {
+  max-width: none;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 575.98px) {
+  .portal-page-content-wide {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.landing-icon-sprite {
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+}
+
+.landing-svg-icon {
+  display: inline-block;
+  fill: none;
+  flex: 0 0 auto;
+  height: 1.15rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+  width: 1.15rem;
+}
+
+a {
+  color: var(--link-action);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: var(--link-action-hover);
+}
+
+[data-bs-toggle="tooltip"]:not(.athlete-card-rank):not(
+    .tournament-register-button
+  ):not(.tournament-power-badge):not(.tournament-card-stat):not(
+    .tournament-card-tag
+  ):not(.tournament-card-fact):not(.tournament-card-fact-icon):not(
+    .athlete-stat
+  ):not(.athlete-chip):not(.club-social-link):not(
+    .tournament-team-captain-badge
+  ) {
+  display: inline-block !important;
+  position: relative !important;
+}
+
+.tournament-register-button[data-bs-toggle="tooltip"],
+.tournament-power-badge[data-bs-toggle="tooltip"],
+.tournament-card-stat[data-bs-toggle="tooltip"],
+.tournament-card-tag[data-bs-toggle="tooltip"] {
+  display: inline-flex !important;
+  position: relative !important;
+}
+
+.tournament-card-fact[data-bs-toggle="tooltip"] {
+  display: flex !important;
+  position: relative !important;
+}
+
+.tournament-card-fact-icon[data-bs-toggle="tooltip"] {
+  display: inline-flex !important;
+  position: static !important;
+}

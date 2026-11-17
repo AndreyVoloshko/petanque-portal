@@ -16,7 +16,15 @@ def _static_asset_version(static_path):
 
 
 def settings_context(request):
+    route = request.resolver_match.url_name if request.resolver_match else ''
     return {
+        "portal_ui": {
+            "athlete_card": route in {
+                'main_page', 'club', 'arbiters', 'coaches', 'departments', 'national_teams',
+                'sport_titles', 'tournament',
+            },
+            "rating_styles": route in {'clubs', 'player', 'tournament'},
+        },
         "settings": settings,
         "federation_telegram_link": settings.FEDERATION_TELEGRAM_LINK,
         "static_asset_versions": {

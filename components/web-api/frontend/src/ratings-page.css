@@ -1,0 +1,63 @@
+.athlete-card.players-mobile-rating-card,
+.athlete-card.players-mobile-rating-card:is(:hover, :focus, :focus-within) {
+  box-shadow: 0 10px 28px rgba(15, 45, 75, 0.1);
+  margin: 0;
+  transform: none !important;
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px),
+  (min-width: 768px) and (max-width: 1400px) and (pointer: coarse) {
+  .players-mobile-rating-card .athlete-card-hero {
+    min-height: 7.9rem;
+    padding: 1rem 5.15rem 1.55rem 1rem;
+  }
+
+  .players-mobile-rating-card .athlete-card-name {
+    font-size: 1.2rem;
+    margin-bottom: 0.38rem;
+  }
+
+  .players-mobile-rating-card .athlete-card-name-link {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .players-mobile-rating-card .athlete-card-given-line {
+    order: 1;
+  }
+
+  .players-mobile-rating-card .athlete-card-surname-line {
+    order: 2;
+  }
+
+  .players-mobile-rating-card .athlete-card-title-badge {
+    margin-top: 0.02rem;
+  }
+
+  .players-mobile-rating-card .athlete-card-stats {
+    margin-left: 0.9rem;
+    margin-right: 0.9rem;
+  }
+
+  .players-mobile-rating-card .athlete-card-meta {
+    column-gap: 0.9rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 0.8rem 0.95rem 0.9rem;
+  }
+
+  .players-mobile-rating-card .athlete-chip {
+    gap: 0.42rem;
+    padding: 0.62rem 0.68rem;
+  }
+
+  .players-mobile-rating-card .athlete-chip
+    + .athlete-chip::before {
+    display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .athlete-card.players-mobile-rating-card .athlete-card-body {
+    min-height: 0;
+  }
+}

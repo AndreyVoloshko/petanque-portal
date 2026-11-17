@@ -1,9 +1,14 @@
-@import "./theme.css";
-@import "./pagination.css";
-@import "./select-focus.css";
+@import "./ratings-page.css";
 
-.players-rating-page,
-.players-rating-page .players-table tbody { grid-template-columns: minmax(0, 1fr); }
+.players-rating-page { grid-template-columns: minmax(0, 1fr); }
+
+.players-mobile-list { display: none; }
+
+@media (max-width: 1199.98px), (max-width: 1400px) and (pointer: coarse) {
+  .players-rating-page .portal-table { display: none; }
+  .players-rating-page .portal-results { background: transparent; border: 0; box-shadow: none; }
+  .players-mobile-list { display: grid; gap: .9rem; grid-template-columns: minmax(0, 1fr); }
+}
 
 .players-rating-page .players-filter-field:focus-within {
   box-shadow: none;

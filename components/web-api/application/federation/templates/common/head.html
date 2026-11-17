@@ -54,13 +54,25 @@
         <!-- FullCalendar CSS -->
         <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
         {% endif %}
-        <!-- Custom Styles -->
-        <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
+        {% vite_stylesheet "src/shell.css" %}
+        {% if not ratings_pilot %}
+            {% vite_stylesheet "src/tournament-badges.css" %}
+        {% endif %}
+        {% if ratings_pilot or portal_ui.athlete_card %}
+            {% vite_stylesheet "src/athlete-card.css" %}
+        {% endif %}
+        {% if ratings_pilot or portal_ui.rating_styles %}
+            {% vite_stylesheet "src/ratings-foundation.css" %}
+        {% endif %}
+        {% if tournaments_pilot or ratings_pilot %}
+            {% vite_stylesheet "src/list-ui.css" %}
+        {% endif %}
         {% if tournaments_pilot %}
             {% vite_stylesheet "src/tournaments.css" %}
         {% elif ratings_pilot %}
             {% vite_stylesheet "src/ratings.css" %}
         {% else %}
+            <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
             <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
         {% endif %}
         {% if tournaments_pilot or ratings_pilot %}
