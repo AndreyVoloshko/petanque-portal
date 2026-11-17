@@ -732,9 +732,8 @@ class SeasonSnapshotGenerationTests(TestCase):
         response = self.client.get('/seasons/2024')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="players-club-logo"')
-        self.assertContains(response, 'media/clubs/season-kpc.png')
-        self.assertContains(response, 'alt="KPC"')
+        self.assertContains(response, '<img class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/season-kpc.png" alt=""')
 
     def test_year_tabs_preserve_active_filters(self):
         player = self.create_player('filtered-player')
@@ -1031,9 +1030,8 @@ class PlayerLicenseListTests(TestCase):
         response = self.client.get('/players/licence')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="players-club-logo"')
-        self.assertContains(response, 'media/clubs/kpc.png')
-        self.assertContains(response, 'alt="KPC"')
+        self.assertContains(response, '<img class="players-club-logo"')
+        self.assertContains(response, 'media/clubs/kpc.png" alt=""')
 
 
 class ClubListingPageTests(TestCase):

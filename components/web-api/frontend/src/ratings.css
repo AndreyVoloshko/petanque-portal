@@ -2,6 +2,16 @@
 
 .players-mobile-list { display: none; }
 
+@media (1200px <= width <= 1480px) {
+  .players-rating-page .players-table :is(th, td) {
+    padding-inline: var(--space-2);
+  }
+
+  .players-rating-page .portal-filter-field {
+    min-width: 13rem;
+  }
+}
+
 @media (max-width: 1199.98px), (max-width: 1400px) and (pointer: coarse) {
   .players-rating-page .portal-table { display: none; }
   .players-rating-page .portal-results { background: transparent; border: 0; box-shadow: none; }

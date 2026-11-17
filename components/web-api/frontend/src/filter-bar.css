@@ -2,11 +2,24 @@
   --bs-border-color: var(--list-border);
 }
 
+.portal-filter-query { min-width: 0; }
+
 .portal-filter-bar :is(.form-select, .form-control) {
   background-color: var(--list-field-surface);
+  border-color: var(--list-border);
+  border-radius: var(--list-radius);
   color: var(--list-ink);
   padding-inline-start: var(--space-8);
 }
+
+.portal-filter-bar .form-select {
+  padding-inline-end: 1.75rem;
+  text-overflow: ellipsis;
+}
+
+.portal-filter-bar .position-absolute { color: var(--list-muted); }
+
+.portal-filter-bar .btn { --bs-btn-border-radius: var(--list-radius); }
 
 .portal-filter-bar :is(.form-select, .form-control):focus {
   border-color: color-mix(in srgb, var(--list-page-accent) 45%, var(--list-border));
@@ -14,7 +27,7 @@
 }
 
 @media (width > 1050px) and (hover: hover) and (pointer: fine) {
-  /* Enter submits the tournament search field. Tab reveals the button. */
+  /* Enter submits the search. Tab reveals the button. */
   .portal-filter-submit:not(:focus-visible) {
     position: absolute;
     inline-size: 1px;

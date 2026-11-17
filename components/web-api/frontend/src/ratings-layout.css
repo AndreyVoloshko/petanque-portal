@@ -41,13 +41,9 @@
 }
 
 .players-title-copy p {
-  align-items: center;
   color: var(--list-muted);
-  display: flex;
-  flex-wrap: wrap;
   font-size: 0.98rem;
   font-weight: 650;
-  gap: var(--space-1);
   line-height: 1.4;
   margin: var(--space-1) 0 0;
 }
@@ -92,7 +88,6 @@
 .players-page-info {
   color: var(--list-muted);
   cursor: pointer;
-  display: inline-flex !important;
   line-height: 1;
 }
 

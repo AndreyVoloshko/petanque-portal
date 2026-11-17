@@ -55,7 +55,7 @@ The medians below use three Chromium loads per width with caching disabled. They
 
 ## Shared filters and one athlete card layout
 
-Tournaments, player ratings, season ratings, and the club directory use the same filter form. The form uses Bootstrap inputs, selects, buttons, and grid utilities. Each view supplies its labels, choices, and preserved URL parameters. The remaining filter CSS covers icons, focus, and the tournament search button's keyboard reveal on desktop. The tournament bundle no longer builds Basecoat text input and select styles.
+Tournaments, player ratings, season ratings, and the club directory use the same filter form. The form uses Bootstrap inputs, selects, buttons, and grid utilities. Each view supplies its labels, choices, and preserved URL parameters. Tournament and rating searches submit with Enter on desktop, where the button appears on keyboard focus. On phones and tablets, the submit button sits beside the search field. The remaining filter CSS covers icons, focus, and layout. The tournament bundle no longer builds Basecoat text input and select styles.
 
 The ratings lists use the shared athlete card at both phone and tablet widths. Bootstrap's grid puts cards in one column below 768 px and two columns at wider card widths. The former ratings-specific card layout stylesheet was removed.
 

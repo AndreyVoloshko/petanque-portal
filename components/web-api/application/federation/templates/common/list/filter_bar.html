@@ -4,14 +4,17 @@
         <input type="hidden" name="per_page" value="{{ per_page }}">
     {% endif %}
     <div class="row g-2 align-items-center">
-        <div class="col-12 col-xl">
-            <div class="position-relative">
+        <div class="col-12 col-xl d-flex gap-2">
+            <div class="portal-filter-query position-relative flex-grow-1">
                 <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 pe-none" aria-hidden="true"></i>
                 <input class="form-control form-control-sm py-2 fw-semibold" type="search" name="q" value="{{ query }}" aria-label="{{ search_label }}" placeholder="{{ search_placeholder }}">
             </div>
+            {% if implicit_desktop_search %}
+                <button class="btn btn-primary btn-sm py-2 fw-semibold portal-filter-submit" type="submit">{{ submit_label }}</button>
+            {% endif %}
         </div>
         {% for field in fields %}
-            <div class="col-12 col-sm-6 col-xl-2">
+            <div class="portal-filter-field col-12 col-sm-6 col-xl-2">
                 <div class="position-relative">
                     <i class="bi {{ field.icon }} position-absolute top-50 start-0 translate-middle-y ms-2 pe-none" aria-hidden="true"></i>
                     <select class="form-select form-select-sm py-2 fw-semibold" name="{{ field.name }}" aria-label="{{ field.label }}">
@@ -23,13 +26,17 @@
                 </div>
             </div>
         {% endfor %}
-        <div class="col-12 col-sm-auto d-flex flex-column flex-sm-row gap-2">
-            <button class="btn btn-primary btn-sm py-2 fw-semibold{% if implicit_desktop_search %} portal-filter-submit{% endif %}" type="submit">{{ submit_label }}</button>
-            {% if reset_url %}
-                <a class="btn btn-outline-primary btn-sm py-2 fw-semibold" href="{{ reset_url }}">
-                    <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{{ reset_label }}
-                </a>
-            {% endif %}
-        </div>
+        {% if reset_url or not implicit_desktop_search %}
+            <div class="col-12 col-sm-auto d-flex flex-column flex-sm-row gap-2">
+                {% if not implicit_desktop_search %}
+                    <button class="btn btn-primary btn-sm py-2 fw-semibold" type="submit">{{ submit_label }}</button>
+                {% endif %}
+                {% if reset_url %}
+                    <a class="btn btn-outline-primary btn-sm py-2 fw-semibold" href="{{ reset_url }}">
+                        <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{{ reset_label }}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </form>

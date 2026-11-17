@@ -74,7 +74,7 @@
                     </span>
                     <span class="players-athlete-copy">
                         <span class="players-athlete-name">
-                            {{ player.get_name }}
+                            <span class="text-truncate">{{ player.get_name }}</span>
                             {% if player.sport_title %}
                                 <span class="players-athlete-title-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ player.get_sport_title_display }}" aria-label="{{ player.get_sport_title_display }}">
                                     <i class="bi bi-award-fill" aria-hidden="true"></i>
@@ -167,18 +167,12 @@
                 {% if club %}
                     <span class="players-club-wrap">
                         <a class="players-club-link" href="{% url 'club' id=club.pk %}">
-                            <span class="players-club-logo" aria-hidden="true">
-                                {% if club.logo %}
-                                    <img src="{{ club.logo.url }}" alt="{{ club.short_name }}" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
-                                    <span class="players-club-logo-placeholder" hidden>
-                                        <i class="bi bi-buildings"></i>
-                                    </span>
-                                {% else %}
-                                    <span class="players-club-logo-placeholder">
-                                        <i class="bi bi-buildings"></i>
-                                    </span>
-                                {% endif %}
-                            </span>
+                            {% if club.logo %}
+                                <img class="players-club-logo" src="{{ club.logo.url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                <i class="bi bi-buildings players-club-logo-placeholder" aria-hidden="true" hidden></i>
+                            {% else %}
+                                <i class="bi bi-buildings players-club-logo-placeholder" aria-hidden="true"></i>
+                            {% endif %}
                             <span class="players-club-copy">
                                 <span class="players-club-name">{{ club.short_name }}</span>
                                 {% if club.city %}
