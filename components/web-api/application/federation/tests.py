@@ -2758,6 +2758,15 @@ class TournamentListingPageTests(TestCase):
     def test_calendar_loads_fullcalendar(self):
         self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
 
+    def test_datatables_assets_are_scoped_to_tournament_detail(self):
+        tournament = self.create_tournament('Teams Cup')
+        detail = self.client.get(f'/tournament/{tournament.pk}')
+        self.assertContains(detail, 'cdn.datatables.net/', count=3)
+
+        for route in ('/', '/tournaments/', '/players/licence', '/seasons/2024', '/clubs/', '/documents/', '/calendar/'):
+            with self.subTest(route=route):
+                self.assertNotContains(self.client.get(route), 'cdn.datatables.net/')
+
     def create_tournament(
         self,
         name,

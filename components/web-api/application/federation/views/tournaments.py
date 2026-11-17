@@ -1023,6 +1023,7 @@ def tournament(request, id):
         'arbiters': arbiters,
         'organizers': organizers,
         'teams': teams,
+        'load_datatables': True,
         'page_title': _("Competitions"),
         'current_user': current_user,
     })
