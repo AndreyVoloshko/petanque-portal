@@ -5882,8 +5882,7 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 .tournament-detail-teams-table.is-single-player-format {
-  min-width: 74rem;
-  width: max-content !important;
+  --tournament-team-table-min-width: 69rem;
 }
 
 table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
@@ -5936,6 +5935,10 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   width: 10rem;
 }
 
+.tournament-detail-teams-table th.tournament-team-coach-col {
+  color: var(--list-muted) !important;
+}
+
 .tournament-team-athletes-col {
   width: auto;
 }
@@ -5960,6 +5963,11 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   width: 4rem;
 }
 
+.tournament-detail-teams-table.no-team-actions
+  :is(.tournament-team-actions-col, .tournament-team-actions-cell) {
+  display: none !important;
+}
+
 .tournament-detail-teams-table.is-processing-finished .tournament-team-place-col {
   width: 10.5rem !important;
 }
@@ -5973,10 +5981,18 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
 }
 
 .tournament-detail-teams-table.is-single-player-format
-  .tournament-team-name-col,
-.tournament-detail-teams-table.is-single-player-format.has-rating-points
   .tournament-team-name-col {
-  width: 18rem;
+  width: auto;
+}
+
+.tournament-detail-teams-table.is-single-player-format
+  .tournament-team-score-col {
+  width: 8rem;
+}
+
+.tournament-detail-teams-table.is-single-player-format
+  .tournament-team-power-col {
+  width: 7rem;
 }
 
 .tournament-detail-teams-table.is-single-player-format
@@ -6018,6 +6034,12 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   line-height: 1.25;
   overflow-wrap: anywhere;
   text-decoration: none;
+}
+
+:is(.tournament-team-coach-cell, .tournament-team-mobile-meta)
+  .tournament-team-captain-name {
+  color: var(--list-muted);
+  font-weight: 600;
 }
 
 .tournament-team-captain-name:hover,
@@ -6938,15 +6960,6 @@ table.dataTable.tournament-detail-teams-table:not(.players-table) thead th,
   .tournament-detail-teams-table.is-single-player-format.is-processing-finished
     .tournament-team-place-col {
     width: 6.1rem !important;
-  }
-
-  .tournament-detail-teams-table.is-single-player-format
-    .tournament-team-name-col,
-  .tournament-detail-teams-table.is-single-player-format.has-rating-points
-    .tournament-team-name-col,
-  .tournament-detail-teams-table.is-single-player-format.is-processing-finished
-    .tournament-team-name-col {
-    width: auto;
   }
 
   .tournament-detail-teams-table.is-single-player-format

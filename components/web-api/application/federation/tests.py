@@ -1897,6 +1897,24 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertContains(response, coach.get_name())
         self.assertContains(response, '/player/{}'.format(coach.pk))
 
+    def test_team_actions_column_collapses_without_permission(self):
+        tournament = self.create_tournament()
+        first = self.create_player('registered-player-one')
+        second = self.create_player('registered-player-two')
+        team = self.create_team('Registered Pair', [first, second])
+        tournament.add_team(team)
+        url = f'/tournament/{tournament.pk}'
+
+        response = self.client.get(url)
+        self.assertContains(response, 'no-team-actions')
+        self.assertNotContains(response, 'tournament-team-delete-form')
+
+        administrator = User.objects.create(username='team-administrator', is_superuser=True)
+        self.client.force_login(administrator)
+        response = self.client.get(url)
+        self.assertNotContains(response, 'no-team-actions')
+        self.assertContains(response, 'tournament-team-delete-form')
+
     def test_tournament_page_shows_dash_when_no_coach_assigned(self):
         first = self.create_player('nocoach-player-one')
         second = self.create_player('nocoach-player-two')

@@ -1016,6 +1016,9 @@ def tournament(request, id):
     )
 
     current_user.can_view_insurance_warnings = _can_view_insurance_warnings(tournament, current_user)
+    show_team_actions = current_user.is_authenticated and any(
+        team.is_user_has_admin_access_to_team(current_user) for team in teams
+    )
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
@@ -1023,6 +1026,7 @@ def tournament(request, id):
         'arbiters': arbiters,
         'organizers': organizers,
         'teams': teams,
+        'show_team_actions': show_team_actions,
         'load_datatables': True,
         'page_title': _("Competitions"),
         'current_user': current_user,

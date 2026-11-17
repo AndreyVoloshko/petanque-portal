@@ -18,7 +18,7 @@
 {% with can_manage_tournament=tournament|is_user_has_admin_access_to_tournament:current_user %}
 <div class="tournament-teams-section">
     <div class="players-table-responsive tournament-teams-table-wrap{% if tournament_detail.is_single_player_format %} is-single-player-format{% endif %}">
-        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished %}is-processing-finished{% endif %} {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}" id="{{ table_id }}">
+        <table class="players-table tournament-detail-teams-table {% if tournament_detail.is_single_player_format %}is-single-player-format{% endif %} {% if tournament.is_processing_finished %}is-processing-finished{% endif %} {% if tournament.is_processing_finished or tournament.is_goes_to_rating %}has-rating-points{% endif %}{% if not show_team_actions %} no-team-actions{% endif %}" id="{{ table_id }}">
             <colgroup>
                 <col class="tournament-team-place-col">
                 <col class="tournament-team-name-col">
