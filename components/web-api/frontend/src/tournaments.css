@@ -3,6 +3,22 @@
 @import "./theme.css";
 @import "./list.css";
 
+.tournaments-page .create-tournament-button {
+  background: #eaf4f8;
+  border-color: #c8dce7;
+  color: var(--list-page-accent);
+}
+
+.tournaments-page .create-tournament-button:hover {
+  background: #dcecf4;
+  border-color: #b8d3de;
+  color: #16486a;
+}
+
+@media (max-width: 767.98px) {
+  .create-tournament-button { width: 100%; }
+}
+
 .tournaments-results-surface {
   background: var(--list-surface);
   border: 1px solid var(--list-border);

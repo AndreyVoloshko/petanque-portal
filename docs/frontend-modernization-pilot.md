@@ -1,6 +1,6 @@
 # Tournament list frontend pilot
 
-The tournament list is a Django page with a desktop table and one card layout for phones and tablets. Search, sort, filter, and pagination use GET requests; links and results are present in the first HTML response. The default page size is 50 at every width. Open the number next to the page-size label and choose 5, 25, 30, or 50.
+The tournament list is a Django page with a desktop table and one card layout for phones and tablets. Search, sort, filter, and pagination use GET requests; links and results are present in the first HTML response. The server sends 25 tournaments by default on desktop and 10 on phones, using the browser’s mobile hint or user agent. Open the number next to the page-size label to choose 5, 10, 25, 30, or 50. An explicit selection is preserved in search, filters, and pagination.
 
 ## Build and maintain
 

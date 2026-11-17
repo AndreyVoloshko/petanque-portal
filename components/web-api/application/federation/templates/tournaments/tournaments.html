@@ -8,10 +8,8 @@
     <div class="tournaments-titlebar">
         <h1 id="tournaments-page-title">{% trans "Турніри" %}</h1>
         {% if can_create_tournament %}
-            <a class="create-tournament-button" href="{{ admin_add_url }}">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                <span>{% trans "Додати турнір" %}</span>
-            </a>
+            {% trans "Додати турнір" as create_label %}
+            {% include "common/list/button.html" with href=admin_add_url label=create_label icon="bi-plus-lg" css_class="create-tournament-button" only %}
         {% endif %}
     </div>
 

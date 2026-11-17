@@ -3358,6 +3358,29 @@ class TournamentListingPageTests(TestCase):
         self.assertContains(response, '1 player')
         self.assertNotContains(response, '1 team')
 
+    def test_default_tournament_page_size_for_desktop_and_phones(self):
+        for index in range(26):
+            self.create_tournament(f'Future Cup {index}')
+
+        for headers, expected_size in (
+            ({}, 25),
+            ({'HTTP_SEC_CH_UA_MOBILE': '?1'}, 10),
+            ({'HTTP_USER_AGENT': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)'}, 10),
+            ({'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; Android 15; Tablet)'}, 25),
+        ):
+            with self.subTest(headers=headers):
+                response = self.client.get('/tournaments/', **headers)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(len(response.context['rows']), expected_size)
+                self.assertNotIn('per_page', response.context['active_filters'])
+
+    def test_explicit_page_size_is_preserved_even_when_it_matches_a_device_default(self):
+        response = self.client.get('/tournaments/', {'per_page': '25'}, HTTP_SEC_CH_UA_MOBILE='?1')
+
+        self.assertEqual(response.context['page_size'], 25)
+        self.assertEqual(response.context['active_filters']['per_page'], 25)
+        self.assertEqual(response.context['reset_url'], '/tournaments/?per_page=25')
+
     def test_per_page_param_limits_tournament_listing_to_five_rows(self):
         for index in range(6):
             self.create_tournament('Future Cup {}'.format(index), start_offset=index + 1)

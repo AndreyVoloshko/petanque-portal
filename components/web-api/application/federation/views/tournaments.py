@@ -21,6 +21,7 @@ from django.utils.translation import get_language, gettext_lazy as _, ngettext
 from urllib.parse import urlencode
 import json, re
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.vary import vary_on_headers
 from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
@@ -32,15 +33,16 @@ from federation.utils.tournament_names import get_tournament_card_metadata
 _SPACES_RE = re.compile(r'\s+')
 _DRAW_REF_PATTERN = r'^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$'
 _DRAW_RESULTS_PAGE = 'https://andrewkameniev.github.io/petanque-draw/#/tournament'
-DEFAULT_TOURNAMENTS_PAGE_SIZE = 50
-TABLET_TOURNAMENTS_PAGE_SIZE = 30
-MOBILE_TOURNAMENTS_PAGE_SIZE = 25
+_PHONE_USER_AGENT = re.compile(r'\b(?:Android.+Mobile|iPhone|iPod|Windows Phone|BlackBerry|Opera Mini)\b', re.I)
+DEFAULT_TOURNAMENTS_PAGE_SIZE = 25
+MOBILE_TOURNAMENTS_PAGE_SIZE = 10
 TOURNAMENTS_PAGE_SIZE_PARAM = 'per_page'
 TOURNAMENTS_PAGE_SIZE_OPTIONS = {
     DEFAULT_TOURNAMENTS_PAGE_SIZE,
-    TABLET_TOURNAMENTS_PAGE_SIZE,
     MOBILE_TOURNAMENTS_PAGE_SIZE,
     5,
+    30,
+    50,
 }
 UK_FULL_MONTHS_GENITIVE = {
     1: 'Січня',
@@ -63,6 +65,7 @@ def _current_language():
     return 'uk' if language.startswith('uk') else 'en'
 
 
+@vary_on_headers("Sec-CH-UA-Mobile", "User-Agent")
 def tournaments(request, date_filter=None, type_filter=None):
     filters = _get_tournament_filters(request, date_filter, type_filter)
     queryset = _get_tournaments_queryset(filters)
@@ -261,6 +264,7 @@ def _get_tournament_filters(request, date_filter, type_filter):
     if type_filter == 'away' and 'foreign' not in request.GET:
         foreign = True
 
+    page_size_override = _requested_page_size(request)
     return {
         'period': period,
         'rating_type': rating_type,
@@ -271,20 +275,26 @@ def _get_tournament_filters(request, date_filter, type_filter):
         'place': request.GET.get('place', '').strip(),
         'club': request.GET.get('club', '').strip(),
         'sort': sort,
-        'page_size': _get_page_size(request),
+        'page_size': page_size_override or _default_page_size(request),
+        'page_size_override': page_size_override,
     }
 
 
-def _get_page_size(request):
+def _requested_page_size(request):
     try:
-        page_size = int(request.GET.get(TOURNAMENTS_PAGE_SIZE_PARAM, DEFAULT_TOURNAMENTS_PAGE_SIZE))
-    except (TypeError, ValueError):
-        return DEFAULT_TOURNAMENTS_PAGE_SIZE
+        page_size = int(request.GET.get(TOURNAMENTS_PAGE_SIZE_PARAM, ''))
+    except ValueError:
+        return None
+    return page_size if page_size in TOURNAMENTS_PAGE_SIZE_OPTIONS else None
 
-    if page_size in TOURNAMENTS_PAGE_SIZE_OPTIONS:
-        return page_size
 
-    return DEFAULT_TOURNAMENTS_PAGE_SIZE
+def _default_page_size(request):
+    mobile_hint = request.headers.get('Sec-CH-UA-Mobile')
+    if mobile_hint in ('?0', '?1'):
+        is_mobile = mobile_hint == '?1'
+    else:
+        is_mobile = bool(_PHONE_USER_AGENT.search(request.headers.get('User-Agent', '')))
+    return MOBILE_TOURNAMENTS_PAGE_SIZE if is_mobile else DEFAULT_TOURNAMENTS_PAGE_SIZE
 
 
 def _truthy(value):
@@ -821,8 +831,8 @@ def _active_filter_params(filters):
     if filters.get('sort') and filters['sort'] != _default_sort(filters['period']):
         params['sort'] = filters['sort']
 
-    if filters.get('page_size') and filters['page_size'] != DEFAULT_TOURNAMENTS_PAGE_SIZE:
-        params[TOURNAMENTS_PAGE_SIZE_PARAM] = filters['page_size']
+    if filters['page_size_override'] is not None:
+        params[TOURNAMENTS_PAGE_SIZE_PARAM] = filters['page_size_override']
 
     return params
 
@@ -848,12 +858,12 @@ def _url_for_filters(filters, page=None):
 
 
 def _reset_url(filters):
-    if filters.get('page_size') == DEFAULT_TOURNAMENTS_PAGE_SIZE:
+    if filters['page_size_override'] is None:
         return reverse('tournaments')
 
     return '{}?{}'.format(
         reverse('tournaments'),
-        urlencode({TOURNAMENTS_PAGE_SIZE_PARAM: filters['page_size']}),
+        urlencode({TOURNAMENTS_PAGE_SIZE_PARAM: filters['page_size_override']}),
     )
 
 
