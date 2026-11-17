@@ -154,7 +154,11 @@
 }
 .tournaments-mobile-list, .tournaments-card-sort { display: none; }
 @media (max-width: 1400px) {
-  .tournaments-results-surface { background: transparent; border: 0; box-shadow: none; }
+  .tournaments-results-surface:has(.tournaments-mobile-list) {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
   .tournaments-page .tournaments-table { display: none; }
   .tournaments-card-sort { display: inline-flex; margin-bottom: .625rem; }
   .tournaments-mobile-list { display: grid; gap: .65rem; }

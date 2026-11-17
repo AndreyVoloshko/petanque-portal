@@ -44,7 +44,7 @@ Use this as the before-and-after reference for the Ukrainian ratings page at 144
 | Pagination summary | 13.76 px · 650 · `#66748a` · 20.64 px | 13.76 px · 650 · `#66748a` · 20.64 px |
 | Disabled pagination arrows | 13.76 px · 800 · `#b1bbc9` · 13.76 px | 13.12 px · 800 · `#b1bbc9` · 13.12 px |
 
-The table heading uses a `#fbfdff` background and 14.4 × 16 px padding. The selects use the same background on their wrappers, with 32 px of trailing space inside the select for the arrow. Keyboard focus on a select uses an inset `#66748a` border. Page controls use white, `#dbe5ef` borders, and `#1f5f8b` for the current page. Page size now uses a disclosure styled like the pager.
+The table heading uses a `#fbfdff` background and 14.4 × 16 px padding. The selects use the same background on their wrappers, with 32 px of trailing space inside the select for the arrow. Select focus uses a soft blue-gray shadow and a slightly darker border. Page controls use white, `#dbe5ef` borders, and `#1f5f8b` for the current page. Page size now uses a disclosure styled like the pager.
 
 ## Lessons for the next migration
 
@@ -58,4 +58,4 @@ The table heading uses a `#fbfdff` background and 14.4 × 16 px padding. The sel
 - The Docker image built both Vite entries. All 262 Django tests passed.
 - Chromium at 320, 390, 820 and 1440 px showed no horizontal overflow. Search by Enter, applying filters, changing the page size, following the next-page link and loading empty results passed with JavaScript disabled. The page number, filters and explicit size stayed in the URL.
 - The same 25 athlete names, ranks and points appeared before and after on the licensed ratings control, on page 2 of the licensed women's filter, and on the 2024 season page.
-- Chromium verified the inset select focus indicator by pointer and Tab on the tournament and ratings lists. It also verified that DataTables is absent from current and seasonal ratings and still loads on the club listing. Safari and physical mobile devices were outside this run.
+- Chromium verified the select focus indicator by pointer and Tab on the tournament and ratings lists. It also verified that DataTables is absent from current and seasonal ratings and still loads on the club listing. Safari and physical mobile devices were outside this run.

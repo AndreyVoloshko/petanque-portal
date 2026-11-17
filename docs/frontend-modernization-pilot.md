@@ -102,4 +102,4 @@ These values describe the tournament pilot at 1440 and 390 px on `/tournaments/?
 | Details action | 13.12 px · 800 · `#23304a` | 13 px · 600 · `#172033` |
 | Pagination link | 13.76 px · 800 · `#23304a` | 13.76 px · 800 · `#23304a` |
 
-The table heading uses a `#fbfdff` background with 14.4 × 16 px padding. The phone calendar icon aligns with the date line. The format tag in this sample uses `#eef6ff` on both layouts. Finished status uses `#eef2f6` on the desktop and `#f0f2f5` on the phone. The filters use `#fbfdff` and the shared inset `#66748a` focus indicator.
+The table heading uses a `#fbfdff` background with 14.4 × 16 px padding. The phone calendar icon aligns with the date line. The format tag in this sample uses `#eef6ff` on both layouts. Finished status uses `#eef2f6` on the desktop and `#f0f2f5` on the phone. The filters use `#fbfdff` with a soft blue-gray shadow on focus. Empty tournament lists use the same bordered surface across widths, with 24–40 px vertical padding, 18–20 px headings at weight 800, and 14.4 px descriptions at weight 600.
