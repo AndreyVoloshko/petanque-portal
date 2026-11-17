@@ -23,7 +23,7 @@
                     </div>
                     <div class="pilot-card-status">
                         {% if show_strength and not filters.foreign %}{{ row.tournament|tournament_power_badge }}{% endif %}
-                        {% include "tournaments/list/status.html" with row=row compact=True only %}
+                        {% include "tournaments/list/status.html" with row=row only %}
                     </div>
                     <footer class="pilot-card-footer">
                         {% include "tournaments/list/actions.html" with row=row only %}

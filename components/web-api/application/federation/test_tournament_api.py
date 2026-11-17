@@ -251,8 +251,8 @@ class TournamentApiDrawIdTests(TournamentApiTestCase):
 
         listing = self.client.get(list_url)
         self.assertContains(listing, f'href="{detail_url}"')
-        # The table keeps the note as a cue to open Details. Cards omit it.
-        self.assertContains(listing, 'pilot-status-note', count=1)
+        self.assertContains(listing, 'data-tone="finished"', count=2)
+        self.assertNotContains(listing, 'pilot-status-note')
         for response in (listing, self.client.get(detail_url)):
             self.assertNotContains(response, 'class="tournament-draw-results"')
             self.assertNotContains(response, protocol_url)
