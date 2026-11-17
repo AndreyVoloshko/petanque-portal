@@ -2748,9 +2748,16 @@ class TournamentListingPageTests(TestCase):
                 self.assertContains(response, '/vite/assets/shell-')
                 self.assertContains(response, '/vite/assets/list-ui-')
                 self.assertNotContains(response, '/style-v2.css')
+                self.assertNotContains(response, 'facebook-jssdk')
 
         home = self.client.get('/')
         self.assertContains(home, '/vite/assets/athlete-card-')
+        self.assertNotContains(home, 'cdn.datatables.net')
+        self.assertNotContains(home, 'fullcalendar@')
+        self.assertNotContains(home, 'facebook-jssdk')
+
+    def test_calendar_loads_fullcalendar(self):
+        self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
 
     def create_tournament(
         self,

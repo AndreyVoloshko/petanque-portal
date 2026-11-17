@@ -39,3 +39,15 @@ Desktop and phone CSS Coverage on the baseline helped locate styles the pilot an
 - Chromium checks covered layout at 320, 390, 820, and 1440 px, including matching table and pagination styles and filter preservation during paging and page-size changes with JavaScript disabled.
 - Browser checks also covered the cookie banner, mobile navigation, autocomplete, athlete links, title registries, club pages, tournament sort, and the empty state.
 - Shared template and style owners are [the athlete card](../components/web-api/application/federation/templates/common/athlete_card.html), [the card stylesheet](../components/web-api/frontend/src/athlete-card.css), [the table template](../components/web-api/application/federation/templates/common/list/table.html), [the table stylesheet](../components/web-api/frontend/src/list-table.css), and [the shell tokens](../components/web-api/frontend/src/tokens.css).
+
+## Optional scripts
+
+The home page skips DataTables. Home, tournaments, and both ratings lists skip the Facebook SDK, which they had loaded without an embed. FullCalendar loads with the calendar template, where it renders the calendar and fetches events.
+
+The medians below use three Chromium loads per width with caching disabled. They compare `93baf58` with this follow-up. The tournament URL was `/tournaments/?period=past&per_page=5`.
+
+| Page | CSS transferred | JavaScript transferred | JavaScript change |
+| --- | ---: | ---: | ---: |
+| Home at 390 px | 94,538 B → 92,210 B | 312,277 B → 114,817 B | −63.2% |
+| Home at 1440 px | 94,396 B → 92,258 B | 312,407 B → 114,828 B | −63.2% |
+| Tournaments at 1440 px | 64,648 B → 64,594 B | 200,173 B → 114,819 B | −42.6% |
