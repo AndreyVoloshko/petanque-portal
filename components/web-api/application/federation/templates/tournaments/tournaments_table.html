@@ -32,7 +32,9 @@
                             {% include "tournaments/list/title.html" with row=row only %}
                             {% include "tournaments/list/team_count.html" with row=row only %}
                         </td>
-                        <td>{% include "tournaments/list/tags.html" with row=row only %}</td>
+                        <td>
+                            <div class="portal-tag-list">{% include "tournaments/_tags.html" with row=row only %}</div>
+                        </td>
                         <td>{% include "tournaments/list/place.html" with row=row only %}</td>
                         {% if show_strength and not filters.foreign %}
                             <td>{{ row.tournament|tournament_power_badge|default:"—" }}</td>
@@ -54,7 +56,7 @@
                         {% include "tournaments/list/team_count.html" with row=row only %}
                     </div>
                     <div class="pilot-card-heading">
-                        {% include "tournaments/list/tags.html" with row=row only %}
+                        <div class="portal-tag-list">{% include "tournaments/_tags.html" with row=row only %}</div>
                         <h2>{% include "tournaments/list/title.html" with row=row only %}</h2>
                     </div>
                     <div class="pilot-card-venue">

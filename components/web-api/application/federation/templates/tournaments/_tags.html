@@ -1,0 +1,3 @@
+{% for label in row.format_labels %}{% include "common/badge.html" with label=label tone="format" only %}{% endfor %}
+{% for label in row.audience_tags %}{% include "common/badge.html" with label=label tone="audience" only %}{% endfor %}
+{% include "common/badge.html" with label=row.openness_label tone=row.openness_key only %}
