@@ -12,19 +12,29 @@
 }
 .tournaments-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; }
 .tournaments-table :is(th, td) {
-  border-bottom: 1px solid #e5ecf4;
   color: var(--list-ink);
   padding: .9rem 1rem;
-  white-space: normal;
+  vertical-align: middle;
 }
+
 .tournaments-table th {
   background: var(--list-field-surface);
+  border-bottom: 1px solid var(--list-border);
   font-size: .82rem;
   font-weight: 800;
+  line-height: 1.25;
   text-align: start;
+  white-space: nowrap;
 }
-.tournaments-table td { font-size: .9rem; vertical-align: middle; }
+
+.tournaments-table td {
+  border-bottom: 1px solid #e5ecf4;
+  font-size: .9rem;
+  white-space: normal;
+}
+
 .tournaments-table :is(th, td):first-child { padding-inline-start: 2.5rem; }
+.tournaments-table th:last-child { padding-inline-end: 2.5rem; }
 .tournaments-table th:first-child { border-start-start-radius: var(--list-panel-radius); }
 .tournaments-table th:last-child { border-start-end-radius: var(--list-panel-radius); }
 .tournaments-table tbody tr:last-child td { border-bottom: 0; }
@@ -47,7 +57,15 @@
   min-height: 0;
   padding: 0;
 }
-.tournaments-table .tournament-date-sort:hover { color: var(--list-primary); }
+.tournaments-table .tournament-date-sort:is(:hover, :focus-visible) {
+  color: var(--list-primary);
+}
+
+.tournaments-table .tournament-date-sort .bi {
+  color: #51627a;
+  font-size: 1rem;
+  line-height: 1;
+}
 
 .pilot-date, .pilot-place, .pilot-team-count {
   align-items: center;
