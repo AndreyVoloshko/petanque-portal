@@ -205,11 +205,5 @@
             </tbody>
         </table>
     </div>
-
-    <div class="portal-list-footer">
-        <p>{{ player_pagination_summary }}</p>
-        {% include "common/list/pagination.html" with pagination_pages=player_pagination_pages pagination_urls=player_pagination_urls anchor="#rating-results" %}
-        {% trans "Athletes per page" as athletes_per_page_label %}
-        {% include "common/list/page_size.html" with action=request.path|add:"#rating-results" active_filters=player_active_params size_label=athletes_per_page_label %}
-    </div>
 </div>
+{% include "common/list/pagination.html" with pagination_path=request.path anchor="#rating-results" %}

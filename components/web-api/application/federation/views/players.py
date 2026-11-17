@@ -1,6 +1,5 @@
 import datetime
 import json
-from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -15,6 +14,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.vary import vary_on_headers
 from federation.helpers.general import get_model
+from federation.utils.pagination import pagination_links
 from federation.utils.rankings import attach_rating_positions
 from federation.utils.request_devices import is_phone_request
 from federation.utils.tournament_names import get_tournament_card_metadata
@@ -67,6 +67,7 @@ def players(request, licence_filter=None, rating_filter=None):
         _player_ranking_queryset(licence_filter, rating_field),
     )
 
+    active_filters = _active_player_filter_params(player_filters)
     return render(request, 'players/players.html', {
         'players': page_players,
         'ratings_pilot': True,
@@ -80,10 +81,9 @@ def players(request, licence_filter=None, rating_filter=None):
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
         'player_filter_options': filter_options,
-        'player_active_params': _active_player_filter_params(player_filters),
-        'player_pagination_pages': _pagination_pages(page_obj),
-        'player_pagination_summary': _player_pagination_summary(page_obj),
-        'player_pagination_urls': _player_pagination_urls(request, player_filters, page_obj),
+        'active_filters': active_filters,
+        'pagination_summary': _player_pagination_summary(page_obj),
+        **pagination_links(page_obj, request.path, active_filters),
     })
 
 
@@ -205,46 +205,6 @@ def _active_player_filter_params(player_filters):
         params[PLAYERS_PAGE_SIZE_PARAM] = player_filters['page_size_override']
 
     return params
-
-
-def _player_url(request, player_filters, page=None):
-    params = _active_player_filter_params(player_filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
-    if not query:
-        return request.path
-
-    return '{}?{}'.format(request.path, query)
-
-
-def _player_pagination_urls(request, player_filters, page_obj):
-    return {
-        'first': _player_url(request, player_filters, 1),
-        'previous': _player_url(request, player_filters, page_obj.previous_page_number()) if page_obj.has_previous() else '#',
-        'next': _player_url(request, player_filters, page_obj.next_page_number()) if page_obj.has_next() else '#',
-        'last': _player_url(request, player_filters, page_obj.paginator.num_pages),
-        'pages': {
-            page: _player_url(request, player_filters, page)
-            for page in _pagination_pages(page_obj)
-            if page != 'ellipsis'
-        },
-    }
-
-
-def _pagination_pages(page_obj):
-    current = page_obj.number
-    total = page_obj.paginator.num_pages
-    pages = []
-
-    for page in range(1, total + 1):
-        if page == 1 or page == total or abs(page - current) <= 1:
-            pages.append(page)
-        elif pages[-1] != 'ellipsis':
-            pages.append('ellipsis')
-
-    return pages
 
 
 def _player_pagination_summary(page_obj):

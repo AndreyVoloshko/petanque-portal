@@ -44,6 +44,8 @@ Use this as the before-and-after reference for the Ukrainian ratings page at 144
 | Pagination summary | 13.76 px · 650 · `#66748a` · 20.64 px | 13.76 px · 650 · `#66748a` · 20.64 px |
 | Disabled pagination arrows | 13.76 px · 800 · `#b1bbc9` · 13.76 px | 13.12 px · 800 · `#b1bbc9` · 13.12 px |
 
+The pagination values in the table reflect the step 2 comparison. The current footer shares the tournament styles, including 13.76 px text and disabled arrows in `#a5b1c3` at both widths.
+
 The table heading uses a `#fbfdff` background and 14.4 × 16 px padding. The selects use the same background on their wrappers, with 32 px of trailing space inside the select for the arrow. Select focus uses a soft blue-gray shadow and a slightly darker border. Page controls use white, `#dbe5ef` borders, and `#1f5f8b` for the current page. Page size now uses a disclosure styled like the pager.
 
 ## Lessons for the next migration

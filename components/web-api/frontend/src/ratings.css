@@ -28,32 +28,12 @@
   color: var(--list-page-accent);
 }
 
-.players-rating-page :is(.players-apply-filters, .portal-page-control):focus-visible {
+.players-rating-page .players-apply-filters:focus-visible {
   outline: 2px solid var(--list-muted);
   outline-offset: 2px;
-}
-
-.players-rating-page .portal-page-control[aria-disabled="true"] { color: #b1bbc9; }
-
-@media (width > 1050px) {
-  .players-rating-page .portal-list-footer { padding-inline: 1.65rem; }
-  .players-rating-page .portal-list-size { grid-column: 3; }
 }
 
 @media (max-width: 767.98px) {
   .players-rating-page .players-control-panel { position: static; }
   .players-rating-page .players-filter-controls { grid-template-columns: minmax(0, 1fr); }
-  .players-rating-page .portal-list-footer {
-    background: var(--list-surface);
-    border: 1px solid var(--list-border);
-    border-radius: var(--list-panel-radius);
-    margin-top: .85rem;
-  }
-  .players-rating-page .portal-list-links :is(.portal-page-control, .portal-page-ellipsis) {
-    border-radius: var(--list-radius);
-    font-size: .82rem;
-    block-size: 1.9rem;
-    min-inline-size: 1.9rem;
-    padding-inline: 0;
-  }
 }

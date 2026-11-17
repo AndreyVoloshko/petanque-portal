@@ -26,6 +26,7 @@ from federation.audit import (
     record_model_change,
     record_tournament_team_places_change,
 )
+from federation.utils.pagination import pagination_links
 from federation.utils.rankings import rating_rank_map
 from federation.utils.request_devices import is_phone_request
 from federation.utils.tournament_names import get_tournament_card_metadata
@@ -114,9 +115,8 @@ def tournaments(request, date_filter=None, type_filter=None):
         'page_obj': page_obj,
         'page_size': filters['page_size'],
         'page_size_options': sorted(TOURNAMENTS_PAGE_SIZE_OPTIONS),
-        'pagination_pages': _pagination_pages(page_obj),
         'pagination_summary': _pagination_summary(page_obj),
-        'pagination_urls': _pagination_urls(filters, page_obj),
+        **pagination_links(page_obj, reverse('tournaments'), active_filters),
         'sort_state': _get_sort_state(filters),
         'active_filters': active_filters,
         'has_active_secondary_filters': _has_active_secondary_filters(filters),
@@ -840,12 +840,8 @@ def _has_active_secondary_filters(filters):
     )
 
 
-def _url_for_filters(filters, page=None):
-    params = _active_filter_params(filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
+def _url_for_filters(filters):
+    query = urlencode(_active_filter_params(filters))
     if not query:
         return reverse('tournaments')
 
@@ -871,42 +867,6 @@ def _get_sort_state(filters):
         'date_direction': direction,
         'date_url': _url_for_filters(next_filters),
     }
-
-
-def _pagination_pages(page_obj):
-    paginator = page_obj.paginator
-    current = page_obj.number
-    pages = []
-
-    for number in paginator.page_range:
-        if number == 1 or number == paginator.num_pages or abs(number - current) <= 1:
-            pages.append(number)
-        elif pages and pages[-1] != 'ellipsis':
-            pages.append('ellipsis')
-
-    return pages
-
-
-def _pagination_urls(filters, page_obj):
-    urls = {
-        'first': _url_for_filters(filters, 1),
-        'last': _url_for_filters(filters, page_obj.paginator.num_pages),
-        'previous': '',
-        'next': '',
-        'pages': {},
-    }
-
-    if page_obj.has_previous():
-        urls['previous'] = _url_for_filters(filters, page_obj.previous_page_number())
-
-    if page_obj.has_next():
-        urls['next'] = _url_for_filters(filters, page_obj.next_page_number())
-
-    for page in _pagination_pages(page_obj):
-        if page != 'ellipsis':
-            urls['pages'][page] = _url_for_filters(filters, page)
-
-    return urls
 
 
 def _pagination_summary(page_obj):

@@ -240,12 +240,6 @@
     min-width: 0;
     white-space: normal;
   }
-  .portal-list-footer {
-    background: var(--list-surface);
-    border: 1px solid var(--list-border);
-    border-radius: var(--list-panel-radius);
-    margin-top: var(--list-space);
-  }
 }
 @media (max-width: 767.98px) {
   .pilot-card-meta .pilot-date {

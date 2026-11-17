@@ -1,22 +1,26 @@
 {% load app_filters i18n %}
-{% if page_obj.paginator.num_pages > 1 %}
-    <nav aria-label="{% trans "Сторінки" %}">
-        <ul class="portal-list-links">
-            {% trans "Перша сторінка" as first_label %}
-            {% trans "Попередня сторінка" as previous_label %}
-            {% include "common/list/page_link.html" with href=pagination_urls.first icon="bi-chevron-double-left" label=first_label anchor=anchor enabled=page_obj.has_previous only %}
-            {% include "common/list/page_link.html" with href=pagination_urls.previous icon="bi-chevron-left" label=previous_label anchor=anchor enabled=page_obj.has_previous only %}
-            {% for page in pagination_pages %}
-                {% if page == "ellipsis" %}
-                    <li class="portal-page-ellipsis" aria-hidden="true">…</li>
-                {% else %}
-                    {% include "common/list/page_link.html" with href=pagination_urls.pages|get_item:page number=page current=page_obj.number anchor=anchor enabled=True only %}
-                {% endif %}
-            {% endfor %}
-            {% trans "Наступна сторінка" as next_label %}
-            {% trans "Остання сторінка" as last_label %}
-            {% include "common/list/page_link.html" with href=pagination_urls.next icon="bi-chevron-right" label=next_label anchor=anchor enabled=page_obj.has_next only %}
-            {% include "common/list/page_link.html" with href=pagination_urls.last icon="bi-chevron-double-right" label=last_label anchor=anchor enabled=page_obj.has_next only %}
-        </ul>
-    </nav>
-{% endif %}
+<div class="portal-list-footer">
+    <p>{{ pagination_summary }}</p>
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="{% trans "Сторінки" %}">
+            <ul class="portal-list-links">
+                {% trans "Перша сторінка" as first_label %}
+                {% trans "Попередня сторінка" as previous_label %}
+                {% include "common/list/page_link.html" with href=pagination_urls.first icon="bi-chevron-double-left" label=first_label anchor=anchor enabled=page_obj.has_previous only %}
+                {% include "common/list/page_link.html" with href=pagination_urls.previous icon="bi-chevron-left" label=previous_label anchor=anchor enabled=page_obj.has_previous only %}
+                {% for page in pagination_pages %}
+                    {% if page == "ellipsis" %}
+                        <li class="portal-page-ellipsis" aria-hidden="true">…</li>
+                    {% else %}
+                        {% include "common/list/page_link.html" with href=pagination_urls.pages|get_item:page number=page current=page_obj.number anchor=anchor enabled=True only %}
+                    {% endif %}
+                {% endfor %}
+                {% trans "Наступна сторінка" as next_label %}
+                {% trans "Остання сторінка" as last_label %}
+                {% include "common/list/page_link.html" with href=pagination_urls.next icon="bi-chevron-right" label=next_label anchor=anchor enabled=page_obj.has_next only %}
+                {% include "common/list/page_link.html" with href=pagination_urls.last icon="bi-chevron-double-right" label=last_label anchor=anchor enabled=page_obj.has_next only %}
+            </ul>
+        </nav>
+    {% endif %}
+    {% include "common/list/page_size.html" with action=pagination_path|add:anchor %}
+</div>

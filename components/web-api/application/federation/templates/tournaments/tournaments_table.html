@@ -72,12 +72,6 @@
                 </article>
             {% endfor %}
         </div>
-
-        <div class="portal-list-footer">
-            <p>{{ pagination_summary }}</p>
-            {% include "common/list/pagination.html" with anchor="#tournament-results" %}
-            {% include "common/list/page_size.html" with action=list_url %}
-        </div>
     {% else %}
         {% if has_active_secondary_filters %}
             {% include "common/list/empty.html" with title=empty_state.title description=empty_state.description reset_url=reset_url reset_label=reset_label only %}
@@ -86,3 +80,6 @@
         {% endif %}
     {% endif %}
 </div>
+{% if rows %}
+    {% include "common/list/pagination.html" with pagination_path=list_url anchor="#tournament-results" %}
+{% endif %}

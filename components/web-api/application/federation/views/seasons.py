@@ -9,13 +9,12 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.vary import vary_on_headers
 
 from federation.models.season import Season
+from federation.utils.pagination import pagination_links
 from federation.views.players import (
     PLAYER_AGE_CATEGORIES,
     PLAYERS_PAGE_SIZE_OPTIONS,
     _active_player_filter_params,
     _get_player_filters,
-    _player_pagination_urls,
-    _pagination_pages,
     _player_pagination_summary,
 )
 
@@ -40,6 +39,7 @@ def seasons(request, year=None):
     _assign_season_display_ranks(page_rows, ranking_rows)
     page_obj.object_list = page_rows
 
+    active_filters = _active_player_filter_params(player_filters)
     return render(request, 'seasons/seasons.html', {
         'players': page_rows,
         'ratings_pilot': True,
@@ -56,10 +56,9 @@ def seasons(request, year=None):
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
         'player_filter_options': filter_options,
-        'player_active_params': _active_player_filter_params(player_filters),
-        'player_pagination_pages': _pagination_pages(page_obj),
-        'player_pagination_summary': _player_pagination_summary(page_obj),
-        'player_pagination_urls': _player_pagination_urls(request, player_filters, page_obj),
+        'active_filters': active_filters,
+        'pagination_summary': _player_pagination_summary(page_obj),
+        **pagination_links(page_obj, request.path, active_filters),
     })
 
 
