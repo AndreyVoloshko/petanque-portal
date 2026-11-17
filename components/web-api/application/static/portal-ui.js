@@ -54,30 +54,6 @@
         return RESPONSIVE_PAGE_SIZES.defaultValue;
     }
 
-    function enforceResponsivePageSize() {
-        var url;
-        var targetSize;
-
-        if (!window.URL || !window.URLSearchParams) {
-            return false;
-        }
-
-        url = new URL(window.location.href);
-        if (url.searchParams.has(PAGE_SIZE_PARAM)) {
-            return false;
-        }
-
-        targetSize = responsivePageSize();
-        if (targetSize === RESPONSIVE_PAGE_SIZES.defaultValue) {
-            return false;
-        }
-
-        url.searchParams.set(PAGE_SIZE_PARAM, String(targetSize));
-        url.searchParams.delete('page');
-        window.location.replace(url.toString());
-        return true;
-    }
-
     function responsiveLayout() {
         if (mediaMatches('mobile')) {
             return 'mobile';
@@ -360,7 +336,7 @@
     function initAutoSubmitControls() {
         $(document).on(
             'change',
-            '.players-filter-form select, .players-page-size-form select[name="' + PAGE_SIZE_PARAM + '"]',
+            '.players-page-size-form select[name="' + PAGE_SIZE_PARAM + '"]',
             submitClosestForm
         );
     }
@@ -429,10 +405,6 @@
     }
 
     function initPortalUi() {
-        if ($('[data-responsive-page-size]').length && enforceResponsivePageSize()) {
-            return;
-        }
-
         registerDataTableOrdering();
         refreshTooltips(document);
         initAutoSubmitControls();
@@ -475,7 +447,6 @@
 
     portal.responsive = {
         pageSize: responsivePageSize,
-        enforcePageSize: enforceResponsivePageSize,
         layout: responsiveLayout
     };
 

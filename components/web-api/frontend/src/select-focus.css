@@ -1,0 +1,9 @@
+.portal-list-filters .portal-field:has(.portal-select:focus-visible),
+.players-rating-page .players-filter-field:has(.players-filter-select:focus-visible) {
+  border-color: var(--list-muted);
+  box-shadow: inset 0 0 0 1px var(--list-muted);
+}
+
+.portal-list-filters .portal-select:focus {
+  outline: none;
+}

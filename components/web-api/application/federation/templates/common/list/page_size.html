@@ -1,14 +1,16 @@
 {% load i18n %}
-{% trans "Показувати:" as size_label %}
-<div class="portal-list-size">
-    <span>{{ size_label }}</span>
-    <details class="portal-list-size-options">
-        <summary class="portal-page-control" aria-label="{{ size_label }} {{ page_size }}">{{ page_size }}</summary>
-        <form class="portal-list-size-menu" method="get" action="{{ action }}" aria-label="{{ size_label }}">
-            {% include "common/list/hidden_fields.html" with fields=active_filters exclude="per_page" only %}
-            {% for size in page_size_options %}
-                <button class="portal-page-control" type="submit" name="per_page" value="{{ size }}"{% if page_size == size %} aria-current="true"{% endif %}>{{ size }}</button>
-            {% endfor %}
-        </form>
-    </details>
-</div>
+{% trans "Показувати:" as default_size_label %}
+{% with size_label=size_label|default:default_size_label %}
+    <div class="portal-list-size">
+        <span>{{ size_label }}</span>
+        <details class="portal-list-size-options">
+            <summary class="portal-page-control" aria-label="{{ size_label }} {{ page_size }}">{{ page_size }}</summary>
+            <form class="portal-list-size-menu" method="get" action="{{ action }}" aria-label="{{ size_label }}">
+                {% include "common/list/hidden_fields.html" with fields=active_filters exclude="per_page" only %}
+                {% for size in page_size_options %}
+                    <button class="portal-page-control" type="submit" name="per_page" value="{{ size }}"{% if page_size == size %} aria-current="true"{% endif %}>{{ size }}</button>
+                {% endfor %}
+            </form>
+        </details>
+    </div>
+{% endwith %}

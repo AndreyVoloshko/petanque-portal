@@ -8,6 +8,6 @@ export default defineConfig({
     manifest: 'manifest.json',
     outDir: '../application/static/vite',
     emptyOutDir: true,
-    rollupOptions: { input: 'src/tournaments.css' },
+    rollupOptions: { input: ['src/tournaments.css', 'src/ratings.css'] },
   },
 });

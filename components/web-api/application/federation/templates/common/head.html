@@ -42,7 +42,7 @@
         <!-- jQuery UI JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
-        {% if not tournaments_pilot %}
+        {% if not tournaments_pilot and not ratings_pilot %}
         <!-- DataTables Bootstrap 5 integration -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
@@ -56,10 +56,14 @@
         {% endif %}
         <!-- Custom Styles -->
         <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
-        {% if not tournaments_pilot %}
-            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-        {% else %}
+        {% if tournaments_pilot %}
             {% vite_stylesheet "src/tournaments.css" %}
+        {% elif ratings_pilot %}
+            {% vite_stylesheet "src/ratings.css" %}
+        {% else %}
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+        {% endif %}
+        {% if tournaments_pilot or ratings_pilot %}
             <noscript><style>#gdpr_warning { position: static; transform: none; margin: 4.5rem auto 0; }</style></noscript>
         {% endif %}
 

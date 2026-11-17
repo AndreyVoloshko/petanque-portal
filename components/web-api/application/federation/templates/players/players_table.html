@@ -1,27 +1,18 @@
 {% load app_filters %}
 {% load i18n %}
 
-{% trans "All clubs" as all_clubs_label %}
-{% trans "All age categories" as all_age_categories_label %}
-{% trans "All athletes" as all_athletes_label %}
-{% trans "Club" as club_label %}
-{% trans "Age" as age_label %}
-{% trans "Sex" as sex_label %}
-{% trans "Search by name or club..." as athlete_search_placeholder %}
-{% trans "Athletes per page" as athletes_per_page_label %}
-{% trans "all" as all_page_size_label %}
 {% trans "Rating points are earned from tournament results. More points means a higher place in the official rating." as points_help_text %}
 {% trans "Power summarizes an athlete's strongest recent rating results. It is used to estimate how strong teams and tournaments are." as power_help_text %}
 {% trans "License shows whether the athlete currently has an active federation license and displays the license number when available." as license_help_text %}
 
-<div class="players-results-surface" data-responsive-page-size>
+<div id="rating-results" class="players-results-surface">
     <div class="players-table-responsive">
         <table class="players-table" id="players">
             <thead>
                 <tr>
-                    <th class="players-rank-column">{% trans "Ranking" %}</th>
-                    <th class="players-athlete-column">{% trans "Athlete" %}</th>
-                    <th class="players-points-column">
+                    <th scope="col" class="players-rank-column">{% trans "Ranking" %}</th>
+                    <th scope="col" class="players-athlete-column">{% trans "Athlete" %}</th>
+                    <th scope="col" class="players-points-column">
                         <span class="players-column-heading">
                             {% trans "Points" %}
                             <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ points_help_text }}">
@@ -31,7 +22,7 @@
                         </span>
                     </th>
                     {% if show_power_column %}
-                        <th class="players-power-column">
+                        <th scope="col" class="players-power-column">
                             <span class="players-column-heading">
                                 {% trans "Power" %}
                                 <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ power_help_text }}">
@@ -41,9 +32,9 @@
                             </span>
                         </th>
                     {% endif %}
-                    <th class="players-sex-column filterable no-sort">{% trans "Sex" %}</th>
-                    <th class="players-age-column filterable no-sort">{% trans "Age" %}</th>
-                    <th class="players-license-column no-sort">
+                    <th scope="col" class="players-sex-column filterable no-sort">{% trans "Sex" %}</th>
+                    <th scope="col" class="players-age-column filterable no-sort">{% trans "Age" %}</th>
+                    <th scope="col" class="players-license-column no-sort">
                         <span class="players-column-heading">
                             {% trans "License" %}
                             <button class="players-column-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ license_help_text }}">
@@ -52,9 +43,9 @@
                             </button>
                         </span>
                     </th>
-                    <th class="players-club-column filterable no-sort">{% trans "Club" %}</th>
-                    <th class="players-action-column no-sort" aria-label="{% trans "Actions" %}"></th>
-                    <th class="players-mobile-card-column no-sort" aria-hidden="true"></th>
+                    <th scope="col" class="players-club-column filterable no-sort">{% trans "Club" %}</th>
+                    <th scope="col" class="players-action-column no-sort" aria-label="{% trans "Actions" %}"></th>
+                    <th scope="col" class="players-mobile-card-column no-sort" aria-hidden="true"></th>
                 </tr>
             </thead>
             <tbody>
@@ -215,59 +206,10 @@
         </table>
     </div>
 
-    <div class="players-table-footer" aria-label="{% trans "Athlete pagination" %}">
-        <p class="players-pagination-summary">{{ player_pagination_summary }}</p>
-        {% if page_obj.paginator.num_pages > 1 %}
-            <nav class="players-page-links" aria-label="{% trans "Pages" %}">
-                <ul class="pagination">
-                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                        <a class="page-link players-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ player_pagination_urls.first }}{% else %}#{% endif %}" aria-label="{% trans "First page" %}">
-                            <i class="bi bi-chevron-double-left" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                        <a class="page-link players-page-link {% if not page_obj.has_previous %}is-disabled{% endif %}" href="{% if page_obj.has_previous %}{{ player_pagination_urls.previous }}{% else %}#{% endif %}" aria-label="{% trans "Previous page" %}">
-                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    {% for page in player_pagination_pages %}
-                        {% if page == "ellipsis" %}
-                            <li class="page-item disabled"><span class="page-link players-page-ellipsis">...</span></li>
-                        {% else %}
-                            <li class="page-item {% if page_obj.number == page %}active{% endif %}">
-                                <a class="page-link players-page-link" href="{{ player_pagination_urls.pages|get_item:page }}">{{ page }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                        <a class="page-link players-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ player_pagination_urls.next }}{% else %}#{% endif %}" aria-label="{% trans "Next page" %}">
-                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                        <a class="page-link players-page-link {% if not page_obj.has_next %}is-disabled{% endif %}" href="{% if page_obj.has_next %}{{ player_pagination_urls.last }}{% else %}#{% endif %}" aria-label="{% trans "Last page" %}">
-                            <i class="bi bi-chevron-double-right" aria-hidden="true"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        {% endif %}
-        <div class="players-footer-length-mount">
-            <form class="players-page-size-form" method="get" action="{{ request.path }}">
-                {% for name,value in player_active_params.items %}
-                    {% if name != "per_page" %}
-                        <input type="hidden" name="{{ name }}" value="{{ value }}">
-                    {% endif %}
-                {% endfor %}
-                <label>
-                    <span>{% trans "Athletes per page" %}</span>
-                    <select name="per_page" aria-label="{% trans "Athletes per page" %}">
-                        {% for option in page_size_options %}
-                            <option value="{{ option }}" {% if page_size == option %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </form>
-        </div>
+    <div class="portal-list-footer">
+        <p>{{ player_pagination_summary }}</p>
+        {% include "common/list/pagination.html" with pagination_pages=player_pagination_pages pagination_urls=player_pagination_urls anchor="#rating-results" %}
+        {% trans "Athletes per page" as athletes_per_page_label %}
+        {% include "common/list/page_size.html" with action=request.path|add:"#rating-results" active_filters=player_active_params size_label=athletes_per_page_label %}
     </div>
 </div>

@@ -2,6 +2,8 @@
 @import "../.generated/basecoat.css";
 @import "./theme.css";
 @import "./list.css";
+@import "./pagination.css";
+@import "./select-focus.css";
 
 .tournaments-page .create-tournament-button {
   background: #eaf4f8;

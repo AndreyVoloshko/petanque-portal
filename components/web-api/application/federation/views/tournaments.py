@@ -27,13 +27,13 @@ from federation.audit import (
     record_tournament_team_places_change,
 )
 from federation.utils.rankings import rating_rank_map
+from federation.utils.request_devices import is_phone_request
 from federation.utils.tournament_names import get_tournament_card_metadata
 
 
 _SPACES_RE = re.compile(r'\s+')
 _DRAW_REF_PATTERN = r'^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$'
 _DRAW_RESULTS_PAGE = 'https://andrewkameniev.github.io/petanque-draw/#/tournament'
-_PHONE_USER_AGENT = re.compile(r'\b(?:Android.+Mobile|iPhone|iPod|Windows Phone|BlackBerry|Opera Mini)\b', re.I)
 DEFAULT_TOURNAMENTS_PAGE_SIZE = 25
 MOBILE_TOURNAMENTS_PAGE_SIZE = 10
 TOURNAMENTS_PAGE_SIZE_PARAM = 'per_page'
@@ -289,12 +289,7 @@ def _requested_page_size(request):
 
 
 def _default_page_size(request):
-    mobile_hint = request.headers.get('Sec-CH-UA-Mobile')
-    if mobile_hint in ('?0', '?1'):
-        is_mobile = mobile_hint == '?1'
-    else:
-        is_mobile = bool(_PHONE_USER_AGENT.search(request.headers.get('User-Agent', '')))
-    return MOBILE_TOURNAMENTS_PAGE_SIZE if is_mobile else DEFAULT_TOURNAMENTS_PAGE_SIZE
+    return MOBILE_TOURNAMENTS_PAGE_SIZE if is_phone_request(request) else DEFAULT_TOURNAMENTS_PAGE_SIZE
 
 
 def _truthy(value):

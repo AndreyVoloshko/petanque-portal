@@ -30,7 +30,7 @@
 }
 
 .tournaments-page :is(a, button, summary):focus-visible,
-.portal-list-filters .portal-field:focus-within {
+.portal-list-filters .portal-search-field:focus-within {
   outline: 2px solid var(--list-primary);
   outline-offset: 2px;
 }
@@ -82,79 +82,6 @@
   padding-inline-end: 1.05rem;
 }
 
-.portal-list-footer {
-  align-items: center;
-  border-top: 1px solid #e5ecf4;
-  color: var(--list-muted);
-  display: grid;
-  font-size: .86rem;
-  font-weight: 650;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1fr) auto minmax(7rem, auto);
-  padding: .85rem 2.5rem;
-}
-
-.portal-list-footer p, .portal-empty p { margin: 0; }
-.portal-list-links, .portal-list-size {
-  align-items: center;
-  display: flex;
-  gap: .45rem;
-}
-.portal-list-links {
-  flex-wrap: wrap;
-  justify-content: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.portal-list-size { justify-content: flex-end; }
-.portal-page-control, .portal-page-ellipsis {
-  align-items: center;
-  block-size: 2rem;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--list-ink);
-  display: inline-flex;
-  font: inherit;
-  font-weight: 800;
-  justify-content: center;
-  line-height: 1;
-  min-inline-size: 2rem;
-  padding-inline: .55rem;
-  text-decoration: none;
-}
-.portal-page-control {
-  background: var(--list-surface);
-  border-color: var(--list-border);
-}
-.portal-page-control[aria-disabled="true"] { color: #a5b1c3; }
-.portal-page-control:is(a, button, summary):hover {
-  background: #eaf4f8;
-  border-color: #b8d3de;
-  color: var(--list-page-accent);
-}
-.portal-page-control[aria-current]:is(a, button) {
-  background: var(--list-page-accent);
-  border-color: #1a557d;
-  color: var(--list-on-primary);
-}
-.portal-list-size-options { position: relative; }
-.portal-list-size-options summary { cursor: pointer; list-style: none; }
-.portal-list-size-options summary::-webkit-details-marker { display: none; }
-.portal-list-size-menu {
-  background: var(--list-surface);
-  border: 1px solid var(--list-border);
-  border-radius: var(--list-radius);
-  box-shadow: 0 6px 18px rgba(23, 32, 51, .12);
-  display: flex;
-  gap: .35rem;
-  inset-block-end: calc(100% + .35rem);
-  inset-inline-end: 0;
-  padding: .35rem;
-  position: absolute;
-  z-index: 2;
-}
-
 .portal-empty { gap: var(--list-space); min-height: 18rem; padding: 2rem 1rem; }
 .portal-empty h2 { font-size: 1.25rem; font-weight: 800; margin: 0; }
 .portal-empty p { color: var(--list-muted); font-weight: 650; }
@@ -179,18 +106,7 @@
 @media (max-width: 1050px) {
   .portal-list-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .portal-list-filters .portal-search-field { grid-column: 1 / -1; }
-  .portal-list-footer {
-    gap: .75rem;
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    padding: .9rem .55rem;
-  }
 }
 @media (max-width: 480px) {
   .portal-list-filters { grid-template-columns: minmax(0, 1fr); }
-  .portal-list-links { gap: .3rem; }
-  .portal-list-links :is(.portal-page-control, .portal-page-ellipsis) {
-    min-inline-size: 1.9rem;
-    padding-inline: .22rem;
-  }
 }

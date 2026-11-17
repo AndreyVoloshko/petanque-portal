@@ -8,7 +8,7 @@
   --color-destructive: #b42318;
 }
 
-.tournaments-page {
+.tournaments-page, .players-rating-page {
   --list-primary: #0b55c6;
   --list-on-primary: white;
   --list-text: #172033;
@@ -23,6 +23,9 @@
   --list-panel-radius: 14px;
   --list-space: .625rem;
   --list-control: 38px;
+}
+
+.tournaments-page {
   color: var(--list-text);
   font-family: inherit;
   grid-template-columns: minmax(0, 1fr);

@@ -6,19 +6,21 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.vary import vary_on_headers
 
 from federation.models.season import Season
 from federation.views.players import (
-    DEFAULT_PLAYERS_PAGE_SIZE,
     PLAYER_AGE_CATEGORIES,
     PLAYERS_PAGE_SIZE_OPTIONS,
-    PLAYERS_PAGE_SIZE_PARAM,
-    _get_player_page_size,
+    _active_player_filter_params,
+    _get_player_filters,
+    _player_pagination_urls,
     _pagination_pages,
     _player_pagination_summary,
 )
 
 
+@vary_on_headers("Sec-CH-UA-Mobile", "User-Agent")
 def seasons(request, year=None):
     years = _get_available_years()
     selected_year = _get_selected_year(year, years)
@@ -27,7 +29,7 @@ def seasons(request, year=None):
     season_rows = _season_rating_queryset(selected_year, rating_field)
     ranking_rows = _order_season_rows(season_rows, rating_field)
 
-    player_filters = _get_season_filters(request)
+    player_filters = _get_player_filters(request)
     filter_options = _get_season_filter_options(season_rows)
     season_rows = _apply_season_filters(season_rows, player_filters, selected_year)
     season_rows = _order_season_rows(season_rows, rating_field)
@@ -40,6 +42,7 @@ def seasons(request, year=None):
 
     return render(request, 'seasons/seasons.html', {
         'players': page_rows,
+        'ratings_pilot': True,
         'years': _season_year_urls(player_filters, years),
         'year': str(selected_year),
         'rating_field': rating_field,
@@ -53,11 +56,10 @@ def seasons(request, year=None):
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
         'player_filter_options': filter_options,
-        'player_active_params': _active_season_filter_params(player_filters),
+        'player_active_params': _active_player_filter_params(player_filters),
         'player_pagination_pages': _pagination_pages(page_obj),
         'player_pagination_summary': _player_pagination_summary(page_obj),
-        'player_pagination_urls': _season_pagination_urls(request, player_filters, page_obj),
-        'player_reset_url': _season_reset_url(request, player_filters),
+        'player_pagination_urls': _player_pagination_urls(request, player_filters, page_obj),
     })
 
 
@@ -91,17 +93,6 @@ def _get_selected_year(year, years):
         return int(year)
     except (TypeError, ValueError):
         raise Http404
-
-
-def _get_season_filters(request):
-    return {
-        'search': request.GET.get('q', '').strip(),
-        'club': request.GET.get('club', '').strip(),
-        'age': request.GET.get('age', '').strip(),
-        'sex': request.GET.get('sex', '').strip(),
-        'league': 'all',
-        'page_size': _get_player_page_size(request),
-    }
 
 
 def _get_season_filter_options(queryset):
@@ -193,57 +184,8 @@ def _season_age_category_key(player, year):
     return ''
 
 
-def _active_season_filter_params(player_filters):
-    params = {}
-    for key in ('search', 'club', 'age', 'sex'):
-        value = player_filters[key]
-        if value:
-            params['q' if key == 'search' else key] = value
-
-    if player_filters.get('page_size') != DEFAULT_PLAYERS_PAGE_SIZE:
-        params[PLAYERS_PAGE_SIZE_PARAM] = player_filters['page_size']
-
-    return params
-
-
-def _season_url(request, player_filters, page=None):
-    params = _active_season_filter_params(player_filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
-    if not query:
-        return request.path
-
-    return '{}?{}'.format(request.path, query)
-
-
-def _season_reset_url(request, player_filters):
-    if player_filters.get('page_size') == DEFAULT_PLAYERS_PAGE_SIZE:
-        return request.path
-
-    return '{}?{}'.format(
-        request.path,
-        urlencode({PLAYERS_PAGE_SIZE_PARAM: player_filters['page_size']}),
-    )
-
-
-def _season_pagination_urls(request, player_filters, page_obj):
-    return {
-        'first': _season_url(request, player_filters, 1),
-        'previous': _season_url(request, player_filters, page_obj.previous_page_number()) if page_obj.has_previous() else '#',
-        'next': _season_url(request, player_filters, page_obj.next_page_number()) if page_obj.has_next() else '#',
-        'last': _season_url(request, player_filters, page_obj.paginator.num_pages),
-        'pages': {
-            page: _season_url(request, player_filters, page)
-            for page in _pagination_pages(page_obj)
-            if page != 'ellipsis'
-        },
-    }
-
-
 def _season_year_urls(player_filters, years):
-    params = _active_season_filter_params(player_filters)
+    params = _active_player_filter_params(player_filters)
     query = urlencode(params)
     suffix = '?' + query if query else ''
 

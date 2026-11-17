@@ -999,6 +999,26 @@ class PlayerLicenseListTests(TestCase):
         self.assertEqual(len(response.context['players']), 50)
         self.assertNotContains(response, 'players-license-badge-missing')
 
+    def test_licensed_players_page_preserves_explicit_page_size_on_phones(self):
+        for index in range(55):
+            self.create_player(f'licensed-{index}', licence_number_value=f'{index:05d}')
+
+        response = self.client.get('/players/licence', HTTP_SEC_CH_UA_MOBILE='?1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['players']), 25)
+        self.assertIn('Sec-CH-UA-Mobile', response.headers['Vary'])
+        self.assertContains(response, 'href="/players/licence?page=2#rating-results"')
+
+        response = self.client.get(
+            '/players/licence',
+            {'per_page': '50'},
+            HTTP_USER_AGENT='Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X)',
+        )
+
+        self.assertEqual(len(response.context['players']), 50)
+        self.assertContains(response, 'href="/players/licence?per_page=50&amp;page=2#rating-results"')
+
     def test_licensed_players_page_shows_club_logo_in_table(self):
         club = Club.objects.create(
             name='Kyiv Petanque Club',

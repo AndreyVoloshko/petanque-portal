@@ -1,0 +1,88 @@
+.portal-list-footer {
+  align-items: center;
+  border-top: 1px solid #e5ecf4;
+  color: var(--list-muted);
+  display: grid;
+  font-size: .86rem;
+  font-weight: 650;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(7rem, auto);
+  padding: .85rem 2.5rem;
+}
+
+.portal-list-footer p { margin: 0; }
+.portal-list-links, .portal-list-size {
+  align-items: center;
+  display: flex;
+  gap: .45rem;
+}
+.portal-list-links {
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.portal-list-size { justify-content: flex-end; }
+.portal-page-control, .portal-page-ellipsis {
+  align-items: center;
+  block-size: 2rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--list-ink);
+  display: inline-flex;
+  font: inherit;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: 2rem;
+  padding-inline: .55rem;
+  text-decoration: none;
+}
+.portal-page-control {
+  background: var(--list-surface);
+  border-color: var(--list-border);
+}
+.portal-page-control[aria-disabled="true"] { color: #a5b1c3; }
+.portal-page-control:is(a, button, summary):hover {
+  background: #eaf4f8;
+  border-color: #b8d3de;
+  color: var(--list-page-accent);
+}
+.portal-page-control[aria-current]:is(a, button) {
+  background: var(--list-page-accent);
+  border-color: #1a557d;
+  color: var(--list-on-primary);
+}
+.portal-list-size-options { position: relative; }
+.portal-list-size-options summary { cursor: pointer; list-style: none; }
+.portal-list-size-options summary::-webkit-details-marker { display: none; }
+.portal-list-size-menu {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-radius);
+  box-shadow: 0 6px 18px rgba(23, 32, 51, .12);
+  display: flex;
+  gap: .35rem;
+  inset-block-end: calc(100% + .35rem);
+  inset-inline-end: 0;
+  padding: .35rem;
+  position: absolute;
+  z-index: 2;
+}
+
+@media (max-width: 1050px) {
+  .portal-list-footer {
+    gap: .75rem;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    padding: .9rem .55rem;
+  }
+}
+@media (max-width: 480px) {
+  .portal-list-links { gap: .3rem; }
+  .portal-list-links :is(.portal-page-control, .portal-page-ellipsis) {
+    min-inline-size: 1.9rem;
+    padding-inline: .22rem;
+  }
+}

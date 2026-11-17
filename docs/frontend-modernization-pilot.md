@@ -77,3 +77,29 @@ Transfer bytes by run: CSS 96799, 97374, 97059 → 95398, 95463, 95137; JS 29609
 The baseline gallery also captures home, tournament detail (`/tournament/750`), player ratings, clubs, documents, registration, and an empty tournament search at 1440 px.
 
 The browser smoke check covered 320, 390, 768, 820, 1024 and 1440 px; the English search control, legacy rating route, and shared global autocomplete also passed. Physical iOS and Android devices, Safari and Firefox, production S3, and Search Console were outside this local run.
+
+## Player and season ratings
+
+[Step 2 measurements and typography reference](frontend-modernization-ratings.md) records the shared pagination, select focus treatment and visual comparison for the ratings routes.
+
+## Tournament typography reference
+
+These values describe the tournament pilot at 1440 and 390 px on `/tournaments/?period=past&per_page=5&page=2`. Each cell lists computed font size, weight and text color. See the [ratings typography reference](frontend-modernization-ratings.md#typography-reference) for the shared font family and the checks to run when migrating other pages.
+
+| Element | Desktop at 1440 px | Phone at 390 px |
+| --- | --- | --- |
+| Table heading | 13.12 px · 800 · `#23304a` |  |
+| Date sort link | 13.12 px · 800 · `#23304a` |  |
+| Date | 14.4 px · 750 · `#172033` | 14 px · 600 · `#172033` |
+| Weekday | 13.44 px · 600 · `#66748a` | 13 px · 500 · `#65728a` |
+| Calendar icon | 14.4 px · 400 · `#4a5b74` | 18 px · 400 · `#526079` |
+| Tournament name | 14.4 px · 800 · `#0d3b66` | 15 px · 750 · `#0d3b66` |
+| Venue | 14.4 px · 400 · `#23304a` | 13 px · 500 · `#5a6780` |
+| Participant count | 12.8 px · 700 · `#66748a` | 13 px · 600 · `#5a6780` |
+| Format tag | 11.84 px · 800 · `#0b58b7` | 12 px · 600 · `#0b58b7` |
+| Finished status | 12.48 px · 800 · `#38465c` | 12 px · 600 · `#5e6a7e` |
+| Filter select | 13.44 px · 650 · `#23304a` | 13.44 px · 650 · `#23304a` |
+| Details action | 13.12 px · 800 · `#23304a` | 13 px · 600 · `#172033` |
+| Pagination link | 13.76 px · 800 · `#23304a` | 13.76 px · 800 · `#23304a` |
+
+The table heading uses a `#fbfdff` background with 14.4 × 16 px padding. The phone calendar icon aligns with the date line. The format tag in this sample uses `#eef6ff` on both layouts. Finished status uses `#eef2f6` on the desktop and `#f0f2f5` on the phone. The filters use `#fbfdff` and the shared inset `#66748a` focus indicator.
