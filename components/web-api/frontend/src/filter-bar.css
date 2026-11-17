@@ -1,0 +1,33 @@
+.portal-filter-bar {
+  --bs-border-color: var(--list-border);
+}
+
+.portal-filter-bar :is(.form-select, .form-control) {
+  background-color: var(--list-field-surface);
+  color: var(--list-ink);
+  padding-inline-start: 2rem;
+}
+
+.portal-filter-bar :is(.form-select, .form-control):focus {
+  border-color: color-mix(in srgb, var(--list-page-accent) 45%, var(--list-border));
+  box-shadow: 0 0 0 3px rgb(31 95 139 / 10%), 0 2px 8px rgb(31 95 139 / 9%);
+}
+
+@media (width > 1050px) and (hover: hover) and (pointer: fine) {
+  /* Enter submits the tournament search field. Tab reveals the button. */
+  .portal-filter-submit:not(:focus-visible) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0 !important;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+@media (forced-colors: active) {
+  .portal-filter-bar :is(.form-select, .form-control):focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

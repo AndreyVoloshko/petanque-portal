@@ -19,6 +19,7 @@ def settings_context(request):
     route = request.resolver_match.url_name if request.resolver_match else ''
     return {
         "portal_ui": {
+            "club_directory": route == "clubs",
             "home_page": route == "main_page",
             "athlete_card": route in {
                 'main_page', 'club', 'arbiters', 'coaches', 'departments', 'national_teams',

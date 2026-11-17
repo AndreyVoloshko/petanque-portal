@@ -16,6 +16,7 @@ from federation.views.players import (
     _active_player_filter_params,
     _get_player_filters,
     _player_pagination_summary,
+    _rating_filter_fields,
 )
 
 
@@ -29,7 +30,7 @@ def seasons(request, year=None):
     ranking_rows = _order_season_rows(season_rows, rating_field)
 
     player_filters = _get_player_filters(request)
-    filter_options = _get_season_filter_options(season_rows)
+    filter_fields = _rating_filter_fields(season_rows, player_filters, "club")
     season_rows = _apply_season_filters(season_rows, player_filters, selected_year)
     season_rows = _order_season_rows(season_rows, rating_field)
 
@@ -55,7 +56,7 @@ def seasons(request, year=None):
         'page_size': player_filters['page_size'],
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
-        'player_filter_options': filter_options,
+        'filter_fields': filter_fields,
         'active_filters': active_filters,
         'pagination_summary': _player_pagination_summary(page_obj),
         **pagination_links(page_obj, request.path, active_filters),
@@ -92,25 +93,6 @@ def _get_selected_year(year, years):
         return int(year)
     except (TypeError, ValueError):
         raise Http404
-
-
-def _get_season_filter_options(queryset):
-    clubs = (
-        queryset
-        .filter(club__isnull=False)
-        .values_list('club__short_name', flat=True)
-        .distinct()
-        .order_by('club__short_name')
-    )
-
-    return {
-        'clubs': [club for club in clubs if club],
-        'ages': PLAYER_AGE_CATEGORIES.keys(),
-        'sexes': (
-            ('M', _('Men')),
-            ('F', _('Women')),
-        ),
-    }
 
 
 def _apply_season_filters(queryset, player_filters, year):

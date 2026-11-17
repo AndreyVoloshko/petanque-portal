@@ -54,7 +54,7 @@ def players(request, licence_filter=None, rating_filter=None):
         rating_power_field = 'current_power_inclusive'
 
     player_filters = _get_player_filters(request)
-    filter_options = _get_player_filter_options(players_objects)
+    filter_fields = _rating_filter_fields(players_objects, player_filters, "current_club")
     players_objects = _apply_player_filters(players_objects, player_filters)
     players_objects = _order_players(players_objects, rating_field)
 
@@ -80,7 +80,7 @@ def players(request, licence_filter=None, rating_filter=None):
         'page_size': player_filters['page_size'],
         'page_size_options': PLAYERS_PAGE_SIZE_OPTIONS,
         'player_filters': player_filters,
-        'player_filter_options': filter_options,
+        'filter_fields': filter_fields,
         'active_filters': active_filters,
         'pagination_summary': _player_pagination_summary(page_obj),
         **pagination_links(page_obj, request.path, active_filters),
@@ -163,23 +163,30 @@ def _player_ranking_queryset(licence_filter, rating_field):
     return Player.objects.all()
 
 
-def _get_player_filter_options(queryset):
+def _rating_filter_fields(queryset, filters, club_relation):
+    club_name = f'{club_relation}__short_name'
     clubs = (
-        queryset
-        .filter(current_club__isnull=False)
-        .values_list('current_club__short_name', flat=True)
+        queryset.filter(**{f'{club_relation}__isnull': False})
+        .values_list(club_name, flat=True)
         .distinct()
-        .order_by('current_club__short_name')
+        .order_by(club_name)
     )
 
-    return {
-        'clubs': [club for club in clubs if club],
-        'ages': PLAYER_AGE_CATEGORIES.keys(),
-        'sexes': (
-            ('M', _('Men')),
-            ('F', _('Women')),
-        ),
-    }
+    return (
+        {
+            'name': 'club', 'label': _("Club"), 'placeholder': _("All clubs"), 'icon': 'bi-building',
+            'options': [(club, club) for club in clubs if club], 'selected': filters['club'],
+        },
+        {
+            'name': 'age', 'label': _("Age"), 'placeholder': _("All age categories"), 'icon': 'bi-people',
+            'options': [(age, age) for age in PLAYER_AGE_CATEGORIES],
+            'selected': filters['age'],
+        },
+        {
+            'name': 'sex', 'label': _("Sex"), 'placeholder': _("All athletes"), 'icon': 'bi-gender-ambiguous',
+            'options': (('M', _("Men")), ('F', _("Women"))), 'selected': filters['sex'],
+        },
+    )
 
 
 def _player_age_category_key(player):

@@ -4015,14 +4015,6 @@ Athletes ranking page
   box-shadow: 0 0 0 3px rgba(31, 95, 139, 0.14);
 }
 
-.clubs-filter-form .players-filter-controls {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) max-content;
-}
-
-.clubs-reset-button {
-  min-height: 2.58rem;
-}
-
 .players-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -4237,13 +4229,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
   white-space: nowrap;
 }
 
-@media (max-width: 991.98px) {
-
-  .clubs-filter-form .players-filter-controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (min-width: 768px) and (max-width: 1199.98px),
   (min-width: 768px) and (max-width: 1400px) and (pointer: coarse) {
   .players-results-surface {
@@ -4303,10 +4288,6 @@ table.dataTable.players-table thead th.sorting_desc::after {
 }
 
 @media (max-width: 767.98px) {
-
-  .clubs-filter-form .players-filter-controls {
-    grid-template-columns: 1fr;
-  }
 
   .players-results-surface {
     background: transparent;

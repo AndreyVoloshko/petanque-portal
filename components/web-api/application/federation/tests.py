@@ -1047,9 +1047,10 @@ class ClubListingPageTests(TestCase):
         })
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="tournament-reset-button clubs-reset-button"')
-        self.assertContains(response, 'href="/clubs/?per_page=50"')
-        self.assertContains(response, 'Скинути фільтри')
+        self.assertRegex(
+            response.content.decode(),
+            r'<a\b[^>]*href="/clubs/\?per_page=50"[^>]*>\s*(?:<i[^>]*></i>)?\s*Скинути фільтри\s*</a>',
+        )
 
 
 class ClubDetailPageTests(TestCase):
@@ -3356,7 +3357,7 @@ class TournamentListingPageTests(TestCase):
         response = self.client.get('/tournaments/', {'period': 'future'})
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'class="portal-btn tournament-search-button" type="submit"')
+        self.assertContains(response, 'portal-filter-submit" type="submit"')
         self.assertContains(response, '>Search</button>')
         self.assertContains(response, 'name="q"')
 

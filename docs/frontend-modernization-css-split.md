@@ -1,6 +1,6 @@
 # CSS split for the frontend pilot
 
-The tournaments, player ratings, and season ratings pages use route stylesheets and shared Vite assets. The header, footer, page layout, and CSS tokens live in separate source files that compile into one shell asset. The shared list asset contains the table styles, pagination, and select focus styles. Both lists extend the same Django table template and supply their own headers and rows.
+The tournaments, player ratings, and season ratings pages use route stylesheets and shared Vite assets. The header, footer, page layout, and CSS tokens live in separate source files that compile into one shell asset. The shared list asset contains the table and pagination styles. The shared filter bar owns the select focus styles. Both lists extend the same Django table template and supply their own headers and rows.
 
 The athlete card is one Django template and one independently cached stylesheet. The home page, club details, title registries, and mobile ratings use it. Ratings place the cards beside the desktop table in the template and switch between them with CSS. The home page still uses the reduced legacy stylesheet for its other content.
 
@@ -51,3 +51,14 @@ The medians below use three Chromium loads per width with caching disabled. They
 | Home at 390 px | 94,538 B → 92,210 B | 312,277 B → 114,817 B | −63.2% |
 | Home at 1440 px | 94,396 B → 92,258 B | 312,407 B → 114,828 B | −63.2% |
 | Tournaments at 1440 px | 64,648 B → 64,594 B | 200,173 B → 114,819 B | −42.6% |
+
+
+## Shared filters and one athlete card layout
+
+Tournaments, player ratings, season ratings, and the club directory use the same filter form. The form uses Bootstrap inputs, selects, buttons, and grid utilities. Each view supplies its labels, choices, and preserved URL parameters. The remaining filter CSS covers icons, focus, and the tournament search button's keyboard reveal on desktop. The tournament bundle no longer builds Basecoat text input and select styles.
+
+The ratings lists use the shared athlete card at both phone and tablet widths. Bootstrap's grid puts cards in one column below 768 px and two columns at wider card widths. The former ratings-specific card layout stylesheet was removed.
+
+Compared with `b17efd9`, authored CSS across `style-v2.css` and the CSS sources in `frontend/src` fell from 13,505 to 13,148 lines. That is 357 fewer lines and 8,431 fewer uncompressed bytes. The source count excludes generated and vendor CSS.
+
+Chromium verified that tournament, rating, and club filters submit and preserve URL state with JavaScript disabled. Layout checks covered 320–1440 px and verified the tournament search button's keyboard reveal.

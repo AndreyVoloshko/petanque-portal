@@ -63,6 +63,9 @@
         {% if tournaments_pilot or ratings_pilot %}
             {% vite_stylesheet "src/list-ui.css" %}
         {% endif %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
+            {% vite_stylesheet "src/filter-bar.css" %}
+        {% endif %}
         {% if tournaments_pilot %}
             {% vite_stylesheet "src/tournaments.css" %}
         {% elif ratings_pilot %}

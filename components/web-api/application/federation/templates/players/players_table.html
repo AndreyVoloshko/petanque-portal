@@ -2,10 +2,12 @@
 
 <div id="rating-results" class="portal-results">
     {% include "players/_ratings_desktop_table.html" %}
-    <div class="players-mobile-list">
+    <div class="players-mobile-list row g-3">
         {% for item in items %}
             {% with player=item|rating_item_player club=item|rating_item_club rank_value=item|rating_item_position:rating_filters points_value=item|rating_item_points:rating_field power_value=item|rating_item_power:rating_power_field %}
-                {% include "common/athlete_card.html" with item=player rank_value=rank_value points_value=points_value power_value=power_value rating_club=club show_power=show_power_column age_year=year card_extra_class="players-mobile-rating-card" %}
+                <div class="col-12 col-md-6">
+                    {% include "common/athlete_card.html" with item=player rank_value=rank_value points_value=points_value power_value=power_value rating_club=club show_power=show_power_column age_year=year card_extra_class="h-100" %}
+                </div>
             {% endwith %}
         {% endfor %}
     </div>

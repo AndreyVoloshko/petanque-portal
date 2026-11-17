@@ -45,8 +45,21 @@ def clubs(request):
         'page_size': club_filters['page_size'],
         'page_size_options': CLUBS_PAGE_SIZE_OPTIONS,
         'club_filters': club_filters,
-        'club_filter_options': filter_options,
-        'club_sort_options': CLUB_SORT_OPTIONS,
+        'filter_page_size': club_filters['page_size'] if club_filters['page_size'] != DEFAULT_CLUBS_PAGE_SIZE else None,
+        'filter_fields': (
+            {
+                'name': 'city', 'label': _("City"), 'placeholder': _("All cities"), 'icon': 'bi-geo-alt',
+                'options': [(city, city) for city in filter_options['cities']], 'selected': club_filters['city'],
+            },
+            {
+                'name': 'year', 'label': _("Year founded"), 'placeholder': _("All founding years"), 'icon': 'bi-calendar3',
+                'options': [(year, year) for year in filter_options['years']], 'selected': club_filters['year'],
+            },
+            {
+                'name': 'sort', 'label': _("Sort clubs"), 'icon': 'bi-sort-down',
+                'options': CLUB_SORT_OPTIONS, 'selected': club_filters['sort'],
+            },
+        ),
         'club_active_params': _active_club_filter_params(club_filters),
         'club_pagination_pages': _pagination_pages(page_obj),
         'club_pagination_summary': _club_pagination_summary(page_obj),

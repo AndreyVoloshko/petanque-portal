@@ -14,6 +14,7 @@ export default defineConfig({
         'src/tournament-badges.css',
         'src/athlete-card.css',
         'src/list-ui.css',
+        'src/filter-bar.css',
         'src/ratings-foundation.css',
         'src/tournaments.css',
         'src/ratings.css',

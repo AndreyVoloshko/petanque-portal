@@ -85,9 +85,20 @@ def tournaments(request, date_filter=None, type_filter=None):
         'tournaments_pilot': True,
         'filters': filters,
         'period_tabs': _get_period_tabs(filters),
-        'format_options': FORMAT_OPTIONS,
-        'category_options': CATEGORY_OPTIONS,
-        'place_options': [(place, place) for place in filter_options['places']],
+        'filter_fields': (
+            {
+                'name': 'format', 'label': _("Формат"), 'placeholder': _("Формат"),
+                'icon': 'bi-globe', 'options': FORMAT_OPTIONS, 'selected': filters['format'],
+            },
+            {
+                'name': 'category', 'label': _("Стать / категорія"), 'placeholder': _("Стать / категорія"),
+                'icon': 'bi-person', 'options': CATEGORY_OPTIONS, 'selected': filters['category'],
+            },
+            {
+                'name': 'place', 'label': _("Місце"), 'placeholder': _("Місце"), 'icon': 'bi-geo-alt',
+                'options': [(place, place) for place in filter_options['places']], 'selected': filters['place'],
+            },
+        ),
         'search_form_fields': {
             key: value for key, value in active_filters.items()
             if key not in ('q', 'format', 'category', 'place')

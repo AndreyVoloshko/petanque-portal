@@ -1,0 +1,35 @@
+<form class="portal-filter-bar border rounded-3 bg-white p-2" method="get" action="{{ action }}" role="search" aria-label="{{ search_label }}">
+    {% include "common/list/hidden_fields.html" with fields=preserved_filters only %}
+    {% if per_page %}
+        <input type="hidden" name="per_page" value="{{ per_page }}">
+    {% endif %}
+    <div class="row g-2 align-items-center">
+        <div class="col-12 col-xl">
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 pe-none" aria-hidden="true"></i>
+                <input class="form-control form-control-sm py-2 fw-semibold" type="search" name="q" value="{{ query }}" aria-label="{{ search_label }}" placeholder="{{ search_placeholder }}">
+            </div>
+        </div>
+        {% for field in fields %}
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="position-relative">
+                    <i class="bi {{ field.icon }} position-absolute top-50 start-0 translate-middle-y ms-2 pe-none" aria-hidden="true"></i>
+                    <select class="form-select form-select-sm py-2 fw-semibold" name="{{ field.name }}" aria-label="{{ field.label }}">
+                        {% if field.placeholder %}<option value="">{{ field.placeholder }}</option>{% endif %}
+                        {% for value, label in field.options %}
+                            <option value="{{ value }}"{% if value == field.selected %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="col-12 col-sm-auto d-flex flex-column flex-sm-row gap-2">
+            <button class="btn btn-primary btn-sm py-2 fw-semibold{% if implicit_desktop_search %} portal-filter-submit{% endif %}" type="submit">{{ submit_label }}</button>
+            {% if reset_url %}
+                <a class="btn btn-outline-primary btn-sm py-2 fw-semibold" href="{{ reset_url }}">
+                    <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{{ reset_label }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</form>
