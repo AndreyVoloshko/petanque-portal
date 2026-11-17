@@ -1,69 +1,179 @@
-.tournaments-page :is(.portal-btn, .portal-input, .portal-select) {
+.tournaments-page .portal-btn {
+  background-color: var(--list-surface);
   border: 1px solid var(--list-border);
   border-radius: var(--list-radius);
-  background-color: var(--list-surface);
-  color: var(--list-text);
-  font: inherit;
-  font-size: var(--list-type);
+  color: var(--list-ink);
+  font-size: .84rem;
+  font-weight: 750;
+  gap: .38rem;
   min-height: var(--list-control);
-  padding: .375rem .65rem;
+  padding: .375rem .68rem;
+  text-align: center;
+  text-decoration: none;
 }
 
-.tournaments-page :is(.portal-btn, .portal-badge) { gap: .35rem; }
-.tournaments-page .portal-btn { font-weight: 700; text-decoration: none; text-align: center; }
 .tournaments-page .portal-btn:hover { background-color: var(--list-muted-surface); }
-.tournaments-page .portal-btn[data-variant="primary"],
-.tournaments-page .portal-btn[aria-current="page"] {
+.tournaments-page .portal-btn[data-variant="primary"] {
   background-color: var(--list-primary);
   border-color: var(--list-primary);
   color: var(--list-on-primary);
 }
-.tournaments-page .portal-btn[data-variant="primary"]:hover { background-color: color-mix(in srgb, var(--list-primary), black 12%); }
-.tournaments-page :is(a, button, input, select):focus-visible { outline: 2px solid var(--list-primary); outline-offset: 2px; }
+.tournaments-page .portal-btn[data-variant="primary"]:hover {
+  background-color: color-mix(in srgb, var(--list-primary), black 12%);
+}
 
-.tournaments-page .portal-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23526079' stroke-width='1.5'/%3E%3C/svg%3E");
-  background-position: right .45rem center;
-  background-repeat: no-repeat;
-  background-size: 1rem;
-  padding-inline-end: 1.65rem;
+.tournaments-page .portal-filter-reset { color: var(--list-primary); }
+.tournaments-page .portal-filter-reset:hover {
+  background: #e4f0ff;
+  border-color: #b8d2ff;
+  color: #09449b;
+}
+
+.tournaments-page :is(a, button, summary):focus-visible,
+.portal-list-filters .portal-field:focus-within {
+  outline: 2px solid var(--list-primary);
+  outline-offset: 2px;
 }
 
 .portal-list-filters {
+  align-items: stretch;
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-panel-radius);
+  box-shadow: 0 12px 34px rgba(23, 32, 51, .05);
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, .7fr) minmax(0, .92fr) minmax(0, .82fr) auto auto;
+  gap: .5rem;
+  padding: .55rem;
+}
+
+.portal-list-filters .portal-field {
+  align-items: center;
+  background: var(--list-field-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-radius);
+  color: #506078;
+  display: flex;
+  gap: .45rem;
+  min-width: 0;
+  padding-inline: .62rem;
+}
+
+.portal-list-filters .bi { flex-shrink: 0; }
+.portal-list-filters :is(.portal-input, .portal-select) {
+  background: transparent;
+  border: 0;
+  color: var(--list-ink);
+  font-size: .84rem;
+  font-weight: 650;
+  min-height: calc(var(--list-control) - 2px);
+  min-width: 0;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.portal-list-filters .portal-input::placeholder { color: #68768d; font-weight: 600; }
+.portal-list-filters .portal-select {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - .45rem) 52%, calc(100% - .1rem) 52%;
+  background-repeat: no-repeat;
+  background-size: .35rem .35rem;
+  padding-inline-end: 1.05rem;
+}
+
+.portal-list-footer {
+  align-items: center;
+  border-top: 1px solid #e5ecf4;
+  color: var(--list-muted);
+  display: grid;
+  font-size: .86rem;
+  font-weight: 650;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(7rem, auto);
+  padding: .85rem 2.5rem;
+}
+
+.portal-list-footer p, .portal-empty p { margin: 0; }
+.portal-list-links, .portal-list-size {
+  align-items: center;
+  display: flex;
+  gap: .45rem;
+}
+.portal-list-links {
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.portal-list-size { justify-content: flex-end; }
+.portal-page-control, .portal-page-ellipsis {
+  align-items: center;
+  block-size: 2rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--list-ink);
+  display: inline-flex;
+  font: inherit;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: 2rem;
+  padding-inline: .55rem;
+  text-decoration: none;
+}
+.portal-page-control {
+  background: var(--list-surface);
+  border-color: var(--list-border);
+}
+.portal-page-control[aria-disabled="true"] { color: #a5b1c3; }
+.portal-page-control:is(a, button, summary):hover {
+  background: #eaf4f8;
+  border-color: #b8d3de;
+  color: var(--list-page-accent);
+}
+.portal-page-control[aria-current]:is(a, button) {
+  background: var(--list-page-accent);
+  border-color: #1a557d;
+  color: var(--list-on-primary);
+}
+.portal-list-size-options { position: relative; }
+.portal-list-size-options summary { cursor: pointer; list-style: none; }
+.portal-list-size-options summary::-webkit-details-marker { display: none; }
+.portal-list-size-menu {
   background: var(--list-surface);
   border: 1px solid var(--list-border);
   border-radius: var(--list-radius);
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto auto;
-  gap: var(--list-space);
-  padding: var(--list-space);
+  box-shadow: 0 6px 18px rgba(23, 32, 51, .12);
+  display: flex;
+  gap: .35rem;
+  inset-block-end: calc(100% + .35rem);
+  inset-inline-end: 0;
+  padding: .35rem;
+  position: absolute;
+  z-index: 2;
 }
 
-.portal-list-filters select { width: 100%; text-overflow: ellipsis; }
-.portal-list-links, .portal-list-size { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .35rem; }
-.portal-list-links { list-style: none; margin: 0; padding: 0; }
-.portal-list-links a { min-width: 2.25rem; padding-inline: .45rem; }
-.portal-list-footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--list-space);
-  padding: .875rem;
-  color: var(--list-muted);
-  font-size: var(--list-type);
-}
-.portal-list-footer p, .portal-empty p { margin: 0; }
-.portal-empty { gap: var(--list-space); padding: 2rem 1rem; }
-.portal-empty h2 { font-size: 1.2rem; margin: 0; }
-.portal-empty p { color: var(--list-muted); }
+.portal-empty { gap: var(--list-space); min-height: 18rem; padding: 2rem 1rem; }
+.portal-empty h2 { font-size: 1.25rem; font-weight: 800; margin: 0; }
+.portal-empty p { color: var(--list-muted); font-weight: 650; }
 
 @media (max-width: 1050px) {
   .portal-list-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .portal-list-filters .portal-input { grid-column: 1 / -1; }
-  .portal-list-footer { justify-content: center; }
+  .portal-list-filters .portal-search-field { grid-column: 1 / -1; }
+  .portal-list-footer {
+    gap: .75rem;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    padding: .9rem .55rem;
+  }
 }
 @media (max-width: 480px) {
   .portal-list-filters { grid-template-columns: minmax(0, 1fr); }
-  .portal-list-links a { min-width: 2rem; padding-inline: .25rem; }
+  .portal-list-links { gap: .3rem; }
+  .portal-list-links :is(.portal-page-control, .portal-page-ellipsis) {
+    min-inline-size: 1.9rem;
+    padding-inline: .22rem;
+  }
 }

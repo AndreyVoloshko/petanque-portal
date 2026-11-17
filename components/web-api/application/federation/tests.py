@@ -3373,7 +3373,7 @@ class TournamentListingPageTests(TestCase):
         self.assertEqual(len(response.context['rows']), 5)
         self.assertContains(response, 'class="tournaments-mobile-list"')
         self.assertContains(response, 'per_page=5')
-        self.assertContains(response, '<option value="5" selected>5</option>')
+        self.assertContains(response, 'name="per_page" value="5" aria-current="true"')
         self.assertNotContains(response, 'data-responsive-page-size')
         self.assertNotContains(response, 'data-responsive-template-mount')
         self.assertContains(response, 'type="submit"')

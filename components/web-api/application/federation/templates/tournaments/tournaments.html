@@ -47,12 +47,15 @@
     {% trans "Find tournaments" as find_label %}
     <form class="portal-list-filters" method="get" action="{% url 'tournaments' %}" role="search" aria-label="{{ find_label }}">
         {% include "common/list/hidden_fields.html" with fields=search_form_fields only %}
-        <input class="portal-input" type="search" name="q" value="{{ filters.search }}" aria-label="{{ query_label }}" placeholder="{% trans "Пошук за назвою, містом або клубом..." %}">
-        {% include "common/list/select_filter.html" with label=format_label name="format" options=format_options selected=filters.format only %}
-        {% include "common/list/select_filter.html" with label=category_label name="category" options=category_options selected=filters.category only %}
-        {% include "common/list/select_filter.html" with label=place_label name="place" options=place_options selected=filters.place only %}
+        <label class="portal-field portal-search-field">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input class="portal-input" type="search" name="q" value="{{ filters.search }}" aria-label="{{ query_label }}" placeholder="{% trans "Пошук за назвою, містом або клубом..." %}">
+        </label>
+        {% include "common/list/select_filter.html" with label=format_label name="format" icon="bi-globe" options=format_options selected=filters.format only %}
+        {% include "common/list/select_filter.html" with label=category_label name="category" icon="bi-person" options=category_options selected=filters.category only %}
+        {% include "common/list/select_filter.html" with label=place_label name="place" icon="bi-geo-alt" options=place_options selected=filters.place only %}
         {% include "common/list/button.html" with label=find_label css_class="tournament-search-button" only %}
-        {% include "common/list/button.html" with href=reset_url label=reset_label icon="bi-arrow-counterclockwise" only %}
+        {% include "common/list/button.html" with href=reset_url label=reset_label icon="bi-arrow-counterclockwise" css_class="portal-filter-reset" only %}
     </form>
 
     {% include "tournaments/tournaments_table.html" %}

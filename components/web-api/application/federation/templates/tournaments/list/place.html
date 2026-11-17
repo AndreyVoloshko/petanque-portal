@@ -5,10 +5,10 @@
     {% else %}
         <span>{{ row.place_label }}</span>
     {% endif %}
-    {% if row.country_code %}<span class="flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>{% endif %}
+    {% if row.country_code %}<span class="pilot-country-flag flag-icon flag-icon-{{ row.country_code }}" title="{{ row.country_name }}"></span>{% endif %}
 </div>
 {% if not row.is_foreign %}
-    <div class="pilot-place">
+    <div class="pilot-place pilot-organizer">
         <i class="bi bi-building" aria-hidden="true"></i>
         {% if row.organizer_url %}<a href="{{ row.organizer_url }}">{{ row.organizer_label }}</a>{% else %}<span>{{ row.organizer_label }}</span>{% endif %}
     </div>

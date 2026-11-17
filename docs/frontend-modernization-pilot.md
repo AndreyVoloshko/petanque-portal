@@ -1,6 +1,6 @@
 # Tournament list frontend pilot
 
-The tournament list is a Django page with a desktop table and one card layout for phones and tablets. Search, sort, filter, and pagination use GET requests; links and results are present in the first HTML response. The default page size is 50 at every width. Choose 5, 25, 30, or 50 in the page-size form.
+The tournament list is a Django page with a desktop table and one card layout for phones and tablets. Search, sort, filter, and pagination use GET requests; links and results are present in the first HTML response. The default page size is 50 at every width. Open the number next to the page-size label and choose 5, 25, 30, or 50.
 
 ## Build and maintain
 
@@ -28,7 +28,7 @@ The deploy script runs `collectstatic` before replacing the web container. It co
 
 ## Comparison on November 17, 2026
 
-Baseline: `8e49265`. Control: `/tournaments/?period=past&per_page=5&page=2`. Same local data, Ukrainian, Chromium at 1440 × 900, three fresh browser contexts per revision, HTTP cache disabled through CDP. Count successfully transferred scripts and styles via `Network.loadingFinished.encodedDataLength`, including third-party resources. Browser transfer varies with CDN responses.
+Baseline: `8e49265`. Initial pilot measurement: `40ee3e7`. Control: `/tournaments/?period=past&per_page=5&page=2`. Same local data, Ukrainian, Chromium at 1440 × 900, three fresh browser contexts per revision, HTTP cache disabled through CDP. Count successfully transferred scripts and styles via `Network.loadingFinished.encodedDataLength`, including third-party resources. Browser transfer varies with CDN responses.
 
 | Metric | Before | Pilot |
 | --- | ---: | ---: |

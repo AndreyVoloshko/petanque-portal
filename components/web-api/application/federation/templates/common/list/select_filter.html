@@ -1,5 +1,6 @@
 <label class="portal-field">
     <span class="visually-hidden">{{ label }}</span>
+    <i class="bi {{ icon }}" aria-hidden="true"></i>
     <select class="portal-select" name="{{ name }}">
         <option value="">{{ label }}</option>
         {% for value, text in options %}
