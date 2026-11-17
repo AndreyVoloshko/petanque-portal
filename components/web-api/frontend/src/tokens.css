@@ -157,6 +157,13 @@
   --rating-license-bg: #edf1f5;
   --rating-license-text: #334155;
 
+  --club-points-bg: #ecf8f1;
+  --club-points-border: #bfe8cf;
+  --club-points-text: #168452;
+  --club-average-bg: #eaf5ff;
+  --club-average-border: #c5dff5;
+  --club-average-text: #176aa3;
+
   --tournament-format-bg: #eef6ff;
   --tournament-format-border: #d7e8ff;
   --tournament-format-text: #0b58b7;

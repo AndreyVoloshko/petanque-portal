@@ -9880,16 +9880,11 @@ Club list page
 
 .clubs-logo-frame {
   align-items: center;
-  background: linear-gradient(145deg, #f3f7f9, #dde8ee);
-  border: 1px solid rgba(15, 45, 75, 0.08);
-  border-radius: 10px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
   color: #9aaaba;
   display: inline-flex;
   flex: 0 0 auto;
   height: 2.72rem;
   justify-content: center;
-  overflow: hidden;
   width: 2.72rem;
 }
 
@@ -9897,7 +9892,6 @@ Club list page
   display: block;
   height: 100%;
   object-fit: contain;
-  padding: 0.18rem;
   width: 100%;
 }
 
@@ -9938,16 +9932,26 @@ Club list page
   white-space: nowrap;
 }
 
+.clubs-rank-badge {
+  --badge-bg: var(--rating-rank-bg);
+  --badge-border: var(--rating-rank-border);
+}
+
 .clubs-points-badge {
-  background: #ecf8f1;
-  border-color: #bfe8cf;
-  color: #168452;
+  --badge-bg: var(--club-points-bg);
+  --badge-border: var(--club-points-border);
+  --badge-tone: var(--club-points-text);
 }
 
 .clubs-average-badge {
-  background: #eaf5ff;
-  border-color: #c5dff5;
-  color: #176aa3;
+  --badge-bg: var(--club-average-bg);
+  --badge-border: var(--club-average-border);
+  --badge-tone: var(--club-average-text);
+}
+
+.clubs-points-badge,
+.clubs-average-badge {
+  border-color: var(--badge-border);
 }
 
 .clubs-founded-date,
@@ -10230,6 +10234,8 @@ Club list page
 }
 
 .club-list-card-rank {
+  --badge-bg: var(--club-points-bg);
+  --badge-tone: var(--club-points-text);
   align-self: start;
 }
 
@@ -10253,18 +10259,6 @@ Club list page
   width: 100%;
 }
 
-.club-list-card-metrics .clubs-points-badge {
-  background: #ecf8f1;
-  border-color: #bfe8cf;
-  color: #168452;
-}
-
-.club-list-card-metrics .clubs-average-badge {
-  background: #eaf5ff;
-  border-color: #c5dff5;
-  color: #176aa3;
-}
-
 .club-list-card-metrics .clubs-athletes-badge {
   background: #e6f7ff;
   border-color: #b8e5f5;
@@ -10284,12 +10278,10 @@ Club list page
 
 .club-list-card-metrics .clubs-points-badge i {
   background: #dff5e8;
-  color: #168452;
 }
 
 .club-list-card-metrics .clubs-average-badge i {
   background: #ddf0ff;
-  color: #176aa3;
 }
 
 .club-list-card-metrics .clubs-athletes-badge i {
