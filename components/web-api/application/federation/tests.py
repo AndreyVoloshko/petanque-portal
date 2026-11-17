@@ -2736,6 +2736,13 @@ class StaticStorageTests(TestCase):
     def test_manifest_storage_does_not_crash_on_missing_entries(self):
         self.assertFalse(StaticStorage.manifest_strict)
 
+    def test_shared_head_loads_built_bootstrap_theme_and_matching_script(self):
+        response = self.client.get('/')
+
+        self.assertContains(response, '/vite/assets/bootstrap-theme-')
+        self.assertContains(response, 'bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js')
+        self.assertNotContains(response, '/static/bootstrap-theme.css')
+
 
 @override_settings(CURRENT_COUNTRY='UA')
 class TournamentListingPageTests(TestCase):

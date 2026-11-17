@@ -2,12 +2,21 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: './',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: ['import'],
+      },
+    },
+  },
   build: {
     manifest: 'manifest.json',
     outDir: '../application/static/vite',
     emptyOutDir: true,
     rollupOptions: {
       input: [
+        'src/bootstrap-theme.scss',
         'src/shell.css',
         'src/tournament-badges.css',
         'src/athlete-card.css',

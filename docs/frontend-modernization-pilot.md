@@ -17,7 +17,7 @@ CI and the web Docker image use the same commands. For browser verification, use
 docker compose -p petanque-portal up -d --no-deps --build petanque_portal_web_api
 ```
 
-Vite writes `application/static/vite/manifest.json` and its hashed assets. Django's `vite_stylesheet` tag reads the manifest from the image and joins the filename to `STATIC_URL`. Vite builds the shared component and route stylesheets. The templates use the Bootstrap theme already served by Django and its layout utilities.
+Vite writes `application/static/vite/manifest.json` and its hashed assets. Django's `vite_stylesheet` tag reads the manifest from the image and joins the filename to `STATIC_URL`. Vite builds the shared component and route stylesheets. The [Bootstrap theme source](../components/web-api/frontend/src/bootstrap-theme.scss) uses the Bootstrap version pinned by npm and carries over the Stylish Portfolio colors, fonts, and headings. Keep the Bootstrap bundle version and integrity hash in [the shared head](../components/web-api/application/federation/templates/common/head.html) in sync with that package.
 
 - To change the color or focus ring of primary buttons, edit `--list-primary` in [tokens.css](../components/web-api/frontend/src/tokens.css).
 - Use the [shared badge template](../components/web-api/application/federation/templates/common/badge.html) for tags and status labels. Pass a label, a tone, and `shape="status"` for a rounded status badge. The list, tournament detail, and registration summary share [tournament-badges.css](../components/web-api/frontend/src/tournament-badges.css). Card sizing stays in [tournaments.css](../components/web-api/frontend/src/tournaments.css).

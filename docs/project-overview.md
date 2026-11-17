@@ -225,7 +225,7 @@ Important static files:
 
 - `style.css`, `style-v2.css`: project styling.
 - `scripts.js`: custom JavaScript.
-- `bootstrap-theme.css`: Bootstrap theme.
+- `components/web-api/frontend/src/bootstrap-theme.scss`: Bootstrap theme source. Vite builds the fingerprinted stylesheet.
 - `jquery.dataTables.js`, `dataTables.bootstrap.js`, `dataTables.bootstrap.css`: table UI.
 - `calendar_full_calendar*.js/css`, `calendar_moment.min.js`: calendar UI.
 - images/icons such as `default.png`, `404.jpg`, `countries.png`, `favicon.ico`.
