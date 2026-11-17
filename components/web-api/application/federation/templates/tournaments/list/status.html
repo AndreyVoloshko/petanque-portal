@@ -3,7 +3,7 @@
     {% include "tournaments/_insurance_required.html" with tournament=row.tournament only %}
 </div>
 {% if row.status.note %}
-    {% if row.status.key != "finished" or not row.draw_results_url %}
+    {% if row.status.key != "finished" or not compact and not row.draw_results_url %}
         <span class="pilot-status-note">{{ row.status.note }}</span>
     {% endif %}
 {% endif %}
