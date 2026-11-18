@@ -1962,8 +1962,8 @@ class TournamentPageCoachDisplayTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertLess(
-            html.index('<th class="tournament-team-athletes-col">'),
-            html.index('<th class="tournament-team-coach-col">'),
+            html.index('<th scope="col" class="tournament-team-athletes-col">'),
+            html.index('<th scope="col" class="tournament-team-coach-col">'),
         )
         self.assertLess(
             html.index('<td class="tournament-team-athletes-cell"'),
@@ -2783,14 +2783,37 @@ class TournamentListingPageTests(TestCase):
     def test_calendar_loads_fullcalendar(self):
         self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
 
-    def test_datatables_assets_are_scoped_to_tournament_detail(self):
+    def test_tournament_detail_and_clubs_load_route_styles_without_datatables(self):
         tournament = self.create_tournament('Teams Cup')
         detail = self.client.get(f'/tournament/{tournament.pk}')
-        self.assertContains(detail, 'cdn.datatables.net/', count=3)
+        self.assertContains(detail, '/vite/assets/tournament-detail-')
+        self.assertNotContains(detail, '/style-v2.css')
+        self.assertNotContains(detail, 'cdn.datatables.net/')
+
+        clubs = self.client.get('/clubs/')
+        self.assertContains(clubs, '/vite/assets/clubs-')
+        self.assertNotContains(clubs, '/style-v2.css')
 
         for route in ('/', '/tournaments/', '/players/licence', '/seasons/2024', '/clubs/', '/documents/', '/calendar/'):
             with self.subTest(route=route):
                 self.assertNotContains(self.client.get(route), 'cdn.datatables.net/')
+
+    def test_team_power_sort_and_page_links_are_server_rendered(self):
+        tournament = self.create_tournament('Team pagination cup', players_min=1)
+        for index in range(26):
+            player = self.create_player(f'team-sort-{index}')
+            membership = self.register_player_for_tournament(tournament, player)
+            membership.power = index
+            membership.save(update_fields=['power'])
+
+        url = f'/tournament/{tournament.pk}'
+        response = self.client.get(url, {'sort': 'power', 'direction': 'asc', 'per_page': '25'})
+        self.assertEqual([m.power for m in response.context['teams']], list(range(25)))
+        self.assertContains(response, f'{url}?sort=power&amp;direction=asc&amp;per_page=25&amp;page=2#tournament-teams-title')
+        self.assertNotContains(response, 'team-sort-25')
+
+        next_page = self.client.get(url, {'sort': 'power', 'direction': 'asc', 'per_page': '25', 'page': '2'})
+        self.assertEqual([m.power for m in next_page.context['teams']], [25])
 
     def create_tournament(
         self,
@@ -3004,8 +3027,9 @@ class TournamentListingPageTests(TestCase):
         self.assertIn('bi bi-star-fill', captain_badge)
         self.assertIn(captain.get_name(), athletes_cell)
         self.assertIn(teammate.get_name(), athletes_cell)
-        self.assertContains(response, 'data-tournament-team-sort="place"')
-        self.assertContains(response, 'data-tournament-team-sort="power"')
+        self.assertContains(response, '?sort=place&amp;direction=asc#tournament-teams-title')
+        self.assertContains(response, '?sort=power&amp;direction=desc#tournament-teams-title')
+        self.assertContains(response, 'tournament-team-mobile-sort-button is-active" aria-current="true"')
         self.assertContains(response, 'class="tournament-team-player-label"')
         self.assertContains(response, 'class="tournament-team-player-country"')
 

@@ -115,3 +115,33 @@ The same local URLs and three-run Chromium method were used for the new measurem
 | Home | 1440 px | 94,061 B | 91,521 B | 91,598 B | −2.6% |
 
 Chromium verified filtering with JavaScript disabled, date sort at card and table widths, tournament switches, empty state, keyboard focus, and card layout from 320 to 1440 px. The Docker asset build and all 264 Django tests passed.
+
+## Club directory and tournament registrations
+
+The club directory and tournament detail now load route-specific CSS. They share the table shell and pagination with tournaments and ratings. Django sorts and paginates singles and team registrations, so those controls work without JavaScript. The last public DataTables asset include was removed, and both routes skip the Facebook SDK.
+
+The club directory reuses the filter bar, points and average badge tokens, and shared spacing. It uses one card per row on phones and two on tablets. Founding dates use standalone Ukrainian month names. The founding-year selector was removed, and existing URLs with a year parameter still work. Tournament registration reuses the extracted detail stylesheet for the shared header.
+
+| Authored CSS scope | Before (`9055782`) | After | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 10,461 lines / 205,847 B | 7,079 lines / 133,605 B | −3,382 lines / −72,242 B |
+| `style-v2.css` and authored frontend CSS | 12,802 lines / 259,336 B | 12,232 lines / 244,047 B | −570 lines / −15,289 B |
+
+Cold transfer was measured against `9055782` with the existing local data and Ukrainian locale. Each cell is the median of three Chromium loads per viewport with the HTTP cache disabled. CDP `Network.loadingFinished.encodedDataLength` counts successful stylesheet and script responses, including shared and third-party assets. Routes were `/clubs/?per_page=25`, `/tournament/750` for singles, and `/tournament/809` for teams.
+
+| Page | Width | CSS transferred | JavaScript transferred |
+| --- | ---: | ---: | ---: |
+| Club directory | 390 px | 94,408 B → 67,157 B (−28.9%) | 197,618 B → 110,562 B (−44.1%) |
+| Tournament singles | 390 px | 98,368 B → 72,787 B (−26.0%) | 227,832 B → 110,534 B (−51.5%) |
+| Tournament teams | 390 px | 98,284 B → 72,860 B (−25.9%) | 227,926 B → 110,547 B (−51.5%) |
+| Club directory | 820 px | 94,613 B → 67,155 B (−29.0%) | 197,332 B → 110,481 B (−44.0%) |
+| Tournament singles | 820 px | 98,230 B → 72,637 B (−26.1%) | 227,948 B → 110,837 B (−51.4%) |
+| Tournament teams | 820 px | 98,151 B → 72,828 B (−25.8%) | 227,866 B → 110,579 B (−51.5%) |
+| Club directory | 1200 px | 94,559 B → 67,192 B (−28.9%) | 197,325 B → 110,534 B (−44.0%) |
+| Tournament singles | 1200 px | 98,303 B → 72,905 B (−25.8%) | 227,880 B → 110,534 B (−51.5%) |
+| Tournament teams | 1200 px | 98,545 B → 72,779 B (−26.1%) | 227,595 B → 110,540 B (−51.4%) |
+| Club directory | 1440 px | 94,639 B → 67,165 B (−29.0%) | 197,317 B → 110,515 B (−44.0%) |
+| Tournament singles | 1440 px | 98,413 B → 72,846 B (−26.0%) | 227,640 B → 110,517 B (−51.5%) |
+| Tournament teams | 1440 px | 98,618 B → 72,768 B (−26.2%) | 227,577 B → 110,538 B (−51.4%) |
+
+Chromium checked layout from 320 to 1440 px and verified club filter submission, tournament sorting, page links, and page-size changes with JavaScript disabled. The container asset build and all 268 Django tests passed.

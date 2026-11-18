@@ -38,14 +38,6 @@
         <!-- jQuery UI JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
-        {% if load_datatables %}
-        <!-- DataTables Bootstrap 5 integration -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-
-        <!-- DataTables JS -->
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        {% endif %}
         {% vite_stylesheet "src/shell.css" %}
         {% if not ratings_pilot %}
             {% vite_stylesheet "src/tournament-badges.css" %}
@@ -56,7 +48,7 @@
         {% if ratings_pilot or portal_ui.rating_styles %}
             {% vite_stylesheet "src/ratings-foundation.css" %}
         {% endif %}
-        {% if tournaments_pilot or ratings_pilot %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.tournament_detail %}
             {% vite_stylesheet "src/list-ui.css" %}
         {% endif %}
         {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
@@ -66,7 +58,14 @@
             {% vite_stylesheet "src/tournaments.css" %}
         {% elif ratings_pilot %}
             {% vite_stylesheet "src/ratings.css" %}
+        {% elif portal_ui.club_directory %}
+            {% vite_stylesheet "src/clubs.css" %}
+        {% elif portal_ui.tournament_detail %}
+            {% vite_stylesheet "src/tournament-detail.css" %}
         {% else %}
+            {% if portal_ui.team_registration %}
+                {% vite_stylesheet "src/tournament-detail.css" %}
+            {% endif %}
             <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
         {% endif %}
         {% if tournaments_pilot or ratings_pilot %}
