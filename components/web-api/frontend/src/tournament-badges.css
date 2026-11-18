@@ -8,7 +8,7 @@
   border-radius: var(--space-2);
   color: var(--badge-tone, var(--list-muted));
   display: inline-flex;
-  font-size: .75rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   gap: var(--space-1);
   line-height: 1.25;
@@ -20,7 +20,7 @@
 
 .tournament-power-badge {
   box-shadow: var(--tournament-power-shadow, none);
-  font-size: .8rem;
+  font-size: var(--text-xs);
 }
 
 .tournament-power-badge:not(.team-power-badge, .tournament-power-none) {
@@ -82,7 +82,7 @@
 }
 
 .tournament-draw-results {
-  font-size: .875rem;
+  font-size: var(--text-sm);
   justify-content: center;
   padding: var(--space-2) var(--space-3);
   text-decoration: none;
@@ -106,7 +106,7 @@
 .tournament-status-note {
   color: var(--list-muted);
   display: block;
-  font-size: .8125rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   margin-top: var(--space-1);
 }
@@ -114,12 +114,12 @@
 .pt-heading-with-help {
   align-items: center;
   display: inline-flex;
-  gap: 6px;
+  gap: var(--space-1);
   white-space: nowrap;
 }
 
 .pt-heading-help {
-  color: #738196;
+  color: var(--list-muted);
   height: 14px;
   width: 14px;
 }
@@ -130,53 +130,53 @@
 
 .pt-place-value {
   font-weight: 800;
-  color: #12213f;
+  color: var(--portal-navy-900);
 }
 
 .pt-place-sep {
-  color: #9aa8b5;
+  color: var(--list-disabled);
   margin: 0 2px;
 }
 
 .pt-place-total {
-  color: #5b6b78;
+  color: var(--list-muted);
   font-size: 13px;
 }
 
 .pt-place-chip {
   align-items: center;
-  background: #f7f9fc;
-  border: 1px solid #d9e3ef;
+  background: var(--place-bg, var(--list-muted-surface));
+  border: 1px solid var(--place-border, var(--list-border));
   border-radius: 999px;
-  color: #12213f;
+  color: var(--place-tone, var(--portal-navy-900));
   display: inline-flex;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  gap: 0.22rem;
+  gap: var(--space-1);
   justify-content: center;
   line-height: 1;
   min-height: 1.5rem;
-  padding: 0.3rem 0.62rem 0.3rem 0.56rem;
+  padding: var(--space-1) var(--space-2);
   white-space: nowrap;
 }
 
 .pt-place-chip .bi {
   align-items: center;
-  color: #64748b;
+  color: var(--place-tone, var(--list-muted));
   display: inline-flex;
   flex: 0 0 0.85rem;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   justify-content: center;
   line-height: 1;
   text-align: center;
-  transform: translateY(-0.01em);
 }
 
 .pt-place-chip .pt-place-value,
 .pt-place-chip .pt-place-sep,
 .pt-place-chip .pt-place-total {
   align-items: center;
+  color: inherit;
   display: inline-flex;
   font-size: inherit;
   line-height: 1;
@@ -184,64 +184,38 @@
 
 .pt-place-chip .pt-place-sep {
   margin: 0;
-  transform: translateY(-0.02em);
 }
 
 .pt-place-chip--gold {
-  background: #fef3c7;
-  border-color: #f59e0b;
-  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.12);
-  color: #78350f;
-}
-
-.pt-place-chip--gold .bi,
-.pt-place-chip--gold .pt-place-value,
-.pt-place-chip--gold .pt-place-sep,
-.pt-place-chip--gold .pt-place-total {
-  color: #78350f;
+  --place-bg: var(--place-gold-bg);
+  --place-border: var(--place-gold-border);
+  --place-tone: var(--place-gold-text);
 }
 
 .pt-place-chip--silver {
-  background: #f1f5f9;
-  border-color: #94a3b8;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
-  color: #334155;
-}
-
-.pt-place-chip--silver .bi,
-.pt-place-chip--silver .pt-place-value,
-.pt-place-chip--silver .pt-place-sep,
-.pt-place-chip--silver .pt-place-total {
-  color: #334155;
+  --place-border: var(--portal-slate-400);
+  --place-tone: var(--rating-license-text);
 }
 
 .pt-place-chip--bronze {
-  background: #ffedd5;
-  border-color: #c2410c;
-  box-shadow: inset 0 0 0 1px rgba(194, 65, 12, 0.1);
-  color: #7c2d12;
-}
-
-.pt-place-chip--bronze .bi,
-.pt-place-chip--bronze .pt-place-value,
-.pt-place-chip--bronze .pt-place-sep,
-.pt-place-chip--bronze .pt-place-total {
-  color: #7c2d12;
+  --place-bg: var(--place-bronze-bg);
+  --place-border: var(--place-bronze-border);
+  --place-tone: var(--place-bronze-text);
 }
 
 .pt-points-chip {
   align-items: center;
-  background: #f0faf5;
-  border: 1px solid rgba(15, 143, 77, 0.34);
+  background: var(--club-points-bg);
+  border: 1px solid var(--club-points-border);
   border-radius: 999px;
-  color: #087443;
+  color: var(--club-points-text);
   display: inline-flex;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   font-weight: 800;
-  gap: 0.3rem;
+  gap: var(--space-1);
   line-height: 1;
   min-height: 1.5rem;
-  padding: 0.3rem 0.52rem;
+  padding: var(--space-1) var(--space-2);
   white-space: nowrap;
 }
 
@@ -250,6 +224,6 @@
 }
 
 .pt-points-chip .bi {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   line-height: 1;
 }

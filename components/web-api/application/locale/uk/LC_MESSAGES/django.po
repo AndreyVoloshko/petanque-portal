@@ -3734,3 +3734,9 @@ msgstr "Знайти"
 
 msgid "Apply page size"
 msgstr "Застосувати розмір сторінки"
+
+msgid "Other organizers and arbiters"
+msgstr "Інші організатори та арбітри"
+
+msgid "NC"
+msgstr "НК"

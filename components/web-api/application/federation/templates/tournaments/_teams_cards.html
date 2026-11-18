@@ -8,7 +8,7 @@
 <div class="tournament-team-mobile-list {% if tournament_detail.is_single_player_format %}is-single-player-format {% endif %}{% if team_headings.rating %}has-rating-points{% endif %}" aria-label="{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}">
     {% for team in teams %}
 {% with can_remove_team=team|is_user_has_admin_access_to_team:current_user %}
-<article class="tournament-team-mobile-card" data-team-membership-id="{{ team.pk }}">
+<article class="portal-panel tournament-team-mobile-card" data-team-membership-id="{{ team.pk }}">
     <div class="tournament-team-mobile-header">
         <div class="tournament-team-mobile-place">
             {% include "tournaments/_ranking_place.html" with team=team editable=can_manage_tournament %}

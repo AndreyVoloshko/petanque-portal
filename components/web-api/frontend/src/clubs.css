@@ -63,7 +63,7 @@
 .clubs-logo-placeholder {
   align-items: center;
   display: inline-flex;
-  font-size: 1.35rem;
+  font-size: var(--text-xl);
   height: 100%;
   justify-content: center;
   width: 100%;
@@ -87,8 +87,8 @@
 
 .clubs-club-full-name {
   color: var(--list-muted);
-  font-size: 0.78rem;
-  font-weight: 650;
+  font-size: var(--text-xs);
+  font-weight: 600;
   line-height: 1.2;
   margin-top: 0.12rem;
   min-width: 0;
@@ -121,7 +121,7 @@
   border: 1px solid transparent;
   border-radius: 8px;
   display: inline-flex !important;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   font-weight: 800;
   gap: 0.34rem;
   justify-content: center;
@@ -135,7 +135,7 @@
   background: transparent;
   border-color: transparent;
   color: var(--list-muted);
-  font-weight: 750;
+  font-weight: 700;
   justify-content: flex-start;
   padding-left: 0;
   padding-right: 0;
@@ -143,7 +143,7 @@
 
 .clubs-founded-date i {
   color: var(--portal-slate-300);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 }
 
 .clubs-athletes-badge {
@@ -174,7 +174,7 @@
   color: var(--list-muted);
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: 1rem;
+  font-size: var(--text-base);
   justify-content: center;
   text-decoration: none;
 }
@@ -204,7 +204,7 @@
 .clubs-president-avatar-placeholder {
   align-items: center;
   display: inline-flex;
-  font-size: 1.18rem;
+  font-size: var(--text-lg);
   height: 100%;
   justify-content: center;
   width: 100%;
@@ -217,7 +217,7 @@
 
 .clubs-city-name {
   color: var(--list-ink);
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.18;
   min-width: 0;
   overflow: hidden;
@@ -229,8 +229,8 @@
   align-items: center;
   color: var(--list-muted);
   display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 650;
+  font-size: var(--text-xs);
+  font-weight: 600;
   gap: 0.16rem;
   line-height: 1.2;
   min-width: 0;
@@ -256,7 +256,7 @@
 
 .clubs-president-name a {
   color: var(--portal-brand);
-  font-weight: 750;
+  font-weight: 700;
   overflow-wrap: anywhere;
   text-decoration: none;
 }
@@ -297,14 +297,14 @@
 
 .clubs-empty-title {
   color: var(--list-ink);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 800;
 }
 
 .clubs-empty-copy {
   color: var(--list-muted);
-  font-size: 0.9rem;
-  font-weight: 650;
+  font-size: var(--text-sm);
+  font-weight: 600;
   margin-top: 0.15rem;
 }
 
@@ -348,8 +348,8 @@
 
 .club-list-card-name {
   color: var(--rating-name-text);
-  font-size: 1.26rem;
-  font-weight: 850;
+  font-size: var(--text-xl);
+  font-weight: 800;
   line-height: 1.08;
   min-width: 0;
   overflow: hidden;
@@ -359,8 +359,8 @@
 
 .club-list-card-full-name {
   color: var(--list-muted);
-  font-size: 0.82rem;
-  font-weight: 650;
+  font-size: var(--text-sm);
+  font-weight: 600;
   line-height: 1.25;
   min-width: 0;
   overflow: hidden;
@@ -372,7 +372,7 @@
   align-items: center;
   color: var(--list-page-accent);
   display: inline-flex;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   gap: 0.22rem;
   line-height: 1.2;
@@ -419,7 +419,7 @@
   align-items: center;
   border-radius: 999px;
   display: inline-flex;
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   height: 1.5rem;
   justify-content: center;
   width: 1.5rem;
@@ -434,7 +434,7 @@
 
 .clubs-athletes-value {
   color: var(--list-text);
-  font-size: 0.92rem;
+  font-size: var(--text-sm);
   font-weight: 800;
   line-height: 1.08;
   overflow: hidden;
@@ -445,19 +445,21 @@
 .clubs-athletes-label {
   color: var(--list-muted);
   display: block;
-  font-size: 0.68rem;
-  font-weight: 650;
+  font-size: var(--text-xs);
+  font-weight: 600;
   line-height: 1.1;
 }
 
 @media (min-width: 768px) and (max-width: 1199.98px),
   (min-width: 768px) and (max-width: 1400px) and (pointer: coarse) {
+
   .clubs-mobile-list .club-list-card {
     margin: 0;
   }
 }
 
 @media (max-width: 767.98px) {
+
   .club-list-card {
     padding: var(--space-3);
   }
@@ -472,11 +474,16 @@
   }
 
   .club-list-card-name {
-    font-size: 1.15rem;
+    font-size: var(--text-lg);
   }
 }
 
 @media (max-width: 420px) {
+  .club-list-card-metrics :is(.players-metric-badge, .clubs-athletes-badge) {
+    padding-inline: var(--space-1);
+  }
+
+
   .club-list-card-main {
     align-items: start;
     grid-template-columns: 3rem minmax(0, 1fr) auto;
@@ -488,12 +495,12 @@
   }
 
   .club-list-card-name {
-    font-size: 1.05rem;
+    font-size: var(--text-base);
   }
 
   .club-list-card-full-name,
   .club-list-card-location {
-    font-size: 0.76rem;
+    font-size: var(--text-xs);
   }
 }
 
@@ -502,12 +509,14 @@
 }
 
 @media (1200px <= width <= 1480px) {
+
   .clubs-table :is(th, td) {
     padding-inline: var(--space-2);
   }
 }
 
 @media (max-width: 1199.98px), (max-width: 1400px) and (pointer: coarse) {
+
   .clubs-table {
     display: none;
   }
@@ -532,11 +541,12 @@
   .clubs-mobile-list .players-metric-label {
     color: var(--list-muted);
     display: block;
-    font-size: .68rem;
+    font-size: var(--text-xs);
   }
 }
 
 @media (max-width: 767.98px) {
+
   .clubs-mobile-list {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -545,7 +555,7 @@
     border: 2px solid var(--list-surface);
     border-radius: 50%;
     flex-direction: column;
-    font-size: 1.175rem;
+    font-size: var(--text-lg);
     gap: 0;
     height: 3rem;
     width: 3rem;
@@ -554,6 +564,6 @@
   .club-list-card-rank .players-rank-label-mobile {
     color: var(--rating-name-text);
     display: block;
-    font-size: .6rem;
+    font-size: var(--text-xs);
   }
 }

@@ -1,7 +1,7 @@
 {% load app_filters %}
 {% load i18n %}
 
-<header class="tournament-detail-hero-card">
+<header class="portal-panel tournament-detail-hero-card">
     <div class="tournament-detail-hero-main">
         <div class="portal-tag-list tournament-detail-hero-chips" aria-label="{% trans "Competition categories" %}">
             {% include "tournaments/_tags.html" with row=row only %}
@@ -51,7 +51,7 @@
 </header>
 
 <section class="tournament-detail-metrics" aria-label="{% trans "Competition summary" %}">
-    <div class="tournament-detail-metric tournament-detail-metric-venue{% if row.organizer_url %} tournament-detail-metric-venue-wide{% endif %}">
+    <div class="portal-panel tournament-detail-metric tournament-detail-metric-venue{% if row.organizer_url %} tournament-detail-metric-venue-wide{% endif %}">
         {% if row.is_foreign %}
             <i class="bi bi-globe2" aria-hidden="true"></i>
         {% else %}
@@ -79,61 +79,32 @@
             {% endif %}
         </span>
     </div>
-    <div class="tournament-detail-metric tournament-detail-metric-teams">
-        <i class="bi bi-people" aria-hidden="true"></i>
-        <span class="tournament-detail-metric-copy">
-            <span class="tournament-detail-metric-value">{{ row.teams_count_label }}</span>
-            <span class="tournament-detail-metric-label">{% trans "Registered" %}</span>
-        </span>
-    </div>
-    <div class="tournament-detail-metric tournament-detail-metric-power">
-        <i class="bi bi-star" aria-hidden="true"></i>
-        <span class="tournament-detail-metric-copy">
-            <span class="tournament-detail-metric-value">
-                {% if tournament.power %}{{ tournament.power|floatformat:2 }}{% else %}&mdash;{% endif %}
-            </span>
-            <span class="tournament-detail-metric-label">{% trans "Competition power" %}</span>
-        </span>
-    </div>
-    <div class="tournament-detail-metric tournament-detail-metric-coefficient">
-        <i class="bi bi-percent" aria-hidden="true"></i>
-        <span class="tournament-detail-metric-copy">
-            <span class="tournament-detail-metric-value">{{ tournament.rating_coefficient|floatformat:2 }}</span>
-            <span class="tournament-detail-metric-label">{% trans "Rating coefficient" %}</span>
-        </span>
-    </div>
+    {% trans "Registered" as registered_label %}
+    {% trans "Competition power" as power_label %}
+    {% trans "Rating coefficient" as coefficient_label %}
+    {% include "tournaments/_detail_metric.html" with icon="bi-people" value=row.teams_count_label label=registered_label tone="teams" only %}
+    {% include "tournaments/_detail_metric.html" with icon="bi-star" value=tournament.power|default:""|floatformat:2|default:"—" label=power_label tone="power" only %}
+    {% include "tournaments/_detail_metric.html" with icon="bi-percent" value=tournament.rating_coefficient|floatformat:2 label=coefficient_label tone="coefficient" only %}
 </section>
 
-<section class="tournament-detail-info-grid tournament-detail-info-grid-compact" aria-label="{% trans "Competition information" %}">
-    <article class="tournament-detail-info-card">
+<section class="tournament-detail-info-grid" aria-label="{% trans "Competition information" %}">
+    <article class="portal-panel tournament-detail-info-card">
         <div class="tournament-detail-section-heading">
             <h2>{% trans "Participation" %}</h2>
         </div>
         <div class="tournament-detail-list">
-            <div class="tournament-detail-row">
-                <i class="bi bi-diagram-3" aria-hidden="true"></i>
-                <span class="tournament-detail-row-label">{% trans "Format" %}</span>
-                <span class="tournament-detail-row-value">{{ tournament.get_format_display }}</span>
-            </div>
-            <div class="tournament-detail-row">
-                <i class="bi bi-tag" aria-hidden="true"></i>
-                <span class="tournament-detail-row-label">{% trans "Category" %}</span>
-                <span class="tournament-detail-row-value">{{ tournament.get_category_display }}</span>
-            </div>
-            <div class="tournament-detail-row">
-                <i class="bi bi-person-vcard" aria-hidden="true"></i>
-                <span class="tournament-detail-row-label">{% trans "Team size" %}</span>
-                <span class="tournament-detail-row-value">{{ tournament_detail.team_size_label }}</span>
-            </div>
-            <div class="tournament-detail-row">
-                <i class="bi bi-people" aria-hidden="true"></i>
-                <span class="tournament-detail-row-label">{% trans "Team limit" %}</span>
-                <span class="tournament-detail-row-value">{{ tournament.teams_limit }}</span>
-            </div>
+            {% trans "Format" as format_label %}
+            {% trans "Category" as category_label %}
+            {% trans "Team size" as size_label %}
+            {% trans "Team limit" as limit_label %}
+            {% include "tournaments/_detail_row.html" with icon="bi-diagram-3" label=format_label value=tournament.get_format_display only %}
+            {% include "tournaments/_detail_row.html" with icon="bi-tag" label=category_label value=tournament.get_category_display only %}
+            {% include "tournaments/_detail_row.html" with icon="bi-person-vcard" label=size_label value=tournament_detail.team_size_label only %}
+            {% include "tournaments/_detail_row.html" with icon="bi-people" label=limit_label value=tournament.teams_limit only %}
         </div>
     </article>
 
-    <article class="tournament-detail-info-card tournament-detail-notes-card" data-tournament-notes-card>
+    <article class="portal-panel tournament-detail-info-card tournament-detail-notes-card" data-tournament-notes-card>
         <div class="tournament-detail-section-heading">
             <h2>{% trans "Additional information" %}</h2>
         </div>

@@ -929,6 +929,7 @@ def tournament(request, id):
             'organizer_club',
             'main_organizer',
             'main_organizer__user',
+            'main_organizer__current_club',
             'federation_delegat',
         ).annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True)),
         pk=id,
@@ -997,8 +998,29 @@ def tournament(request, id):
                 messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 
-    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament).select_related('arbiter')
-    organizers = OrganizerTournamentMembership.objects.filter(tournament=tournament).select_related('organizer', 'organizer__current_club')
+    arbiters = (
+        ArbiterTournamentMembership.objects
+        .filter(tournament=tournament, arbiter__isnull=False)
+        .select_related('arbiter', 'arbiter__current_club')
+        .order_by('-is_main_arbiter', 'pk')
+    )
+    # Existing data may contain repeated arbiter memberships. Prefer the head role.
+    seen_arbiters = set()
+    head_arbiters = []
+    other_arbiters = []
+    for membership in arbiters:
+        if membership.arbiter_id in seen_arbiters:
+            continue
+        seen_arbiters.add(membership.arbiter_id)
+        (head_arbiters if membership.is_main_arbiter else other_arbiters).append(membership)
+
+    organizers = list(
+        OrganizerTournamentMembership.objects
+        .filter(tournament=tournament, organizer__isnull=False)
+        .exclude(organizer_id=tournament.main_organizer_id)
+        .select_related('organizer', 'organizer__current_club')
+        .order_by('pk')
+    )
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
@@ -1026,7 +1048,9 @@ def tournament(request, id):
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
         'tournament_detail': tournament_detail,
-        'arbiters': arbiters,
+        'head_arbiters': head_arbiters,
+        'other_arbiters': other_arbiters,
+        'additional_people_count': len(organizers) + len(other_arbiters),
         'organizers': organizers,
         'show_team_actions': show_team_actions,
         'page_title': _("Competitions"),

@@ -40,6 +40,7 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    ArbiterTournamentMembership,
     OrganizerTournamentMembership,
     OrganizerTournamentMembershipInline,
     TeamsTournamentMembershipInline,
@@ -2076,6 +2077,54 @@ class TournamentDelegationsOrganizerDisplayTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Організатор')
+
+
+    def test_main_people_stay_visible_and_other_people_are_collapsed(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('main-organizer')
+        head = self.create_player('head-arbiter')
+        head.arbiter_level = 'national'
+        head.save(update_fields=['arbiter_level'])
+        other = self.create_player('other-arbiter')
+        other.arbiter_level = 'club'
+        other.save(update_fields=['arbiter_level'])
+        co_organizer = self.create_player('co-organizer')
+        tournament.main_organizer = organizer
+        tournament.save(update_fields=['main_organizer'])
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=head)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=head, is_main_arbiter=True)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=other)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=other)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=None)
+
+        with override('uk'):
+            response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['additional_people_count'], 2)
+        self.assertEqual([m.arbiter_id for m in response.context['head_arbiters']], [head.pk])
+        self.assertEqual([m.arbiter_id for m in response.context['other_arbiters']], [other.pk])
+        visible, collapsed = response.content.decode().split('<details class="tournament-people-more">')
+        self.assertIn(organizer.get_name(), visible)
+        self.assertIn(head.get_name(), visible)
+        self.assertNotIn(other.get_name(), visible)
+        self.assertNotIn(co_organizer.get_name(), visible)
+        self.assertIn(other.get_name(), collapsed)
+        self.assertIn(co_organizer.get_name(), collapsed)
+        self.assertContains(response, 'Головний арбітр (НК)')
+        self.assertContains(response, 'Арбітр (II)')
+        self.assertContains(response, 'class="tournament-person-card tournament-person-card-arbiter"', count=2)
+
+    def test_arbiter_short_categories_use_official_abbreviations(self):
+        from federation.templatetags.app_filters import arbiter_category_short
+
+        with override('uk'):
+            for level, expected in (('club', 'II'), ('regional', 'I'), ('national', 'НК'),
+                                    ('euro', 'CEP'), ('fipjp', 'FIPJP'), ('arbiter', ''), ('', '')):
+                with self.subTest(level=level):
+                    self.assertEqual(arbiter_category_short(SimpleNamespace(arbiter_level=level)), expected)
 
 
 class TournamentTeamExportCsvTests(TestCase):

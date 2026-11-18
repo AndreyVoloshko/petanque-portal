@@ -145,3 +145,44 @@ Cold transfer was measured against `9055782` with the existing local data and Uk
 | Tournament teams | 1440 px | 98,618 B → 72,768 B (−26.2%) | 227,577 B → 110,538 B (−51.4%) |
 
 Chromium checked layout from 320 to 1440 px and verified club filter submission, tournament sorting, page links, and page-size changes with JavaScript disabled. The container asset build and all 268 Django tests passed.
+
+## Tournament detail refinement
+
+The detail layout now reuses the shell's `portal-panel` surface atom for its header, summary metrics, information panels, people section, participants section, and mobile team cards. The repeated metric and label/value markup has one template each. Existing color tokens replace the local detail palette and all literal colors in the shared tournament badges. The five `--text-*` tokens define the component font-size scale, and the detail layout uses the shared spacing scale.
+
+Unused hero facts, tab styling, obsolete table display resets, duplicate rules, and the DataTables-era `!important` declarations were removed. Color-coded organizer and arbiter tiles were replaced with compact neutral cards. Only the assigned main organizer and head arbiters appear initially. Native `details` exposes the remaining people, with the number of additional people in its summary. Repeated arbiter memberships are shown once, giving the head-arbiter role priority. Missing person records are skipped. The category suffixes are `I`, `II`, `НК` (`NC` in English), `CEP`, and `FIPJP` where applicable.
+
+The incremental baseline below is `16db20b`. Both asset builds used the same Vite configuration, package lock, Node version, and separate gzip compression per file.
+
+| Measure | Before refinement | After refinement | Change |
+| --- | ---: | ---: | ---: |
+| Tournament detail source | 2,107 lines / 43,668 B | 1,759 lines / 38,616 B | −348 lines / −5,052 B |
+| All authored CSS, including `style-v2.css` | 12,232 lines / 244,047 B | 11,890 lines / 239,560 B | −342 lines / −4,487 B |
+| Literal hex/RGB color references in detail and shared tournament badges | 123 | 0 | −123 |
+| Compiled tournament detail CSS | 36,197 B | 32,765 B | −9.5% |
+| Compiled tournament detail CSS, gzip | 6,177 B | 5,204 B | −15.8% |
+
+The shared shell gzip grew from 3,825 to 3,948 B to supply the reusable panel atom, font-size tokens, and award palette. Shared tournament badges fell from 1,258 to 1,120 B gzip. Clubs changed from 1,902 to 1,893 B gzip. The combined shell, badges, and tournament detail entries fell from 11,260 to 10,272 B gzip.
+
+Across the whole club/team migration, the comparison against `9055782` is now 12,802 → 11,890 authored CSS lines, a reduction of 912 lines and 19,776 uncompressed bytes. `style-v2.css` remains at 7,079 lines.
+
+### Updated cold-load measurements
+
+These replace the migration checkpoint's final values for the current PR. The baseline is still `9055782`, using the same three routes and medians of three Chromium loads per viewport with caching disabled.
+
+| Page | Width | CSS transferred | JavaScript transferred |
+| --- | ---: | ---: | ---: |
+| Club directory | 390 px | 94,408 B → 67,376 B (−28.6%) | 197,618 B → 111,061 B (−43.8%) |
+| Tournament singles | 390 px | 98,368 B → 72,074 B (−26.7%) | 227,832 B → 111,074 B (−51.2%) |
+| Tournament teams | 390 px | 98,284 B → 72,028 B (−26.7%) | 227,926 B → 111,093 B (−51.3%) |
+| Club directory | 820 px | 94,613 B → 67,442 B (−28.7%) | 197,332 B → 111,107 B (−43.7%) |
+| Tournament singles | 820 px | 98,230 B → 71,840 B (−26.9%) | 227,948 B → 111,403 B (−51.1%) |
+| Tournament teams | 820 px | 98,151 B → 72,177 B (−26.5%) | 227,866 B → 111,088 B (−51.2%) |
+| Club directory | 1200 px | 94,559 B → 67,415 B (−28.7%) | 197,325 B → 111,092 B (−43.7%) |
+| Tournament singles | 1200 px | 98,303 B → 72,177 B (−26.6%) | 227,880 B → 111,090 B (−51.3%) |
+| Tournament teams | 1200 px | 98,545 B → 72,197 B (−26.7%) | 227,595 B → 111,024 B (−51.2%) |
+| Club directory | 1440 px | 94,639 B → 67,373 B (−28.8%) | 197,317 B → 111,081 B (−43.7%) |
+| Tournament singles | 1440 px | 98,413 B → 72,169 B (−26.7%) | 227,640 B → 111,083 B (−51.2%) |
+| Tournament teams | 1440 px | 98,618 B → 72,074 B (−26.9%) | 227,577 B → 111,081 B (−51.2%) |
+
+The existing Docker service was rebuilt and all 270 Django tests passed. Browser verification covered club filters, table/card breakpoints, sorting, and pagination, plus collapsed and expanded people sections at 320, 390, 768, 820, 1200, and 1440 px. The people disclosure was exercised with JavaScript disabled, including keyboard activation. Local tournaments with a national head arbiter, a category-II head arbiter, and 13 other arbiters were checked.

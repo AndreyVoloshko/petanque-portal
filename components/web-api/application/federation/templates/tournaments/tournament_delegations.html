@@ -4,33 +4,38 @@
 {% trans "Head arbiter" as head_arbiter_label %}
 {% trans "Arbiter" as arbiter_label %}
 
-<section class="tournament-detail-people-card" aria-labelledby="tournament-people-title">
+<section class="portal-panel tournament-detail-people-card" aria-labelledby="tournament-people-title">
     <div class="tournament-detail-section-heading">
         <h2 id="tournament-people-title">{% trans "Organizers and arbiters" %}</h2>
     </div>
 
-    {% if tournament.main_organizer or organizers or arbiters %}
-    <div class="tournament-person-grid">
-        {% if tournament.main_organizer %}
-            {% include "tournaments/_tournament_person_card.html" with person=tournament.main_organizer role_label=main_organizer_label role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
-        {% endif %}
-
-        {% for membership in organizers %}
-            {% include "tournaments/_tournament_person_card.html" with person=membership.organizer role_label=membership.get_role_display role_icon="bi-person-check" card_class="tournament-person-card-organizer" %}
-        {% endfor %}
-
-        {% for arbiter in arbiters %}
-            {% if arbiter.is_main_arbiter %}
-                {% include "tournaments/_tournament_person_card.html" with person=arbiter.arbiter role_label=head_arbiter_label role_icon="bi-patch-check" card_class="tournament-person-card-arbiter" %}
-            {% else %}
-                {% include "tournaments/_tournament_person_card.html" with person=arbiter.arbiter role_label=arbiter_label role_icon="bi-flag" card_class="tournament-person-card-arbiter" %}
+    {% if tournament.main_organizer or head_arbiters %}
+        <div class="tournament-person-grid">
+            {% if tournament.main_organizer %}
+                {% include "tournaments/_tournament_person_card.html" with person=tournament.main_organizer role_label=main_organizer_label role_icon="bi-person-check" card_class="tournament-person-card-organizer" show_category=False only %}
             {% endif %}
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="tournament-detail-empty-card">
-        <i class="bi bi-person-badge" aria-hidden="true"></i>
-        <span>{% trans "No organizers or arbiters are specified." %}</span>
-    </div>
+            {% for membership in head_arbiters %}
+                {% include "tournaments/_tournament_person_card.html" with person=membership.arbiter role_label=head_arbiter_label role_icon="bi-patch-check" card_class="tournament-person-card-arbiter" show_category=True only %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if additional_people_count %}
+        <details class="tournament-people-more">
+            <summary>{% trans "Other organizers and arbiters" %} ({{ additional_people_count }})</summary>
+            <div class="tournament-person-grid">
+                {% for membership in organizers %}
+                    {% include "tournaments/_tournament_person_card.html" with person=membership.organizer role_label=membership.get_role_display role_icon="bi-person-check" card_class="tournament-person-card-organizer" show_category=False only %}
+                {% endfor %}
+                {% for membership in other_arbiters %}
+                    {% include "tournaments/_tournament_person_card.html" with person=membership.arbiter role_label=arbiter_label role_icon="bi-flag" card_class="tournament-person-card-arbiter" show_category=True only %}
+                {% endfor %}
+            </div>
+        </details>
+    {% elif not tournament.main_organizer and not head_arbiters %}
+        <div class="tournament-detail-empty-card">
+            <i class="bi bi-person-badge" aria-hidden="true"></i>
+            <span>{% trans "No organizers or arbiters are specified." %}</span>
+        </div>
     {% endif %}
 </section>
