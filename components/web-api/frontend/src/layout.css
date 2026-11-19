@@ -92,3 +92,12 @@ a:focus {
   display: inline-flex !important;
   position: static !important;
 }
+
+.portal-panel {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-panel-radius);
+  box-shadow: var(--portal-shadow-soft);
+  min-width: 0;
+  padding: var(--panel-padding, var(--space-6));
+}

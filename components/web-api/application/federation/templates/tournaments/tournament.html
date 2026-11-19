@@ -16,22 +16,24 @@
     </nav>
 
     {% include "tournaments/tournament_summary.html" with tournament=tournament tournament_detail=tournament_detail row=row %}
-    {% include "tournaments/tournament_delegations.html" with tournament=tournament arbiters=arbiters organizers=organizers %}
+    {% include "tournaments/tournament_delegations.html" %}
 
-    <section class="tournament-detail-main-card" aria-labelledby="tournament-teams-title">
+    <section class="portal-panel tournament-detail-main-card" aria-labelledby="tournament-teams-title">
         <div class="tournament-detail-section-heading tournament-detail-section-heading-row tournament-teams-heading{% if tournament_detail.is_single_player_format %} is-single-player-format{% endif %}">
             <div>
                 <h2 id="tournament-teams-title">{% if tournament_detail.is_single_player_format %}{% trans "Participants" %}{% else %}{% trans "Teams" %}{% endif %}</h2>
                 <p>{{ row.teams_count_label }}</p>
             </div>
-            <div class="tournament-team-mobile-sort" role="group" aria-label="{% trans "Sort" %}">
-                <button type="button" class="tournament-team-mobile-sort-button is-active" data-tournament-team-sort="place" aria-pressed="true">
-                    {% trans "Place" %}
-                </button>
-                <button type="button" class="tournament-team-mobile-sort-button" data-tournament-team-sort="power" aria-pressed="false">
-                    {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
-                </button>
-            </div>
+            {% if teams %}
+                <div class="tournament-team-mobile-sort" role="group" aria-label="{% trans "Sort" %}">
+                    {% if teams_have_places %}
+                        <a href="{{ team_mobile_sort_links.place }}#tournament-teams-title" class="tournament-team-mobile-sort-button{% if team_sort == 'place' %} is-active{% endif %}"{% if team_sort == 'place' %} aria-current="true"{% endif %}>{% trans "Place" %}</a>
+                    {% endif %}
+                    <a href="{{ team_mobile_sort_links.power }}#tournament-teams-title" class="tournament-team-mobile-sort-button{% if team_sort == 'power' %} is-active{% endif %}"{% if team_sort == 'power' %} aria-current="true"{% endif %}>
+                        {% if tournament_detail.is_single_player_format %}{% trans "Participant power" %}{% else %}{% trans "Team power" %}{% endif %}
+                    </a>
+                </div>
+            {% endif %}
         </div>
 
         {% include "tournaments/tournament_teams.html" with tournament=tournament teams=teams current_user=current_user table_id="tournament_teams_table" %}

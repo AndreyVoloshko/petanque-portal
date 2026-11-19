@@ -45,6 +45,7 @@ TOURNAMENTS_PAGE_SIZE_OPTIONS = {
     30,
     50,
 }
+TOURNAMENT_TEAMS_PAGE_SIZES = (25, 30, 50, 100, -1)
 UK_FULL_MONTHS_GENITIVE = {
     1: 'Січня',
     2: 'Лютого',
@@ -918,6 +919,7 @@ def _empty_state(filters):
 
 # Draw-tool writes (meta, petanque_draw_id, results) live in views/api.py behind
 # the API password. This page is a CSRF-protected, session-authenticated view.
+@vary_on_headers('Sec-CH-UA-Mobile', 'User-Agent')
 @csrf_protect
 def tournament(request, id):
     current_user = request.user
@@ -927,6 +929,7 @@ def tournament(request, id):
             'organizer_club',
             'main_organizer',
             'main_organizer__user',
+            'main_organizer__current_club',
             'federation_delegat',
         ).annotate(actual_teams_count=Count('teamtournamentmembership', distinct=True)),
         pk=id,
@@ -995,8 +998,29 @@ def tournament(request, id):
                 messages.success(request, _('Team places updated.'))
                 return HttpResponseRedirect(request.path_info)
 
-    arbiters = ArbiterTournamentMembership.objects.filter(tournament=tournament).select_related('arbiter')
-    organizers = OrganizerTournamentMembership.objects.filter(tournament=tournament).select_related('organizer', 'organizer__current_club')
+    arbiters = (
+        ArbiterTournamentMembership.objects
+        .filter(tournament=tournament, arbiter__isnull=False)
+        .select_related('arbiter', 'arbiter__current_club')
+        .order_by('-is_main_arbiter', 'pk')
+    )
+    # Existing data may contain repeated arbiter memberships. Prefer the head role.
+    seen_arbiters = set()
+    head_arbiters = []
+    other_arbiters = []
+    for membership in arbiters:
+        if membership.arbiter_id in seen_arbiters:
+            continue
+        seen_arbiters.add(membership.arbiter_id)
+        (head_arbiters if membership.is_main_arbiter else other_arbiters).append(membership)
+
+    organizers = list(
+        OrganizerTournamentMembership.objects
+        .filter(tournament=tournament, organizer__isnull=False)
+        .exclude(organizer_id=tournament.main_organizer_id)
+        .select_related('organizer', 'organizer__current_club')
+        .order_by('pk')
+    )
     teams = (
         TeamTournamentMembership.objects
         .filter(tournament=tournament)
@@ -1015,18 +1039,110 @@ def tournament(request, id):
         .order_by('place_min', 'place_max', 'date_registration', 'pk')
     )
 
+    tournament_detail = _build_tournament_detail(tournament)
     current_user.can_view_insurance_warnings = _can_view_insurance_warnings(tournament, current_user)
+    show_team_actions = current_user.is_authenticated and any(
+        team.is_user_has_admin_access_to_team(current_user) for team in teams
+    )
 
     return render(request, 'tournaments/tournament.html', {
         'tournament': tournament,
-        'tournament_detail': _build_tournament_detail(tournament),
-        'arbiters': arbiters,
+        'tournament_detail': tournament_detail,
+        'head_arbiters': head_arbiters,
+        'other_arbiters': other_arbiters,
+        'additional_people_count': len(organizers) + len(other_arbiters),
         'organizers': organizers,
-        'teams': teams,
-        'load_datatables': True,
+        'show_team_actions': show_team_actions,
         'page_title': _("Competitions"),
         'current_user': current_user,
+        **_tournament_teams_page(request, list(teams), tournament, tournament_detail['is_single_player_format']),
     })
+
+
+def _tournament_teams_page(request, teams, tournament, is_single):
+    def first_player(row):
+        return next(iter(row.team.players.all()), None) if row.team_id else None
+
+    def name(row):
+        if row.team_id is None:
+            return ''
+        player = first_player(row) if is_single else row.team.get_display_capitan()
+        return (player.get_name() if player else str(row.team)).casefold()
+
+    def club(row):
+        player = first_player(row)
+        return player.current_club.short_name.casefold() if player and player.current_club else ''
+
+    columns = {
+        'place': ('asc', lambda row: row.place_min),
+        'name': ('asc', name),
+        'power': ('desc', lambda row: row.power),
+        'date': ('asc', lambda row: row.date_registration),
+    }
+    if is_single:
+        columns['club'] = ('asc', club)
+    if tournament.is_processing_finished or tournament.is_goes_to_rating:
+        columns['rating'] = ('desc', lambda row: row.rating_points if tournament.is_processing_finished else 0)
+
+    has_places = any(row.place_min > 0 for row in teams)
+    default_sort = 'place' if has_places else 'power'
+    sort = request.GET.get('sort', default_sort)
+    if sort not in columns:
+        sort = default_sort
+    default_direction, sort_key = columns[sort]
+    direction = request.GET.get('direction', default_direction)
+    if direction not in {'asc', 'desc'}:
+        direction = default_direction
+
+    default_size = 25 if is_phone_request(request) else 50
+    try:
+        page_size = int(request.GET.get('per_page', default_size))
+    except ValueError:
+        page_size = default_size
+    if page_size not in TOURNAMENT_TEAMS_PAGE_SIZES:
+        page_size = default_size
+
+    ordered = sorted(teams, key=sort_key, reverse=direction == 'desc')
+    paginator = Paginator(ordered, max(1, len(ordered)) if page_size == -1 else page_size)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    params = {}
+    if sort != default_sort or direction != default_direction:
+        params.update(sort=sort, direction=direction)
+    if request.GET.get('per_page') is not None:
+        params['per_page'] = page_size
+
+    headings = {}
+    mobile_sort_links = {}
+    for field, (initial_direction, _sort_key) in columns.items():
+        active = field == sort
+        # Clicking the active header toggles direction. Mobile shortcuts pick its default order.
+        next_direction = ('asc' if direction == 'desc' else 'desc') if active else initial_direction
+        headings[field] = {
+            'url': f"{request.path}?{urlencode(dict(params, sort=field, direction=next_direction))}",
+            'direction': ('ascending' if direction == 'asc' else 'descending') if active else '',
+        }
+        if field in {'place', 'power'}:
+            mobile_sort_links[field] = f"{request.path}?{urlencode(dict(params, sort=field, direction=initial_direction))}"
+
+    if paginator.count:
+        summary = _("Showing _START_ to _END_ of _TOTAL_ participants") if is_single else _("Showing _START_ to _END_ of _TOTAL_ teams")
+        summary = summary.replace('_START_', str(page_obj.start_index())).replace('_END_', str(page_obj.end_index())).replace('_TOTAL_', str(paginator.count))
+    else:
+        summary = _("Showing 0 of 0 participants") if is_single else _("Showing 0 of 0 teams")
+
+    return {
+        'teams': page_obj.object_list,
+        'team_headings': headings,
+        'team_mobile_sort_links': mobile_sort_links,
+        'team_sort': sort,
+        'teams_have_places': has_places,
+        'page_obj': page_obj,
+        'page_size': page_size,
+        'page_size_options': TOURNAMENT_TEAMS_PAGE_SIZES,
+        'active_filters': params,
+        'pagination_summary': summary,
+        **pagination_links(page_obj, request.path, params),
+    }
 
 
 def _can_view_insurance_warnings(tournament, user):

@@ -562,8 +562,8 @@
     };
     const paginationState = {
         page: 1,
-        pageSize: window.PetanquePortal && window.PetanquePortal.dataTableFooter
-            ? window.PetanquePortal.dataTableFooter.defaultPageLength()
+        pageSize: window.PetanquePortal && window.PetanquePortal.responsive
+            ? window.PetanquePortal.responsive.pageSize()
             : 50
     };
     const paginationOptions = [25, 50, 100, -1];

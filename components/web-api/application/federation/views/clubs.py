@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from federation.models.club import Club
 from federation.models.national_teams import PlayerNational_teamMembership
 from federation.models.player import Player
+from federation.utils.pagination import pagination_links
 
 
 CLUBS_PAGE_SIZE_PARAM = 'per_page'
@@ -37,6 +38,7 @@ def clubs(request):
 
     paginator = Paginator(clubs_queryset, club_filters['page_size'])
     page_obj = paginator.get_page(request.GET.get('page'))
+    active_filters = _active_club_filter_params(club_filters)
 
     return render(request, 'clubs/clubs.html', {
         'clubs': page_obj.object_list,
@@ -52,18 +54,13 @@ def clubs(request):
                 'options': [(city, city) for city in filter_options['cities']], 'selected': club_filters['city'],
             },
             {
-                'name': 'year', 'label': _("Year founded"), 'placeholder': _("All founding years"), 'icon': 'bi-calendar3',
-                'options': [(year, year) for year in filter_options['years']], 'selected': club_filters['year'],
-            },
-            {
                 'name': 'sort', 'label': _("Sort clubs"), 'icon': 'bi-sort-down',
                 'options': CLUB_SORT_OPTIONS, 'selected': club_filters['sort'],
             },
         ),
-        'club_active_params': _active_club_filter_params(club_filters),
-        'club_pagination_pages': _pagination_pages(page_obj),
-        'club_pagination_summary': _club_pagination_summary(page_obj),
-        'club_pagination_urls': _club_pagination_urls(request, club_filters, page_obj),
+        'active_filters': active_filters,
+        'pagination_summary': _club_pagination_summary(page_obj),
+        **pagination_links(page_obj, request.path, active_filters),
         'club_reset_url': _club_reset_url(request, club_filters),
     })
 
@@ -130,14 +127,8 @@ def _get_club_filter_options(queryset):
         .distinct()
         .order_by('city__name')
     )
-    years = (
-        queryset
-        .dates('date_created', 'year', order='DESC')
-    )
-
     return {
         'cities': [city for city in cities if city],
-        'years': [str(date.year) for date in years],
     }
 
 
@@ -193,32 +184,6 @@ def _active_club_filter_params(club_filters):
     return params
 
 
-def _club_url(request, club_filters, page=None):
-    params = _active_club_filter_params(club_filters)
-    if page and page != 1:
-        params['page'] = page
-
-    query = urlencode(params)
-    if not query:
-        return request.path
-
-    return '{}?{}'.format(request.path, query)
-
-
-def _club_pagination_urls(request, club_filters, page_obj):
-    return {
-        'first': _club_url(request, club_filters, 1),
-        'previous': _club_url(request, club_filters, page_obj.previous_page_number()) if page_obj.has_previous() else '#',
-        'next': _club_url(request, club_filters, page_obj.next_page_number()) if page_obj.has_next() else '#',
-        'last': _club_url(request, club_filters, page_obj.paginator.num_pages),
-        'pages': {
-            page: _club_url(request, club_filters, page)
-            for page in _pagination_pages(page_obj)
-            if page != 'ellipsis'
-        },
-    }
-
-
 def _club_reset_url(request, club_filters):
     if club_filters['page_size'] == DEFAULT_CLUBS_PAGE_SIZE:
         return request.path
@@ -227,20 +192,6 @@ def _club_reset_url(request, club_filters):
         request.path,
         urlencode({CLUBS_PAGE_SIZE_PARAM: club_filters['page_size']}),
     )
-
-
-def _pagination_pages(page_obj):
-    current = page_obj.number
-    total = page_obj.paginator.num_pages
-    pages = []
-
-    for page in range(1, total + 1):
-        if page == 1 or page == total or abs(page - current) <= 1:
-            pages.append(page)
-        elif pages[-1] != 'ellipsis':
-            pages.append('ellipsis')
-
-    return pages
 
 
 def _club_pagination_summary(page_obj):

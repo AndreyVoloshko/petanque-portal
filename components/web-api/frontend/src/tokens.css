@@ -157,6 +157,23 @@
   --rating-license-bg: #edf1f5;
   --rating-license-text: #334155;
 
+  --club-points-bg: #ecf8f1;
+  --club-points-border: #bfe8cf;
+  --club-points-text: #168452;
+  --club-average-bg: #eaf5ff;
+  --club-average-border: #c5dff5;
+  --club-average-text: #176aa3;
+  --club-athletes-bg: #e6f7ff;
+  --club-athletes-border: #b8e5f5;
+  --club-athletes-text: #0b789d;
+
+  --place-gold-bg: #fef3c7;
+  --place-gold-border: #f59e0b;
+  --place-gold-text: #78350f;
+  --place-bronze-bg: #ffedd5;
+  --place-bronze-border: #c2410c;
+  --place-bronze-text: #7c2d12;
+
   --tournament-format-bg: #eef6ff;
   --tournament-format-border: #d7e8ff;
   --tournament-format-text: #0b58b7;
@@ -164,6 +181,12 @@
   --tournament-open-border: #b9e6c7;
   --tournament-audience-bg: #f5f0ff;
   --tournament-audience-border: #e5dbff;
+
+  --text-xs: .75rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
 
   --space-1: .25rem;
   --space-2: .5rem;

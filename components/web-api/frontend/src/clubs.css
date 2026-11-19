@@ -1,0 +1,569 @@
+.clubs-rank-column {
+  width: 7%;
+}
+
+.clubs-club-column {
+  width: 22%;
+}
+
+.clubs-points-column,
+.clubs-average-column {
+  width: 10%;
+}
+
+.clubs-city-column {
+  width: 13%;
+}
+
+.clubs-founded-column {
+  width: 12%;
+}
+
+.clubs-president-column {
+  width: 18%;
+}
+
+.clubs-athletes-column {
+  width: 9%;
+}
+
+.clubs-club-link {
+  align-items: center;
+  color: var(--rating-name-text);
+  display: inline-flex;
+  gap: var(--space-3);
+  max-width: 100%;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.clubs-club-link:hover,
+.clubs-club-link:focus {
+  color: var(--rating-power-text);
+  text-decoration: none;
+}
+
+.clubs-logo-frame {
+  align-items: center;
+  color: var(--portal-slate-300);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 2.72rem;
+  justify-content: center;
+  width: 2.72rem;
+}
+
+.clubs-logo-frame img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.clubs-logo-placeholder {
+  align-items: center;
+  display: inline-flex;
+  font-size: var(--text-xl);
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.clubs-club-copy,
+.clubs-city-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.clubs-club-name {
+  color: var(--rating-name-text);
+  font-weight: 800;
+  line-height: 1.15;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubs-club-full-name {
+  color: var(--list-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 0.12rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubs-rank-badge {
+  --badge-bg: var(--rating-rank-bg);
+  --badge-border: var(--rating-rank-border);
+}
+
+.clubs-points-badge {
+  --badge-bg: var(--club-points-bg);
+  --badge-border: var(--club-points-border);
+  --badge-tone: var(--club-points-text);
+}
+
+.clubs-average-badge {
+  --badge-bg: var(--club-average-bg);
+  --badge-border: var(--club-average-border);
+  --badge-tone: var(--club-average-text);
+}
+
+.clubs-founded-date,
+.clubs-athletes-badge,
+.clubs-muted-badge {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  display: inline-flex !important;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  gap: 0.34rem;
+  justify-content: center;
+  line-height: 1;
+  min-height: 1.75rem;
+  padding: 0.36rem 0.48rem;
+  white-space: nowrap;
+}
+
+.clubs-founded-date {
+  background: transparent;
+  border-color: transparent;
+  color: var(--list-muted);
+  font-weight: 700;
+  justify-content: flex-start;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.clubs-founded-date i {
+  color: var(--portal-slate-300);
+  font-size: var(--text-base);
+}
+
+.clubs-athletes-badge {
+  background: var(--club-athletes-bg);
+  border-color: var(--club-athletes-border);
+  color: var(--club-athletes-text);
+  min-width: 3.2rem;
+}
+
+.clubs-muted-badge {
+  background: color-mix(in srgb, var(--list-danger) 8%, var(--list-surface));
+  border-color: color-mix(in srgb, var(--list-danger) 24%, var(--list-surface));
+  color: var(--list-danger);
+}
+
+.clubs-city-wrap,
+.clubs-president-wrap {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-2);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.clubs-city-map,
+.clubs-city-icon {
+  align-items: center;
+  color: var(--list-muted);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--text-base);
+  justify-content: center;
+  text-decoration: none;
+}
+
+.clubs-president-avatar {
+  align-items: center;
+  background: var(--list-placeholder);
+  border: 1px solid var(--portal-navy-a08);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--portal-white-a62);
+  color: var(--portal-slate-300);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 2.05rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 2.05rem;
+}
+
+.clubs-president-avatar img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.clubs-president-avatar-placeholder {
+  align-items: center;
+  display: inline-flex;
+  font-size: var(--text-lg);
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.clubs-city-map:hover,
+.clubs-city-map:focus {
+  color: var(--portal-brand);
+}
+
+.clubs-city-name {
+  color: var(--list-ink);
+  font-weight: 700;
+  line-height: 1.18;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubs-country-line {
+  align-items: center;
+  color: var(--list-muted);
+  display: inline-flex;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  gap: 0.16rem;
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubs-country-line .flag-icon {
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--portal-navy-a08);
+  margin-left: 0.08rem;
+}
+
+.clubs-president-name {
+  color: var(--list-ink);
+  display: block;
+  font-weight: 700;
+  line-height: 1.2;
+  min-width: 0;
+  white-space: normal;
+}
+
+.clubs-president-name a {
+  color: var(--portal-brand);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.clubs-president-name a:hover,
+.clubs-president-name a:focus {
+  color: var(--portal-brand-hover);
+  text-decoration: underline;
+}
+
+.clubs-table tbody tr.clubs-row:nth-child(odd) {
+  background: var(--list-surface);
+}
+
+.clubs-table tbody tr.clubs-row:nth-child(even) {
+  background: var(--portal-table-row-alt);
+}
+
+.clubs-table tbody tr.clubs-row:hover {
+  background: var(--portal-sky-50);
+}
+
+.clubs-empty-cell {
+  padding: 3rem 1rem !important;
+  text-align: center;
+}
+
+.clubs-empty-cell span {
+  display: block;
+}
+
+.clubs-empty-icon {
+  color: var(--portal-slate-300);
+  font-size: 1.9rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.clubs-empty-title {
+  color: var(--list-ink);
+  font-size: var(--text-base);
+  font-weight: 800;
+}
+
+.clubs-empty-copy {
+  color: var(--list-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.club-list-card {
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-panel-radius);
+  box-shadow: var(--portal-shadow-soft);
+  color: var(--list-ink);
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.club-list-card-main {
+  align-items: center;
+  color: inherit;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 3.6rem minmax(0, 1fr) auto;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.club-list-card-main:hover,
+.club-list-card-main:focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+.club-list-card-logo {
+  height: 3.6rem;
+  width: 3.6rem;
+}
+
+.club-list-card-copy {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.club-list-card-name {
+  color: var(--rating-name-text);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  line-height: 1.08;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.club-list-card-full-name {
+  color: var(--list-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.club-list-card-location {
+  align-items: center;
+  color: var(--list-page-accent);
+  display: inline-flex;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  gap: 0.22rem;
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.club-list-card-location .bi {
+  color: var(--list-muted);
+  flex: 0 0 auto;
+}
+
+.club-list-card-rank {
+  --badge-bg: var(--club-points-bg);
+  --badge-tone: var(--club-points-text);
+  align-self: start;
+}
+
+.club-list-card-metrics {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.club-list-card-metrics .players-metric-badge,
+.club-list-card-metrics .clubs-athletes-badge {
+  align-items: flex-start;
+  border-radius: var(--list-radius);
+  display: flex !important;
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-content: flex-start;
+  min-height: 0;
+  min-width: 0;
+  padding: var(--space-2);
+  white-space: normal;
+  width: 100%;
+}
+
+.club-list-card-metrics .players-metric-badge i,
+.club-list-card-metrics .clubs-athletes-badge i {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: var(--text-sm);
+  height: 1.5rem;
+  justify-content: center;
+  width: 1.5rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.clubs-athletes-copy {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.clubs-athletes-value {
+  color: var(--list-text);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.08;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubs-athletes-label {
+  color: var(--list-muted);
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px),
+  (min-width: 768px) and (max-width: 1400px) and (pointer: coarse) {
+
+  .clubs-mobile-list .club-list-card {
+    margin: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+
+  .club-list-card {
+    padding: var(--space-3);
+  }
+
+  .club-list-card-main {
+    grid-template-columns: 3.35rem minmax(0, 1fr) auto;
+  }
+
+  .club-list-card-logo {
+    height: 3.35rem;
+    width: 3.35rem;
+  }
+
+  .club-list-card-name {
+    font-size: var(--text-lg);
+  }
+}
+
+@media (max-width: 420px) {
+  .club-list-card-metrics :is(.players-metric-badge, .clubs-athletes-badge) {
+    padding-inline: var(--space-1);
+  }
+
+
+  .club-list-card-main {
+    align-items: start;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+  }
+
+  .club-list-card-logo {
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .club-list-card-name {
+    font-size: var(--text-base);
+  }
+
+  .club-list-card-full-name,
+  .club-list-card-location {
+    font-size: var(--text-xs);
+  }
+}
+
+.clubs-mobile-list {
+  display: none;
+}
+
+@media (1200px <= width <= 1480px) {
+
+  .clubs-table :is(th, td) {
+    padding-inline: var(--space-2);
+  }
+}
+
+@media (max-width: 1199.98px), (max-width: 1400px) and (pointer: coarse) {
+
+  .clubs-table {
+    display: none;
+  }
+
+  .clubs-results-surface:has(.clubs-mobile-list) {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .clubs-mobile-list {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clubs-mobile-list .players-metric-copy {
+    align-items: start;
+    display: grid;
+  }
+
+  .clubs-mobile-list .players-metric-label {
+    color: var(--list-muted);
+    display: block;
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 767.98px) {
+
+  .clubs-mobile-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .club-list-card-rank {
+    border: 2px solid var(--list-surface);
+    border-radius: 50%;
+    flex-direction: column;
+    font-size: var(--text-lg);
+    gap: 0;
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .club-list-card-rank .players-rank-label-mobile {
+    color: var(--rating-name-text);
+    display: block;
+    font-size: var(--text-xs);
+  }
+}
