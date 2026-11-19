@@ -1,0 +1,14 @@
+// Stylish Portfolio 6.0.6 theme settings for the portal.
+$blue: #1d809f;
+$yellow: #ecb807;
+$primary: $blue;
+$secondary: $yellow;
+$font-family-base: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  "Segoe UI Symbol", "Noto Color Emoji";
+$headings-font-weight: 700;
+// Keep the existing placeholder gray in the header search and list filters.
+$input-placeholder-color: var(--bs-gray-600);
+
+@import "bootstrap/scss/bootstrap";
+@import "stylish-portfolio";
