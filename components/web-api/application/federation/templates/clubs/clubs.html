@@ -25,7 +25,7 @@
     {% trans "Search by club, city, or president..." as query_placeholder %}
     {% trans "Search" as submit_label %}
     {% trans "Скинути фільтри" as reset_label %}
-    {% include "common/list/filter_bar.html" with action=request.path query=club_filters.search search_label=query_label search_placeholder=query_placeholder fields=filter_fields per_page=filter_page_size submit_label=submit_label reset_url=club_reset_url reset_label=reset_label only %}
+    {% include "common/list/filter_bar.html" with action=request.path query=club_filters.search search_label=query_label search_placeholder=query_placeholder fields=filter_fields per_page=filter_page_size submit_label=submit_label reset_url=club_reset_url reset_label=reset_label implicit_desktop_search=True only %}
 
     {% include "clubs/clubs_table.html" with items=clubs %}
 </section>

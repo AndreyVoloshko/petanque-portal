@@ -20,19 +20,15 @@
         <link rel="apple-touch-icon" sizes="72x72" href="{% static 'favicon.ico' %}">
         <link rel="apple-touch-icon" sizes="114x114" href="{% static 'favicon.ico' %}">
 
-        {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"> {% endcomment %}
-        <link rel="stylesheet" href="{% static 'bootstrap-theme.css' %}" />
+        {% vite_stylesheet "src/bootstrap-theme.scss" %}
 
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/css/flag-icon.min.css" />
-
-        <!-- Bootswatch Flatly Theme -->
-        {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/zephyr/bootstrap.min.css"> {% endcomment %}
 
         <!-- Bootstrap Icons (optional) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
         <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" integrity="sha384-WyOxWvTyr1QaMPfiPJSv76iReVthorl5uWlFtZPyK0IEB0hGzo9y5Bp9mYanr8Bu" crossorigin="anonymous"></script>
 
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -42,14 +38,6 @@
         <!-- jQuery UI JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
-        {% if load_datatables %}
-        <!-- DataTables Bootstrap 5 integration -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-
-        <!-- DataTables JS -->
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-        {% endif %}
         {% vite_stylesheet "src/shell.css" %}
         {% if not ratings_pilot %}
             {% vite_stylesheet "src/tournament-badges.css" %}
@@ -60,7 +48,7 @@
         {% if ratings_pilot or portal_ui.rating_styles %}
             {% vite_stylesheet "src/ratings-foundation.css" %}
         {% endif %}
-        {% if tournaments_pilot or ratings_pilot %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.tournament_detail %}
             {% vite_stylesheet "src/list-ui.css" %}
         {% endif %}
         {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
@@ -70,7 +58,14 @@
             {% vite_stylesheet "src/tournaments.css" %}
         {% elif ratings_pilot %}
             {% vite_stylesheet "src/ratings.css" %}
+        {% elif portal_ui.club_directory %}
+            {% vite_stylesheet "src/clubs.css" %}
+        {% elif portal_ui.tournament_detail %}
+            {% vite_stylesheet "src/tournament-detail.css" %}
         {% else %}
+            {% if portal_ui.team_registration %}
+                {% vite_stylesheet "src/tournament-detail.css" %}
+            {% endif %}
             <link rel="stylesheet" href="{% static 'style-v2.css' %}?v={{ static_asset_versions.style_v2 }}" />
         {% endif %}
         {% if tournaments_pilot or ratings_pilot %}

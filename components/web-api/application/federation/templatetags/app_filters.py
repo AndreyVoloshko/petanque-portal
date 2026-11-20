@@ -332,7 +332,19 @@ def arbiter_label(player):
             </dd>
         </dl>
     '''
-    
+
+
+@register.filter
+def arbiter_category_short(player):
+    return {
+        'club': 'II',
+        'regional': 'I',
+        'national': _('NC'),
+        'euro': 'CEP',
+        'fipjp': 'FIPJP',
+    }.get(player.arbiter_level, '')
+
+
 @register.filter(name="player_sport_title_label")
 def player_sport_title_label(player):
     if not player.sport_title:

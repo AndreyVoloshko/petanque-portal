@@ -1,0 +1,13 @@
+{% load app_filters %}
+{% with heading=team_headings|get_item:field %}
+<th scope="col" class="{{ css_class }} team-sort-heading"{% if heading.direction %} aria-sort="{{ heading.direction }}"{% endif %}>
+    <a class="team-sort-link" href="{{ heading.url }}#tournament-teams-title">{{ label }}
+        <i class="bi {% if heading.direction == 'ascending' %}bi-arrow-up-short{% elif heading.direction == 'descending' %}bi-arrow-down-short{% else %}bi-arrow-down-up{% endif %}" aria-hidden="true"></i>
+    </a>
+    {% if help_text %}
+        <button class="pt-heading-help tournament-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ help_text }}" aria-label="{{ help_text }}">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+        </button>
+    {% endif %}
+</th>
+{% endwith %}

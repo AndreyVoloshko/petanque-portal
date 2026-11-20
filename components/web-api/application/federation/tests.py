@@ -40,6 +40,7 @@ from federation.models.season import Season
 from federation.models.team import PlayerTeamMembership, Team
 from federation.models.tournament import (
     ArbiterTeamTournamentAdminInline,
+    ArbiterTournamentMembership,
     OrganizerTournamentMembership,
     OrganizerTournamentMembershipInline,
     TeamsTournamentMembershipInline,
@@ -1897,6 +1898,24 @@ class TournamentPageCoachDisplayTests(TestCase):
         self.assertContains(response, coach.get_name())
         self.assertContains(response, '/player/{}'.format(coach.pk))
 
+    def test_team_actions_column_collapses_without_permission(self):
+        tournament = self.create_tournament()
+        first = self.create_player('registered-player-one')
+        second = self.create_player('registered-player-two')
+        team = self.create_team('Registered Pair', [first, second])
+        tournament.add_team(team)
+        url = f'/tournament/{tournament.pk}'
+
+        response = self.client.get(url)
+        self.assertContains(response, 'no-team-actions')
+        self.assertNotContains(response, 'tournament-team-delete-form')
+
+        administrator = User.objects.create(username='team-administrator', is_superuser=True)
+        self.client.force_login(administrator)
+        response = self.client.get(url)
+        self.assertNotContains(response, 'no-team-actions')
+        self.assertContains(response, 'tournament-team-delete-form')
+
     def test_tournament_page_shows_dash_when_no_coach_assigned(self):
         first = self.create_player('nocoach-player-one')
         second = self.create_player('nocoach-player-two')
@@ -1944,8 +1963,8 @@ class TournamentPageCoachDisplayTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertLess(
-            html.index('<th class="tournament-team-athletes-col">'),
-            html.index('<th class="tournament-team-coach-col">'),
+            html.index('<th scope="col" class="tournament-team-athletes-col">'),
+            html.index('<th scope="col" class="tournament-team-coach-col">'),
         )
         self.assertLess(
             html.index('<td class="tournament-team-athletes-cell"'),
@@ -2058,6 +2077,54 @@ class TournamentDelegationsOrganizerDisplayTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Організатор')
+
+
+    def test_main_people_stay_visible_and_other_people_are_collapsed(self):
+        tournament = self.create_tournament()
+        organizer = self.create_player('main-organizer')
+        head = self.create_player('head-arbiter')
+        head.arbiter_level = 'national'
+        head.save(update_fields=['arbiter_level'])
+        other = self.create_player('other-arbiter')
+        other.arbiter_level = 'club'
+        other.save(update_fields=['arbiter_level'])
+        co_organizer = self.create_player('co-organizer')
+        tournament.main_organizer = organizer
+        tournament.save(update_fields=['main_organizer'])
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=organizer)
+        OrganizerTournamentMembership.objects.create(tournament=tournament, organizer=co_organizer)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=head)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=head, is_main_arbiter=True)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=other)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=other)
+        ArbiterTournamentMembership.objects.create(tournament=tournament, arbiter=None)
+
+        with override('uk'):
+            response = self.client.get(f'/tournament/{tournament.pk}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['additional_people_count'], 2)
+        self.assertEqual([m.arbiter_id for m in response.context['head_arbiters']], [head.pk])
+        self.assertEqual([m.arbiter_id for m in response.context['other_arbiters']], [other.pk])
+        visible, collapsed = response.content.decode().split('<details class="tournament-people-more">')
+        self.assertIn(organizer.get_name(), visible)
+        self.assertIn(head.get_name(), visible)
+        self.assertNotIn(other.get_name(), visible)
+        self.assertNotIn(co_organizer.get_name(), visible)
+        self.assertIn(other.get_name(), collapsed)
+        self.assertIn(co_organizer.get_name(), collapsed)
+        self.assertContains(response, 'Головний арбітр (НК)')
+        self.assertContains(response, 'Арбітр (II)')
+        self.assertContains(response, 'class="tournament-person-card tournament-person-card-arbiter"', count=2)
+
+    def test_arbiter_short_categories_use_official_abbreviations(self):
+        from federation.templatetags.app_filters import arbiter_category_short
+
+        with override('uk'):
+            for level, expected in (('club', 'II'), ('regional', 'I'), ('national', 'НК'),
+                                    ('euro', 'CEP'), ('fipjp', 'FIPJP'), ('arbiter', ''), ('', '')):
+                with self.subTest(level=level):
+                    self.assertEqual(arbiter_category_short(SimpleNamespace(arbiter_level=level)), expected)
 
 
 class TournamentTeamExportCsvTests(TestCase):
@@ -2736,6 +2803,13 @@ class StaticStorageTests(TestCase):
     def test_manifest_storage_does_not_crash_on_missing_entries(self):
         self.assertFalse(StaticStorage.manifest_strict)
 
+    def test_shared_head_loads_built_bootstrap_theme_and_matching_script(self):
+        response = self.client.get('/')
+
+        self.assertContains(response, '/vite/assets/bootstrap-theme-')
+        self.assertContains(response, 'bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js')
+        self.assertNotContains(response, '/static/bootstrap-theme.css')
+
 
 @override_settings(CURRENT_COUNTRY='UA')
 class TournamentListingPageTests(TestCase):
@@ -2758,14 +2832,37 @@ class TournamentListingPageTests(TestCase):
     def test_calendar_loads_fullcalendar(self):
         self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
 
-    def test_datatables_assets_are_scoped_to_tournament_detail(self):
+    def test_tournament_detail_and_clubs_load_route_styles_without_datatables(self):
         tournament = self.create_tournament('Teams Cup')
         detail = self.client.get(f'/tournament/{tournament.pk}')
-        self.assertContains(detail, 'cdn.datatables.net/', count=3)
+        self.assertContains(detail, '/vite/assets/tournament-detail-')
+        self.assertNotContains(detail, '/style-v2.css')
+        self.assertNotContains(detail, 'cdn.datatables.net/')
+
+        clubs = self.client.get('/clubs/')
+        self.assertContains(clubs, '/vite/assets/clubs-')
+        self.assertNotContains(clubs, '/style-v2.css')
 
         for route in ('/', '/tournaments/', '/players/licence', '/seasons/2024', '/clubs/', '/documents/', '/calendar/'):
             with self.subTest(route=route):
                 self.assertNotContains(self.client.get(route), 'cdn.datatables.net/')
+
+    def test_team_power_sort_and_page_links_are_server_rendered(self):
+        tournament = self.create_tournament('Team pagination cup', players_min=1)
+        for index in range(26):
+            player = self.create_player(f'team-sort-{index}')
+            membership = self.register_player_for_tournament(tournament, player)
+            membership.power = index
+            membership.save(update_fields=['power'])
+
+        url = f'/tournament/{tournament.pk}'
+        response = self.client.get(url, {'sort': 'power', 'direction': 'asc', 'per_page': '25'})
+        self.assertEqual([m.power for m in response.context['teams']], list(range(25)))
+        self.assertContains(response, f'{url}?sort=power&amp;direction=asc&amp;per_page=25&amp;page=2#tournament-teams-title')
+        self.assertNotContains(response, 'team-sort-25')
+
+        next_page = self.client.get(url, {'sort': 'power', 'direction': 'asc', 'per_page': '25', 'page': '2'})
+        self.assertEqual([m.power for m in next_page.context['teams']], [25])
 
     def create_tournament(
         self,
@@ -2979,8 +3076,9 @@ class TournamentListingPageTests(TestCase):
         self.assertIn('bi bi-star-fill', captain_badge)
         self.assertIn(captain.get_name(), athletes_cell)
         self.assertIn(teammate.get_name(), athletes_cell)
-        self.assertContains(response, 'data-tournament-team-sort="place"')
-        self.assertContains(response, 'data-tournament-team-sort="power"')
+        self.assertContains(response, '?sort=place&amp;direction=asc#tournament-teams-title')
+        self.assertContains(response, '?sort=power&amp;direction=desc#tournament-teams-title')
+        self.assertContains(response, 'tournament-team-mobile-sort-button is-active" aria-current="true"')
         self.assertContains(response, 'class="tournament-team-player-label"')
         self.assertContains(response, 'class="tournament-team-player-country"')
 

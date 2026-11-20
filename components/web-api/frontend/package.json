@@ -9,6 +9,8 @@
     "build": "vite build"
   },
   "devDependencies": {
+    "bootstrap": "5.3.9",
+    "sass-embedded": "1.108.2",
     "vite": "7.3.8"
   }
 }

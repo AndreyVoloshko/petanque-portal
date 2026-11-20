@@ -1,3 +1,4 @@
+{% load app_filters %}
 <article class="tournament-person-card {{ card_class }}">
     <a class="tournament-person-avatar" href="{% url 'player' id=person.pk %}" aria-label="{{ person.get_name }}">
         {% if person.avatar %}
@@ -14,7 +15,7 @@
     <div class="tournament-person-copy">
         <span class="tournament-person-role">
             <i class="bi {{ role_icon }}" aria-hidden="true"></i>
-            {{ role_label }}
+            {{ role_label }}{% if show_category %}{% with category=person|arbiter_category_short %}{% if category %} ({{ category }}){% endif %}{% endwith %}{% endif %}
         </span>
         <a class="tournament-person-name" href="{% url 'player' id=person.pk %}">{{ person.get_name }}</a>
         {% if person.current_club %}

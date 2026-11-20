@@ -20,6 +20,8 @@ def settings_context(request):
     return {
         "portal_ui": {
             "club_directory": route == "clubs",
+            "tournament_detail": route == "tournament",
+            "team_registration": route == "register_team",
             "home_page": route == "main_page",
             "athlete_card": route in {
                 'main_page', 'club', 'arbiters', 'coaches', 'departments', 'national_teams',
