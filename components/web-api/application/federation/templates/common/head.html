@@ -48,7 +48,7 @@
         {% if ratings_pilot or portal_ui.rating_styles %}
             {% vite_stylesheet "src/ratings-foundation.css" %}
         {% endif %}
-        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.tournament_detail %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.tournament_detail or portal_ui.player_profile %}
             {% vite_stylesheet "src/list-ui.css" %}
         {% endif %}
         {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
@@ -62,6 +62,10 @@
             {% vite_stylesheet "src/clubs.css" %}
         {% elif portal_ui.tournament_detail %}
             {% vite_stylesheet "src/tournament-detail.css" %}
+        {% elif portal_ui.club_profile %}
+            {% vite_stylesheet "src/club-profile.css" %}
+        {% elif portal_ui.player_profile %}
+            {% vite_stylesheet "src/player-profile.css" %}
         {% else %}
             {% if portal_ui.team_registration %}
                 {% vite_stylesheet "src/tournament-detail.css" %}
@@ -72,6 +76,9 @@
             <noscript><style>#gdpr_warning { position: static; transform: none; margin: 4.5rem auto 0; }</style></noscript>
         {% endif %}
 
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.player_profile %}
+            <script defer src="{% static 'list-navigation.js' %}?v={{ static_asset_versions.list_navigation }}"></script>
+        {% endif %}
         <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
     </head>
     <body class="d-flex flex-column min-vh-100" style="min-height: 100vh; display: flex; flex-direction: column;">

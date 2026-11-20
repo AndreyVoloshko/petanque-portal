@@ -1,4 +1,4 @@
-<form class="portal-filter-bar border rounded-3 bg-white p-2" method="get" action="{{ action }}" role="search" aria-label="{{ search_label }}">
+<form class="portal-filter-bar border rounded-3 bg-white p-2" data-list-form method="get" action="{{ action }}" role="search" aria-label="{{ search_label }}">
     {% include "common/list/hidden_fields.html" with fields=preserved_filters only %}
     {% if per_page %}
         <input type="hidden" name="per_page" value="{{ per_page }}">
@@ -32,7 +32,7 @@
                     <button class="btn btn-primary btn-sm py-2 fw-semibold" type="submit">{{ submit_label }}</button>
                 {% endif %}
                 {% if reset_url %}
-                    <a class="btn btn-outline-primary btn-sm py-2 fw-semibold" href="{{ reset_url }}">
+                    <a class="btn btn-outline-primary btn-sm py-2 fw-semibold" href="{{ reset_url }}" data-list-link>
                         <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>{{ reset_label }}
                     </a>
                 {% endif %}

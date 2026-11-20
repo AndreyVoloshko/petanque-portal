@@ -4,7 +4,7 @@
 {% block main_classes %}portal-page-content-wide{% endblock %}
 
 {% block content %}
-<section class="tournaments-page" aria-labelledby="tournaments-page-title">
+<section class="tournaments-page" aria-labelledby="tournaments-page-title" data-list-region>
     <div class="tournaments-titlebar">
         <h1 id="tournaments-page-title">{% trans "Турніри" %}</h1>
         {% if can_create_tournament %}
@@ -16,7 +16,7 @@
     <div class="tournaments-control-row">
         <nav class="tournament-period-tabs" aria-label="{% trans "Період турнірів" %}">
             {% for tab in period_tabs %}
-                <a class="tournament-period-tab {% if tab.active %}is-active{% endif %}" href="{{ tab.url }}" {% if tab.active %}aria-current="page"{% endif %}>
+                <a class="tournament-period-tab {% if tab.active %}is-active{% endif %}" href="{{ tab.url }}" data-list-link {% if tab.active %}aria-current="page"{% endif %}>
                     <i class="bi {{ tab.icon }}" aria-hidden="true"></i>
                     <span>{{ tab.label }}</span>
                     <span class="tournament-period-count">{{ tab.count }}</span>
@@ -26,7 +26,7 @@
 
         <div class="tournament-toggle-group">
             {% for toggle in toggle_forms %}
-                <form class="tournament-toggle-form" method="get" action="{% url 'tournaments' %}">
+                <form class="tournament-toggle-form" data-list-form method="get" action="{% url 'tournaments' %}">
                     {% include "common/list/hidden_fields.html" with fields=toggle.fields only %}
                     <button class="tournament-toggle" type="submit" role="switch" aria-checked="{{ toggle.checked|yesno:'true,false' }}" name="{{ toggle.name }}" value="{{ toggle.value }}">
                         <span class="tournament-toggle-label"><i class="bi {{ toggle.icon }}" aria-hidden="true"></i> {{ toggle.label }}</span>

@@ -1,0 +1,135 @@
+{% extends "common/list/table.html" %}
+{% load app_filters i18n %}
+{% block table_class %}player-tournaments-table{% endblock %}
+{% block table_head %}
+<tr>
+    <th class="pt-col-date" scope="col"{% if history_headings.date.direction %} aria-sort="{{ history_headings.date.direction }}"{% endif %}>
+        {% trans "Date" as sort_label %}
+        {% include "players/_history_sort.html" with heading=history_headings.date label=sort_label css_class="pt-sort-button" only %}
+    </th>
+    <th class="pt-col-name" scope="col">{% trans "Name" %}</th>
+    <th class="pt-col-format" scope="col">{% trans "Format" %}</th>
+    <th class="pt-col-place" scope="col"{% if history_headings.place.direction %} aria-sort="{{ history_headings.place.direction }}"{% endif %}>
+        {% trans "Place" as sort_label %}
+        {% include "players/_history_sort.html" with heading=history_headings.place label=sort_label css_class="pt-sort-button" only %}
+    </th>
+    <th class="pt-col-team" scope="col">{% trans "Team" %}</th>
+    <th class="pt-col-strength" scope="col">
+        <span class="pt-strength-heading">
+            <span class="pt-strength-title">{% trans "Power" %}</span>
+            <span class="pt-strength-subhead">
+                <span class="pt-strength-subitem">
+                    {% trans "Power column team" %}
+                    <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        <span class="visually-hidden">{{ tournament_team_power_help_text }}</span>
+                    </button>
+                </span>
+                <span class="pt-strength-subitem">
+                    {% trans "Power column tournament" %}
+                    <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_power_help_text }}">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        <span class="visually-hidden">{{ tournament_power_help_text }}</span>
+                    </button>
+                </span>
+            </span>
+        </span>
+    </th>
+    <th class="pt-col-points" scope="col"{% if history_headings.points.direction %} aria-sort="{{ history_headings.points.direction }}"{% endif %}>
+        <span class="pt-heading-with-help">
+            {% trans "Points" as sort_label %}
+            {% include "players/_history_sort.html" with heading=history_headings.points label=sort_label css_class="pt-sort-button" only %}
+            <button class="player-stat-help pt-heading-help" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <span class="visually-hidden">{{ tournament_points_help_text }}</span>
+            </button>
+        </span>
+    </th>
+</tr>
+{% endblock %}
+{% block table_rows %}
+{% for row in player_tournament_rows %}
+{% with item=row.tournament place=row.place place_max=row.place_max place_label=row.place_label teams=row.teams_count tournament_power=row.tournament_power team_power=row.team_power points=row.team_rating_points meta=row.metadata %}
+<tr class="player-tournament-row {% if row.is_rating_relevant %}tournament_goes_to_rating{% endif %}"
+    data-href="{% url 'tournament' id=item.pk %}">
+    <td class="pt-col-date" data-label="{% trans "Date" %}">
+        <div class="pt-date-wrap">
+            <i class="bi bi-calendar3"></i>
+            <div>
+                <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"d M Y" }}</time>
+                <span>{{ item.start_date|date:"l" }}</span>
+            </div>
+        </div>
+    </td>
+    <td class="pt-col-name" data-label="{% trans "Name" %}">
+        <a href="{% url 'tournament' id=item.pk %}" class="pt-tournament-link">{{ row.title }}</a>
+        {% if item.place %}
+            <span class="pt-tournament-location">{{ item.place }}</span>
+        {% endif %}
+    </td>
+    <td class="pt-col-format" data-label="{% trans "Format" %}">
+        <div class="pt-chip-list">
+            {% for tag in meta.format_tags %}
+                <span class="tournament-chip tournament-chip-format">{{ tag }}</span>
+            {% endfor %}
+            {% for tag in meta.audience_tags %}
+                <span class="tournament-chip tournament-chip-audience {{ tag|tournament_audience_tag_class }}">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="pt-col-place" data-label="{% trans "Place" %}">
+        {% if place_max == place and place == "1" or place_max == place and place == "2" or place_max == place and place == "3" %}
+            <span class="pt-place-chip {% if place == "1" %}pt-place-chip--gold{% elif place == "2" %}pt-place-chip--silver{% elif place == "3" %}pt-place-chip--bronze{% endif %}" aria-label="{% trans "Place" %}">
+                <i class="bi bi-award" aria-hidden="true"></i>
+                <span class="pt-place-value">{{ place_label }}</span>
+                <span class="pt-place-sep">/</span>
+                <span class="pt-place-total">{{ teams }}</span>
+            </span>
+        {% else %}
+            <span class="pt-place-value">{{ place_label }}</span>
+            <span class="pt-place-sep">/</span>
+            <span class="pt-place-total">{{ teams }}</span>
+        {% endif %}
+    </td>
+    <td class="pt-col-team" data-label="{% trans "Team" %}">
+        {% if row.team_players %}
+            <span class="pt-team-players">
+                {% for team_player in row.team_players %}
+                    <span class="pt-team-player">{{ team_player.get_name }}</span>
+                {% endfor %}
+            </span>
+        {% elif row.team %}
+            {{ row.team.get_short_name }}
+        {% endif %}
+    </td>
+    <td class="pt-col-strength" data-label="{% trans "Power" %}">
+        <div class="pt-strength-values">
+            {% if team_power %}
+                {{ team_power|team_power_badge|safe }}
+            {% else %}
+                <span class="badge tournament-power-badge team-power-badge player-team-power-missing" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_team_power_help_text }}" aria-label="{{ tournament_team_power_help_text }}">
+                    <i class="bi bi-star" aria-hidden="true"></i>
+                    <span>---</span>
+                </span>
+            {% endif %}
+            {% if tournament_power %}
+                {{ tournament_power|tournament_power_badge|safe }}
+            {% else %}
+                <span class="pt-muted">&mdash;</span>
+            {% endif %}
+        </div>
+    </td>
+    <td class="pt-col-points" data-label="{% trans "Points" %}">
+            {% if points %}
+                <span class="pt-points-chip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ tournament_points_help_text }}">
+                    <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                    <span>{{ points|floatformat:2 }}</span>
+                </span>
+            {% else %}
+                <span class="pt-muted">&mdash;</span>
+            {% endif %}
+    </td>
+</tr>
+{% endwith %}
+{% endfor %}
+{% endblock %}

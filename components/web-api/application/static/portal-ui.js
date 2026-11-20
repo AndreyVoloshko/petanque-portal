@@ -17,7 +17,6 @@
         tablet: 30,
         mobile: 25
     };
-    var PAGE_SIZE_PARAM = 'per_page';
     var TOOLTIP_SELECTOR = '[data-bs-toggle="tooltip"], [data-toggle="tooltip"]';
     var TOOLTIP_DATA_OFFSET = '0,2';
     var TOOLTIP_OFFSET = [0, 2];
@@ -246,20 +245,8 @@
         activeTooltipTrigger = trigger;
     }
 
-    function submitClosestForm() {
-        $(this).closest('form').trigger('submit');
-    }
-
-    function initAutoSubmitControls() {
-        $(document).on(
-            'change',
-            '.players-page-size-form select[name="' + PAGE_SIZE_PARAM + '"]',
-            submitClosestForm
-        );
-    }
-
     function initRowClicks() {
-        $(document).on('click', '#players tbody tr.players-row, #clubs tbody tr.clubs-row', function(event) {
+        $(document).on('click', '#players tbody tr.players-row, #clubs tbody tr.clubs-row, .player-tournament-row', function(event) {
             var href;
 
             if ($(event.target).closest('a, button, input, select').length) {
@@ -271,25 +258,6 @@
                 window.location.href = href;
             }
         });
-    }
-
-    function initScrollMemory(linkSelector, targetSelector, storageKey) {
-        $(document).on('click', linkSelector, function() {
-            if (!$(this).hasClass('is-disabled') && $(this).attr('href') !== '#') {
-                window.sessionStorage.setItem(storageKey, '1');
-            }
-        });
-
-        if (window.sessionStorage.getItem(storageKey) === '1') {
-            window.sessionStorage.removeItem(storageKey);
-            $(targetSelector).each(function() {
-                this.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                return false;
-            });
-        }
     }
 
     function initTournamentNotesCards() {
@@ -323,10 +291,8 @@
 
     function initPortalUi() {
         refreshTooltips(document);
-        initAutoSubmitControls();
         initRowClicks();
         initTournamentNotesCards();
-        initScrollMemory('.players-page-link', '.players-results-surface', 'players-table-scroll');
 
         $(document).on('click', '.players-column-help', function(event) {
             event.preventDefault();

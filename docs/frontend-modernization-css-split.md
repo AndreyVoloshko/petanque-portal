@@ -186,3 +186,23 @@ These replace the migration checkpoint's final values for the current PR. The ba
 | Tournament teams | 1440 px | 98,618 B → 72,074 B (−26.9%) | 227,577 B → 111,081 B (−51.2%) |
 
 The existing Docker service was rebuilt and all 270 Django tests passed. Browser verification covered club filters, table/card breakpoints, sorting, and pagination, plus collapsed and expanded people sections at 320, 390, 768, 820, 1200, and 1440 px. The people disclosure was exercised with JavaScript disabled, including keyboard activation. Local tournaments with a national head arbiter, a category-II head arbiter, and 13 other arbiters were checked.
+
+## Athlete and club profiles
+
+Both profiles load route stylesheets in place of the site-wide legacy sheet. The club page retains the shared athlete cards, and both profiles use the existing panel and palette. Athlete history uses the shared table and pagination. Django renders the requested sort order and page so the URL can be shared and navigation works without JavaScript.
+
+Tournaments, athlete ratings, season ratings, the club directory, and athlete history update in place on same-route filter, sort, or pagination actions. The browser preserves the current scroll position and restores it for Back and Forward. Regular GET links and forms handle navigation when JavaScript is disabled. Club roster filters continue to filter the cards already on the page.
+
+| Authored CSS | Before (`77f546d`) | After | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 7,079 lines | 4,685 lines | −2,394 lines |
+| All authored CSS including the legacy sheet | 11,890 lines / 239,560 B | 11,587 lines / 236,854 B | −303 lines / −2,706 B |
+
+These figures exclude compiled and vendor CSS. Transfer totals are medians of three Chromium loads with the cache disabled, measured on the same local database and viewports. They include successfully transferred first-party and third-party stylesheets.
+
+| Route | Width | Before | After | Change |
+| --- | ---: | ---: | ---: | ---: |
+| `/club/24` | 390 px | 84,364 B | 65,982 B | −21.8% |
+| `/player/391` | 390 px | 84,028 B | 67,612 B | −19.5% |
+| `/club/24` | 1440 px | 84,373 B | 65,984 B | −21.8% |
+| `/player/391` | 1440 px | 84,235 B | 67,685 B | −19.6% |
