@@ -5,7 +5,7 @@
     <span>{{ size_label }}</span>
     <details class="portal-list-size-options">
         <summary class="portal-page-control" aria-label="{{ size_label }} {% if page_size == -1 %}{{ all_label }}{% else %}{{ page_size }}{% endif %}">{% if page_size == -1 %}{{ all_label }}{% else %}{{ page_size }}{% endif %}</summary>
-        <form class="portal-list-size-menu" method="get" action="{{ action }}" aria-label="{{ size_label }}">
+        <form class="portal-list-size-menu" data-list-form method="get" action="{{ action }}" aria-label="{{ size_label }}">
             {% include "common/list/hidden_fields.html" with fields=active_filters exclude="per_page" only %}
             {% for size in page_size_options %}
                 <button class="portal-page-control" type="submit" name="per_page" value="{{ size }}"{% if page_size == size %} aria-current="true"{% endif %}>{% if size == -1 %}{{ all_label }}{% else %}{{ size }}{% endif %}</button>

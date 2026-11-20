@@ -3,5 +3,5 @@
         <h2>{{ title }}</h2>
         <p>{{ description }}</p>
     </header>
-    {% if reset_url %}{% include "common/list/button.html" with href=reset_url label=reset_label icon="bi-arrow-counterclockwise" only %}{% endif %}
+    {% if reset_url %}{% include "common/list/button.html" with href=reset_url label=reset_label icon="bi-arrow-counterclockwise" list_link=True only %}{% endif %}
 </div>

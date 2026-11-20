@@ -1425,8 +1425,9 @@ class PlayerTournamentListTests(TestCase):
         self.assertIn('tournament-power-4', content)
         self.assertIn('team-power-badge', content)
         self.assertNotIn('tournament-power-label', content)
-        self.assertIn('data-sort-place="5"', content)
-        self.assertIn('data-sort-place-max="8"', content)
+        self.assertContains(response, 'sort=place&amp;direction=asc#player-history')
+        self.assertContains(response, '/vite/assets/player-profile-')
+        self.assertNotContains(response, 'style-v2.css')
         self.assertIn('>5-8</span>', content)
         self.assertIn('<span class="pt-tournament-location">Київ</span>', content)
         self.assertIn('<span class="ptm-location">Київ</span>', content)
@@ -1438,6 +1439,29 @@ class PlayerTournamentListTests(TestCase):
             table_body.index('class="pt-col-strength"'),
             table_body.index('class="pt-col-points"'),
         )
+
+    def test_player_history_sorts_before_paginating_and_preserves_the_sort_in_page_links(self):
+        player = self.create_player('paged-history')
+        team = Team.objects.create(name='History Team')
+        PlayerTeamMembership.objects.create(team=team, player=player, is_capitan=True)
+        for points in range(26):
+            tournament = Tournament.objects.create(
+                name=f'History Cup {points}',
+                category='open',
+                start_date=timezone.localdate() - timedelta(days=points + 1),
+                is_processing_finished=True,
+            )
+            TeamTournamentMembership.objects.create(tournament=tournament, team=team, rating_points=points)
+
+        path = f'/player/{player.pk}'
+        query = {'sort': 'points', 'direction': 'desc', 'per_page': 25}
+        response = self.client.get(path, query)
+        self.assertContains(response, f'{path}?sort=points&amp;direction=desc&amp;per_page=25&amp;page=2#player-history')
+        points = [row['team_rating_points'] for row in response.context['player_tournament_rows']]
+        self.assertEqual(points, list(range(25, 0, -1)))
+
+        response = self.client.get(path, dict(query, page=2))
+        self.assertEqual([row['team_rating_points'] for row in response.context['player_tournament_rows']], [0])
 
     def test_player_tournament_table_shows_placeholder_team_power_badge(self):
         player = self.create_player('missing-team-power-player')
@@ -3432,7 +3456,7 @@ class TournamentListingPageTests(TestCase):
         response = self.client.get('/player/{}'.format(player.pk))
 
         self.assertEqual(response.status_code, 200)
-        tournament_ids = {tournament.pk for tournament in response.context['player_tournaments']}
+        tournament_ids = {row['tournament'].pk for row in response.context['player_tournament_rows']}
         self.assertNotIn(stale.pk, tournament_ids)
         self.assertIn(recent.pk, tournament_ids)
         self.assertIn(processed.pk, tournament_ids)

@@ -26,6 +26,8 @@ export default defineConfig({
         'src/tournaments.css',
         'src/ratings.css',
         'src/clubs.css',
+        'src/club-profile.css',
+        'src/player-profile.css',
         'src/tournament-detail.css',
       ],
     },

@@ -1,6 +1,6 @@
 <li>
     {% if enabled %}
-        <a class="portal-page-control" href="{{ href }}{{ anchor }}"{% if label %} aria-label="{{ label }}"{% endif %}{% if number == current and number %} aria-current="page"{% endif %}>
+        <a class="portal-page-control" href="{{ href }}{{ anchor }}" data-list-link{% if label %} aria-label="{{ label }}"{% endif %}{% if number == current and number %} aria-current="page"{% endif %}>
             {% if icon %}<i class="bi {{ icon }}" aria-hidden="true"></i>{% else %}{{ number }}{% endif %}
         </a>
     {% else %}

@@ -1,5 +1,6 @@
 import datetime
 import json
+from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -25,6 +26,8 @@ PLAYERS_PAGE_SIZE_PARAM = 'per_page'
 DEFAULT_PLAYERS_PAGE_SIZE = 50
 MOBILE_PLAYERS_PAGE_SIZE = 25
 PLAYERS_PAGE_SIZE_OPTIONS = (MOBILE_PLAYERS_PAGE_SIZE, 30, DEFAULT_PLAYERS_PAGE_SIZE, 100)
+PLAYER_HISTORY_PAGE_SIZES = (*PLAYERS_PAGE_SIZE_OPTIONS, -1)
+PLAYER_HISTORY_SORT_DEFAULTS = {'date': 'desc', 'place': 'asc', 'points': 'desc'}
 PLAYER_AGE_CATEGORIES = {
     'JUN': (0, 18),
     'ESP': (19, 23),
@@ -226,6 +229,7 @@ def _player_pagination_summary(page_obj):
     )
 
 
+@vary_on_headers('Sec-CH-UA-Mobile', 'User-Agent')
 def player(request, id):
     player = get_object_or_404(
         Player.objects.select_related('current_club', 'current_club__city'),
@@ -233,9 +237,12 @@ def player(request, id):
     )
 
     all_past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past').distinct()
-    past_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='except_b').distinct()
+    past_tournaments = (
+        Tournament.get_list_by_player(player=player, date_filter='past', type_filter='except_b')
+        .distinct()
+        .order_by('-start_date', '-pk')
+    )
     past_b_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='b').distinct()
-    future_tournaments = Tournament.get_list_by_player(player=player, date_filter='future').distinct()
     past_away_tournaments = Tournament.get_list_by_player(player=player, date_filter='past', type_filter='away').distinct()
 
     today = datetime.datetime.now()
@@ -270,16 +277,78 @@ def player(request, id):
         'player': player,
         'player_summary_info': player_summary_info,
         'player_rating_position': player_rating_position,
-        'past_tournaments': past_tournaments,
-        'future_tournaments': future_tournaments,
-        'past_b_tournaments': past_b_tournaments,
-        'past_away_tournaments': past_away_tournaments,
-        'player_tournaments': past_tournaments,
-        'player_tournament_rows': player_tournament_rows,
+        **_paginate_player_history(request, player_tournament_rows),
         'is_national_team_player': is_national_team_player,
         'season_rating_field': season_rating_field,
         'player_seasons': player_seasons,
     })
+
+
+def _paginate_player_history(request, rows):
+    sort = request.GET.get('sort', 'date')
+    if sort not in PLAYER_HISTORY_SORT_DEFAULTS:
+        sort = 'date'
+    direction = request.GET.get('direction', PLAYER_HISTORY_SORT_DEFAULTS[sort])
+    if direction not in ('asc', 'desc'):
+        direction = PLAYER_HISTORY_SORT_DEFAULTS[sort]
+    descending = direction == 'desc'
+
+    if sort == 'place':
+        def place_key(row):
+            place = int(row['place'] or 0)
+            if place <= 0:
+                return (True,)
+            place_max = int(row['place_max'] or place)
+            return (False, -place if descending else place,
+                    -row['tournament'].start_date.toordinal(),
+                    -place_max if descending else place_max,
+                    row['teams_count'] if descending else -row['teams_count'])
+
+        rows.sort(key=place_key)
+    elif sort == 'points':
+        rows.sort(key=lambda row: row['team_rating_points'] or 0, reverse=descending)
+    else:
+        rows.sort(key=lambda row: row['tournament'].start_date, reverse=descending)
+
+    try:
+        page_size = int(request.GET.get('per_page', ''))
+    except ValueError:
+        page_size = None
+    filters = {}
+    if sort != 'date' or direction != 'desc':
+        filters.update(sort=sort, direction=direction)
+    if page_size in PLAYER_HISTORY_PAGE_SIZES:
+        filters['per_page'] = page_size
+    else:
+        page_size = _default_player_page_size(request)
+
+    paginator = Paginator(rows, max(len(rows), 1) if page_size == -1 else page_size)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    headings = {}
+    for field, default in PLAYER_HISTORY_SORT_DEFAULTS.items():
+        active = field == sort
+        next_direction = ('asc' if descending else 'desc') if active else default
+        query = urlencode(dict(filters, sort=field, direction=next_direction))
+        headings[field] = {
+            'url': f'{request.path}?{query}#player-history',
+            'direction': ('descending' if descending else 'ascending') if active else '',
+        }
+
+    return {
+        'player_tournament_rows': page_obj.object_list,
+        'history_headings': headings,
+        'page_obj': page_obj,
+        'page_size': page_size,
+        'page_size_options': PLAYER_HISTORY_PAGE_SIZES,
+        'active_filters': filters,
+        'pagination_summary': _('Showing 0 of 0 competitions') if not rows else (
+            _('Showing _START_ to _END_ of _TOTAL_ competitions')
+            .replace('_START_', str(page_obj.start_index()))
+            .replace('_END_', str(page_obj.end_index()))
+            .replace('_TOTAL_', str(paginator.count))
+        ),
+        **pagination_links(page_obj, request.path, filters),
+    }
 
 
 def _build_player_tournament_rows(player, tournaments):

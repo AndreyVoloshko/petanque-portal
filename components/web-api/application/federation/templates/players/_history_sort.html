@@ -1,0 +1,5 @@
+<a class="{{ css_class }}{% if heading.direction %} is-active{% endif %}" href="{{ heading.url }}" data-list-link{% if heading.direction and icon %} aria-current="true"{% endif %}>
+    {% if icon %}<i class="bi {{ icon }}" aria-hidden="true"></i>{% endif %}
+    {{ label }}
+    <i class="bi {% if heading.direction == 'ascending' %}bi-arrow-up{% elif heading.direction == 'descending' %}bi-arrow-down{% else %}bi-arrow-down-up{% endif %} pt-sort-icon" aria-hidden="true"></i>
+</a>

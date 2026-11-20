@@ -17,99 +17,98 @@
         <span class="club-breadcrumb-current">{{ club.short_name }}</span>
     </nav>
 
-    <div class="club-detail-top">
-        <header class="club-hero-card">
-            <div class="club-hero-brand">
-                <div class="club-logo-frame">
-                    {% if club.logo %}
-                        <img src="{{ settings.MEDIA_URL }}{{ club.logo }}" alt="{{ club.short_name }}">
-                    {% else %}
-                        <img src="{% static 'default.png' %}" alt="{{ club.short_name }}">
-                    {% endif %}
-                </div>
-
-                <div class="club-title-block">
-                    <p class="club-eyebrow">{{ club.name }}</p>
-                    <h1 id="club-detail-title" class="club-title">{{ club.short_name|upper }}</h1>
-
-                    {% if club.city %}
-                    <p class="club-location-line">
-                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
-                        <span>
-                            {{ club.city }}
-                            {% if club.city.country %}, {{ club.city.country.name }} {{ club.city.country|country_flag|safe }}{% endif %}
-                        </span>
-                    </p>
-                    {% endif %}
-
-                    <div class="club-social-list" aria-label="{% trans "Club links" %}">
-                        {% if club.facebook %}
-                        <a class="club-social-link club-social-link-facebook" href="{{ club.facebook|social_url:'facebook' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
-                            <i class="bi bi-facebook" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                        {% if club.instagram %}
-                        <a class="club-social-link club-social-link-instagram" href="{{ club.instagram|social_url:'instagram' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram" aria-label="Instagram">
-                            <i class="bi bi-instagram" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                        {% if club.twitter %}
-                        <a class="club-social-link club-social-link-twitter" href="{{ club.twitter|social_url:'twitter' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
-                            <i class="bi bi-twitter-x" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                        {% if club.website %}
-                        <a class="club-social-link club-social-link-website" href="{{ club.website|social_url:'website' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Website" %}" aria-label="{% trans "Website" %}">
-                            <i class="bi bi-globe2" aria-hidden="true"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="club-hero-metrics" aria-label="{% trans "Club summary" %}">
-                <div class="club-hero-metric">
-                    <span class="club-hero-metric-icon club-hero-metric-athletes"><i class="bi bi-people" aria-hidden="true"></i></span>
-                    <span class="club-hero-metric-copy">
-                        <span class="club-hero-metric-value">{{ club_stats.players_count }}</span>
-                        <span class="club-hero-metric-label">{% trans "Athletes" %}</span>
-                    </span>
-                </div>
-                <div class="club-hero-metric">
-                    <span class="club-hero-metric-icon club-hero-metric-founded"><i class="bi bi-calendar3" aria-hidden="true"></i></span>
-                    <span class="club-hero-metric-copy">
-                        <span class="club-hero-metric-value">{{ club.date_created|date:"F Y" }}</span>
-                        <span class="club-hero-metric-label">{% trans "Founded" %}</span>
-                    </span>
-                </div>
-                <div class="club-hero-metric">
-                    <span class="club-hero-metric-icon club-hero-metric-rank"><i class="bi bi-trophy" aria-hidden="true"></i></span>
-                    <span class="club-hero-metric-copy">
-                        <span class="club-hero-metric-value">#{{ club_stats.club_rank }}</span>
-                        <span class="club-hero-metric-label">{% trans "Place in Ukrainian club rating" %}</span>
-                    </span>
-                </div>
-            </div>
-
-            <aside class="club-president-panel" aria-labelledby="club-president-title">
-                <div class="club-section-heading">
-                    <h2 id="club-president-title">{% trans "Club president" %}</h2>
-                </div>
-                {% if club.president %}
-                    {% with item=club.president rank_value=club.president|rating_position:rating_filters points_value=club.president.current_rating power_value=club.president.current_power card_extra_class="club-president-card" %}
-                        {% include "common/athlete_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value show_power=1 card_extra_class=card_extra_class %}
-                    {% endwith %}
+    <header class="portal-panel club-hero-card">
+        <div class="club-hero-brand">
+            <div class="club-logo-frame">
+                {% if club.logo %}
+                    <img src="{{ club.logo.url }}" alt="{{ club.short_name }}" onerror="this.hidden=true; this.nextElementSibling.hidden=false">
+                    <img src="{% static 'default.png' %}" alt="{{ club.short_name }}" hidden>
                 {% else %}
-                    <div class="club-empty-card">
-                        <i class="bi bi-person" aria-hidden="true"></i>
-                        <span>{% trans "President is not specified." %}</span>
-                    </div>
+                    <img src="{% static 'default.png' %}" alt="{{ club.short_name }}">
                 {% endif %}
-            </aside>
-        </header>
-    </div>
+            </div>
 
-    <section class="club-stats-panel" aria-labelledby="club-stats-title">
+            <div class="club-title-block">
+                <p class="club-eyebrow">{{ club.name }}</p>
+                <h1 id="club-detail-title" class="club-title">{{ club.short_name|upper }}</h1>
+
+                {% if club.city %}
+                <p class="club-location-line">
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    <span>
+                        {{ club.city }}
+                        {% if club.city.country %}, {{ club.city.country.name }} {{ club.city.country|country_flag|safe }}{% endif %}
+                    </span>
+                </p>
+                {% endif %}
+
+                <div class="club-social-list" aria-label="{% trans "Club links" %}">
+                    {% if club.facebook %}
+                    <a class="club-social-link club-social-link-facebook" href="{{ club.facebook|social_url:'facebook' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+                        <i class="bi bi-facebook" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
+                    {% if club.instagram %}
+                    <a class="club-social-link club-social-link-instagram" href="{{ club.instagram|social_url:'instagram' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram" aria-label="Instagram">
+                        <i class="bi bi-instagram" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
+                    {% if club.twitter %}
+                    <a class="club-social-link club-social-link-twitter" href="{{ club.twitter|social_url:'twitter' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
+                        <i class="bi bi-twitter-x" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
+                    {% if club.website %}
+                    <a class="club-social-link club-social-link-website" href="{{ club.website|social_url:'website' }}" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="{% trans "Website" %}" aria-label="{% trans "Website" %}">
+                        <i class="bi bi-globe2" aria-hidden="true"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="club-hero-metrics" aria-label="{% trans "Club summary" %}">
+            <div class="club-hero-metric">
+                <span class="club-hero-metric-icon club-hero-metric-athletes"><i class="bi bi-people" aria-hidden="true"></i></span>
+                <span class="club-hero-metric-copy">
+                    <span class="club-hero-metric-value">{{ club_stats.players_count }}</span>
+                    <span class="club-hero-metric-label">{% trans "Athletes" %}</span>
+                </span>
+            </div>
+            <div class="club-hero-metric">
+                <span class="club-hero-metric-icon club-hero-metric-founded"><i class="bi bi-calendar3" aria-hidden="true"></i></span>
+                <span class="club-hero-metric-copy">
+                    <span class="club-hero-metric-value">{{ club.date_created|date:"F Y" }}</span>
+                    <span class="club-hero-metric-label">{% trans "Founded" %}</span>
+                </span>
+            </div>
+            <div class="club-hero-metric">
+                <span class="club-hero-metric-icon club-hero-metric-rank"><i class="bi bi-trophy" aria-hidden="true"></i></span>
+                <span class="club-hero-metric-copy">
+                    <span class="club-hero-metric-value">#{{ club_stats.club_rank }}</span>
+                    <span class="club-hero-metric-label">{% trans "Place in Ukrainian club rating" %}</span>
+                </span>
+            </div>
+        </div>
+
+        <aside class="club-president-panel" aria-labelledby="club-president-title">
+            <div class="club-section-heading">
+                <h2 id="club-president-title">{% trans "Club president" %}</h2>
+            </div>
+            {% if club.president %}
+                {% with item=club.president rank_value=club.president|rating_position:rating_filters points_value=club.president.current_rating power_value=club.president.current_power card_extra_class="club-president-card" %}
+                    {% include "common/athlete_card.html" with item=item rank_value=rank_value points_value=points_value power_value=power_value show_power=1 card_extra_class=card_extra_class %}
+                {% endwith %}
+            {% else %}
+                <div class="club-empty-card">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                    <span>{% trans "President is not specified." %}</span>
+                </div>
+            {% endif %}
+        </aside>
+    </header>
+
+    <section class="portal-panel club-stats-panel" aria-labelledby="club-stats-title">
         <div class="club-section-heading">
             <h2 id="club-stats-title">{% trans "Club indicators" %}</h2>
         </div>

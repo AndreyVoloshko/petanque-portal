@@ -20,6 +20,8 @@ def settings_context(request):
     return {
         "portal_ui": {
             "club_directory": route == "clubs",
+            "club_profile": route == "club",
+            "player_profile": route == "player",
             "tournament_detail": route == "tournament",
             "team_registration": route == "register_team",
             "home_page": route == "main_page",
@@ -32,6 +34,7 @@ def settings_context(request):
         "settings": settings,
         "federation_telegram_link": settings.FEDERATION_TELEGRAM_LINK,
         "static_asset_versions": {
+            "list_navigation": _static_asset_version("list-navigation.js"),
             "portal_ui": _static_asset_version('portal-ui.js'),
             "style_v2": _static_asset_version('style-v2.css'),
         },
