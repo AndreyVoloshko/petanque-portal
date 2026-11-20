@@ -1,0 +1,43 @@
+<script>
+(() => {
+    const section = document.currentScript.closest('.tournament-teams-section');
+    const mobile = section.querySelector('.tournament-team-mobile-list');
+    const table = section.querySelector('.tournament-teams-table-wrap');
+    const inputs = '.tournament-ranking-place-input';
+    const button = section.querySelector('.save-places');
+    const token = section.querySelector('.tournament-teams-admin-actions [name="csrfmiddlewaretoken"]');
+
+    function updateRange(field) {
+        const min = field.querySelector('.tournament-place-field-min').value.trim();
+        const max = field.querySelector('.tournament-place-field-max').value.trim();
+        field.classList.toggle('has-complete-range', Boolean(min && max));
+    }
+
+    section.querySelectorAll('.tournament-ranking-place:has(input)').forEach(updateRange);
+    section.addEventListener('input', ({target}) => {
+        if (!target.matches(inputs)) return;
+        for (const other of section.querySelectorAll(inputs)) {
+            if (other.name === target.name) other.value = target.value;
+        }
+        section.querySelectorAll('.tournament-ranking-place:has(input)').forEach(updateRange);
+    });
+
+    button.addEventListener('click', async () => {
+        if (!window.confirm(button.dataset.confirm)) return;
+        const scope = mobile.getClientRects().length ? mobile : table;
+        const values = Array.from(scope.querySelectorAll(inputs), ({name, value}) => ({name, value}));
+        const body = new URLSearchParams({
+            teams: JSON.stringify(values),
+            csrfmiddlewaretoken: token.value,
+        });
+
+        button.disabled = true;
+        try {
+            const response = await fetch(window.location.href, {method: 'POST', body});
+            if (response.ok) window.location.reload();
+        } finally {
+            button.disabled = false;
+        }
+    });
+})();
+</script>

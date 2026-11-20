@@ -17,14 +17,6 @@
         tablet: 30,
         mobile: 25
     };
-    var DATA_TABLE_LARGE_PAGE_SIZE = 100;
-    var DATA_TABLE_ALL_PAGE_SIZE = -1;
-    var DATA_TABLE_LENGTH_VALUES = [
-        RESPONSIVE_PAGE_SIZES.mobile,
-        RESPONSIVE_PAGE_SIZES.defaultValue,
-        DATA_TABLE_LARGE_PAGE_SIZE,
-        DATA_TABLE_ALL_PAGE_SIZE
-    ];
     var PAGE_SIZE_PARAM = 'per_page';
     var TOOLTIP_SELECTOR = '[data-bs-toggle="tooltip"], [data-toggle="tooltip"]';
     var TOOLTIP_DATA_OFFSET = '0,2';
@@ -254,81 +246,6 @@
         activeTooltipTrigger = trigger;
     }
 
-    function fuzzyNum(value) {
-        return String(value || '').replace(/[^\d.\-]/g, '');
-    }
-
-    function registerDataTableOrdering() {
-        if (!$.fn.dataTable || !$.fn.dataTable.ext) {
-            return;
-        }
-
-        $.fn.dataTable.ext.order['numbercase-asc'] = function(x, y) {
-            return fuzzyNum(x) - fuzzyNum(y);
-        };
-
-        $.fn.dataTable.ext.order['numbercase-desc'] = function(x, y) {
-            return fuzzyNum(y) - fuzzyNum(x);
-        };
-    }
-
-    function dataTableFooterOptions(options) {
-        var config = options || {};
-        var lengthLabel = config.lengthLabel || '';
-        var allLabel = config.allLabel || 'All';
-
-        return {
-            dom: 't<"d-none portal-datatable-generated-controls"lpi>',
-            pageLength: config.pageLength || responsivePageSize(),
-            pagingType: 'full_numbers',
-            lengthMenu: [
-                DATA_TABLE_LENGTH_VALUES,
-                [
-                    RESPONSIVE_PAGE_SIZES.mobile,
-                    RESPONSIVE_PAGE_SIZES.defaultValue,
-                    DATA_TABLE_LENGTH_VALUES[2],
-                    allLabel
-                ]
-            ],
-            language: {
-                lengthMenu: '<span>' + lengthLabel + '</span> _MENU_',
-                paginate: {
-                    first: '<i class="bi bi-chevron-double-left" aria-hidden="true"></i>',
-                    previous: '<i class="bi bi-chevron-left" aria-hidden="true"></i>',
-                    next: '<i class="bi bi-chevron-right" aria-hidden="true"></i>',
-                    last: '<i class="bi bi-chevron-double-right" aria-hidden="true"></i>'
-                }
-            }
-        };
-    }
-
-    function mountDataTableFooter(tableElement, footerElement) {
-        var table = $(tableElement);
-        var footer = $(footerElement);
-        var wrapper = table.closest('.dataTables_wrapper');
-        var length = wrapper.find('.dataTables_length');
-        var info = wrapper.find('.dataTables_info');
-        var paginate = wrapper.find('.dataTables_paginate');
-        var infoMount = footer.find('.js-datatable-info-mount');
-        var paginationMount = footer.find('.js-datatable-pagination-mount');
-        var lengthMount = footer.find('.js-datatable-length-mount');
-
-        if (info.length && infoMount.length && info.parent()[0] !== infoMount[0]) {
-            infoMount.empty().append(info);
-        }
-
-        if (paginate.length && paginationMount.length && paginate.parent()[0] !== paginationMount[0]) {
-            paginationMount.empty().append(paginate);
-        }
-
-        if (length.length && lengthMount.length) {
-            length.addClass('players-page-size-form');
-            if (length.parent()[0] !== lengthMount[0]) {
-                lengthMount.empty().append(length);
-            }
-        }
-    }
-
     function submitClosestForm() {
         $(this).closest('form').trigger('submit');
     }
@@ -342,7 +259,7 @@
     }
 
     function initRowClicks() {
-        $(document).on('click', '#players tbody tr.players-row', function(event) {
+        $(document).on('click', '#players tbody tr.players-row, #clubs tbody tr.clubs-row', function(event) {
             var href;
 
             if ($(event.target).closest('a, button, input, select').length) {
@@ -405,7 +322,6 @@
     }
 
     function initPortalUi() {
-        registerDataTableOrdering();
         refreshTooltips(document);
         initAutoSubmitControls();
         initRowClicks();
@@ -454,30 +370,6 @@
         disable: disableTooltips,
         hideAll: hideAllTooltips,
         refresh: refreshTooltips
-    };
-
-    portal.dataTableFooter = {
-        defaultPageLength: responsivePageSize,
-        init: function(tableElement, tableOptions, footerElement, afterDraw) {
-            var table = $(tableElement);
-            var options = $.extend(true, {}, tableOptions || {});
-            var portalFooter = options.portalFooter || {};
-            var dataTable;
-
-            delete options.portalFooter;
-            dataTable = table.DataTable($.extend(true, {}, dataTableFooterOptions(portalFooter), options));
-
-            mountDataTableFooter(table, footerElement);
-            dataTable.on('draw.dt', function() {
-                mountDataTableFooter(table, footerElement);
-                if (typeof afterDraw === 'function') {
-                    afterDraw(dataTable);
-                }
-            });
-
-            return dataTable;
-        },
-        mount: mountDataTableFooter
     };
 
     $(initPortalUi);

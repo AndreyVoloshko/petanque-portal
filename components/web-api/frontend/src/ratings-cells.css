@@ -111,7 +111,7 @@
 .players-rank-badge {
   background: var(--badge-bg, var(--list-success)) !important;
   border-color: var(--badge-border, var(--list-success));
-  color: var(--list-surface) !important;
+  color: var(--badge-tone, var(--list-surface)) !important;
   font-weight: 800;
   min-width: 2.35rem;
 }
