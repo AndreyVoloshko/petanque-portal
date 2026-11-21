@@ -206,3 +206,19 @@ These figures exclude compiled and vendor CSS. Transfer totals are medians of th
 | `/player/391` | 390 px | 84,028 B | 67,612 B | −19.5% |
 | `/club/24` | 1440 px | 84,373 B | 65,984 B | −21.8% |
 | `/player/391` | 1440 px | 84,235 B | 67,685 B | −19.6% |
+
+## Home page
+
+The home page uses a route-specific Vite stylesheet, the existing shell and tokens, and the shared buttons, panels, tournament badges and athlete cards. Cookie-banner breakpoints live with the shared header. The tournament carousels use CSS scroll snap and native JavaScript. The page uses the shared tooltip initializer and the shared header still loads jQuery and jQuery UI.
+
+| Authored CSS | Before (`5828cfe`) | After | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
+| All authored CSS including the legacy sheet | 11,582 lines / 236,705 B | 11,502 lines / 235,302 B | −80 lines / −1,403 B |
+
+The authored totals exclude built and vendor CSS. Transfer totals are medians of three Chromium loads per width at `localhost:60102` with caching disabled and include all successfully transferred first-party and third-party stylesheets.
+
+| Home viewport | Before | After | Change |
+| --- | ---: | ---: | ---: |
+| 390 px | 78,237 B | 66,103 B | −15.5% |
+| 1440 px | 78,189 B | 65,864 B | −15.8% |

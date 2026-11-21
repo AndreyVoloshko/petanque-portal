@@ -1,0 +1,919 @@
+@import "./list.css";
+
+@media (max-width: 575.98px) {
+  .landing-header-container {
+    padding-top: 0 !important;
+  }
+}
+
+.landing-header-container {
+  margin-top: 3.5rem !important;
+  max-width: none;
+  padding: 0 !important;
+  width: 100%;
+}
+
+.landing-hero {
+  align-items: center;
+  background-image:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-soft-surface) 99%, transparent) 0%,
+      color-mix(in srgb, var(--color-soft-surface) 96%, transparent) 39%,
+      color-mix(in srgb, var(--color-soft-surface) 70%, transparent) 56%,
+      color-mix(in srgb, var(--color-soft-surface) 45%, transparent) 66%,
+      color-mix(in srgb, var(--color-soft-surface) 78%, transparent) 84%,
+      color-mix(in srgb, var(--color-soft-surface) 98%, transparent) 100%
+    ),
+    var(--home-hero-image);
+  background-position:
+    center,
+    67% 58%;
+  background-repeat: no-repeat;
+  background-size:
+    auto,
+    max(76vw, 64rem) auto;
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.43fr);
+  margin: 0 0 1rem;
+  min-height: 16.25rem;
+  overflow: hidden;
+  padding: 1.55rem max(2rem, calc((100vw - 1320px) / 2 + 0.75rem));
+}
+
+.landing-hero-copy {
+  align-content: center;
+  display: grid;
+  max-width: 42rem;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-title {
+  align-items: center;
+  color: var(--color-text);
+  display: flex;
+  font-size: 2.12rem;
+  font-weight: 800;
+  gap: 1rem;
+  letter-spacing: 0;
+  line-height: 1.15;
+  margin-bottom: 0.85rem;
+}
+
+.landing-title-logo {
+  display: block;
+  flex: 0 0 auto;
+  height: 5rem;
+  width: 5rem;
+}
+
+.landing-title a,
+.landing-title a:hover,
+.landing-title a:focus {
+  color: var(--color-text);
+}
+
+.landing-intro {
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 36rem;
+}
+
+.landing-actions {
+  align-content: center;
+  display: grid;
+  gap: 0.65rem;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-action {
+  align-items: center;
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px var(--list-shadow);
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 4rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.landing-action-primary {
+  background: var(--list-surface);
+}
+
+.landing-icon {
+  align-items: center;
+  background: var(--list-muted-surface);
+  border-radius: 999px;
+  color: var(--link-action);
+  display: inline-flex;
+  flex: 0 0 2.55rem;
+  height: 2.55rem;
+  justify-content: center;
+  line-height: 1;
+  width: 2.55rem;
+}
+
+.landing-icon .landing-svg-icon {
+  height: 1.45rem;
+  width: 1.45rem;
+}
+
+.landing-icon-gold {
+  background: var(--rating-age-bg);
+  color: var(--rating-award-icon);
+}
+
+.landing-line {
+  color: var(--color-text);
+  font-size: 0.95rem;
+  line-height: 1.38;
+  margin: 0;
+}
+
+.landing-action-chevron {
+  color: var(--color-text);
+  fill: none;
+  height: 1.1rem;
+  opacity: 0.7;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+  width: 1.1rem;
+}
+
+.landing-action-cta a {
+  color: var(--link-action);
+}
+
+.landing-action-cta a:hover,
+.landing-action-cta a:focus {
+  color: var(--link-action-hover);
+}
+
+.homepage-content {
+  color: var(--color-text);
+  display: grid;
+  gap: clamp(2.75rem, 4vw, 4.5rem);
+  min-width: 0;
+}
+
+.homepage-content.py-4 {
+  padding-top: 0.75rem !important;
+}
+
+.landing-block {
+  display: grid;
+  gap: clamp(1.35rem, 2vw, 1.9rem);
+  min-width: 0;
+}
+
+.landing-block-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.landing-heading-copy {
+  align-items: flex-start;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.85rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.landing-heading-copy > div {
+  min-width: 0;
+}
+
+.landing-heading-icon {
+  align-items: center;
+  color: var(--portal-icon-muted);
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  margin-top: 0.1rem;
+}
+
+.landing-heading-icon .landing-svg-icon {
+  height: 1.55rem;
+  width: 1.55rem;
+}
+
+.landing-block-header h2,
+.landing-subsection-header h3 {
+  color: var(--color-text);
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.landing-block-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.landing-block-header p,
+.landing-subsection-header p {
+  color: var(--color-muted);
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.landing-block-header p {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  margin-top: 0.35rem;
+}
+
+.landing-header-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.75rem;
+}
+
+.landing-subsection {
+  display: grid;
+  gap: 0.95rem;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.landing-subsection + .landing-subsection {
+  margin-top: clamp(2.25rem, 4vw, 3.5rem);
+}
+
+.landing-subsection-header {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.landing-subsection-title-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.landing-subsection-header h3 {
+  align-items: center;
+  display: inline-flex;
+  font-size: 1.2rem;
+  font-weight: 800;
+  gap: 0.55rem;
+  line-height: 1.2;
+}
+
+.landing-subsection-header h3 .landing-svg-icon {
+  color: var(--portal-icon-muted);
+  height: 1.45rem;
+  width: 1.45rem;
+}
+
+.landing-subsection-header p {
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.homepage-view-all {
+  align-items: center;
+  color: var(--link-action);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.9rem;
+  font-weight: 800;
+  gap: 0.45rem;
+  line-height: 1.1;
+  padding: 0.2rem 0;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.homepage-view-all:hover,
+.homepage-view-all:focus {
+  color: var(--link-action-hover);
+  text-decoration: none;
+}
+
+.homepage-view-all .landing-svg-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.landing-carousel {
+  --carousel-columns: 4;
+  --landing-carousel-gutter: clamp(3rem, 4vw, 5rem);
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 var(--landing-carousel-gutter) 1.15rem;
+  position: relative;
+  width: 100%;
+}
+
+.landing-carousel-track {
+  --carousel-gap: var(--space-3);
+  display: grid;
+  gap: var(--carousel-gap);
+  grid-auto-columns: calc((100% - (var(--carousel-columns) - 1) * var(--carousel-gap)) / var(--carousel-columns));
+  grid-auto-flow: column;
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: 10px;
+}
+
+.landing-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.landing-carousel-item {
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.landing-carousel-arrow {
+  align-items: center;
+  background: var(--list-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: 0 4px 10px var(--list-shadow);
+  color: var(--color-text);
+  display: inline-flex;
+  height: 2.4rem;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  top: calc(50% - 0.75rem);
+  transform: translateY(-50%);
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease,
+    opacity 0.16s ease,
+    transform 0.16s ease;
+  width: 2.4rem;
+  z-index: 2;
+}
+
+.landing-carousel-arrow:hover,
+.landing-carousel-arrow:focus {
+  background: var(--color-soft-surface);
+  box-shadow: 0 5px 12px var(--list-shadow);
+  color: var(--link-action-hover);
+  transform: translateY(-50%) scale(1.03);
+}
+
+.landing-carousel-arrow:disabled {
+  cursor: default;
+  opacity: 0.5;
+  transform: translateY(-50%);
+}
+
+.landing-carousel-arrow-prev {
+  left: 0;
+}
+
+.landing-carousel-arrow-next {
+  right: 0;
+}
+
+.landing-carousel-dots {
+  align-items: center;
+  bottom: 0.05rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.landing-carousel-dot {
+  appearance: none;
+  background: var(--list-disabled);
+  border: 0;
+  border-radius: 999px;
+  height: 0.55rem;
+  padding: 0;
+  transition:
+    background-color 0.16s ease,
+    transform 0.16s ease;
+  width: 0.55rem;
+}
+
+.landing-carousel-dot.is-active {
+  background: var(--list-page-accent);
+  transform: scale(1.12);
+}
+
+.landing-carousel:not([data-carousel-ready]) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.landing-carousel:not([data-carousel-ready]) .landing-carousel-arrow,
+.landing-carousel:not([data-carousel-ready]) .landing-carousel-dots {
+  display: none;
+}
+
+.tournament-card {
+  --panel-padding: 0;
+  color: var(--list-text);
+  box-shadow: 0 2px 5px var(--portal-shadow-navy-04);
+  height: 100%;
+}
+
+.tournament-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 11.25rem;
+  padding: 0.85rem;
+}
+
+.tournament-card-main {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tournament-card-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.tournament-card-title a {
+  color: var(--color-text);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.tournament-card-title a:hover,
+.tournament-card-title a:focus {
+  color: var(--link-action-hover);
+}
+
+.tournament-card-tag-men {
+  --badge-bg: var(--tournament-tag-men-bg);
+  --badge-border: var(--tournament-tag-men-border);
+  --badge-tone: var(--tournament-tag-men-text);
+}
+
+.tournament-card-tag-women {
+  --badge-bg: var(--tournament-tag-women-bg);
+  --badge-border: var(--tournament-tag-women-border);
+  --badge-tone: var(--tournament-tag-women-text);
+}
+
+.tournament-card-tag-youth {
+  --badge-bg: var(--tournament-tag-youth-bg);
+  --badge-border: var(--tournament-tag-youth-border);
+  --badge-tone: var(--tournament-tag-youth-text);
+}
+
+.tournament-card [data-bs-toggle="tooltip"] {
+  cursor: pointer;
+}
+
+.tournament-card-facts {
+  color: var(--color-text);
+  display: grid;
+  gap: 0.28rem;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.tournament-card-fact {
+  align-items: center;
+  display: flex;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.tournament-card-organizer {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+  min-width: 0;
+}
+
+.tournament-card-separator {
+  color: var(--color-muted);
+  margin-right: 0.2rem;
+}
+
+.tournament-card-country {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.tournament-card-fact .landing-svg-icon {
+  color: var(--portal-icon-muted);
+  height: 0.95rem;
+  width: 0.95rem;
+}
+
+.tournament-card-fact[data-bs-toggle="tooltip"] {
+  justify-self: start;
+  max-width: 100%;
+  width: fit-content;
+}
+
+.tournament-card-fact-icon {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tournament-card-fact a {
+  color: var(--color-text);
+}
+
+.tournament-card-fact a:hover,
+.tournament-card-fact a:focus {
+  color: var(--link-action-hover);
+}
+
+.tournament-card-bottom {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.tournament-card-power-row {
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  min-height: 1.55rem;
+  min-width: 0;
+}
+
+.tournament-card-footer {
+  border-top: 1px solid var(--portal-border-subtle);
+  display: grid;
+  min-height: 3rem;
+  padding-top: 0.55rem;
+}
+
+.tournament-card-stats {
+  align-items: center;
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  min-height: 2.25rem;
+  min-width: 0;
+}
+
+.tournament-card-stat {
+  align-items: center;
+  color: var(--color-text);
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 700;
+  gap: 0.3rem;
+  line-height: 1;
+  min-height: 1.5rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tournament-card-stat .landing-svg-icon {
+  color: var(--color-text);
+  height: 0.95rem;
+  width: 0.95rem;
+}
+
+.tournament-card-action {
+  display: flex;
+  justify-self: end;
+  justify-content: flex-end;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.tournament-card-action .tournament-register-button {
+  align-items: center;
+  background: var(--club-points-bg) !important;
+  border: 1px solid var(--club-points-border);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--portal-white-a62);
+  color: var(--club-points-text) !important;
+  display: inline-flex !important;
+  font-size: 0.8rem;
+  font-weight: 800;
+  gap: 0.3rem;
+  justify-content: center;
+  line-height: 1;
+  max-width: 100%;
+  min-height: 2.05rem;
+  min-width: 7.55rem;
+  overflow: hidden;
+  padding: 0.4rem 0.68rem;
+  text-overflow: ellipsis;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+  white-space: nowrap;
+  width: auto;
+}
+
+.tournament-card-action .tournament-register-button:hover,
+.tournament-card-action .tournament-register-button:focus {
+  background: var(--tournament-register-bg) !important;
+  border-color: var(--tournament-register-bg);
+  box-shadow: 0 7px 16px var(--portal-green-ring);
+  color: var(--list-surface) !important;
+}
+
+.tournament-card-action .tournament-register-button:active {
+  background: var(--tournament-register-active-bg) !important;
+  border-color: var(--tournament-register-active-bg);
+  box-shadow: none;
+}
+
+.tournament-card-action .tournament-register-button .bi-plus,
+.tournament-card-action .tournament-register-button .bi-plus-lg {
+  font-size: 1.05rem;
+  line-height: 1;
+  margin-left: 0;
+}
+
+.tournament-card-empty {
+  background: var(--color-soft-surface);
+  box-shadow: none;
+}
+
+.tournament-card-empty-text {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.athletes-block {
+  padding-bottom: 1rem;
+}
+
+.athlete-tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.athlete-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.athlete-tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text);
+  flex: 0 0 auto;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  min-height: 2.45rem;
+  padding: 0.65rem 1.1rem;
+  transition:
+    color 0.16s ease,
+    border-color 0.16s ease,
+    background-color 0.16s ease;
+}
+
+.athlete-tab:hover,
+.athlete-tab:focus {
+  background: var(--color-soft-surface);
+  color: var(--link-action-hover);
+}
+
+.athlete-tab.active {
+  border-bottom-color: var(--list-page-accent);
+  color: var(--list-primary);
+}
+
+.athlete-tab-content {
+  padding-top: 0.9rem;
+}
+
+@media (max-width: 1399.98px) {
+  .landing-carousel {
+    --carousel-columns: 3;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .landing-hero {
+    background-position: center bottom;
+    gap: 1.4rem;
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+  }
+
+  .landing-actions {
+    max-width: 32rem;
+  }
+
+  .landing-block-header,
+  .landing-subsection-header {
+    align-items: flex-start;
+  }
+
+  .landing-heading-copy,
+  .landing-subsection-title-row {
+    width: 100%;
+  }
+
+  .landing-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .landing-carousel {
+    --carousel-columns: 2;
+  }
+}
+
+@media (max-width: 767.98px) {
+
+  .landing-header-container {
+    margin-top: 3.35rem !important;
+  }
+
+  .landing-hero {
+    background-image:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-soft-surface) 98%, transparent) 0%,
+        color-mix(in srgb, var(--color-soft-surface) 94%, transparent) 52%,
+        color-mix(in srgb, var(--color-soft-surface) 74%, transparent) 100%
+      ),
+      var(--home-hero-image);
+    background-position:
+      center,
+      center bottom;
+    background-size:
+      auto,
+      44rem auto;
+    min-height: 0;
+  }
+
+  .landing-title {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 2rem;
+  }
+
+  .landing-title-logo {
+    height: 4.4rem;
+    width: 4.4rem;
+  }
+
+  .landing-action {
+    min-height: 0;
+  }
+
+  .landing-block-header {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .landing-header-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .landing-header-actions .portal-btn {
+    width: 100%;
+  }
+
+  .landing-carousel {
+    --carousel-columns: 1;
+    --landing-carousel-gutter: 2.5rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .landing-carousel-track {
+    --carousel-gap: var(--space-2);
+    padding-inline: 0;
+  }
+
+}
+
+@media (max-width: 575.98px) {
+
+  .landing-hero {
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.15rem 1rem;
+  }
+
+  .landing-title {
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .landing-intro {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .landing-action {
+    border-radius: 12px;
+    padding: 0.875rem;
+  }
+
+  .homepage-content {
+    gap: 2.2rem;
+  }
+
+  .landing-block-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .homepage-view-all {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .tournament-card-body {
+    min-height: 0;
+  }
+
+  .landing-carousel-arrow {
+    height: 2.15rem;
+    width: 2.15rem;
+  }
+
+  .athlete-tabs {
+    gap: 0.1rem;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .athlete-tab {
+    flex: 0 1 auto;
+    font-size: 0.76rem;
+    min-height: 2.2rem;
+    padding: 0.55rem 0.3rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .athlete-tabs {
+    gap: 0.05rem;
+  }
+
+  .athlete-tab {
+    font-size: 0.7rem;
+    padding-left: 0.18rem;
+    padding-right: 0.18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-carousel-track { scroll-behavior: auto; }
+}

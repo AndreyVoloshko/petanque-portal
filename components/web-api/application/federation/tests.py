@@ -2849,6 +2849,9 @@ class TournamentListingPageTests(TestCase):
 
         home = self.client.get('/')
         self.assertContains(home, '/vite/assets/athlete-card-')
+        self.assertContains(home, '/vite/assets/home-')
+        self.assertContains(home, '/static/home-carousel.js?')
+        self.assertNotContains(home, '/style-v2.css')
         self.assertNotContains(home, 'cdn.datatables.net')
         self.assertNotContains(home, 'fullcalendar@')
         self.assertNotContains(home, 'facebook-jssdk')

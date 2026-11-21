@@ -6,7 +6,7 @@
 {% block header %}
 {% include "common/landing_icon_sprite.html" %}
 
-<section class="landing-hero" aria-labelledby="landing-title">
+<section class="landing-hero" aria-labelledby="landing-title" style="--home-hero-image: url('{% static 'brand/landing-hero-petanque.png' %}')">
     <div class="landing-hero-copy">
         <h1 id="landing-title" class="landing-title">
             <img class="landing-title-logo" src="{% static 'brand/petanque_federation_logo_transparent_clean.png' %}" alt="">
@@ -62,14 +62,12 @@
                 </div>
             </div>
             <div class="landing-header-actions">
-                <a class="landing-action-button landing-action-button-primary" href="{% url 'tournaments' %}">
-                    <span>{% trans "All competitions" %}</span>
-                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                </a>
-                <a class="landing-action-button" href="{% url 'tournaments_calendar' %}">
-                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
-                    <span>{% trans "Calendar" %}</span>
-                </a>
+                {% url 'tournaments' as competitions_url %}
+                {% url 'tournaments_calendar' as calendar_url %}
+                {% trans "All competitions" as competitions_label %}
+                {% trans "Calendar" as calendar_label %}
+                {% include "common/list/button.html" with href=competitions_url label=competitions_label icon="bi-arrow-right" variant="primary" only %}
+                {% include "common/list/button.html" with href=calendar_url label=calendar_label icon="bi-calendar3" only %}
             </div>
         </div>
 
@@ -156,111 +154,5 @@
         </div>
     </section>
 </div>
-
-{% trans "Go to slide" as go_to_slide_label %}
-<script>
-    $(document).ready(function() {
-        function initTooltips() {
-            setTimeout(function () {
-                const $tooltips = $('[data-bs-toggle="tooltip"]');
-                $tooltips.attr('data-bs-offset', '0,2').tooltip('dispose').tooltip({
-                    offset: [0, 2]
-                }).on('shown.bs.tooltip', function () {
-                    bootstrap.Tooltip.getInstance(this).update();
-                });
-            }, 300);
-        }
-    
-        initTooltips();
-
-        function carouselPageSize() {
-            if (window.matchMedia('(min-width: 1400px)').matches) {
-                return 4;
-            }
-            if (window.matchMedia('(min-width: 992px)').matches) {
-                return 3;
-            }
-            if (window.matchMedia('(min-width: 768px)').matches) {
-                return 2;
-            }
-            return 1;
-        }
-
-        function initLandingCarousel(carousel) {
-            const track = carousel.querySelector('[data-carousel-track]');
-            const previous = carousel.querySelector('[data-carousel-prev]');
-            const next = carousel.querySelector('[data-carousel-next]');
-            const dots = carousel.querySelector('[data-carousel-dots]');
-            const items = Array.from(carousel.querySelectorAll('.landing-carousel-item'));
-
-            if (!track || !previous || !next || !dots || !items.length) {
-                return;
-            }
-
-            let pageCount = 1;
-
-            function rebuildDots() {
-                pageCount = Math.max(1, Math.ceil(items.length / carouselPageSize()));
-                dots.innerHTML = '';
-                carousel.classList.toggle('is-single-page', pageCount <= 1);
-
-                for (let index = 0; index < pageCount; index += 1) {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'landing-carousel-dot';
-                    button.setAttribute('aria-label', '{{ go_to_slide_label|escapejs }} ' + (index + 1));
-                    button.addEventListener('click', function () {
-                        track.scrollTo({
-                            left: index * track.clientWidth,
-                            behavior: 'smooth'
-                        });
-                    });
-                    dots.appendChild(button);
-                }
-
-                updateState();
-            }
-
-            function updateState() {
-                const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
-                const currentPage = track.clientWidth ? Math.round(track.scrollLeft / track.clientWidth) : 0;
-
-                previous.disabled = track.scrollLeft <= 4;
-                next.disabled = track.scrollLeft >= maxScroll - 4;
-
-                Array.from(dots.children).forEach(function (dot, index) {
-                    dot.classList.toggle('is-active', index === Math.min(currentPage, pageCount - 1));
-                });
-            }
-
-            previous.addEventListener('click', function () {
-                track.scrollBy({left: -track.clientWidth, behavior: 'smooth'});
-            });
-
-            next.addEventListener('click', function () {
-                track.scrollBy({left: track.clientWidth, behavior: 'smooth'});
-            });
-
-            track.addEventListener('scroll', updateState, {passive: true});
-            rebuildDots();
-            carousel._refreshLandingCarousel = rebuildDots;
-        }
-
-        const carousels = Array.from(document.querySelectorAll('[data-landing-carousel]'));
-        carousels.forEach(initLandingCarousel);
-
-        let resizeTimer;
-        window.addEventListener('resize', function () {
-            window.clearTimeout(resizeTimer);
-            resizeTimer = window.setTimeout(function () {
-                carousels.forEach(function (carousel) {
-                    if (carousel._refreshLandingCarousel) {
-                        carousel._refreshLandingCarousel();
-                    }
-                });
-            }, 150);
-        });
-    });
-</script>
 
 {% endblock content %}
