@@ -243,3 +243,7 @@ The calendar is the primary home competition action and the full list uses a sec
 ## Hero and header polish
 
 The home hero now has registration and club links next to the federation intro, with the existing pétanque artwork in its own area. Header menus use a dark surface. On mobile, the account links are visible as soon as the navigation opens. The calendar action keeps its contrast when focused, including the pointer-focus state. Compared with `d7bec0a`, the home stylesheet lost 144 lines and the header stylesheet added 5 lines.
+
+## Home action styling
+
+Registration and Calendar use a muted blue fill with dark text. Find a club and All competitions use white with a soft border. All four actions are at least 48 px tall. The archive is a text link with a 44 px target. On phones and narrow tablets, the illustration is shorter and the archive link sits below the empty-state message. This refinement added 10 lines to the home stylesheet.

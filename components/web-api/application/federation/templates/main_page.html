@@ -20,7 +20,7 @@
             {% url 'clubs' as clubs_url %}
             {% trans "Register" as register_label %}
             {% trans "Find a club" as clubs_label %}
-            {% include "common/list/button.html" with href=register_url label=register_label icon="bi-person-plus" only %}
+            {% include "common/list/button.html" with href=register_url label=register_label icon="bi-person-plus" variant="primary" only %}
             {% include "common/list/button.html" with href=clubs_url label=clubs_label icon="bi-geo-alt" only %}
         </div>
     </div>

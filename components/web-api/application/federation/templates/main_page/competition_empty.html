@@ -5,6 +5,8 @@
         <p class="landing-empty-title">{% trans "No upcoming competitions yet." %}</p>
         <p>{% trans "Find results from previous tournaments in the archive." %}</p>
     </div>
-    {% trans "Past competitions" as archive_label %}
-    {% include "common/list/button.html" with href=archive_url label=archive_label icon="bi-clock-history" only %}
+    <a class="homepage-view-all" href="{{ archive_url }}">
+        {% trans "Past competitions" %}
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+    </a>
 </div>
