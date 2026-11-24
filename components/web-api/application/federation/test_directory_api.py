@@ -186,3 +186,34 @@ class ClubsListTests(TestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 405)
         self.assertEqual(response['Allow'], 'GET')
+
+
+class HeaderSearchTests(TestCase):
+    url = '/api/players_clubs_and_tournaments/list/'
+
+    def test_search_matches_full_names_in_both_orders(self):
+        player = create_player('header-search-player', name='Maria', surname='Melnik')
+
+        for query in ('  Maria  Melnik ', 'Melnik Maria'):
+            with self.subTest(query=query):
+                response = self.client.get(self.url, {'typedText': query, 'limit_per_type': 4})
+                self.assertEqual(response.json(), [{
+                    'kind': 'player',
+                    'href': f'/player/{player.pk}',
+                    'value': player.get_name(),
+                    'disabled': 0,
+                }])
+
+    def test_search_limits_each_kind_and_accepts_club_abbreviations(self):
+        create_player('header-search-first', name='Portal', surname='Adams')
+        create_player('header-search-second', name='Portal', surname='Brown')
+        create_player('header-search-prefix', name='Portals', surname='Abbot')
+        club = Club.objects.create(name='Visible Club', short_name='Portal Club', is_active=True)
+        Club.objects.create(name='Hidden Portal Club', is_active=False)
+
+        response = self.client.get(self.url, {'typedText': 'Portal', 'limit_per_type': 1})
+
+        self.assertEqual(
+            [(item['kind'], item['value']) for item in response.json()],
+            [('player', 'ADAMS Portal'), ('club', club.name)],
+        )

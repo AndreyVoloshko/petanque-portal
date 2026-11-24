@@ -209,7 +209,7 @@ These figures exclude compiled and vendor CSS. Transfer totals are medians of th
 
 ## Home page
 
-The home page uses a route-specific Vite stylesheet, the existing shell and tokens, and the shared buttons, panels, tournament badges and athlete cards. Cookie-banner breakpoints live with the shared header. The tournament carousels use CSS scroll snap and native JavaScript. The page uses the shared tooltip initializer and the shared header still loads jQuery and jQuery UI.
+The home page uses a route-specific Vite stylesheet, the existing shell and tokens, and the shared buttons, panels, tournament badges and athlete cards. Cookie-banner breakpoints live with the shared header. The tournament carousels use CSS scroll snap and native JavaScript. The page uses the shared tooltip initializer. At the home migration checkpoint the header still loaded jQuery and jQuery UI.
 
 | Authored CSS | Before (`5828cfe`) | After | Change |
 | --- | ---: | ---: | ---: |
@@ -222,3 +222,16 @@ The authored totals exclude built and vendor CSS. Transfer totals are medians of
 | --- | ---: | ---: | ---: |
 | 390 px | 78,237 B | 66,103 B | −15.5% |
 | 1440 px | 78,189 B | 65,864 B | −15.8% |
+
+## Header navigation and search
+
+The header keeps the portal's dark color and uses Bootstrap dropdowns and collapse for navigation. The desktop search stays visible in the header. On mobile its button opens a full-width panel with focus in the search field. Results from the existing API are capped at four per category in the header. Full names match in either order, clubs can match abbreviations, and requests from earlier input are canceled. The competitions menu links to upcoming and past lists, the same lists filtered to foreign events, and the calendar. The rated-only switch stays on the tournament list.
+
+The header source added 170 authored CSS lines compared with `6b4aa83`. The browser no longer downloads jQuery UI CSS or JavaScript. jQuery remains for the shared `portal-ui.js` and pages that still depend on it.
+
+| Home viewport | CSS before | CSS after | JS before | JS after |
+| --- | ---: | ---: | ---: | ---: |
+| 390 px | 66,408 B | 59,364 B | 112,543 B | 56,943 B |
+| 1440 px | 65,984 B | 60,014 B | 111,765 B | 57,656 B |
+
+Each column is the median of three local Chromium loads with cache disabled. Transfer includes successful first- and third-party stylesheet and script requests. The baseline is the running home migration build before the header change.

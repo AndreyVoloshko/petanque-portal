@@ -3628,3 +3628,30 @@ msgstr "Search"
 
 msgid "Apply page size"
 msgstr "Apply page size"
+
+msgid "Past"
+msgstr "Past"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Main navigation"
+msgstr "Main navigation"
+
+msgid "Site search"
+msgstr "Site search"
+
+msgid "Type at least two characters."
+msgstr "Type at least two characters."
+
+msgid "No matches found."
+msgstr "No matches found."
+
+msgid "Search is unavailable. Press Enter to try again."
+msgstr "Search is unavailable. Press Enter to try again."
+
+msgid "Close search"
+msgstr "Close search"
+
+msgid "Search results"
+msgstr "Search results"

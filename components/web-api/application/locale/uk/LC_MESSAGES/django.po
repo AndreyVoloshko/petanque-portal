@@ -3740,3 +3740,30 @@ msgstr "Інші організатори та арбітри"
 
 msgid "NC"
 msgstr "НК"
+
+msgid "Past"
+msgstr "Минулі"
+
+msgid "Account"
+msgstr "Обліковий запис"
+
+msgid "Main navigation"
+msgstr "Головна навігація"
+
+msgid "Site search"
+msgstr "Пошук на сайті"
+
+msgid "Type at least two characters."
+msgstr "Введіть щонайменше два символи."
+
+msgid "No matches found."
+msgstr "Збігів не знайдено."
+
+msgid "Search is unavailable. Press Enter to try again."
+msgstr "Пошук недоступний. Натисніть Enter, щоб спробувати ще раз."
+
+msgid "Close search"
+msgstr "Закрити пошук"
+
+msgid "Search results"
+msgstr "Результати пошуку"

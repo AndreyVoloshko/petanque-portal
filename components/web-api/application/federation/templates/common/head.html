@@ -33,11 +33,6 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
-        <!-- jQuery UI CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.min.css">
-        <!-- jQuery UI JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
-
         {% vite_stylesheet "src/shell.css" %}
         {% if not ratings_pilot %}
             {% vite_stylesheet "src/tournament-badges.css" %}
@@ -84,6 +79,7 @@
         {% if portal_ui.home_page %}
             <script defer src="{% static 'home-carousel.js' %}?v={{ static_asset_versions.home_carousel }}"></script>
         {% endif %}
+        <script defer src="{% static 'header.js' %}?v={{ static_asset_versions.header }}"></script>
         <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
     </head>
     <body class="d-flex flex-column min-vh-100" style="min-height: 100vh; display: flex; flex-direction: column;">

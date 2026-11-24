@@ -1,12 +1,13 @@
 import json
 from copy import copy
+from itertools import islice
 
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Case, Q, When
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
@@ -125,45 +126,53 @@ def tournaments_list(request):
     return JsonResponse(data, safe=False)
 
 
+@require_GET
 def players_clubs_and_tournaments_list(request):
-    template = request.GET.get('typedText')
+    query = ' '.join(request.GET.get('typedText', '').split())
+    if not query:
+        return JsonResponse([], safe=False)
+
+    try:
+        limit = min(10, max(1, int(request.GET['limit_per_type'])))
+    except (KeyError, ValueError):
+        limit = None
+
+    players = Player.objects.only('id', 'name', 'surname').order_by(
+        Case(
+            When(Q(name__iexact=query) | Q(surname__iexact=query), then=0),
+            When(Q(name__istartswith=query) | Q(surname__istartswith=query), then=1),
+            default=2,
+        ),
+        'surname', 'name', 'id',
+    )
+    for word in query.split():
+        players = players.filter(Q(name__icontains=word) | Q(surname__icontains=word))
+
+    clubs = Club.objects.filter(
+        Q(name__icontains=query) | Q(short_name__icontains=query),
+        is_active=True,
+    ).only('id', 'name').order_by('name', 'id')
+
+    tournaments = Tournament.public_queryset().only(
+        'id', 'name', 'start_date', 'format', 'number_of_players_in_team_min',
+    ).order_by('-start_date', '-id')
+    matching_tournaments = (
+        tournament for tournament in tournaments.iterator(chunk_size=128)
+        if tournament_display_name_matches(tournament, query)
+    )
+
     data = []
-
-    if template:
-        players = Player.objects.filter(Q(name__icontains=template) | Q(surname__icontains=template))
-        clubs = Club.objects.filter(name__icontains=template, is_active=True)
-        tournaments = [
-            tournament for tournament in Tournament.public_queryset()
-            if tournament_display_name_matches(tournament, template)
-        ]
-
-        for player in players:
-            item = {
-                'href': reverse('player', kwargs={'id':player.pk}),
-                'value': player.get_name(),
-                'disabled': 0,
-            }
-
-            data.append(item)
-
-        for club in clubs:
-            item = {
-                'href': reverse('club', kwargs={'id':club.pk}),
-                'value': club.name,
-                'disabled': 0,
-            }
-
-            data.append(item)
-
-        for tournament in tournaments:
-            item = {
-                'href': reverse('tournament', kwargs={'id':tournament.pk}),
-                'value': tournament.get_display_name(),
-                'disabled': 0,
-            }
-
-            data.append(item)
-
+    for kind, rows, label in (
+        ('player', players[:limit], Player.get_name),
+        ('club', clubs[:limit], lambda club: club.name),
+        ('tournament', islice(matching_tournaments, limit), Tournament.get_display_name),
+    ):
+        data.extend({
+            'href': reverse(kind, kwargs={'id': item.pk}),
+            'value': label(item),
+            'disabled': 0,
+            'kind': kind,
+        } for item in rows)
     return JsonResponse(data, safe=False)
 
 
