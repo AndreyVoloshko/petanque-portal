@@ -144,6 +144,7 @@
   --header-muted: color-mix(in srgb, var(--header-ink) 78%, transparent);
   --header-line: color-mix(in srgb, var(--header-ink) 18%, transparent);
   --header-hover: color-mix(in srgb, var(--header-ink) 10%, transparent);
+  --header-accent: color-mix(in srgb, var(--list-page-accent) 34%, var(--bs-dark));
   box-shadow: 0 1px var(--header-line);
   padding: 0;
 }
@@ -194,8 +195,13 @@
   line-height: 1;
 }
 
-.portal-header-control:is(:hover, [aria-expanded="true"]) {
+.portal-header-control:hover {
   background: var(--header-hover);
+  border-color: var(--header-line);
+}
+
+.portal-header .portal-header-control[aria-expanded="true"] {
+  background: var(--header-accent);
   border-color: var(--header-line);
 }
 

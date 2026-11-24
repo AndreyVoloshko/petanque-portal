@@ -3664,3 +3664,10 @@ msgstr "Past competitions"
 
 msgid "Find a club"
 msgstr "Find a club"
+
+msgid "Federation news"
+msgstr "Federation news"
+
+#, python-format
+msgid "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."
+msgstr "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."

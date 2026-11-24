@@ -257,18 +257,18 @@ The complete PR compares against `c1e388f`, the merge base with `master`. The so
 | Authored CSS scope | Base | Final | Change |
 | --- | ---: | ---: | ---: |
 | `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
-| All authored CSS | 11,587 lines / 236,854 B | 11,491 lines / 237,133 B | −96 lines / +279 B |
+| All authored CSS | 11,587 lines / 236,854 B | 11,494 lines / 237,197 B | −93 lines / +343 B |
 
 Both revisions ran on the existing local Docker service against the same database. Each transfer figure is the median of three Chromium loads with the cache disabled, including first- and third-party stylesheets and scripts. Combined savings use the sum of the CSS and JavaScript medians. Images, fonts, HTML, and API requests are measured separately from this table.
 
 | Route | Width | CSS base → final | JS base → final | Combined reduction |
 | --- | ---: | ---: | ---: | ---: |
-| Home | 390 px | 77,758 → 59,176 B | 110,222 → 57,034 B | 71,770 B (38.2%) |
-| Home | 1440 px | 77,821 → 59,493 B | 110,213 → 57,700 B | 70,841 B (37.7%) |
-| Past tournaments | 390 px | 64,660 → 58,291 B | 112,572 → 57,878 B | 61,063 B (34.5%) |
-| Past tournaments | 1440 px | 64,682 → 58,708 B | 112,560 → 58,607 B | 59,927 B (33.8%) |
-| Athlete ratings | 390 px | 66,162 → 59,875 B | 112,556 → 57,841 B | 61,002 B (34.1%) |
-| Athlete ratings | 1440 px | 66,158 → 60,133 B | 112,539 → 58,555 B | 60,009 B (33.6%) |
+| Home | 390 px | 77,758 → 59,140 B | 110,222 → 56,970 B | 71,870 B (38.2%) |
+| Home | 1440 px | 77,821 → 59,392 B | 110,213 → 57,746 B | 70,896 B (37.7%) |
+| Past tournaments | 390 px | 64,660 → 58,453 B | 112,572 → 57,889 B | 60,890 B (34.4%) |
+| Past tournaments | 1440 px | 64,682 → 58,759 B | 112,560 → 58,555 B | 59,928 B (33.8%) |
+| Athlete ratings | 390 px | 66,162 → 59,869 B | 112,556 → 57,868 B | 60,981 B (34.1%) |
+| Athlete ratings | 1440 px | 66,158 → 60,141 B | 112,539 → 58,539 B | 60,017 B (33.6%) |
 
 ### Search
 
@@ -281,3 +281,5 @@ The same local API and database produced these uncompressed JSON sizes. The fina
 | `Андрій` | 47 → 4 | 6,249 → 614 B | −90.2% |
 | `Кубок` | 43 → 4 | 8,469 → 1,173 B | −86.1% |
 | `Fair` | 3 → 3 | 609 → 669 B | +9.9% |
+
+The final hero uses inline club and registration links in an invitation to try pétanque, with a separate federation news link to `https://petanque.org.ua/`. The mobile and desktop header applies a muted accent to open controls.

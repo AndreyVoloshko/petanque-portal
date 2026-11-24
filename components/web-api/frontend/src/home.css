@@ -24,6 +24,7 @@
 
 .landing-title {
   align-items: center;
+  color: var(--color-text);
   display: flex;
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 800;
@@ -38,25 +39,21 @@
   width: clamp(3rem, 6vw, 4.5rem);
 }
 
-.landing-title a {
-  color: var(--color-text);
-}
-
-.landing-title a:hover {
-  color: var(--portal-brand-hover);
-}
-
 .landing-intro {
   color: var(--color-muted);
   margin: 0;
   max-width: 32rem;
 }
 
-.landing-hero-links {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
-  max-width: 23rem;
+.landing-intro a {
+  color: var(--list-page-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: .15em;
+}
+
+.landing-intro a:hover {
+  color: var(--color-text);
 }
 
 .landing-hero-art {
@@ -523,7 +520,7 @@
   white-space: nowrap;
 }
 
-:is(.landing-hero-links, .landing-header-actions) .portal-btn {
+.landing-header-actions .portal-btn {
   --bs-btn-color: var(--color-text);
   --bs-btn-bg: var(--color-surface);
   --bs-btn-border-color: var(--portal-bluegray-250);
@@ -534,13 +531,13 @@
   min-height: 3rem;
 }
 
-:is(.landing-hero-links, .landing-header-actions) .portal-btn[data-variant="primary"] {
+.landing-header-actions .portal-btn[data-variant="primary"] {
   --bs-btn-bg: color-mix(in srgb, var(--list-page-accent) 20%, var(--color-surface));
   --bs-btn-border-color: color-mix(in srgb, var(--list-page-accent) 36%, var(--color-surface));
   --bs-btn-hover-bg: color-mix(in srgb, var(--list-page-accent) 28%, var(--color-surface));
 }
 
-:is(.landing-hero, .competitions-block) :is(.portal-btn, .landing-title a, .homepage-view-all):focus-visible {
+:is(.landing-hero, .competitions-block) :is(.portal-btn, .homepage-view-all, .landing-intro a):focus-visible {
   outline: 2px solid var(--list-page-accent);
   outline-offset: 2px;
 }
@@ -737,7 +734,7 @@
 }
 
 @media (max-width: 375px) {
-  :is(.landing-hero-links, .landing-header-actions) .portal-btn {
+  .landing-header-actions .portal-btn {
     --bs-btn-font-size: var(--text-sm);
     --bs-btn-padding-x: var(--space-2);
   }
