@@ -248,7 +248,7 @@
 }
 
 .portal-header :is(.portal-menu, .portal-search-panel) {
-  background: color-mix(in srgb, var(--bs-dark) 94%, var(--header-ink));
+  background: var(--header-accent);
   border: 1px solid var(--header-line);
   border-radius: var(--radius-card);
   box-shadow: var(--portal-shadow-soft);
