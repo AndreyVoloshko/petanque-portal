@@ -3661,3 +3661,6 @@ msgstr "Find results from previous tournaments in the archive."
 
 msgid "Past competitions"
 msgstr "Past competitions"
+
+msgid "Find a club"
+msgstr "Find a club"

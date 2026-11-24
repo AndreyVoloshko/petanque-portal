@@ -3773,3 +3773,6 @@ msgstr "Результати проведених турнірів можна з
 
 msgid "Past competitions"
 msgstr "Минулі змагання"
+
+msgid "Find a club"
+msgstr "Знайти клуб"

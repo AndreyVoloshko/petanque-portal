@@ -239,3 +239,7 @@ Each column is the median of three local Chromium loads with cache disabled. Tra
 ## Home competition empty states
 
 The calendar is the primary home competition action and the full list uses a secondary button in the same teal palette. With no upcoming competitions, one full-width panel links to the archive. When only one category is empty, its panel links to the corresponding past list. The home stylesheet grew by 62 lines for the layout, responsive states, and button styles.
+
+## Hero and header polish
+
+The home hero now has registration and club links next to the federation intro, with the existing pétanque artwork in its own area. Header menus use a dark surface. On mobile, the account links are visible as soon as the navigation opens. The calendar action keeps its contrast when focused, including the pointer-focus state. Compared with `d7bec0a`, the home stylesheet lost 144 lines and the header stylesheet added 5 lines.

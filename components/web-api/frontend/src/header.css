@@ -190,6 +190,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--list-radius);
+  box-shadow: none;
   font-size: .875rem;
   font-weight: 600;
   justify-content: center;
@@ -251,24 +252,24 @@
 }
 
 .portal-header :is(.portal-menu, .portal-search-panel) {
-  background: var(--list-surface);
-  border: 1px solid var(--list-border);
+  background: color-mix(in srgb, var(--bs-dark) 94%, var(--header-ink));
+  border: 1px solid var(--header-line);
   border-radius: var(--radius-card);
   box-shadow: var(--portal-shadow-soft);
-  color: var(--list-text);
+  color: var(--header-ink);
   padding: var(--space-2);
 }
 
 .portal-header .portal-menu {
   --bs-dropdown-min-width: 13rem;
   --bs-dropdown-divider-margin-y: var(--space-2);
-  --bs-dropdown-divider-bg: var(--list-border);
-  --bs-dropdown-link-color: var(--list-text);
-  --bs-dropdown-link-hover-color: var(--list-primary);
-  --bs-dropdown-link-hover-bg: var(--list-muted-surface);
-  --bs-dropdown-link-active-color: var(--list-primary);
-  --bs-dropdown-link-active-bg: var(--list-muted-surface);
-  --bs-dropdown-header-color: var(--list-muted);
+  --bs-dropdown-divider-bg: var(--header-line);
+  --bs-dropdown-link-color: var(--header-ink);
+  --bs-dropdown-link-hover-color: var(--header-ink);
+  --bs-dropdown-link-hover-bg: var(--header-hover);
+  --bs-dropdown-link-active-color: var(--header-ink);
+  --bs-dropdown-link-active-bg: var(--header-hover);
+  --bs-dropdown-header-color: var(--header-muted);
   margin-top: var(--space-2);
 }
 
@@ -285,12 +286,11 @@
 
 .portal-menu .dropdown-item .bi,
 .portal-search-option .bi {
-  color: var(--list-muted);
+  color: var(--header-muted);
   flex: none;
 }
 
 .portal-header :is(.portal-menu, .portal-search-panel) :is(a, button):focus-visible {
-  outline-color: var(--list-primary);
   outline-offset: -2px;
 }
 
@@ -301,12 +301,12 @@
 }
 
 .portal-competition-links > div + div {
-  border-inline-start: 1px solid var(--list-border);
+  border-inline-start: 1px solid var(--header-line);
   padding-inline-start: var(--space-2);
 }
 
 .portal-header :is(.dropdown-header, .portal-search-group) {
-  color: var(--list-muted);
+  color: var(--header-muted);
   font-size: .75rem;
   font-weight: 700;
   margin: 0;
@@ -369,37 +369,30 @@
 }
 
 .portal-search-status {
-  color: var(--list-muted);
+  color: var(--header-muted);
   font-size: .875rem;
   margin: 0;
   padding: var(--space-2) var(--space-3);
 }
 
 .portal-search-results [role="group"] + [role="group"] {
-  border-top: 1px solid var(--list-border);
+  border-top: 1px solid var(--header-line);
   margin-top: var(--space-1);
   padding-top: var(--space-1);
 }
 
 .portal-search-option {
-  color: var(--list-text);
+  color: var(--header-ink);
   overflow-wrap: anywhere;
 }
 
 .portal-search-option:is(:hover, [aria-selected="true"]) {
-  background: var(--list-muted-surface);
-  color: var(--list-primary);
+  background: var(--header-hover);
+  color: var(--header-ink);
 }
 
 .portal-header :is(.portal-search-toggle, .portal-search-close) {
   display: none;
-}
-
-.portal-account-label {
-  position: absolute;
-  clip-path: inset(50%);
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 @media (min-width: 1200px) {
@@ -494,13 +487,25 @@
     padding: var(--space-2) 0 0;
   }
 
-  .portal-header-actions .portal-menu {
+  .portal-header .portal-account-toggle {
+    display: none;
+  }
+
+  .portal-header .portal-account .portal-menu {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: 0;
+    min-width: 0;
+    padding: 0;
     position: static;
   }
 
-  .portal-account-label {
-    clip-path: none;
-    position: static;
+  .portal-account .dropdown-item {
+    min-height: 2.75rem;
   }
 }
 
@@ -519,7 +524,7 @@
 
   .portal-competition-links > div + div {
     border-inline-start: 0;
-    border-top: 1px solid var(--list-border);
+    border-top: 1px solid var(--header-line);
     padding-inline-start: 0;
   }
 }
