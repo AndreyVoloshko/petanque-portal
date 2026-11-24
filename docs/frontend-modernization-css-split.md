@@ -257,9 +257,9 @@ The complete PR compares against `c1e388f`, the merge base with `master`. The so
 | Authored CSS scope | Base | Final | Change |
 | --- | ---: | ---: | ---: |
 | `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
-| All authored CSS | 11,587 lines / 236,854 B | 11,494 lines / 237,197 B | −93 lines / +343 B |
+| All authored CSS | 11,587 lines / 236,854 B | 11,500 lines / 237,542 B | −87 lines / +688 B |
 
-Both revisions ran on the existing local Docker service against the same database. Each transfer figure is the median of three Chromium loads with the cache disabled, including first- and third-party stylesheets and scripts. Combined savings use the sum of the CSS and JavaScript medians. Images, fonts, HTML, and API requests are measured separately from this table.
+Both revisions ran on the existing local Docker service against the same database. The transfer checkpoint is `23cd584`. Each transfer figure is the median of three Chromium loads with the cache disabled, including first- and third-party stylesheets and scripts. Combined savings use the sum of the CSS and JavaScript medians. Images, fonts, HTML, and API requests are measured separately from this table.
 
 | Route | Width | CSS base → final | JS base → final | Combined reduction |
 | --- | ---: | ---: | ---: | ---: |
@@ -282,4 +282,4 @@ The same local API and database produced these uncompressed JSON sizes. The fina
 | `Кубок` | 43 → 4 | 8,469 → 1,173 B | −86.1% |
 | `Fair` | 3 → 3 | 609 → 669 B | +9.9% |
 
-The final hero uses inline club and registration links in an invitation to try pétanque, with a separate federation news link to `https://petanque.org.ua/`. The mobile and desktop header applies a muted accent to open controls.
+The final hero uses inline club and registration links in an invitation to try pétanque, with a separate federation news link to `https://petanque.org.ua/`. The mobile and desktop header applies a muted accent to open controls and uses white dropdown panels and search suggestions.
