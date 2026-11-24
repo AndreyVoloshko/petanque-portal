@@ -3767,3 +3767,9 @@ msgstr "Закрити пошук"
 
 msgid "Search results"
 msgstr "Результати пошуку"
+
+msgid "Find results from previous tournaments in the archive."
+msgstr "Результати проведених турнірів можна знайти в архіві."
+
+msgid "Past competitions"
+msgstr "Минулі змагання"

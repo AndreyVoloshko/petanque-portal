@@ -51,6 +51,7 @@
 {% block content %}
 <div class="homepage-content py-4">
     <section class="landing-block competitions-block" aria-labelledby="competitions-title">
+        {% url 'tournaments' as competitions_url %}
         <div class="landing-block-header">
             <div class="landing-heading-copy">
                 <span class="landing-heading-icon" aria-hidden="true">
@@ -62,48 +63,31 @@
                 </div>
             </div>
             <div class="landing-header-actions">
-                {% url 'tournaments' as competitions_url %}
                 {% url 'tournaments_calendar' as calendar_url %}
-                {% trans "All competitions" as competitions_label %}
                 {% trans "Calendar" as calendar_label %}
-                {% include "common/list/button.html" with href=competitions_url label=competitions_label icon="bi-arrow-right" variant="primary" only %}
-                {% include "common/list/button.html" with href=calendar_url label=calendar_label icon="bi-calendar3" only %}
+                {% trans "All competitions" as competitions_label %}
+                {% include "common/list/button.html" with href=calendar_url label=calendar_label icon="bi-calendar3" variant="primary" only %}
+                {% include "common/list/button.html" with href=competitions_url label=competitions_label icon="bi-list-ul" only %}
             </div>
         </div>
 
-        <section class="landing-subsection" aria-labelledby="rating-competitions-title">
-            <div class="landing-subsection-header">
-                <div class="landing-subsection-title-row">
-                    <h3 id="rating-competitions-title">
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-star"></use></svg>
-                        <span>{% trans "Rating competitions" %}</span>
-                    </h3>
-                    <a class="homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}">
-                        <span>{% trans "View all rating competitions" %}</span>
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                    </a>
-                </div>
-                <p>{% trans "Official tournaments that affect Ukrainian pétanque ratings." %}</p>
-            </div>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments_rating show_power=1 %}
-        </section>
+        {% if future_tournaments_rating or future_tournaments %}
+            {% url 'tournaments' date_filter='future' type_filter='rating' as rating_url %}
+            {% url 'tournaments' date_filter='past' type_filter='rating' as rating_archive_url %}
+            {% trans "Rating competitions" as rating_title %}
+            {% trans "Official tournaments that affect Ukrainian pétanque ratings." as rating_description %}
+            {% trans "View all rating competitions" as rating_link %}
+            {% include "main_page/competition_section.html" with items=future_tournaments_rating title=rating_title heading_id="rating-competitions-title" icon="star" description=rating_description list_label=rating_link list_url=rating_url archive_url=rating_archive_url show_power=True only %}
 
-        <section class="landing-subsection" aria-labelledby="non-rating-competitions-title">
-            <div class="landing-subsection-header">
-                <div class="landing-subsection-title-row">
-                    <h3 id="non-rating-competitions-title">
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
-                        <span>{% trans "Non-rating competitions" %}</span>
-                    </h3>
-                    <a class="homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='non_rating' %}">
-                        <span>{% trans "View all non-rating competitions" %}</span>
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                    </a>
-                </div>
-                <p>{% trans "Open, club, training and community tournaments." %}</p>
-            </div>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments show_power=0 %}
-        </section>
+            {% url 'tournaments' date_filter='future' type_filter='non_rating' as non_rating_url %}
+            {% url 'tournaments' date_filter='past' type_filter='non_rating' as non_rating_archive_url %}
+            {% trans "Non-rating competitions" as non_rating_title %}
+            {% trans "Open, club, training and community tournaments." as non_rating_description %}
+            {% trans "View all non-rating competitions" as non_rating_link %}
+            {% include "main_page/competition_section.html" with items=future_tournaments title=non_rating_title heading_id="non-rating-competitions-title" icon="calendar" description=non_rating_description list_label=non_rating_link list_url=non_rating_url archive_url=non_rating_archive_url only %}
+        {% else %}
+            {% include "main_page/competition_empty.html" with archive_url=competitions_url|add:"?period=past" only %}
+        {% endif %}
     </section>
 
     <section class="landing-block athletes-block" aria-labelledby="athletes-title">

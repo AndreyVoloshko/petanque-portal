@@ -235,3 +235,7 @@ The header source added 170 authored CSS lines compared with `6b4aa83`. The brow
 | 1440 px | 65,984 B | 60,014 B | 111,765 B | 57,656 B |
 
 Each column is the median of three local Chromium loads with cache disabled. Transfer includes successful first- and third-party stylesheet and script requests. The baseline is the running home migration build before the header change.
+
+## Home competition empty states
+
+The calendar is the primary home competition action and the full list uses a secondary button in the same teal palette. With no upcoming competitions, one full-width panel links to the archive. When only one category is empty, its panel links to the corresponding past list. The home stylesheet grew by 62 lines for the layout, responsive states, and button styles.

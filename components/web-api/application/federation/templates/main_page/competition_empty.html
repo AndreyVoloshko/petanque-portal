@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="portal-panel landing-competition-empty">
+    <i class="bi bi-calendar-event landing-empty-icon" aria-hidden="true"></i>
+    <div>
+        <p class="landing-empty-title">{% trans "No upcoming competitions yet." %}</p>
+        <p>{% trans "Find results from previous tournaments in the archive." %}</p>
+    </div>
+    {% trans "Past competitions" as archive_label %}
+    {% include "common/list/button.html" with href=archive_url label=archive_label icon="bi-clock-history" only %}
+</div>

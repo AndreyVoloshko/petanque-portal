@@ -240,6 +240,10 @@
   margin-top: 0.35rem;
 }
 
+.competitions-block > .landing-block-header {
+  align-items: center;
+}
+
 .landing-header-actions {
   align-items: center;
   display: flex;
@@ -253,10 +257,6 @@
   max-width: 100%;
   min-width: 0;
   width: 100%;
-}
-
-.landing-subsection + .landing-subsection {
-  margin-top: clamp(2.25rem, 4vw, 3.5rem);
 }
 
 .landing-subsection-header {
@@ -675,14 +675,67 @@
   margin-left: 0;
 }
 
-.tournament-card-empty {
-  background: var(--color-soft-surface);
-  box-shadow: none;
+.competitions-block .portal-btn {
+  --bs-btn-color: var(--portal-brand-hover);
+  --bs-btn-bg: var(--portal-teal-50);
+  --bs-btn-border-color: var(--list-accent-border);
+  --bs-btn-hover-bg: var(--list-accent-surface);
+  --bs-btn-hover-border-color: var(--portal-brand);
+  gap: var(--space-2);
+  min-height: 2.75rem;
 }
 
-.tournament-card-empty-text {
+.landing-header-actions .portal-btn[data-variant="primary"] {
+  --bs-btn-color: var(--list-surface);
+  --bs-btn-bg: var(--portal-brand);
+  --bs-btn-border-color: var(--portal-brand);
+  --bs-btn-hover-bg: var(--portal-brand-hover);
+  --bs-btn-hover-border-color: var(--portal-brand-hover);
+}
+
+.competitions-block .portal-btn:focus-visible {
+  outline: 2px solid var(--portal-brand);
+  outline-offset: 2px;
+}
+
+.landing-competition-empty {
+  --panel-padding: var(--space-4);
+  align-items: center;
+  background: var(--portal-teal-50);
+  box-shadow: none;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.landing-empty-icon {
+  align-items: center;
+  aspect-ratio: 1;
+  background: var(--list-surface);
+  border: 1px solid var(--list-accent-border);
+  border-radius: 50%;
+  color: var(--portal-brand);
+  display: inline-flex;
+  font-size: var(--text-xl);
+  justify-content: center;
+  width: 3rem;
+}
+
+.landing-competition-empty p {
   color: var(--color-muted);
+  font-size: var(--text-sm);
   margin: 0;
+}
+
+.landing-competition-empty .landing-empty-title {
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.landing-competition-empty .portal-btn {
+  --bs-btn-bg: var(--list-surface);
 }
 
 .athletes-block {
@@ -840,6 +893,15 @@
 }
 
 @media (max-width: 575.98px) {
+
+  .landing-competition-empty {
+    gap: var(--space-3);
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .landing-competition-empty .portal-btn {
+    grid-column: 1 / -1;
+  }
 
   .landing-hero {
     gap: 1rem;

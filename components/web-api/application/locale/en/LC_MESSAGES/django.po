@@ -3655,3 +3655,9 @@ msgstr "Close search"
 
 msgid "Search results"
 msgstr "Search results"
+
+msgid "Find results from previous tournaments in the archive."
+msgstr "Find results from previous tournaments in the archive."
+
+msgid "Past competitions"
+msgstr "Past competitions"

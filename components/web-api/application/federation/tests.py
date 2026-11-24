@@ -2856,6 +2856,25 @@ class TournamentListingPageTests(TestCase):
         self.assertNotContains(home, 'fullcalendar@')
         self.assertNotContains(home, 'facebook-jssdk')
 
+    def test_home_competitions_use_an_archive_panel_for_empty_lists(self):
+        empty = self.client.get('/')
+        self.assertContains(empty, 'landing-competition-empty', count=1)
+        self.assertNotContains(empty, 'data-landing-carousel')
+        self.assertContains(empty, 'href="/tournaments/?period=past"')
+
+        self.create_tournament('Upcoming rated cup', is_rating=True)
+        mixed = self.client.get('/')
+        self.assertContains(mixed, 'Upcoming rated cup')
+        self.assertContains(mixed, 'data-landing-carousel', count=1)
+        self.assertContains(mixed, 'landing-competition-empty', count=1)
+        self.assertContains(mixed, 'href="/tournaments/past/non_rating"')
+
+        self.create_tournament('Upcoming club cup')
+        populated = self.client.get('/')
+        self.assertContains(populated, 'Upcoming club cup')
+        self.assertContains(populated, 'data-landing-carousel', count=2)
+        self.assertNotContains(populated, 'landing-competition-empty')
+
     def test_calendar_loads_fullcalendar(self):
         self.assertContains(self.client.get('/calendar/'), 'fullcalendar@')
 
