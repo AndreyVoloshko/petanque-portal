@@ -2,7 +2,7 @@
   align-items: center;
   background: color-mix(in srgb, var(--list-surface) 96%, transparent);
   border: 1px solid var(--list-border);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   box-shadow: 0 18px 48px var(--list-shadow);
   display: grid;
   gap: var(--space-4);
@@ -26,7 +26,7 @@
 
 .cookie-consent-text {
   color: var(--list-text);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   line-height: 1.45;
   margin: 0;
   min-width: 0;
@@ -45,13 +45,12 @@
   align-items: center;
   appearance: none;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--bs-border-radius-pill);
   display: inline-flex;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   gap: var(--space-2);
   justify-content: center;
-  letter-spacing: 0;
   line-height: 1.2;
   max-width: 100%;
   min-height: 2.5rem;
@@ -60,7 +59,6 @@
   text-align: center;
   transition:
     background-color 0.15s ease,
-    box-shadow 0.15s ease,
     transform 0.15s ease;
   white-space: normal;
 }
@@ -117,29 +115,21 @@
 
 @media (max-width: 575.98px) {
   .cookie-consent {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-left: 0;
-    border-right: 0;
+    border-radius: 0;
+    border-inline-width: 0;
     bottom: 0;
-    gap: 0.875rem;
-    grid-template-columns: 1fr;
-    padding: 1rem;
+    gap: var(--space-3);
     width: 100%;
   }
 
   .cookie-consent-actions {
-    display: grid;
     grid-template-columns: 1fr 1.35fr;
-    width: 100%;
   }
 
   .cookie-consent-button {
-    border-radius: 12px;
-    font-size: 0.875rem;
+    border-radius: var(--list-radius);
     min-height: 2.75rem;
-    padding: 0.65rem 0.75rem;
-    white-space: normal;
+    padding: var(--space-2) var(--space-3);
   }
 }
 
@@ -161,7 +151,7 @@
 .portal-header .portal-header-inner {
   flex-wrap: nowrap;
   gap: var(--space-3);
-  min-height: 3.5rem;
+  min-height: var(--portal-header-height);
 }
 
 .portal-header :is(.portal-brand, .portal-header-control) {
@@ -173,7 +163,7 @@
 
 .portal-brand {
   flex: 0 0 auto;
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
@@ -191,7 +181,7 @@
   border: 1px solid transparent;
   border-radius: var(--list-radius);
   box-shadow: none;
-  font-size: .875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   justify-content: center;
   min-height: 2.5rem;
@@ -200,7 +190,7 @@
 }
 
 .portal-header-control > .bi {
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1;
 }
 
@@ -269,7 +259,6 @@
   --bs-dropdown-link-hover-bg: var(--header-hover);
   --bs-dropdown-link-active-color: var(--header-ink);
   --bs-dropdown-link-active-bg: var(--header-hover);
-  --bs-dropdown-header-color: var(--header-muted);
   margin-top: var(--space-2);
 }
 
@@ -277,7 +266,7 @@
   align-items: center;
   border-radius: var(--list-radius);
   display: flex;
-  font-size: .875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   gap: var(--space-2);
   min-height: 2.5rem;
@@ -307,7 +296,7 @@
 
 .portal-header :is(.dropdown-header, .portal-search-group) {
   color: var(--header-muted);
-  font-size: .75rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   margin: 0;
   padding: var(--space-2) var(--space-3);
@@ -370,7 +359,7 @@
 
 .portal-search-status {
   color: var(--header-muted);
-  font-size: .875rem;
+  font-size: var(--text-sm);
   margin: 0;
   padding: var(--space-2) var(--space-3);
 }
@@ -386,7 +375,7 @@
   overflow-wrap: anywhere;
 }
 
-.portal-search-option:is(:hover, [aria-selected="true"]) {
+.portal-search-option:is(:hover, :focus, [aria-selected="true"]) {
   background: var(--header-hover);
   color: var(--header-ink);
 }
@@ -420,7 +409,7 @@
     border-top: 1px solid var(--header-line);
     box-shadow: var(--portal-shadow-soft);
     inset-inline: 0;
-    max-height: calc(100dvh - 3.5rem);
+    max-height: calc(100dvh - var(--portal-header-height));
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: var(--space-3);
@@ -453,7 +442,7 @@
   }
 
   .portal-search-field input {
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 
   .portal-search-field input::-webkit-search-cancel-button {

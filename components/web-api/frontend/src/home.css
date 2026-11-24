@@ -1,7 +1,7 @@
 @import "./list.css";
 
 .landing-header-container {
-  margin-top: 3.5rem !important;
+  margin-top: var(--portal-header-height) !important;
   padding-top: var(--space-4) !important;
 }
 
@@ -70,10 +70,7 @@
   display: grid;
   gap: clamp(2.75rem, 4vw, 4.5rem);
   min-width: 0;
-}
-
-.homepage-content.py-4 {
-  padding-top: 0.75rem !important;
+  padding-block: var(--space-3) var(--space-6);
 }
 
 .landing-block {
@@ -85,19 +82,16 @@
 .landing-block-header {
   align-items: flex-start;
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   justify-content: space-between;
-  max-width: 100%;
   min-width: 0;
-  width: 100%;
 }
 
 .landing-heading-copy {
   align-items: flex-start;
   display: flex;
   flex: 1 1 auto;
-  gap: 0.85rem;
-  max-width: 100%;
+  gap: var(--space-3);
   min-width: 0;
 }
 
@@ -109,9 +103,7 @@
   align-items: center;
   color: var(--portal-icon-muted);
   display: inline-flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  margin-top: 0.1rem;
+  flex: none;
 }
 
 .landing-heading-icon .landing-svg-icon {
@@ -122,7 +114,6 @@
 .landing-block-header h2,
 .landing-subsection-header h3 {
   color: var(--color-text);
-  letter-spacing: 0;
   margin: 0;
 }
 
@@ -136,14 +127,13 @@
 .landing-subsection-header p {
   color: var(--color-muted);
   margin: 0;
-  max-width: 100%;
   overflow-wrap: anywhere;
 }
 
 .landing-block-header p {
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   line-height: 1.45;
-  margin-top: 0.35rem;
+  margin-top: var(--space-1);
 }
 
 .competitions-block > .landing-block-header {
@@ -154,42 +144,36 @@
   align-items: center;
   display: flex;
   flex: 0 0 auto;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .landing-subsection {
   display: grid;
-  gap: 0.95rem;
-  max-width: 100%;
+  gap: var(--space-4);
   min-width: 0;
-  width: 100%;
 }
 
 .landing-subsection-header {
   display: grid;
-  gap: 0.25rem;
-  max-width: 100%;
+  gap: var(--space-1);
   min-width: 0;
-  width: 100%;
 }
 
 .landing-subsection-title-row {
   align-items: center;
   display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  max-width: 100%;
-  min-width: 0;
-  width: 100%;
   flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  min-width: 0;
 }
 
 .landing-subsection-header h3 {
   align-items: center;
   display: inline-flex;
-  font-size: 1.2rem;
+  font-size: var(--text-xl);
   font-weight: 800;
-  gap: 0.55rem;
+  gap: var(--space-2);
   line-height: 1.2;
 }
 
@@ -200,7 +184,7 @@
 }
 
 .landing-subsection-header p {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
@@ -209,9 +193,9 @@
   color: var(--link-action);
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 800;
-  gap: 0.45rem;
+  gap: var(--space-2);
   line-height: 1.1;
   padding: 0.2rem 0;
   text-decoration: none;
@@ -250,7 +234,7 @@
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  border-radius: 10px;
+  border-radius: var(--list-radius);
 }
 
 .landing-carousel-track::-webkit-scrollbar {
@@ -266,7 +250,7 @@
   align-items: center;
   background: var(--list-surface);
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: 50%;
   box-shadow: 0 4px 10px var(--list-shadow);
   color: var(--color-text);
   display: inline-flex;
@@ -280,7 +264,6 @@
     background-color 0.16s ease,
     box-shadow 0.16s ease,
     color 0.16s ease,
-    opacity 0.16s ease,
     transform 0.16s ease;
   width: 2.4rem;
   z-index: 2;
@@ -312,7 +295,7 @@
   align-items: center;
   bottom: 0.05rem;
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   justify-content: center;
   left: 50%;
   position: absolute;
@@ -323,7 +306,7 @@
   appearance: none;
   background: var(--list-disabled);
   border: 0;
-  border-radius: 999px;
+  border-radius: 50%;
   height: 0.55rem;
   padding: 0;
   transition:
@@ -338,8 +321,7 @@
 }
 
 .landing-carousel:not([data-carousel-ready]) {
-  padding-left: 0;
-  padding-right: 0;
+  padding-inline: 0;
 }
 
 .landing-carousel:not([data-carousel-ready]) .landing-carousel-arrow,
@@ -357,20 +339,19 @@
 .tournament-card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: var(--space-3);
   min-height: 11.25rem;
-  padding: 0.85rem;
+  padding: var(--space-3);
 }
 
 .tournament-card-main {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .tournament-card-title {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 800;
-  letter-spacing: 0;
   line-height: 1.2;
   margin: 0;
 }
@@ -413,15 +394,16 @@
 .tournament-card-facts {
   color: var(--color-text);
   display: grid;
-  gap: 0.28rem;
-  font-size: 0.84rem;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
   line-height: 1.35;
 }
 
 .tournament-card-fact {
   align-items: center;
   display: flex;
-  gap: 0.45rem;
+  gap: var(--space-2);
+  justify-self: start;
   min-width: 0;
 }
 
@@ -429,31 +411,24 @@
   align-items: center;
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0;
   min-width: 0;
 }
 
 .tournament-card-separator {
   color: var(--color-muted);
-  margin-right: 0.2rem;
+  margin-inline-end: var(--space-1);
 }
 
 .tournament-card-country {
   align-items: center;
   display: inline-flex;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .tournament-card-fact .landing-svg-icon {
   color: var(--portal-icon-muted);
   height: 0.95rem;
   width: 0.95rem;
-}
-
-.tournament-card-fact[data-bs-toggle="tooltip"] {
-  justify-self: start;
-  max-width: 100%;
-  width: fit-content;
 }
 
 .tournament-card-fact-icon {
@@ -475,7 +450,7 @@
 
 .tournament-card-bottom {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-2);
   margin-top: auto;
 }
 
@@ -491,13 +466,13 @@
   border-top: 1px solid var(--portal-border-subtle);
   display: grid;
   min-height: 3rem;
-  padding-top: 0.55rem;
+  padding-top: var(--space-2);
 }
 
 .tournament-card-stats {
   align-items: center;
   display: grid;
-  gap: 0.45rem;
+  gap: var(--space-2);
   grid-template-columns: minmax(0, 1fr) max-content;
   min-height: 2.25rem;
   min-width: 0;
@@ -507,9 +482,9 @@
   align-items: center;
   color: var(--color-text);
   display: inline-flex;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   font-weight: 700;
-  gap: 0.3rem;
+  gap: var(--space-1);
   line-height: 1;
   min-height: 1.5rem;
   min-width: 0;
@@ -527,58 +502,25 @@
 .tournament-card-action {
   display: flex;
   justify-self: end;
-  justify-content: flex-end;
-  max-width: 100%;
   min-width: 0;
 }
 
-.tournament-card-action .tournament-register-button {
+.tournament-register-button {
+  --bs-btn-color: var(--list-success);
+  --bs-btn-bg: var(--club-points-bg);
+  --bs-btn-border-color: var(--club-points-border);
+  --bs-btn-hover-color: var(--list-surface);
+  --bs-btn-hover-bg: var(--tournament-register-hover-bg);
+  --bs-btn-hover-border-color: var(--bs-btn-hover-bg);
+  --bs-btn-active-bg: var(--tournament-register-active-bg);
+  --bs-btn-active-border-color: var(--bs-btn-active-bg);
+  --bs-btn-border-radius: var(--bs-border-radius-pill);
+  --bs-btn-font-size: var(--text-xs);
+  --bs-btn-padding-y: var(--space-1);
   align-items: center;
-  background: var(--club-points-bg) !important;
-  border: 1px solid var(--club-points-border);
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--portal-white-a62);
-  color: var(--club-points-text) !important;
-  display: inline-flex !important;
-  font-size: 0.8rem;
-  font-weight: 800;
-  gap: 0.3rem;
   justify-content: center;
-  line-height: 1;
-  max-width: 100%;
-  min-height: 2.05rem;
-  min-width: 7.55rem;
-  overflow: hidden;
-  padding: 0.4rem 0.68rem;
-  text-overflow: ellipsis;
-  transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    color 0.16s ease,
-    box-shadow 0.16s ease;
+  min-height: 2rem;
   white-space: nowrap;
-  width: auto;
-}
-
-.tournament-card-action .tournament-register-button:hover,
-.tournament-card-action .tournament-register-button:focus {
-  background: var(--tournament-register-bg) !important;
-  border-color: var(--tournament-register-bg);
-  box-shadow: 0 7px 16px var(--portal-green-ring);
-  color: var(--list-surface) !important;
-}
-
-.tournament-card-action .tournament-register-button:active {
-  background: var(--tournament-register-active-bg) !important;
-  border-color: var(--tournament-register-active-bg);
-  box-shadow: none;
-}
-
-.tournament-card-action .tournament-register-button .bi-plus,
-.tournament-card-action .tournament-register-button .bi-plus-lg {
-  font-size: 1.05rem;
-  line-height: 1;
-  margin-left: 0;
 }
 
 :is(.landing-hero-links, .landing-header-actions) .portal-btn {
@@ -642,14 +584,14 @@
 }
 
 .athletes-block {
-  padding-bottom: 1rem;
+  padding-bottom: var(--space-4);
 }
 
 .athlete-tabs {
   align-items: center;
   border-bottom: 1px solid var(--color-border);
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-1);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -665,11 +607,11 @@
   border-bottom: 2px solid transparent;
   color: var(--color-text);
   flex: 0 0 auto;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1.1;
   min-height: 2.45rem;
-  padding: 0.65rem 1.1rem;
+  padding: var(--space-3) var(--space-4);
   transition:
     color 0.16s ease,
     border-color 0.16s ease,
@@ -688,7 +630,7 @@
 }
 
 .athlete-tab-content {
-  padding-top: 0.9rem;
+  padding-top: var(--space-3);
 }
 
 @media (max-width: 1399.98px) {
@@ -698,27 +640,12 @@
 }
 
 @media (max-width: 991.98px) {
-  .landing-block-header,
-  .landing-subsection-header {
-    align-items: flex-start;
-  }
-
-  .landing-heading-copy,
-  .landing-subsection-title-row {
-    width: 100%;
-  }
-
-  .landing-header-actions {
-    flex-wrap: wrap;
-  }
-
   .landing-carousel {
     --carousel-columns: 2;
   }
 }
 
 @media (max-width: 767.98px) {
-
   .landing-hero {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -755,10 +682,6 @@
     width: 100%;
   }
 
-  .landing-header-actions .portal-btn {
-    width: 100%;
-  }
-
   .landing-carousel {
     --carousel-columns: 1;
     --landing-carousel-gutter: 2.5rem;
@@ -767,13 +690,10 @@
 
   .landing-carousel-track {
     --carousel-gap: var(--space-2);
-    padding-inline: 0;
   }
-
 }
 
 @media (max-width: 575.98px) {
-
   .landing-hero-copy {
     padding: var(--space-4);
   }
@@ -806,32 +726,13 @@
   }
 
   .athlete-tabs {
-    gap: 0.1rem;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
+    gap: 0;
   }
 
   .athlete-tab {
-    flex: 0 1 auto;
-    font-size: 0.76rem;
-    min-height: 2.2rem;
-    padding: 0.55rem 0.3rem;
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-1);
     white-space: nowrap;
-  }
-}
-
-@media (max-width: 420px) {
-
-  .athlete-tabs {
-    gap: 0.05rem;
-  }
-
-  .athlete-tab {
-    font-size: 0.7rem;
-    padding-left: 0.18rem;
-    padding-right: 0.18rem;
   }
 }
 

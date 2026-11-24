@@ -1,6 +1,30 @@
 @import "./tournament-controls.css";
 @import "./list.css";
 
+.tournaments-page :is(a, button, summary):focus-visible {
+  outline: 2px solid var(--list-primary);
+  outline-offset: 2px;
+}
+
+.portal-empty {
+  gap: var(--space-3);
+  padding: clamp(var(--space-6), 4vw, var(--space-8)) clamp(var(--space-4), 3vw, var(--space-8));
+}
+
+.portal-empty h2 {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 800;
+  margin: 0 0 var(--space-2);
+}
+
+.portal-empty p {
+  color: var(--list-muted);
+  font-size: .9rem;
+  font-weight: 600;
+  margin: 0;
+  max-width: 36rem;
+}
+
 .create-tournament-button {
   --bs-btn-color: var(--list-page-accent);
   --bs-btn-bg: var(--list-accent-surface);

@@ -66,7 +66,7 @@ a:focus {
     .tournament-register-button
   ):not(.tournament-power-badge):not(.tournament-card-stat):not(
     .portal-badge
-  ):not(.tournament-card-fact):not(.tournament-card-fact-icon):not(
+  ):not(.tournament-card-fact):not(
     .athlete-stat
   ):not(.athlete-chip):not(.club-social-link):not(
     .tournament-team-captain-badge
@@ -86,11 +86,6 @@ a:focus {
 .tournament-card-fact[data-bs-toggle="tooltip"] {
   display: flex !important;
   position: relative !important;
-}
-
-.tournament-card-fact-icon[data-bs-toggle="tooltip"] {
-  display: inline-flex !important;
-  position: static !important;
 }
 
 .portal-panel {

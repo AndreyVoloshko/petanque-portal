@@ -29,7 +29,7 @@
 {% endblock header %}
 
 {% block content %}
-<div class="homepage-content py-4">
+<div class="homepage-content">
     <section class="landing-block competitions-block" aria-labelledby="competitions-title">
         {% url 'tournaments' as competitions_url %}
         <div class="landing-block-header">
@@ -81,7 +81,7 @@
                     <p>{% trans "Leading players of Ukraine with the highest ratings." %}</p>
                 </div>
             </div>
-            <a class="homepage-view-all homepage-view-all-wide" href="{% url 'players' licence_filter='licence' %}">
+            <a class="homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
                 <span>{% trans "View all athletes" %}</span>
                 <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
             </a>

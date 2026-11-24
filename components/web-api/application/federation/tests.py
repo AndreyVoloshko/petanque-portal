@@ -2862,9 +2862,11 @@ class TournamentListingPageTests(TestCase):
         self.assertNotContains(empty, 'data-landing-carousel')
         self.assertContains(empty, 'href="/tournaments/?period=past"')
 
-        self.create_tournament('Upcoming rated cup', is_rating=True)
+        self.create_tournament('Upcoming rated cup', is_rating=True, registration_days=5)
         mixed = self.client.get('/')
         self.assertContains(mixed, 'Upcoming rated cup')
+        self.assertContains(mixed, 'btn portal-btn tournament-register-button')
+        self.assertContains(mixed, 'data-bs-toggle="tooltip" data-bs-placement="top"')
         self.assertContains(mixed, 'data-landing-carousel', count=1)
         self.assertContains(mixed, 'landing-competition-empty', count=1)
         self.assertContains(mixed, 'href="/tournaments/past/non_rating"')

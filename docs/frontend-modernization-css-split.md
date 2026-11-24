@@ -247,3 +247,37 @@ The home hero now has registration and club links next to the federation intro, 
 ## Home action styling
 
 Registration and Calendar use a muted blue fill with dark text. Find a club and All competitions use white with a soft border. All four actions are at least 48 px tall. The archive is a text link with a 44 px target. On phones and narrow tablets, the illustration is shorter and the archive link sits below the empty-state message. This refinement added 10 lines to the home stylesheet.
+
+## Final PR #43 CSS review and measurements
+
+The CSS review kept the tournament list's empty-state and focus rules in its own entry, replaced the home card's bespoke registration styling with Bootstrap button variables, and removed an unused tooltip exception and icon. Home and header reuse the palette, font-size scale, spacing scale, and one header-height token. Visual sizes for artwork and the carousel remain local. The review removed 114 authored CSS lines and 1,769 source bytes relative to `860fddc`.
+
+The complete PR compares against `c1e388f`, the merge base with `master`. The source inventory counts `style-v2.css` and all authored `.css` files in `frontend/src`. It excludes generated bundles, SCSS, and vendored CSS.
+
+| Authored CSS scope | Base | Final | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
+| All authored CSS | 11,587 lines / 236,854 B | 11,491 lines / 237,133 B | −96 lines / +279 B |
+
+Both revisions ran on the existing local Docker service against the same database. Each transfer figure is the median of three Chromium loads with the cache disabled, including first- and third-party stylesheets and scripts. Combined savings use the sum of the CSS and JavaScript medians. Images, fonts, HTML, and API requests are measured separately from this table.
+
+| Route | Width | CSS base → final | JS base → final | Combined reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Home | 390 px | 77,758 → 59,176 B | 110,222 → 57,034 B | 71,770 B (38.2%) |
+| Home | 1440 px | 77,821 → 59,493 B | 110,213 → 57,700 B | 70,841 B (37.7%) |
+| Past tournaments | 390 px | 64,660 → 58,291 B | 112,572 → 57,878 B | 61,063 B (34.5%) |
+| Past tournaments | 1440 px | 64,682 → 58,708 B | 112,560 → 58,607 B | 59,927 B (33.8%) |
+| Athlete ratings | 390 px | 66,162 → 59,875 B | 112,556 → 57,841 B | 61,002 B (34.1%) |
+| Athlete ratings | 1440 px | 66,158 → 60,133 B | 112,539 → 58,555 B | 60,009 B (33.6%) |
+
+### Search
+
+The suggestion debounce measured 300 ms in the old jQuery UI widget. The new header uses 160 ms, serves repeated queries from its in-page cache, and cancels superseded requests. The widget shows up to four matches per category. Full names match in either order, exact name matches rank higher, and club abbreviations are searchable.
+
+The same local API and database produced these uncompressed JSON sizes. The final header requests four results per category. The public endpoint still accepts requests without that parameter, and the new category field adds a small cost for queries that already had few matches.
+
+| Query | Results base → final | JSON base → final | Change |
+| --- | ---: | ---: | ---: |
+| `Андрій` | 47 → 4 | 6,249 → 614 B | −90.2% |
+| `Кубок` | 43 → 4 | 8,469 → 1,173 B | −86.1% |
+| `Fair` | 3 → 3 | 609 → 669 B | +9.9% |
