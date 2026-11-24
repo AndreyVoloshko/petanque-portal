@@ -21,7 +21,9 @@
             {% endblocktrans %}
         </p>
         <p class="landing-intro">
-            <a href="https://petanque.org.ua/" target="_blank" rel="noopener">{% trans "Federation news" %}</a>
+            {% blocktrans trimmed with news_url="https://petanque.org.ua/" %}
+                Catch up on tournaments and events in the <a href="{{ news_url }}" target="_blank" rel="noopener">federation news</a>.
+            {% endblocktrans %}
         </p>
     </div>
     <div class="landing-hero-art" aria-hidden="true"></div>

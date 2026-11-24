@@ -3777,8 +3777,9 @@ msgstr "Минулі змагання"
 msgid "Find a club"
 msgstr "Знайти клуб"
 
-msgid "Federation news"
-msgstr "Новини федерації"
+#, python-format
+msgid "Catch up on tournaments and events in the <a href=\"%(news_url)s\" target=\"_blank\" rel=\"noopener\">federation news</a>."
+msgstr "Дізнавайтеся про турніри й події з <a href=\"%(news_url)s\" target=\"_blank\" rel=\"noopener\">новин федерації</a>."
 
 #, python-format
 msgid "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."
