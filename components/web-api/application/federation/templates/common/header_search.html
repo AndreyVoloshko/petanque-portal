@@ -1,0 +1,25 @@
+{% load i18n %}
+<div class="portal-search" data-header-search hidden>
+    <button class="portal-header-control portal-search-toggle" type="button" aria-label="{% trans 'Search' %}" aria-expanded="false" aria-controls="portal-search-form">
+        <i class="bi bi-search" aria-hidden="true"></i>
+    </button>
+    <form class="portal-search-form" id="portal-search-form" role="search" aria-label="{% trans 'Site search' %}"
+          data-url="{% url 'api_players_clubs_and_tournaments_list' %}"
+          data-minimum="{% trans 'Type at least two characters.' %}"
+          data-loading="{% trans 'Searching...' %}"
+          data-empty="{% trans 'No matches found.' %}"
+          data-error="{% trans 'Search is unavailable. Press Enter to try again.' %}"
+          data-player="{% trans 'Athletes' %}" data-club="{% trans 'Clubs' %}" data-tournament="{% trans 'Tournaments' %}">
+        <div class="portal-search-field">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input id="portal-search-input" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="portal-search-results"
+                   aria-label="{% trans 'Find an athlete, club, or competition' %}" placeholder="{% trans 'Search' %}"
+                   autocomplete="off" spellcheck="false" maxlength="100" enterkeyhint="search">
+            <button class="portal-search-close" type="button" aria-label="{% trans 'Close search' %}"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="portal-search-panel" hidden>
+            <p class="portal-search-status" role="status"></p>
+            <div class="portal-search-results" id="portal-search-results" role="listbox" aria-label="{% trans 'Search results' %}"></div>
+        </div>
+    </form>
+</div>

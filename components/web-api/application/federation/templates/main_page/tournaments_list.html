@@ -1,24 +1,26 @@
 {% load app_filters %}
 {% load i18n %}
 
-<div class="landing-carousel tournament-carousel" data-landing-carousel>
+<div class="landing-carousel" data-landing-carousel data-slide-label="{% trans "Go to slide" %}">
     <button class="landing-carousel-arrow landing-carousel-arrow-prev" type="button" data-carousel-prev aria-label="{% trans "Previous competitions" %}">
         <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-chevron-left"></use></svg>
     </button>
 
-    <div class="landing-carousel-track tournament-card-grid" data-carousel-track>
+    <div class="landing-carousel-track" data-carousel-track{% if items|length > 1 %} tabindex="0"{% endif %}>
     {% for item in items %}
     {% with meta=item|tournament_card_metadata %}
     <div class="landing-carousel-item">
-        <article class="card tournament-card">
-            <div class="card-body tournament-card-body">
+        <article class="portal-panel tournament-card">
+            <div class="tournament-card-body">
                 <div class="tournament-card-main">
-                    <div class="tournament-card-tags" aria-label="{% trans "Competition details" %}">
+                    <div class="portal-tag-list" aria-label="{% trans "Competition details" %}">
                         {% if meta.format %}
-                            <span class="tournament-card-tag tournament-card-tag-format" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Format" %}">{{ meta.format }}</span>
+                            {% trans "Format" as format_help %}
+                            {% include "common/badge.html" with label=meta.format tone="format" help_text=format_help only %}
                         {% endif %}
                         {% for tag in meta.audience_tags %}
-                            <span class="tournament-card-tag {{ tag|tournament_audience_tag_class }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Category" %}">{{ tag }}</span>
+                            {% trans "Category" as category_help %}
+                            {% include "common/badge.html" with label=tag tone="audience" help_text=category_help css_class=tag|tournament_audience_tag_class only %}
                         {% endfor %}
                     </div>
 
@@ -31,7 +33,7 @@
                             <span class="tournament-card-fact-icon">
                                 <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
                             </span>
-                            <span>{{ item.start_date|date:"j F Y" }}</span>
+                            <time datetime="{{ item.start_date|date:'Y-m-d' }}">{{ item.start_date|date:"j F Y" }}</time>
                         </div>
                         {% if item.place %}
                             <div class="tournament-card-fact" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{% trans "Venue" %}">
@@ -84,14 +86,6 @@
         </article>
     </div>
     {% endwith %}
-    {% empty %}
-    <div class="landing-carousel-item">
-        <article class="card tournament-card tournament-card-empty">
-            <div class="card-body tournament-card-body">
-                <p class="tournament-card-empty-text">{% trans "No upcoming competitions yet." %}</p>
-            </div>
-        </article>
-    </div>
     {% endfor %}
     </div>
 
@@ -99,13 +93,5 @@
         <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
     </button>
 
-    <div class="landing-carousel-dots" data-carousel-dots aria-hidden="true"></div>
+    <div class="landing-carousel-dots" data-carousel-dots></div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $('[data-bs-toggle="tooltip"]').attr('data-bs-offset', '0,2').tooltip({
-            offset: [0, 2]
-        });
-    });
-</script>

@@ -6,51 +6,34 @@
 {% block header %}
 {% include "common/landing_icon_sprite.html" %}
 
-<section class="landing-hero" aria-labelledby="landing-title">
+<section class="landing-hero" aria-labelledby="landing-title" style="--home-hero-image: url('{% static 'brand/landing-hero-petanque.png' %}')">
     <div class="landing-hero-copy">
         <h1 id="landing-title" class="landing-title">
             <img class="landing-title-logo" src="{% static 'brand/petanque_federation_logo_transparent_clean.png' %}" alt="">
-            <a target="_blank" href="http://petanque.org.ua/" class="text-decoration-none">{% trans "Ukrainian Petanque Federation" %}</a>
+            <span>{% trans "Ukrainian Petanque Federation" %}</span>
         </h1>
+        {% url 'clubs' as clubs_url %}
+        {% url 'register_player' as register_url %}
         <p class="landing-intro">
-            {% trans "Official portal for competitions, rankings, clubs, athletes, and federation updates." %}
+            {% blocktrans trimmed %}
+                Want to try pétanque? <a href="{{ clubs_url }}">Find a club near you</a>.
+                When you are ready to compete, <a href="{{ register_url }}">register on the portal</a>.
+            {% endblocktrans %}
+        </p>
+        <p class="landing-intro">
+            {% blocktrans trimmed with news_url="https://petanque.org.ua/" %}
+                Catch up on tournaments and events in the <a href="{{ news_url }}" target="_blank" rel="noopener">federation news</a>.
+            {% endblocktrans %}
         </p>
     </div>
-    <div class="landing-actions" aria-label="{% trans "Portal highlights" %}">
-        <div class="landing-action landing-action-primary">
-            <span class="landing-icon landing-icon-gold" aria-hidden="true">
-                <svg class="landing-svg-icon"><use href="#landing-icon-trophy"></use></svg>
-            </span>
-            <p class="landing-line">
-                <span>{% blocktrans %}Let us play petanque in Ukraine and <strong>win</strong>!{% endblocktrans %}</span>
-            </p>
-            <svg class="landing-action-chevron" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
-        </div>
-        <div class="landing-action">
-            <span class="landing-icon" aria-hidden="true">
-                <svg class="landing-svg-icon"><use href="#landing-icon-document"></use></svg>
-            </span>
-            <p class="landing-line">
-                <span>{% trans "Find current federation news, competitions, athletes, clubs, and more." %}</span>
-            </p>
-            <svg class="landing-action-chevron" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
-        </div>
-        <div class="landing-action landing-action-cta">
-            <span class="landing-icon" aria-hidden="true">
-                <svg class="landing-svg-icon"><use href="#landing-icon-map-pin"></use></svg>
-            </span>
-            <p class="landing-line">
-                <span>{% url 'clubs' as clubs_url %}{% url 'register_player' as register_url %}{% blocktrans %}Ready to throw boules? Start now — <a href="{{ register_url }}" class="fw-bold text-decoration-none">register</a> and choose <a href="{{ clubs_url }}" class="fw-bold text-decoration-none">a nearby club</a>.{% endblocktrans %}</span>
-            </p>
-            <svg class="landing-action-chevron" aria-hidden="true"><use href="#landing-icon-chevron-right"></use></svg>
-        </div>
-    </div>
+    <div class="landing-hero-art" aria-hidden="true"></div>
 </section>
 {% endblock header %}
 
 {% block content %}
-<div class="homepage-content py-4">
+<div class="homepage-content">
     <section class="landing-block competitions-block" aria-labelledby="competitions-title">
+        {% url 'tournaments' as competitions_url %}
         <div class="landing-block-header">
             <div class="landing-heading-copy">
                 <span class="landing-heading-icon" aria-hidden="true">
@@ -62,50 +45,31 @@
                 </div>
             </div>
             <div class="landing-header-actions">
-                <a class="landing-action-button landing-action-button-primary" href="{% url 'tournaments' %}">
-                    <span>{% trans "All competitions" %}</span>
-                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                </a>
-                <a class="landing-action-button" href="{% url 'tournaments_calendar' %}">
-                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
-                    <span>{% trans "Calendar" %}</span>
-                </a>
+                {% url 'tournaments_calendar' as calendar_url %}
+                {% trans "Calendar" as calendar_label %}
+                {% trans "All competitions" as competitions_label %}
+                {% include "common/list/button.html" with href=calendar_url label=calendar_label icon="bi-calendar3" variant="primary" only %}
+                {% include "common/list/button.html" with href=competitions_url label=competitions_label icon="bi-list-ul" only %}
             </div>
         </div>
 
-        <section class="landing-subsection" aria-labelledby="rating-competitions-title">
-            <div class="landing-subsection-header">
-                <div class="landing-subsection-title-row">
-                    <h3 id="rating-competitions-title">
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-star"></use></svg>
-                        <span>{% trans "Rating competitions" %}</span>
-                    </h3>
-                    <a class="homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='rating' %}">
-                        <span>{% trans "View all rating competitions" %}</span>
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                    </a>
-                </div>
-                <p>{% trans "Official tournaments that affect Ukrainian pétanque ratings." %}</p>
-            </div>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments_rating show_power=1 %}
-        </section>
+        {% if future_tournaments_rating or future_tournaments %}
+            {% url 'tournaments' date_filter='future' type_filter='rating' as rating_url %}
+            {% url 'tournaments' date_filter='past' type_filter='rating' as rating_archive_url %}
+            {% trans "Rating competitions" as rating_title %}
+            {% trans "Official tournaments that affect Ukrainian pétanque ratings." as rating_description %}
+            {% trans "View all rating competitions" as rating_link %}
+            {% include "main_page/competition_section.html" with items=future_tournaments_rating title=rating_title heading_id="rating-competitions-title" icon="star" description=rating_description list_label=rating_link list_url=rating_url archive_url=rating_archive_url show_power=True only %}
 
-        <section class="landing-subsection" aria-labelledby="non-rating-competitions-title">
-            <div class="landing-subsection-header">
-                <div class="landing-subsection-title-row">
-                    <h3 id="non-rating-competitions-title">
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-calendar"></use></svg>
-                        <span>{% trans "Non-rating competitions" %}</span>
-                    </h3>
-                    <a class="homepage-view-all" href="{% url 'tournaments' date_filter='future' type_filter='non_rating' %}">
-                        <span>{% trans "View all non-rating competitions" %}</span>
-                        <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
-                    </a>
-                </div>
-                <p>{% trans "Open, club, training and community tournaments." %}</p>
-            </div>
-            {% include "main_page/tournaments_list.html" with items=future_tournaments show_power=0 %}
-        </section>
+            {% url 'tournaments' date_filter='future' type_filter='non_rating' as non_rating_url %}
+            {% url 'tournaments' date_filter='past' type_filter='non_rating' as non_rating_archive_url %}
+            {% trans "Non-rating competitions" as non_rating_title %}
+            {% trans "Open, club, training and community tournaments." as non_rating_description %}
+            {% trans "View all non-rating competitions" as non_rating_link %}
+            {% include "main_page/competition_section.html" with items=future_tournaments title=non_rating_title heading_id="non-rating-competitions-title" icon="calendar" description=non_rating_description list_label=non_rating_link list_url=non_rating_url archive_url=non_rating_archive_url only %}
+        {% else %}
+            {% include "main_page/competition_empty.html" with archive_url=competitions_url|add:"?period=past" only %}
+        {% endif %}
     </section>
 
     <section class="landing-block athletes-block" aria-labelledby="athletes-title">
@@ -119,7 +83,7 @@
                     <p>{% trans "Leading players of Ukraine with the highest ratings." %}</p>
                 </div>
             </div>
-            <a class="homepage-view-all homepage-view-all-wide" href="{% url 'players' licence_filter='licence' %}">
+            <a class="homepage-view-all" href="{% url 'players' licence_filter='licence' %}">
                 <span>{% trans "View all athletes" %}</span>
                 <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
             </a>
@@ -156,111 +120,5 @@
         </div>
     </section>
 </div>
-
-{% trans "Go to slide" as go_to_slide_label %}
-<script>
-    $(document).ready(function() {
-        function initTooltips() {
-            setTimeout(function () {
-                const $tooltips = $('[data-bs-toggle="tooltip"]');
-                $tooltips.attr('data-bs-offset', '0,2').tooltip('dispose').tooltip({
-                    offset: [0, 2]
-                }).on('shown.bs.tooltip', function () {
-                    bootstrap.Tooltip.getInstance(this).update();
-                });
-            }, 300);
-        }
-    
-        initTooltips();
-
-        function carouselPageSize() {
-            if (window.matchMedia('(min-width: 1400px)').matches) {
-                return 4;
-            }
-            if (window.matchMedia('(min-width: 992px)').matches) {
-                return 3;
-            }
-            if (window.matchMedia('(min-width: 768px)').matches) {
-                return 2;
-            }
-            return 1;
-        }
-
-        function initLandingCarousel(carousel) {
-            const track = carousel.querySelector('[data-carousel-track]');
-            const previous = carousel.querySelector('[data-carousel-prev]');
-            const next = carousel.querySelector('[data-carousel-next]');
-            const dots = carousel.querySelector('[data-carousel-dots]');
-            const items = Array.from(carousel.querySelectorAll('.landing-carousel-item'));
-
-            if (!track || !previous || !next || !dots || !items.length) {
-                return;
-            }
-
-            let pageCount = 1;
-
-            function rebuildDots() {
-                pageCount = Math.max(1, Math.ceil(items.length / carouselPageSize()));
-                dots.innerHTML = '';
-                carousel.classList.toggle('is-single-page', pageCount <= 1);
-
-                for (let index = 0; index < pageCount; index += 1) {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'landing-carousel-dot';
-                    button.setAttribute('aria-label', '{{ go_to_slide_label|escapejs }} ' + (index + 1));
-                    button.addEventListener('click', function () {
-                        track.scrollTo({
-                            left: index * track.clientWidth,
-                            behavior: 'smooth'
-                        });
-                    });
-                    dots.appendChild(button);
-                }
-
-                updateState();
-            }
-
-            function updateState() {
-                const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
-                const currentPage = track.clientWidth ? Math.round(track.scrollLeft / track.clientWidth) : 0;
-
-                previous.disabled = track.scrollLeft <= 4;
-                next.disabled = track.scrollLeft >= maxScroll - 4;
-
-                Array.from(dots.children).forEach(function (dot, index) {
-                    dot.classList.toggle('is-active', index === Math.min(currentPage, pageCount - 1));
-                });
-            }
-
-            previous.addEventListener('click', function () {
-                track.scrollBy({left: -track.clientWidth, behavior: 'smooth'});
-            });
-
-            next.addEventListener('click', function () {
-                track.scrollBy({left: track.clientWidth, behavior: 'smooth'});
-            });
-
-            track.addEventListener('scroll', updateState, {passive: true});
-            rebuildDots();
-            carousel._refreshLandingCarousel = rebuildDots;
-        }
-
-        const carousels = Array.from(document.querySelectorAll('[data-landing-carousel]'));
-        carousels.forEach(initLandingCarousel);
-
-        let resizeTimer;
-        window.addEventListener('resize', function () {
-            window.clearTimeout(resizeTimer);
-            resizeTimer = window.setTimeout(function () {
-                carousels.forEach(function (carousel) {
-                    if (carousel._refreshLandingCarousel) {
-                        carousel._refreshLandingCarousel();
-                    }
-                });
-            }, 150);
-        });
-    });
-</script>
 
 {% endblock content %}

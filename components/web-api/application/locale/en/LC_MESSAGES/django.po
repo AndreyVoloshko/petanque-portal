@@ -3628,3 +3628,47 @@ msgstr "Search"
 
 msgid "Apply page size"
 msgstr "Apply page size"
+
+msgid "Past"
+msgstr "Past"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Main navigation"
+msgstr "Main navigation"
+
+msgid "Site search"
+msgstr "Site search"
+
+msgid "Type at least two characters."
+msgstr "Type at least two characters."
+
+msgid "No matches found."
+msgstr "No matches found."
+
+msgid "Search is unavailable. Press Enter to try again."
+msgstr "Search is unavailable. Press Enter to try again."
+
+msgid "Close search"
+msgstr "Close search"
+
+msgid "Search results"
+msgstr "Search results"
+
+msgid "Find results from previous tournaments in the archive."
+msgstr "Find results from previous tournaments in the archive."
+
+msgid "Past competitions"
+msgstr "Past competitions"
+
+msgid "Find a club"
+msgstr "Find a club"
+
+#, python-format
+msgid "Catch up on tournaments and events in the <a href=\"%(news_url)s\" target=\"_blank\" rel=\"noopener\">federation news</a>."
+msgstr "Catch up on tournaments and events in the <a href=\"%(news_url)s\" target=\"_blank\" rel=\"noopener\">federation news</a>."
+
+#, python-format
+msgid "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."
+msgstr "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."

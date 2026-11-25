@@ -134,13 +134,14 @@ Returns tournaments in a date range, formatted for FullCalendar.
 
 ### `GET /api/players_clubs_and_tournaments/list/`
 
-Full-text search across players, clubs, and tournaments. Used by the site-wide autocomplete.
+Searches athletes by first and last name, active clubs by name or abbreviation, and public tournaments by their display name. Used by the site-wide autocomplete.
 
 **Query parameters**
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `typedText` | string | Yes | Search query |
+| `limit_per_type` | integer | No | Maximum matches per category, between 1 and 10. The header requests four. Omit to return all matches. |
 
 **Response** — JSON array
 
@@ -148,8 +149,9 @@ Full-text search across players, clubs, and tournaments. Used by the site-wide a
 [
   {
     "href": "/player/42",
-    "value": "John Doe",
-    "disabled": 0
+    "value": "DOE John",
+    "disabled": 0,
+    "kind": "player"
   }
 ]
 ```

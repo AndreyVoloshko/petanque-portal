@@ -17,18 +17,4 @@
     </div>
 </div>
 
-<script>
-$(function() {
-    $('#gdpr-yes').click(function() {
-        var date = new Date();
-        date.setFullYear(date.getFullYear() + 10);
-        document.cookie = 'gdpr_agree=1; path=/; expires=' + date.toUTCString();
-        $('#gdpr_warning').fadeOut().remove();
-    });
-
-    $('#gdpr-no').click(function() {
-        window.location.href = "https://www.google.com"; // или другая страница выхода
-    });
-});
-</script>
 {% endif %}

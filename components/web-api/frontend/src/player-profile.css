@@ -216,10 +216,6 @@
   flex-shrink: 0;
   width: 108px;
   height: 108px;
-  border: 2px solid var(--player-club-logo-border);
-  border-radius: 16%;
-  overflow: hidden;
-  background: var(--list-muted-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,10 +224,10 @@
 .player-club-logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
-.player-club-logo-placeholder {
+.player-club-logo-placeholder:not([hidden]) {
   width: 100%;
   height: 100%;
   display: flex;

@@ -98,6 +98,13 @@
         }
     }
 
+    region.addEventListener('change', event => {
+        const select = event.target;
+        if (select instanceof HTMLSelectElement && select.form?.matches('.portal-filter-bar[data-list-form]')) {
+            select.form.requestSubmit();
+        }
+    });
+
     region.addEventListener('submit', event => {
         const form = event.target.closest('form[data-list-form]');
         if (!form || event.defaultPrevented) return;

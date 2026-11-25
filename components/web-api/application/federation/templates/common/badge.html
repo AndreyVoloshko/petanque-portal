@@ -1,1 +1,1 @@
-<span class="portal-badge" data-tone="{{ tone }}"{% if shape %} data-shape="{{ shape }}"{% endif %}>{{ label }}</span>
+<span class="portal-badge{% if css_class %} {{ css_class }}{% endif %}" data-tone="{{ tone }}"{% if shape %} data-shape="{{ shape }}"{% endif %}{% if help_text %} data-bs-toggle="tooltip" title="{{ help_text }}"{% endif %}>{{ label }}</span>

@@ -164,7 +164,7 @@
 }
 
 .athlete-card-title-badge {
-  color: var(--list-gold);
+  color: var(--rating-award-icon);
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;

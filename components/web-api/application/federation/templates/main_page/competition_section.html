@@ -1,0 +1,22 @@
+<section class="landing-subsection" aria-labelledby="{{ heading_id }}">
+    <div class="landing-subsection-header">
+        <div class="landing-subsection-title-row">
+            <h3 id="{{ heading_id }}">
+                <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-{{ icon }}"></use></svg>
+                <span>{{ title }}</span>
+            </h3>
+            {% if items %}
+                <a class="homepage-view-all" href="{{ list_url }}">
+                    <span>{{ list_label }}</span>
+                    <svg class="landing-svg-icon" aria-hidden="true"><use href="#landing-icon-arrow-right"></use></svg>
+                </a>
+            {% endif %}
+        </div>
+        <p>{{ description }}</p>
+    </div>
+    {% if items %}
+        {% include "main_page/tournaments_list.html" with items=items show_power=show_power only %}
+    {% else %}
+        {% include "main_page/competition_empty.html" with archive_url=archive_url only %}
+    {% endif %}
+</section>

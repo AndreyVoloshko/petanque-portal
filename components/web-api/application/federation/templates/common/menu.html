@@ -1,195 +1,101 @@
 {% load i18n static %}
 {% get_current_language as CURRENT_LANGUAGE %}
-<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-xl">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand portal-brand" href="/">
-                <img class="portal-brand-logo" src="{% static 'brand/petanque_federation_logo_transparent_clean.png' %}" alt="">
-                <span class="portal-brand-full">{% trans "Ukrainian Petanque Federation" %}</span>
-                <span class="portal-brand-short">{% trans "FPU" %}</span>
-            </a>
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="visually-hidden">{% trans "Menu" %}</span>
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navbar">
-            <ul class="navbar-nav me-auto">
+{% url 'tournaments' as tournaments_url %}
+<nav class="portal-header navbar navbar-expand-xl bg-dark fixed-top" aria-label="{% trans 'Main navigation' %}">
+    <div class="portal-header-inner container">
+        <a class="portal-brand" href="{% url 'main_page' %}">
+            <img src="{% static 'brand/petanque_federation_logo_transparent_clean.png' %}" width="34" height="34" alt="">
+            <span class="portal-brand-full">{% trans "Ukrainian Petanque Federation" %}</span>
+            <span class="portal-brand-short">{% trans "FPU" %}</span>
+        </a>
+
+        {% include 'common/header_search.html' %}
+
+        <button class="portal-header-toggle portal-header-control navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#portal-navigation" aria-expanded="false" aria-controls="portal-navigation" aria-label="{% trans 'Menu' %}">
+            <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+
+        <div class="portal-navigation collapse navbar-collapse" id="portal-navigation">
+            <ul class="portal-nav navbar-nav">
                 <li class="nav-item dropdown">
-                    <a href="{% url 'clubs' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-house-door"></i> {% trans "Federation" %} </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-list"></i> {% trans "Structure" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text"></i> {% trans "Documents" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-people"></i> {% trans "Clubs" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-eye"></i> {% trans "Arbiters" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard"></i> {% trans "Coaches" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-hand-thumbs-up"></i> {% trans "National teams" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'sport_titles' %}"><i class="bi bi-award"></i> {% trans "Sports titles" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-fire"></i> {% trans "Ukrainian records" %}</a></li>
-                        <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart"></i> {% trans "Portal statistics" %}</a></li>
+                    <button class="portal-header-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="portal-federation-menu">
+                        <i class="bi bi-house-door" aria-hidden="true"></i> {% trans "Federation" %}
+                    </button>
+                    <ul class="portal-menu dropdown-menu" aria-labelledby="portal-federation-menu">
+                        <li><a class="dropdown-item" href="{% url 'departments' %}"><i class="bi bi-diagram-3" aria-hidden="true"></i> {% trans "Structure" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'documents' %}"><i class="bi bi-file-text" aria-hidden="true"></i> {% trans "Documents" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'clubs' %}"><i class="bi bi-buildings" aria-hidden="true"></i> {% trans "Clubs" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'arbiters' %}"><i class="bi bi-flag" aria-hidden="true"></i> {% trans "Arbiters" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coaches' %}"><i class="bi bi-mortarboard" aria-hidden="true"></i> {% trans "Coaches" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'national_teams' %}"><i class="bi bi-people" aria-hidden="true"></i> {% trans "National teams" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sport_titles' %}"><i class="bi bi-award" aria-hidden="true"></i> {% trans "Sports titles" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'records' %}"><i class="bi bi-trophy" aria-hidden="true"></i> {% trans "Ukrainian records" %}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'statistics' %}"><i class="bi bi-bar-chart" aria-hidden="true"></i> {% trans "Portal statistics" %}</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a href="{% url 'tournaments' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-trophy"></i> {% trans "Competitions" %} </a>
-                    <ul class="dropdown-menu">
-                
-                        <!-- Майбутні -->
-                        <li><h6 class="dropdown-header">{% trans "Upcoming" %}</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future"><i class="bi bi-hourglass"></i> {% trans "All" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future&amp;type=rating"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=future&amp;foreign=1"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
-                
-                        <li role="separator" class="dropdown-divider"></li>
-                
-                        <!-- Результати -->
-                        <li><h6 class="dropdown-header">{% trans "Results" %}</h6></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past"><i class="bi bi-check2-circle"></i> {% trans "All" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past&amp;type=rating"><i class="bi bi-star"></i> {% trans "Rating competitions" %}</a></li>
-                        <li><a class="dropdown-item" href="{% url 'tournaments' %}?period=past&amp;foreign=1"><i class="bi bi-airplane"></i> {% trans "International competitions" %}</a></li>
-                
-                        <li role="separator" class="dropdown-divider"></li>
-                
-                        <!-- Календар -->
-                        <li><a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar-week"></i> {% trans "Calendar" %}</a></li>
-                
-                    </ul>
-                </li>                
+                    <button class="portal-header-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="portal-competitions-menu">
+                        <i class="bi bi-trophy" aria-hidden="true"></i> {% trans "Competitions" %}
+                    </button>
+                    <div class="portal-menu dropdown-menu" aria-labelledby="portal-competitions-menu">
+                        <div class="portal-competition-links">
+                            <div>
+                                <h2 class="dropdown-header">{% trans "All competitions" %}</h2>
+                                <a class="dropdown-item" href="{{ tournaments_url }}?period=future"><i class="bi bi-calendar-event" aria-hidden="true"></i> {% trans "Upcoming" %}</a>
+                                <a class="dropdown-item" href="{{ tournaments_url }}?period=past"><i class="bi bi-clock-history" aria-hidden="true"></i> {% trans "Past" %}</a>
+                            </div>
+                            <div>
+                                <h2 class="dropdown-header">{% trans "International competitions" %}</h2>
+                                <a class="dropdown-item" href="{{ tournaments_url }}?period=future&amp;foreign=1"><i class="bi bi-airplane" aria-hidden="true"></i> {% trans "Upcoming" %}</a>
+                                <a class="dropdown-item" href="{{ tournaments_url }}?period=past&amp;foreign=1"><i class="bi bi-clock-history" aria-hidden="true"></i> {% trans "Past" %}</a>
+                            </div>
+                        </div>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'tournaments_calendar' %}"><i class="bi bi-calendar-week" aria-hidden="true"></i> {% trans "Calendar" %}</a>
+                    </div>
+                </li>
                 <li class="nav-item dropdown">
-                    <a href="#ratings" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-award"></i> {% trans "Rankings" %} </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart"></i> {% trans "Overall" %}</a></li>
-                        <li role="separator" class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'seasons' %}"><i class="bi bi-clock-history"></i> {% trans "Previous seasons" %}</a></li>
-                        <!-- <li role="separator" class="dropdown-divider"></li>
-                        <li class="dropdown-header">Неофіційні рейтинги</li>
-                        <li><a href="{% url 'players' %}"><i class="bi bi-graph-up"></i> Повний рейтинг порталу</a></li> -->
+                    <button class="portal-header-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="portal-rankings-menu">
+                        <i class="bi bi-award" aria-hidden="true"></i> {% trans "Rankings" %}
+                    </button>
+                    <ul class="portal-menu dropdown-menu" aria-labelledby="portal-rankings-menu">
+                        <li><a class="dropdown-item" href="{% url 'players' licence_filter='licence' %}"><i class="bi bi-bar-chart" aria-hidden="true"></i> {% trans "Overall" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'seasons' %}"><i class="bi bi-clock-history" aria-hidden="true"></i> {% trans "Previous seasons" %}</a></li>
                     </ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right me-2">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false"><i class="bi bi-power"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+
+            <div class="portal-header-actions">
+                <div class="portal-account dropdown">
+                    <button class="portal-account-toggle portal-header-control dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="portal-account-menu">
+                        <i class="bi bi-person-circle" aria-hidden="true"></i> <span class="visually-hidden">{% trans "Account" %}</span>
+                    </button>
+                    <ul class="portal-menu dropdown-menu dropdown-menu-end" aria-labelledby="portal-account-menu">
                         {% if user.is_authenticated %}
-                            {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li>
-                            <li role="separator" class="dropdown-divider"></li> {% endcomment %}
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> {% trans "Profile" %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> {% trans "Log out" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person" aria-hidden="true"></i> {% trans "Profile" %}</a></li>
                             {% if user.is_superuser %}
-                            <li role="separator" class="dropdown-divider"></li>
-                            <li class="dropdown-header">{% trans "Additional options" %}</li>
-                            <li><a class="dropdown-item" class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-globe"></i> {% trans "Admin panel" %}</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear" aria-hidden="true"></i> {% trans "Admin panel" %}</a></li>
                             {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> {% trans "Log out" %}</a></li>
                         {% else %}
-                            {% comment %} <li><a class="dropdown-item" href="javascript:void(0);" id="theme-toggle"><i class="bi bi-moon-fill"></i> <span id="theme-text">Темна тема</span></li> {% endcomment %}
-                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> {% trans "Log in" %}</a></li>
-                            <li><a class="dropdown-item" href="{% url 'register_player' %}"><i class="bi bi-person-plus"></i> {% trans "Register" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> {% trans "Log in" %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register_player' %}"><i class="bi bi-person-plus" aria-hidden="true"></i> {% trans "Register" %}</a></li>
                         {% endif %}
                     </ul>
-                </li>
-            </ul>
-            <form id="search-form" class="d-flex ms-auto">
-                <div class="input-group">
-                    <input type="text" id="search" class="form-control" title="{% trans "Find an athlete, club, or competition" %}" placeholder="{% trans "Search" %}">
-                    <button class="btn portal-search-button" type="submit" aria-label="{% trans "Search" %}"><i class="bi bi-search"></i></button>
                 </div>
-            </form>
-            <form action="{% url 'set_language' %}" method="post" class="language-switcher ms-lg-3">
-                {% csrf_token %}
-                <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                {% if CURRENT_LANGUAGE == 'en' %}
-                    <input name="language" type="hidden" value="uk">
-                {% else %}
-                    <input name="language" type="hidden" value="en">
-                {% endif %}
-                <button class="language-current" type="submit" aria-label="{% trans "Language" %}">
-                    <span>{% trans "Language" %}:</span>
+                <form action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
                     {% if CURRENT_LANGUAGE == 'en' %}
-                        <svg class="lang-flag" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                            <path fill="#012169" d="M0 0h640v480H0z"></path>
-                            <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"></path>
-                            <path fill="#C8102E" d="m424 281 216 159v40L369 281h55zm-184 20 6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"></path>
-                            <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"></path>
-                            <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"></path>
-                        </svg>
+                        <input name="language" type="hidden" value="uk">
+                        <button class="portal-header-control portal-language" type="submit" title="Українська" aria-label="Українська" lang="uk"><span class="flag-icon flag-icon-ua" aria-hidden="true"></span> UA</button>
                     {% else %}
-                        <svg class="lang-flag" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                            <rect width="640" height="240" fill="#005BBB"></rect>
-                            <rect y="240" width="640" height="240" fill="#FFD500"></rect>
-                        </svg>
+                        <input name="language" type="hidden" value="en">
+                        <button class="portal-header-control portal-language" type="submit" title="English" aria-label="English" lang="en"><span class="flag-icon flag-icon-gb" aria-hidden="true"></span> EN</button>
                     {% endif %}
-                </button>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
-
-
-<script>
-$(function () {
-    const lightThemeLabel = "{% trans "Light theme" %}";
-    const darkThemeLabel = "{% trans "Dark theme" %}";
-
-    // Search autocomplete
-    $("#search").autocomplete({
-        source: function (request, response) {
-            $.ajax({
-                url: "{% url 'api_players_clubs_and_tournaments_list' %}",
-                data: { typedText: request.term },
-                success: function (data) {
-                    response(
-                        $.map(data, function (item) {
-                            return {
-                                label: item.value,
-                                value: item.value,
-                                href: item.href
-                            };
-                        })
-                    );
-                }
-            });
-        },
-        minLength: 3,
-        select: function (event, ui) {
-            window.location.href = ui.item.href;
-            return false;
-        }
-    }).autocomplete("instance")._renderItem = function (ul, item) {
-        return $("<li>")
-            .append("<div class='p-2'>" + item.label + "</div>")
-            .appendTo(ul);
-    };
-
-    // Theme toggle
-    const themeToggle = $("#theme-toggle");
-    const htmlElement = $("html");
-
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const savedTheme = localStorage.getItem("theme") || systemTheme;
-    
-    // setTheme(savedTheme);
-
-    themeToggle.click(function (e) {
-        e.preventDefault();
-        const newTheme = htmlElement.attr("data-bs-theme") === "dark" ? "light" : "dark";
-        setTheme(newTheme);
-    });
-
-    function setTheme(theme) {
-        htmlElement.attr("data-bs-theme", theme);
-        localStorage.setItem("theme", theme);
-        
-        if (theme === "dark") {
-            themeToggle.html('<i class="bi bi-sun-fill"></i> ' + lightThemeLabel);
-        } else {
-            themeToggle.html('<i class="bi bi-moon-fill"></i> ' + darkThemeLabel);
-        }
-    }
-});    
-</script>

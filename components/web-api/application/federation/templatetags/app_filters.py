@@ -951,7 +951,7 @@ def tournament_registration(tournament):
     icon_class = ""
 
     if tournament.is_registration_opened():
-        button_class = "badge bg-success tournament-register-button"
+        button_class = "btn portal-btn tournament-register-button"
         icon_class = "bi bi-plus-lg"
         message = _("Registration is open until %(date)s") % {
             'date': format_datetime(tournament.date_registration_stop)

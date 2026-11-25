@@ -206,3 +206,80 @@ These figures exclude compiled and vendor CSS. Transfer totals are medians of th
 | `/player/391` | 390 px | 84,028 B | 67,612 B | −19.5% |
 | `/club/24` | 1440 px | 84,373 B | 65,984 B | −21.8% |
 | `/player/391` | 1440 px | 84,235 B | 67,685 B | −19.6% |
+
+## Home page
+
+The home page uses a route-specific Vite stylesheet, the existing shell and tokens, and the shared buttons, panels, tournament badges and athlete cards. Cookie-banner breakpoints live with the shared header. The tournament carousels use CSS scroll snap and native JavaScript. The page uses the shared tooltip initializer. At the home migration checkpoint the header still loaded jQuery and jQuery UI.
+
+| Authored CSS | Before (`5828cfe`) | After | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
+| All authored CSS including the legacy sheet | 11,582 lines / 236,705 B | 11,502 lines / 235,302 B | −80 lines / −1,403 B |
+
+The authored totals exclude built and vendor CSS. Transfer totals are medians of three Chromium loads per width at `localhost:60102` with caching disabled and include all successfully transferred first-party and third-party stylesheets.
+
+| Home viewport | Before | After | Change |
+| --- | ---: | ---: | ---: |
+| 390 px | 78,237 B | 66,103 B | −15.5% |
+| 1440 px | 78,189 B | 65,864 B | −15.8% |
+
+## Header navigation and search
+
+The header keeps the portal's dark color and uses Bootstrap dropdowns and collapse for navigation. The desktop search stays visible in the header. On mobile its button opens a full-width panel with focus in the search field. Results from the existing API are capped at four per category in the header. Full names match in either order, clubs can match abbreviations, and requests from earlier input are canceled. The competitions menu links to upcoming and past lists, the same lists filtered to foreign events, and the calendar. The rated-only switch stays on the tournament list.
+
+The header source added 170 authored CSS lines compared with `6b4aa83`. The browser no longer downloads jQuery UI CSS or JavaScript. jQuery remains for the shared `portal-ui.js` and pages that still depend on it.
+
+| Home viewport | CSS before | CSS after | JS before | JS after |
+| --- | ---: | ---: | ---: | ---: |
+| 390 px | 66,408 B | 59,364 B | 112,543 B | 56,943 B |
+| 1440 px | 65,984 B | 60,014 B | 111,765 B | 57,656 B |
+
+Each column is the median of three local Chromium loads with cache disabled. Transfer includes successful first- and third-party stylesheet and script requests. The baseline is the running home migration build before the header change.
+
+## Home competition empty states
+
+The calendar is the primary home competition action and the full list uses a secondary button in the same teal palette. With no upcoming competitions, one full-width panel links to the archive. When only one category is empty, its panel links to the corresponding past list. The home stylesheet grew by 62 lines for the layout, responsive states, and button styles.
+
+## Hero and header polish
+
+The home hero now has registration and club links next to the federation intro, with the existing pétanque artwork in its own area. Header menus use a dark surface. On mobile, the account links are visible as soon as the navigation opens. The calendar action keeps its contrast when focused, including the pointer-focus state. Compared with `d7bec0a`, the home stylesheet lost 144 lines and the header stylesheet added 5 lines.
+
+## Home action styling
+
+Registration and Calendar use a muted blue fill with dark text. Find a club and All competitions use white with a soft border. All four actions are at least 48 px tall. The archive is a text link with a 44 px target. On phones and narrow tablets, the illustration is shorter and the archive link sits below the empty-state message. This refinement added 10 lines to the home stylesheet.
+
+## Final PR #43 CSS review and measurements
+
+The CSS review kept the tournament list's empty-state and focus rules in its own entry, replaced the home card's bespoke registration styling with Bootstrap button variables, and removed an unused tooltip exception and icon. Home and header reuse the palette, font-size scale, spacing scale, and one header-height token. Visual sizes for artwork and the carousel remain local. The review removed 114 authored CSS lines and 1,769 source bytes relative to `860fddc`.
+
+The complete PR compares against `c1e388f`, the merge base with `master`. The source inventory counts `style-v2.css` and all authored `.css` files in `frontend/src`. It excludes generated bundles, SCSS, and vendored CSS.
+
+| Authored CSS scope | Base | Final | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 4,685 lines / 91,569 B | 3,634 lines / 71,675 B | −1,051 lines / −19,894 B |
+| All authored CSS | 11,587 lines / 236,854 B | 11,500 lines / 237,542 B | −87 lines / +688 B |
+
+Both revisions ran on the existing local Docker service against the same database. The transfer checkpoint is `23cd584`. Each transfer figure is the median of three Chromium loads with the cache disabled, including first- and third-party stylesheets and scripts. Combined savings use the sum of the CSS and JavaScript medians. Images, fonts, HTML, and API requests are measured separately from this table.
+
+| Route | Width | CSS base → final | JS base → final | Combined reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Home | 390 px | 77,758 → 59,140 B | 110,222 → 56,970 B | 71,870 B (38.2%) |
+| Home | 1440 px | 77,821 → 59,392 B | 110,213 → 57,746 B | 70,896 B (37.7%) |
+| Past tournaments | 390 px | 64,660 → 58,453 B | 112,572 → 57,889 B | 60,890 B (34.4%) |
+| Past tournaments | 1440 px | 64,682 → 58,759 B | 112,560 → 58,555 B | 59,928 B (33.8%) |
+| Athlete ratings | 390 px | 66,162 → 59,869 B | 112,556 → 57,868 B | 60,981 B (34.1%) |
+| Athlete ratings | 1440 px | 66,158 → 60,141 B | 112,539 → 58,539 B | 60,017 B (33.6%) |
+
+### Search
+
+The suggestion debounce measured 300 ms in the old jQuery UI widget. The new header uses 160 ms, serves repeated queries from its in-page cache, and cancels superseded requests. The widget shows up to four matches per category. Full names match in either order, exact name matches rank higher, and club abbreviations are searchable.
+
+The same local API and database produced these uncompressed JSON sizes. The final header requests four results per category. The public endpoint still accepts requests without that parameter, and the new category field adds a small cost for queries that already had few matches.
+
+| Query | Results base → final | JSON base → final | Change |
+| --- | ---: | ---: | ---: |
+| `Андрій` | 47 → 4 | 6,249 → 614 B | −90.2% |
+| `Кубок` | 43 → 4 | 8,469 → 1,173 B | −86.1% |
+| `Fair` | 3 → 3 | 609 → 669 B | +9.9% |
+
+The final hero uses inline club and registration links in an invitation to try pétanque, with a separate federation news link to `https://petanque.org.ua/`. The mobile and desktop header applies a muted accent to open controls and uses white dropdown panels and search suggestions.
