@@ -1,0 +1,11 @@
+<span class="document-file-icon" data-extension="{{ extension }}" aria-hidden="true">
+    {% if extension == "pdf" or extension == "docx" or extension == "xlsx" or extension == "pptx" or extension == "txt" or extension == "csv" or extension == "ai" or extension == "jpg" %}
+        <i class="bi bi-filetype-{{ extension }}"></i>
+    {% elif extension == "zip" or extension == "rar" %}
+        <i class="bi bi-file-earmark-zip"></i>
+    {% elif extension == "jpeg" or extension == "png" or extension == "svg" %}
+        <i class="bi bi-file-earmark-image"></i>
+    {% else %}
+        <i class="bi bi-file-earmark"></i>
+    {% endif %}
+</span>

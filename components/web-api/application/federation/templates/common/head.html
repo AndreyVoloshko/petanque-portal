@@ -23,7 +23,7 @@
 
         {% vite_stylesheet "src/bootstrap-theme.scss" %}
 
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/css/flag-icon.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/css/flag-icon.min.css" />
 
         <!-- Bootstrap Icons (optional) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -31,12 +31,12 @@
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" integrity="sha384-WyOxWvTyr1QaMPfiPJSv76iReVthorl5uWlFtZPyK0IEB0hGzo9y5Bp9mYanr8Bu" crossorigin="anonymous"></script>
 
-        {% if not portal_ui.directory %}
+        {% if not portal_ui.directory and not portal_ui.documents %}
             <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
         {% endif %}
 
         {% vite_stylesheet "src/shell.css" %}
-        {% if not ratings_pilot %}
+        {% if not ratings_pilot and not portal_ui.documents %}
             {% vite_stylesheet "src/tournament-badges.css" %}
         {% endif %}
         {% if ratings_pilot or portal_ui.athlete_card %}
@@ -48,7 +48,7 @@
         {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.tournament_detail or portal_ui.player_profile %}
             {% vite_stylesheet "src/list-ui.css" %}
         {% endif %}
-        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory %}
+        {% if tournaments_pilot or ratings_pilot or portal_ui.club_directory or portal_ui.documents %}
             {% vite_stylesheet "src/filter-bar.css" %}
         {% endif %}
         {% if tournaments_pilot %}
@@ -62,6 +62,8 @@
         {% elif portal_ui.directory %}
             {% vite_stylesheet "src/directories.css" %}
             <script defer src="{% static 'directory-tabs.js' %}?v={{ static_asset_versions.directory_tabs }}"></script>
+        {% elif portal_ui.documents %}
+            {% vite_stylesheet "src/documents.css" %}
         {% elif portal_ui.home_page %}
             {% vite_stylesheet "src/home.css" %}
         {% elif portal_ui.club_profile %}
@@ -85,7 +87,9 @@
             <script defer src="{% static 'home-carousel.js' %}?v={{ static_asset_versions.home_carousel }}"></script>
         {% endif %}
         <script defer src="{% static 'header.js' %}?v={{ static_asset_versions.header }}"></script>
-        {% if not portal_ui.directory %}
+        {% if portal_ui.documents %}
+            <script defer src="{% static 'documents.js' %}?v={{ static_asset_versions.documents }}"></script>
+        {% elif not portal_ui.directory %}
             <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
         {% endif %}
     </head>

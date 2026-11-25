@@ -303,3 +303,22 @@ The baseline is the PR #43 merge at `045701d`, whose file tree matches `af0e55f`
 Per-route sizes sum the local Vite assets and the legacy stylesheet where present. The gzip figures compress each file independently. Browser network transfer depends on the server and cache.
 
 The directory navigation script is 564 B raw and 305 B gzip. The former jQuery and portal UI requests transferred 31,175 B combined on a Chromium load of Structure with caching disabled. The updated directories were checked in Chromium on the existing Compose service with the local database.
+
+## Documents page
+
+The Documents route uses the shared Bootstrap theme, shell, filter controls, buttons, and design tokens. Its own stylesheet covers the catalog layout and file types. The route drops `style-v2.css`, tournament badge styles, jQuery, and the jQuery-based `portal-ui.js`. The deferred filter script handles title and notes search, category and year filters, sorting, and Show more. It preserves the saved grid or list preference. The full catalog and download links remain available without JavaScript.
+
+The production comparison restored two card columns on phones, three on larger screens, the navy category labels, teal selections and sidebar links, date chips, and the original folded file icons with format-specific gradients. The download icon uses the original thicker outline with the shared button color and a 44 px target. Notes, category labels, and dates on cards use 13 px text. A native category select keeps all categories and counts reachable on phones and tablets. Phone users can read document notes in list view and search them from either view.
+
+The baseline is `master` at `8b31413`, the PR #44 merge. Its file tree matches the measured baseline at `c55963c`. The Documents stylesheet has 434 authored lines and uses shared spacing, typography, color, and file-format tokens. The search remains a shared filter input, with local styling for the white background, magnifier placement and focus accent. Applying the search styling alone added 87 B gzip to the built stylesheet. The filter script moved from 192 inline lines (7,022 B) to a cacheable asset with 152 lines (5,509 B).
+
+| Measure | Base | Documents migration | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 3,042 lines / 59,686 B | 2,129 lines / 42,346 B | −913 lines / −17,340 B |
+| All authored CSS | 11,258 lines / 234,547 B | 10,779 lines / 227,327 B | −479 lines / −7,220 B |
+| First-party CSS on Documents, raw | 318,410 B | 264,693 B | −53,717 B (−16.9%) |
+| First-party CSS on Documents, gzip | 48,182 B | 39,757 B | −8,425 B (−17.5%) |
+
+The source inventory counts `style-v2.css` and the authored `.css` files in `frontend/src`. Route sizes sum built first-party stylesheets, including the Bootstrap theme. Each file was compressed independently for the gzip estimate. These figures exclude CDN assets, browser caching, and HTTP overhead. The shared header still uses Bootstrap, Bootstrap Icons, and flag styles.
+
+Chromium verified the catalog at 320, 390, 820, 1024, 1200, and 1440 px on the existing Compose service. The local page and production expose the same 94 counted download links. The download handler was checked with a stubbed data source for its redirect and counter update. Browser checks covered search, combined filters, date sorting, Show more, saved views, and the full catalog with JavaScript disabled. The local network trace confirmed the four removed route assets were absent.

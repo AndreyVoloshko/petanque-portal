@@ -29,6 +29,7 @@ def settings_context(request):
             "team_registration": route == "register_team",
             "home_page": route == "main_page",
             "directory": route in DIRECTORY_ROUTES,
+            "documents": route == "documents",
             "athlete_card": route in DIRECTORY_ROUTES or route in {'main_page', 'club', 'tournament'},
             "rating_styles": route in {'clubs', 'player', 'tournament'},
         },
@@ -36,6 +37,7 @@ def settings_context(request):
         "federation_telegram_link": settings.FEDERATION_TELEGRAM_LINK,
         "static_asset_versions": {
             "directory_tabs": _static_asset_version("directory-tabs.js"),
+            "documents": _static_asset_version("documents.js"),
             "header": _static_asset_version("header.js"),
             "home_carousel": _static_asset_version("home-carousel.js"),
             "list_navigation": _static_asset_version("list-navigation.js"),
