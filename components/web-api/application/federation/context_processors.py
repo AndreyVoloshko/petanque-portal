@@ -5,6 +5,9 @@ from django.conf import settings
 from django.contrib.staticfiles import finders
 
 
+DIRECTORY_ROUTES = {'departments', 'arbiters', 'coaches', 'national_teams', 'sport_titles'}
+
+
 @lru_cache(maxsize=None)
 def _static_asset_version(static_path):
     asset_path = finders.find(static_path)
@@ -25,10 +28,8 @@ def settings_context(request):
             "tournament_detail": route == "tournament",
             "team_registration": route == "register_team",
             "home_page": route == "main_page",
-            "athlete_card": route in {
-                'main_page', 'club', 'arbiters', 'coaches', 'departments', 'national_teams',
-                'sport_titles', 'tournament',
-            },
+            "directory": route in DIRECTORY_ROUTES,
+            "athlete_card": route in DIRECTORY_ROUTES or route in {'main_page', 'club', 'tournament'},
             "rating_styles": route in {'clubs', 'player', 'tournament'},
         },
         "settings": settings,

@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.urls import reverse
 
 from federation.models.city import City
 from federation.models.club import Club
@@ -22,6 +23,52 @@ def create_player(username, name='Олена', surname='Шевченко', **fie
         gender='F',
         **fields,
     )
+
+
+class DirectoryPresentationTests(SimpleTestCase):
+    def test_directories_use_shared_card_and_route_assets(self):
+        route_groups = {
+            'departments': 'department_groups',
+            'arbiters': 'player_choice_groups',
+            'coaches': 'player_choice_groups',
+            'national_teams': 'national_team_groups',
+            'sport_titles': 'player_choice_groups',
+        }
+        player = Player(pk=42, name='Олена', surname='Шевченко',
+                        birth_date=date(1990, 1, 1), gender='F', country='UA')
+        groups = [{
+            'key': 'first',
+            'label': 'Directory group',
+            'short_label': 'A',
+            'items': [{
+                'player': player,
+                'title_short': 'Member',
+                'title_label': 'Tournament committee',
+            }],
+        }, {
+            'key': 'second',
+            'label': 'Second group',
+            'short_label': 'B',
+            'items': [],
+        }]
+
+        for route, groups_function in route_groups.items():
+            with self.subTest(route=route):
+                with patch(f'federation.views.{route}.{groups_function}', return_value=groups):
+                    response = self.client.get(reverse(route))
+                self.assertContains(response, '/vite/assets/directories-')
+                self.assertContains(response, '/vite/assets/athlete-card-')
+                self.assertNotContains(response, '/style-v2.css')
+                self.assertContains(response, 'athlete-card-has-title-status')
+                self.assertContains(response, 'Tournament committee')
+                self.assertContains(response, 'type="button" tabindex="-1"', count=1)
+
+    def test_footer_links_to_portal_and_federation_sites(self):
+        with patch('federation.views.departments.department_groups', return_value=[]):
+            response = self.client.get(reverse('departments'))
+        self.assertContains(response, 'class="portal-footer-nav"')
+        self.assertContains(response, '<a href="https://petanque.org.ua/" target="_blank" rel="noopener">')
+        self.assertContains(response, '<a href="https://feedback.petanque.org.ua/" target="_blank" rel="noopener">')
 
 
 class DepartmentsListTests(TestCase):

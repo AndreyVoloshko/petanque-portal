@@ -106,9 +106,6 @@
   --document-icon-spreadsheet-bg: linear-gradient(135deg, #34d399 0%, #15803d 100%);
   --document-icon-text-bg: linear-gradient(135deg, #94a3b8 0%, #475569 100%);
   --portal-placeholder-gradient: linear-gradient(145deg, #f3f7f9, #dde8ee);
-  --title-registry-federation-bg: linear-gradient(115deg, #dfe9ff 0%, #f7faff 46%, #fff8df 100%);
-  --title-registry-federation-glow: rgba(250, 238, 211, 0.42);
-  --title-registry-neutral-bg: linear-gradient(135deg, #fffefa 0%, #fffaf4 52%, #fcf5e8 100%);
   --title-registry-purple-glow: rgba(216, 180, 254, 0.78);
   --club-hero-cyan-glow: rgba(14, 165, 233, 0.11);
 

@@ -283,3 +283,19 @@ The same local API and database produced these uncompressed JSON sizes. The fina
 | `Fair` | 3 → 3 | 609 → 669 B | +9.9% |
 
 The final hero uses inline club and registration links in an invitation to try pétanque, with a separate federation news link to `https://petanque.org.ua/`. The mobile and desktop header applies a muted accent to open controls and uses white dropdown panels and search suggestions.
+
+## Directories and footer
+
+The five registry routes share a route-specific Vite stylesheet, the existing athlete-card template and its responsive grid. The card component owns title and role styling. The shared Bootstrap tooltip setup replaces the registry's duplicate jQuery initializer. The footer keeps its shared asset and includes a sitemap with federation news and feedback.
+
+The baseline is PR #43 at `af0e55f`.
+
+| Measure | Base | Directories and footer | Change |
+| --- | ---: | ---: | ---: |
+| `style-v2.css` | 3,634 lines / 71,675 B | 3,042 lines / 59,686 B | −592 lines / −11,989 B |
+| All authored CSS | 11,500 lines / 237,542 B | 11,099 lines / 230,109 B | −401 lines / −7,433 B |
+| Authored CSS and Stylish Portfolio SCSS | 11,789 lines / 243,402 B | 11,368 lines / 235,539 B | −421 lines / −7,863 B |
+| First-party CSS on each registry route, raw | 338,022 B | 269,977 B | −68,045 B (−20.1%) |
+| First-party CSS on each registry route, gzip | 52,142 B | 40,988 B | −11,154 B (−21.4%) |
+
+Per-route sizes sum the local Vite assets and the legacy stylesheet where present. The gzip figures compress each file independently. Browser network transfer depends on the server and cache.
