@@ -288,17 +288,17 @@ The final hero uses inline club and registration links in an invitation to try p
 
 The five registry routes share a route-specific Vite stylesheet, the existing athlete-card template and its responsive grid. The card component owns title and role styling. The shared Bootstrap tooltip setup replaces the registry's duplicate jQuery initializer. The footer keeps its shared asset and includes a sitemap with federation news and feedback.
 
-The directory colors now carry through the active tab, card header, and role icon. Grid rows align the role text and athlete metadata across adjacent cards. A native select replaces the horizontal tab strip on phones and tablets. Phones have a back-to-top link beneath the cards.
+Each directory reuses its pre-migration palette for active tabs, card header gradients, and role panels. The compact dropdown uses the same palette. The gold accent uses dark text and icons for contrast. Grid rows align the role text and athlete metadata across adjacent cards. A native select replaces the horizontal tab strip on phones and tablets. Phones have a back-to-top link beneath the cards.
 
 The baseline is the PR #43 merge at `045701d`, whose file tree matches `af0e55f`.
 
 | Measure | Base | Directories and footer | Change |
 | --- | ---: | ---: | ---: |
 | `style-v2.css` | 3,634 lines / 71,675 B | 3,042 lines / 59,686 B | −592 lines / −11,989 B |
-| All authored CSS | 11,500 lines / 237,542 B | 11,176 lines / 232,043 B | −324 lines / −5,499 B |
-| Authored CSS and Stylish Portfolio SCSS | 11,789 lines / 243,402 B | 11,445 lines / 237,473 B | −344 lines / −5,929 B |
-| First-party CSS on each registry route, raw | 338,022 B | 271,621 B | −66,401 B (−19.6%) |
-| First-party CSS on each registry route, gzip | 52,142 B | 41,421 B | −10,721 B (−20.6%) |
+| All authored CSS | 11,500 lines / 237,542 B | 11,222 lines / 233,584 B | −278 lines / −3,958 B |
+| Authored CSS and Stylish Portfolio SCSS | 11,789 lines / 243,402 B | 11,491 lines / 239,014 B | −298 lines / −4,388 B |
+| First-party CSS on each registry route, raw | 338,022 B | 273,049 B | −64,973 B (−19.2%) |
+| First-party CSS on each registry route, gzip | 52,142 B | 41,747 B | −10,395 B (−19.9%) |
 
 Per-route sizes sum the local Vite assets and the legacy stylesheet where present. The gzip figures compress each file independently. Browser network transfer depends on the server and cache.
 

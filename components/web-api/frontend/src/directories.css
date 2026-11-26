@@ -2,21 +2,68 @@
   --registry-accent: var(--list-page-accent);
   --registry-tint: color-mix(in srgb, var(--registry-accent) 8%, var(--list-surface));
   --registry-border: color-mix(in srgb, var(--registry-accent) 26%, var(--list-surface));
+  --registry-ink: var(--registry-accent);
+  --registry-on-accent: var(--list-surface);
   --athlete-title-accent: var(--registry-accent);
+  --athlete-title-surface: var(--registry-tint);
+  --athlete-title-border: var(--registry-border);
+  --athlete-title-text: var(--registry-ink);
+  --athlete-title-on-accent: var(--registry-on-accent);
   display: grid;
   gap: var(--space-6);
   margin-inline: auto;
   max-width: 88rem;
 }
 
-.title-registry-page--arbiters { --registry-accent: var(--list-success); }
-.title-registry-page--coaches { --registry-accent: var(--club-average-text); }
-.title-registry-page--departments { --registry-accent: var(--portal-slate-700); }
-.title-registry-page--national_teams {
-  --registry-accent: var(--list-violet);
-  --athlete-title-highlight: var(--place-gold-bg);
+.title-registry-page--arbiters {
+  --registry-accent: #1f7a3b;
+  --registry-tint: #e8f7ed;
+  --registry-border: #b8e5c5;
+  --athlete-title-hero:
+    radial-gradient(circle at 16% 14%, rgba(184, 229, 197, .9), transparent 43%),
+    linear-gradient(135deg, #f4fbf6, var(--registry-tint) 52%, #d8f0df);
 }
-.title-registry-page--sport_titles { --registry-accent: var(--list-gold); }
+
+.title-registry-page--coaches {
+  --registry-accent: #1d6fb8;
+  --registry-tint: #eaf5ff;
+  --registry-border: #b7dcff;
+  --registry-ink: #155a97;
+  --athlete-title-hero:
+    radial-gradient(circle at 16% 14%, rgba(183, 220, 255, .92), transparent 43%),
+    linear-gradient(135deg, #f3faff, var(--registry-tint) 52%, #dceeff);
+}
+
+.title-registry-page--departments {
+  --registry-accent: var(--portal-slate-700);
+  --registry-tint: #e8eef2;
+  --registry-border: #cad6df;
+  --registry-ink: #2f4658;
+  --athlete-title-hero:
+    radial-gradient(circle at 16% 14%, rgba(210, 221, 229, .9), transparent 43%),
+    linear-gradient(135deg, #f7f9fa, #e9eff3 52%, #dce6ec);
+}
+
+.title-registry-page--national_teams {
+  --registry-accent: #5f6fd3;
+  --registry-tint: #f0f3ff;
+  --registry-border: #cbd3ff;
+  --registry-ink: #34449e;
+  --athlete-title-hero:
+    radial-gradient(circle at 95% 18%, rgba(255, 230, 145, .45), transparent 42%),
+    linear-gradient(115deg, #dfe9ff, #f7faff 46%, #fff8df);
+}
+
+.title-registry-page--sport_titles {
+  --registry-accent: #d9a441;
+  --registry-tint: #fff7e8;
+  --registry-border: #f5dda8;
+  --registry-ink: #7a4b00;
+  --registry-on-accent: var(--list-text);
+  --athlete-title-hero:
+    radial-gradient(circle at 16% 14%, rgba(250, 238, 211, .42), transparent 48%),
+    linear-gradient(135deg, #fffefa, #fffaf4 52%, #fcf5e8);
+}
 
 .title-registry-header h1 {
   scroll-margin-top: calc(var(--portal-header-height) + var(--space-4));
@@ -83,7 +130,7 @@
 .title-registry-category.active {
   background: var(--registry-accent);
   border-color: var(--registry-accent);
-  color: var(--list-surface);
+  color: var(--registry-on-accent);
 }
 
 .title-registry-category:focus-visible {
@@ -94,7 +141,7 @@
 .title-registry-category-badge {
   background: var(--registry-tint);
   border-radius: var(--space-2);
-  color: var(--registry-accent);
+  color: var(--registry-ink);
   font-size: var(--text-xs);
   min-width: 2.75rem;
   padding: var(--space-1) var(--space-2);
@@ -103,7 +150,7 @@
 }
 
 .title-registry-category.active .title-registry-category-badge {
-  background: color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in srgb, var(--list-surface) 22%, transparent);
   color: inherit;
 }
 
@@ -166,10 +213,10 @@
   }
 
   .title-registry-select:not([hidden]) {
-    background-color: var(--list-field-surface);
+    background-color: var(--registry-tint);
     border-color: var(--registry-border);
     border-radius: var(--list-radius);
-    color: var(--list-ink);
+    color: var(--registry-ink);
     display: block;
     font-weight: 700;
     min-height: 3rem;
@@ -202,9 +249,9 @@
 
 @media (max-width: 767.98px) {
   .title-registry-top-link {
-    --bs-btn-color: var(--registry-accent);
+    --bs-btn-color: var(--registry-ink);
     --bs-btn-border-color: var(--registry-border);
-    --bs-btn-hover-color: var(--registry-accent);
+    --bs-btn-hover-color: var(--registry-ink);
     --bs-btn-hover-bg: var(--registry-tint);
     --bs-btn-hover-border-color: var(--registry-accent);
     aspect-ratio: 1;

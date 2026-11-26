@@ -390,13 +390,12 @@
 
 .athlete-card-has-title-status {
   --title-tone: var(--athlete-title-accent, var(--list-page-accent));
-  --title-tint: color-mix(in srgb, var(--title-tone) 12%, var(--list-surface));
+  --title-tint: var(--athlete-title-surface, color-mix(in srgb, var(--title-tone) 12%, var(--list-surface)));
 }
 
 .athlete-card-has-title-status .athlete-card-hero {
-  background:
-    radial-gradient(ellipse at top right, var(--athlete-title-highlight, transparent), transparent 64%),
-    linear-gradient(135deg, var(--title-tint), var(--list-field-surface), var(--title-tint));
+  background: var(--athlete-title-hero,
+    linear-gradient(135deg, var(--title-tint), var(--list-field-surface), var(--title-tint)));
 }
 
 .athlete-card-has-title-status .athlete-card-avatar {
@@ -424,7 +423,7 @@
 .athlete-card-title-status {
   align-items: start;
   background: var(--title-tint);
-  border: 1px solid color-mix(in srgb, var(--title-tone) 24%, var(--list-surface));
+  border: 1px solid var(--athlete-title-border, color-mix(in srgb, var(--title-tone) 24%, var(--list-surface)));
   gap: var(--space-2);
   grid-template-columns: var(--space-8) minmax(0, 1fr);
   min-height: 4rem;
@@ -436,7 +435,7 @@
   aspect-ratio: 1;
   background: var(--title-tone);
   border-radius: var(--list-radius);
-  color: var(--list-surface);
+  color: var(--athlete-title-on-accent, var(--list-surface));
   display: inline-flex;
   justify-content: center;
 }
@@ -449,7 +448,7 @@
 }
 
 .athlete-title-status-short {
-  color: color-mix(in srgb, var(--title-tone) 62%, var(--list-text));
+  color: var(--athlete-title-text, color-mix(in srgb, var(--title-tone) 62%, var(--list-text)));
   font-size: var(--text-sm);
   font-weight: 800;
   line-height: 1.1;
