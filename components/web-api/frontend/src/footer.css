@@ -6,6 +6,7 @@
 
 .portal-footer-inner {
   display: grid;
+  font-size: var(--text-sm);
   gap: var(--space-3);
   padding-block: var(--space-4);
 }
@@ -26,14 +27,22 @@
 .portal-footer-nav a {
   align-items: center;
   display: inline-flex;
-  font-weight: 700;
+  font-weight: 500;
   min-height: 2rem;
+}
+
+.portal-footer a {
+  color: var(--list-muted);
+}
+
+.portal-footer a:is(:hover, :focus-visible) {
+  color: var(--link-action-hover);
+  text-decoration: underline;
 }
 
 .portal-footer-meta {
   border-top: 1px solid var(--list-border);
   color: var(--list-muted);
-  font-size: var(--text-sm);
   justify-content: space-between;
   padding-top: var(--space-3);
 }

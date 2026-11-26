@@ -63,7 +63,7 @@ class DirectoryPresentationTests(SimpleTestCase):
                 self.assertContains(response, 'Tournament committee')
                 self.assertContains(response, 'type="button" tabindex="-1"', count=1)
 
-    def test_footer_links_to_portal_and_federation_sites(self):
+    def test_footer_links_to_news_and_feedback(self):
         with patch('federation.views.departments.department_groups', return_value=[]):
             response = self.client.get(reverse('departments'))
         self.assertContains(response, 'class="portal-footer-nav"')
