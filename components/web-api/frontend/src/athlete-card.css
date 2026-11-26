@@ -433,7 +433,7 @@
 .athlete-title-status-icon {
   align-items: center;
   aspect-ratio: 1;
-  background: var(--title-tone);
+  background: var(--athlete-title-icon-background, var(--title-tone));
   border-radius: var(--list-radius);
   color: var(--athlete-title-on-accent, var(--list-surface));
   display: inline-flex;

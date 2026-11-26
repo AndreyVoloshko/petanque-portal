@@ -4,11 +4,14 @@
   --registry-border: color-mix(in srgb, var(--registry-accent) 26%, var(--list-surface));
   --registry-ink: var(--registry-accent);
   --registry-on-accent: var(--list-surface);
+  --registry-active-background: var(--registry-accent);
+  --registry-active-border: var(--registry-accent);
   --athlete-title-accent: var(--registry-accent);
   --athlete-title-surface: var(--registry-tint);
   --athlete-title-border: var(--registry-border);
   --athlete-title-text: var(--registry-ink);
   --athlete-title-on-accent: var(--registry-on-accent);
+  --athlete-title-icon-background: var(--registry-active-background);
   --athlete-title-hero: linear-gradient(135deg,
     var(--list-surface), color-mix(in srgb, var(--registry-tint) 82%, var(--list-surface)));
   display: grid;
@@ -51,11 +54,14 @@
 }
 
 .title-registry-page--sport_titles {
-  --registry-accent: #d9a441;
-  --registry-tint: #fff7e8;
-  --registry-border: #f5dda8;
+  --registry-accent: color-mix(in srgb, var(--rating-award-icon) 70%, var(--list-gold));
+  --registry-tint: color-mix(in srgb, var(--place-gold-bg) 35%, var(--list-surface));
+  --registry-border: color-mix(in srgb, var(--registry-accent) 34%, var(--list-surface));
   --registry-ink: #7a4b00;
-  --registry-on-accent: var(--list-text);
+  --registry-on-accent: var(--registry-ink);
+  --registry-active-background: color-mix(in srgb, var(--place-gold-bg) 75%, var(--list-surface));
+  --registry-active-border: var(--registry-border);
+  --athlete-title-on-accent: var(--registry-accent);
 }
 
 .title-registry-header h1 {
@@ -121,8 +127,8 @@
 }
 
 .title-registry-category.active {
-  background: var(--registry-accent);
-  border-color: var(--registry-accent);
+  background: var(--registry-active-background);
+  border-color: var(--registry-active-border);
   color: var(--registry-on-accent);
 }
 
