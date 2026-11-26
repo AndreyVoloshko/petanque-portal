@@ -6,6 +6,7 @@
   --registry-on-accent: var(--list-surface);
   --registry-active-background: var(--registry-accent);
   --registry-active-border: var(--registry-accent);
+  --athlete-chip-icon-color: #d9a000;
   --athlete-title-accent: var(--registry-accent);
   --athlete-title-surface: var(--registry-tint);
   --athlete-title-border: var(--registry-border);

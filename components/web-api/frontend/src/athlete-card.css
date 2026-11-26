@@ -314,7 +314,7 @@
 }
 
 .athlete-chip-icon {
-  color: var(--list-gold);
+  color: var(--athlete-chip-icon-color, var(--list-gold));
   font-size: 0.98rem;
   line-height: 1;
   opacity: 0.9;
