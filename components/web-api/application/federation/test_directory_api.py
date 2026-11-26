@@ -59,6 +59,7 @@ class DirectoryPresentationTests(SimpleTestCase):
                 self.assertContains(response, '/vite/assets/directories-')
                 self.assertContains(response, '/vite/assets/athlete-card-')
                 self.assertNotContains(response, '/style-v2.css')
+                self.assertNotContains(response, 'connect.facebook.net')
                 self.assertContains(response, 'athlete-card-has-title-status')
                 self.assertContains(response, 'Tournament committee')
                 self.assertContains(response, 'type="button" tabindex="-1"', count=1)
