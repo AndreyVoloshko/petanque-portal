@@ -56,6 +56,7 @@ class DirectoryPresentationTests(SimpleTestCase):
             with self.subTest(route=route):
                 with patch(f'federation.views.{route}.{groups_function}', return_value=groups):
                     response = self.client.get(reverse(route))
+                self.assertTrue(response.content.lstrip().startswith(b'<!doctype html>'))
                 self.assertContains(response, '/vite/assets/directories-')
                 self.assertContains(response, '/vite/assets/athlete-card-')
                 self.assertNotContains(response, '/style-v2.css')
