@@ -4,7 +4,7 @@
 
 <section class="title-registry-page title-registry-page--{{ title_registry.route_type }}" aria-labelledby="title-registry-page-title">
     <header class="title-registry-header">
-        <h1 id="title-registry-page-title">{{ title_registry.page_title }}</h1>
+        <h1 id="title-registry-page-title" tabindex="-1">{{ title_registry.page_title }}</h1>
         <p>{{ title_registry.page_subtitle }}</p>
     </header>
 
@@ -12,6 +12,11 @@
         <div class="title-registry-layout">
             <aside class="title-registry-sidebar" aria-label="{{ title_registry.sidebar_title }}">
                 <p class="title-registry-sidebar-title" id="title-registry-categories-title">{{ title_registry.sidebar_title }}</p>
+                <select class="form-select title-registry-select" aria-labelledby="title-registry-categories-title" hidden>
+                    {% for group in title_registry.groups %}
+                        <option value="{{ title_registry.route_type }}-{{ group.key }}-tab"{% if group.is_active %} selected{% endif %}>{{ group.label }}</option>
+                    {% endfor %}
+                </select>
                 <div class="title-registry-categories" role="tablist" aria-labelledby="title-registry-categories-title">
                     {% for group in title_registry.groups %}
                         <button class="title-registry-category{% if group.is_active %} active{% endif %}"
@@ -32,7 +37,7 @@
 
             <div class="title-registry-content tab-content">
                 {% for group in title_registry.groups %}
-                    <section class="tab-pane fade{% if group.is_active %} show active{% endif %}"
+                    <section class="tab-pane{% if group.is_active %} show active{% endif %}"
                              id="{{ title_registry.route_type }}-{{ group.key }}"
                              role="tabpanel"
                              aria-labelledby="{{ title_registry.route_type }}-{{ group.key }}-tab"
@@ -51,6 +56,9 @@
                 {% endfor %}
             </div>
         </div>
+        <a class="btn btn-outline-secondary title-registry-top-link" href="#title-registry-page-title" aria-label="{% trans 'Back to top' %}">
+            <i class="bi bi-arrow-up" aria-hidden="true"></i>
+        </a>
     {% else %}
         <div class="portal-panel title-registry-empty">
             <p>{% trans "No athletes to show yet." %}</p>

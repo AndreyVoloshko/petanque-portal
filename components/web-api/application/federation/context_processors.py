@@ -35,6 +35,7 @@ def settings_context(request):
         "settings": settings,
         "federation_telegram_link": settings.FEDERATION_TELEGRAM_LINK,
         "static_asset_versions": {
+            "directory_tabs": _static_asset_version("directory-tabs.js"),
             "header": _static_asset_version("header.js"),
             "home_carousel": _static_asset_version("home-carousel.js"),
             "list_navigation": _static_asset_version("list-navigation.js"),

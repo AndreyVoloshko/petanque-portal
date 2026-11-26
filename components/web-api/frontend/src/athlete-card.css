@@ -378,14 +378,33 @@
   padding-right: var(--space-4);
 }
 
+@supports (grid-template-rows: subgrid) {
+  .athlete-card-grid > .athlete-card-has-title-status,
+  .athlete-card-grid > .athlete-card-has-title-status .athlete-card-body {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+}
+
+.athlete-card-has-title-status {
+  --title-tone: var(--athlete-title-accent, var(--list-page-accent));
+  --title-tint: color-mix(in srgb, var(--title-tone) 12%, var(--list-surface));
+}
+
 .athlete-card-has-title-status .athlete-card-hero {
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--athlete-title-accent, var(--list-page-accent)) 16%, var(--list-surface)),
-    var(--list-field-surface));
+  background:
+    radial-gradient(ellipse at top right, var(--athlete-title-highlight, transparent), transparent 64%),
+    linear-gradient(135deg, var(--title-tint), var(--list-field-surface), var(--title-tint));
 }
 
 .athlete-card-has-title-status .athlete-card-avatar {
-  width: 4rem;
+  width: 4.25rem;
+}
+
+.athlete-card-has-title-status .athlete-card-avatar-placeholder {
+  font-size: var(--space-8);
 }
 
 .athlete-card-has-title-status .athlete-card-meta {
@@ -403,20 +422,21 @@
 }
 
 .athlete-card-title-status {
-  --title-tone: var(--athlete-title-accent, var(--list-page-accent));
-  background: color-mix(in srgb, var(--title-tone) 8%, var(--list-surface));
+  align-items: start;
+  background: var(--title-tint);
   border: 1px solid color-mix(in srgb, var(--title-tone) 24%, var(--list-surface));
   gap: var(--space-2);
-  grid-template-columns: 2rem minmax(0, 1fr);
-  padding: var(--space-2) var(--space-3);
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+  min-height: 4rem;
+  padding: var(--space-3);
 }
 
 .athlete-title-status-icon {
   align-items: center;
   aspect-ratio: 1;
-  background: color-mix(in srgb, var(--title-tone) 16%, var(--list-surface));
+  background: var(--title-tone);
   border-radius: var(--list-radius);
-  color: var(--title-tone);
+  color: var(--list-surface);
   display: inline-flex;
   justify-content: center;
 }
@@ -429,7 +449,7 @@
 }
 
 .athlete-title-status-short {
-  color: var(--list-text);
+  color: color-mix(in srgb, var(--title-tone) 62%, var(--list-text));
   font-size: var(--text-sm);
   font-weight: 800;
   line-height: 1.1;
@@ -438,6 +458,7 @@
 .athlete-title-status-label {
   color: var(--list-muted);
   font-size: var(--text-xs);
+  font-weight: 600;
   line-height: 1.3;
 }
 

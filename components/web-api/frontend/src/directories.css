@@ -10,12 +10,16 @@
 }
 
 .title-registry-page--arbiters { --registry-accent: var(--list-success); }
-.title-registry-page--coaches { --registry-accent: var(--list-primary); }
-.title-registry-page--departments { --registry-accent: var(--list-muted); }
-.title-registry-page--national_teams { --registry-accent: var(--list-violet); }
+.title-registry-page--coaches { --registry-accent: var(--club-average-text); }
+.title-registry-page--departments { --registry-accent: var(--portal-slate-700); }
+.title-registry-page--national_teams {
+  --registry-accent: var(--list-violet);
+  --athlete-title-highlight: var(--place-gold-bg);
+}
 .title-registry-page--sport_titles { --registry-accent: var(--list-gold); }
 
 .title-registry-header h1 {
+  scroll-margin-top: calc(var(--portal-header-height) + var(--space-4));
   color: var(--color-text);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
@@ -71,14 +75,20 @@
   text-align: start;
 }
 
-.title-registry-category:is(:hover, .active) {
+.title-registry-category:hover {
   background: var(--registry-tint);
   border-color: var(--registry-border);
 }
 
+.title-registry-category.active {
+  background: var(--registry-accent);
+  border-color: var(--registry-accent);
+  color: var(--list-surface);
+}
+
 .title-registry-category:focus-visible {
-  outline: 2px solid var(--registry-accent);
-  outline-offset: -2px;
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
 }
 
 .title-registry-category-badge {
@@ -86,19 +96,30 @@
   border-radius: var(--space-2);
   color: var(--registry-accent);
   font-size: var(--text-xs);
+  min-width: 2.75rem;
   padding: var(--space-1) var(--space-2);
+  text-align: center;
   white-space: nowrap;
 }
 
 .title-registry-category.active .title-registry-category-badge {
-  background: var(--list-surface);
+  background: color-mix(in srgb, currentColor 22%, transparent);
+  color: inherit;
 }
 
 .title-registry-category-name {
   overflow-wrap: anywhere;
 }
 
-.title-registry-category-chevron,
+.title-registry-category-chevron {
+  opacity: .75;
+}
+
+.title-registry-select,
+.title-registry-top-link {
+  display: none;
+}
+
 .title-registry-player-count,
 .title-registry-empty {
   color: var(--list-muted);
@@ -144,6 +165,25 @@
     position: static;
   }
 
+  .title-registry-select:not([hidden]) {
+    background-color: var(--list-field-surface);
+    border-color: var(--registry-border);
+    border-radius: var(--list-radius);
+    color: var(--list-ink);
+    display: block;
+    font-weight: 700;
+    min-height: 3rem;
+  }
+
+  .title-registry-select:focus {
+    border-color: var(--registry-accent);
+    box-shadow: 0 0 0 3px var(--registry-tint);
+  }
+
+  .title-registry-select:not([hidden]) + .title-registry-categories {
+    display: none;
+  }
+
   .title-registry-categories {
     display: flex;
     overflow-x: auto;
@@ -157,5 +197,20 @@
 
   .title-registry-category-chevron {
     display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .title-registry-top-link {
+    --bs-btn-color: var(--registry-accent);
+    --bs-btn-border-color: var(--registry-border);
+    --bs-btn-hover-color: var(--registry-accent);
+    --bs-btn-hover-bg: var(--registry-tint);
+    --bs-btn-hover-border-color: var(--registry-accent);
+    aspect-ratio: 1;
+    display: inline-grid;
+    justify-self: end;
+    min-width: 2.75rem;
+    place-items: center;
   }
 }

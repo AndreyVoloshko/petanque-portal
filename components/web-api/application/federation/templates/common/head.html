@@ -59,6 +59,7 @@
             {% vite_stylesheet "src/tournament-detail.css" %}
         {% elif portal_ui.directory %}
             {% vite_stylesheet "src/directories.css" %}
+            <script defer src="{% static 'directory-tabs.js' %}?v={{ static_asset_versions.directory_tabs }}"></script>
         {% elif portal_ui.home_page %}
             {% vite_stylesheet "src/home.css" %}
         {% elif portal_ui.club_profile %}

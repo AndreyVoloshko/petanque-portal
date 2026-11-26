@@ -288,14 +288,18 @@ The final hero uses inline club and registration links in an invitation to try p
 
 The five registry routes share a route-specific Vite stylesheet, the existing athlete-card template and its responsive grid. The card component owns title and role styling. The shared Bootstrap tooltip setup replaces the registry's duplicate jQuery initializer. The footer keeps its shared asset and includes a sitemap with federation news and feedback.
 
-The baseline is PR #43 at `af0e55f`.
+The directory colors now carry through the active tab, card header, and role icon. Grid rows align the role text and athlete metadata across adjacent cards. A native select replaces the horizontal tab strip on phones and tablets. Phones have a back-to-top link beneath the cards.
+
+The baseline is the PR #43 merge at `045701d`, whose file tree matches `af0e55f`.
 
 | Measure | Base | Directories and footer | Change |
 | --- | ---: | ---: | ---: |
 | `style-v2.css` | 3,634 lines / 71,675 B | 3,042 lines / 59,686 B | −592 lines / −11,989 B |
-| All authored CSS | 11,500 lines / 237,542 B | 11,099 lines / 230,109 B | −401 lines / −7,433 B |
-| Authored CSS and Stylish Portfolio SCSS | 11,789 lines / 243,402 B | 11,368 lines / 235,539 B | −421 lines / −7,863 B |
-| First-party CSS on each registry route, raw | 338,022 B | 269,977 B | −68,045 B (−20.1%) |
-| First-party CSS on each registry route, gzip | 52,142 B | 40,988 B | −11,154 B (−21.4%) |
+| All authored CSS | 11,500 lines / 237,542 B | 11,176 lines / 232,043 B | −324 lines / −5,499 B |
+| Authored CSS and Stylish Portfolio SCSS | 11,789 lines / 243,402 B | 11,445 lines / 237,473 B | −344 lines / −5,929 B |
+| First-party CSS on each registry route, raw | 338,022 B | 271,621 B | −66,401 B (−19.6%) |
+| First-party CSS on each registry route, gzip | 52,142 B | 41,421 B | −10,721 B (−20.6%) |
 
 Per-route sizes sum the local Vite assets and the legacy stylesheet where present. The gzip figures compress each file independently. Browser network transfer depends on the server and cache.
+
+The directory navigation script is 564 B raw and 305 B gzip. The updated directories were checked in Chromium on the existing Compose service with the local database.

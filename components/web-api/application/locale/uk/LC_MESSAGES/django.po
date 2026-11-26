@@ -3793,3 +3793,6 @@ msgstr "Новини федерації"
 
 msgid "Feedback"
 msgstr "Зворотний зв’язок"
+
+msgid "Back to top"
+msgstr "До початку сторінки"
