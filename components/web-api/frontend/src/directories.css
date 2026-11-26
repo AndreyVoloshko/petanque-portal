@@ -9,6 +9,8 @@
   --athlete-title-border: var(--registry-border);
   --athlete-title-text: var(--registry-ink);
   --athlete-title-on-accent: var(--registry-on-accent);
+  --athlete-title-hero: linear-gradient(135deg,
+    var(--list-surface), color-mix(in srgb, var(--registry-tint) 82%, var(--list-surface)));
   display: grid;
   gap: var(--space-6);
   margin-inline: auto;
@@ -19,9 +21,6 @@
   --registry-accent: #1f7a3b;
   --registry-tint: #e8f7ed;
   --registry-border: #b8e5c5;
-  --athlete-title-hero:
-    radial-gradient(circle at 16% 14%, rgba(184, 229, 197, .9), transparent 43%),
-    linear-gradient(135deg, #f4fbf6, var(--registry-tint) 52%, #d8f0df);
 }
 
 .title-registry-page--coaches {
@@ -29,9 +28,6 @@
   --registry-tint: #eaf5ff;
   --registry-border: #b7dcff;
   --registry-ink: #155a97;
-  --athlete-title-hero:
-    radial-gradient(circle at 16% 14%, rgba(183, 220, 255, .92), transparent 43%),
-    linear-gradient(135deg, #f3faff, var(--registry-tint) 52%, #dceeff);
 }
 
 .title-registry-page--departments {
@@ -49,9 +45,9 @@
   --registry-tint: #f0f3ff;
   --registry-border: #cbd3ff;
   --registry-ink: #34449e;
-  --athlete-title-hero:
-    radial-gradient(circle at 95% 18%, rgba(255, 230, 145, .45), transparent 42%),
-    linear-gradient(115deg, #dfe9ff, #f7faff 46%, #fff8df);
+  --athlete-title-hero: linear-gradient(115deg,
+    var(--registry-tint), var(--list-field-surface) 55%,
+    color-mix(in srgb, var(--place-gold-bg) 30%, var(--list-surface)));
 }
 
 .title-registry-page--sport_titles {
@@ -60,9 +56,6 @@
   --registry-border: #f5dda8;
   --registry-ink: #7a4b00;
   --registry-on-accent: var(--list-text);
-  --athlete-title-hero:
-    radial-gradient(circle at 16% 14%, rgba(250, 238, 211, .42), transparent 48%),
-    linear-gradient(135deg, #fffefa, #fffaf4 52%, #fcf5e8);
 }
 
 .title-registry-header h1 {
