@@ -1,16 +1,19 @@
 {% load i18n %}
 <footer class="portal-footer mt-auto">
     <div class="container portal-footer-inner">
+        <p class="portal-footer-brand">
+            <a href="{% url 'main_page' %}">{% trans "Ukrainian Petanque Federation" %}</a>
+            <span>&copy;&nbsp;{% now "Y" %}</span>
+        </p>
         <nav aria-label="{% trans 'Footer navigation' %}">
             <ul class="portal-footer-nav">
                 <li><a href="https://petanque.org.ua/" target="_blank" rel="noopener">{% trans "Federation news" %}</a></li>
                 <li><a href="https://feedback.petanque.org.ua/" target="_blank" rel="noopener">{% trans "Feedback" %}</a></li>
             </ul>
         </nav>
-        <div class="portal-footer-meta">
-            <p><a href="{% url 'main_page' %}">{% trans "Ukrainian Petanque Federation" %}</a> <span>&copy;&nbsp;{% now "Y" %}</span></p>
-            <p><span>{% trans "Development" %}:</span> <a href="http://andrey-voloshko.org.ua/" target="_blank" rel="noopener">Андрiй Волошко</a></p>
-        </div>
+        <p class="portal-footer-credit">
+            {% trans "Development" %}: <a href="http://andrey-voloshko.org.ua/" target="_blank" rel="noopener">Андрiй Волошко</a>
+        </p>
     </div>
 </footer>
 {% include "common/foot.html" %}
