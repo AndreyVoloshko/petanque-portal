@@ -286,7 +286,7 @@ The final hero uses inline club and registration links in an invitation to try p
 
 ## Directories and footer
 
-The five registry routes share a route-specific Vite stylesheet, the existing athlete-card template and its responsive grid. The card component owns title and role styling. The shared Bootstrap tooltip setup replaces the registry's duplicate jQuery initializer. The shared footer links to federation news and feedback using smaller, muted typography.
+The five registry routes share a route-specific Vite stylesheet, the existing athlete-card template and its responsive grid. The card component owns title and role styling. Directory tabs use Bootstrap's native JavaScript. The registry routes skip jQuery and the shared jQuery-based portal script. The shared footer links to federation news and feedback using smaller, muted typography.
 
 Each directory uses its own palette for active tabs and role panels. Card headers use lighter gradients in those same colors, with the original gradient on Structure. The compact dropdown uses the same palette. Sports Titles uses a pale gold selection and a gold medal. Grid rows align the role text and athlete metadata across adjacent cards. A native select replaces the horizontal tab strip on phones and tablets. Phones have a back-to-top link beneath the cards.
 
@@ -302,4 +302,4 @@ The baseline is the PR #43 merge at `045701d`, whose file tree matches `af0e55f`
 
 Per-route sizes sum the local Vite assets and the legacy stylesheet where present. The gzip figures compress each file independently. Browser network transfer depends on the server and cache.
 
-The directory navigation script is 564 B raw and 305 B gzip. The updated directories were checked in Chromium on the existing Compose service with the local database.
+The directory navigation script is 564 B raw and 305 B gzip. The former jQuery and portal UI requests transferred 31,175 B combined on a Chromium load of Structure with caching disabled. The updated directories were checked in Chromium on the existing Compose service with the local database.
