@@ -26,7 +26,6 @@ def documents(request):
 
     return render(request, 'documents/documents.html', {
         'documents': documents_by_category,
-        'all_documents': list(all_documents),
         'popular_documents': popular_documents,
         'total_count': total_count,
         'page_title': _("Documents"),
