@@ -1,0 +1,263 @@
+.title-registry-page {
+  --registry-accent: var(--list-page-accent);
+  --registry-tint: color-mix(in srgb, var(--registry-accent) 8%, var(--list-surface));
+  --registry-border: color-mix(in srgb, var(--registry-accent) 26%, var(--list-surface));
+  --registry-ink: var(--registry-accent);
+  --registry-on-accent: var(--list-surface);
+  --registry-active-background: var(--registry-accent);
+  --registry-active-border: var(--registry-accent);
+  --athlete-chip-icon-color: #d9a000;
+  --athlete-title-accent: var(--registry-accent);
+  --athlete-title-surface: var(--registry-tint);
+  --athlete-title-border: var(--registry-border);
+  --athlete-title-text: var(--registry-ink);
+  --athlete-title-on-accent: var(--registry-on-accent);
+  --athlete-title-icon-background: var(--registry-active-background);
+  --athlete-title-hero: linear-gradient(135deg,
+    var(--list-surface), color-mix(in srgb, var(--registry-tint) 82%, var(--list-surface)));
+  display: grid;
+  gap: var(--space-6);
+  margin-inline: auto;
+  max-width: 88rem;
+}
+
+.title-registry-page--arbiters {
+  --registry-accent: #1f7a3b;
+  --registry-tint: #e8f7ed;
+  --registry-border: #b8e5c5;
+}
+
+.title-registry-page--coaches {
+  --registry-accent: #1d6fb8;
+  --registry-tint: #eaf5ff;
+  --registry-border: #b7dcff;
+  --registry-ink: #155a97;
+}
+
+.title-registry-page--departments {
+  --registry-accent: var(--portal-slate-700);
+  --registry-tint: #e8eef2;
+  --registry-border: #cad6df;
+  --registry-ink: #2f4658;
+  --athlete-title-hero:
+    radial-gradient(circle at 16% 14%, rgba(210, 221, 229, .9), transparent 43%),
+    linear-gradient(135deg, #f7f9fa, #e9eff3 52%, #dce6ec);
+}
+
+.title-registry-page--national_teams {
+  --registry-accent: #5f6fd3;
+  --registry-tint: #f0f3ff;
+  --registry-border: #cbd3ff;
+  --registry-ink: #34449e;
+  --athlete-title-hero: linear-gradient(115deg,
+    var(--registry-tint), var(--list-field-surface) 55%,
+    color-mix(in srgb, var(--place-gold-bg) 30%, var(--list-surface)));
+}
+
+.title-registry-page--sport_titles {
+  --registry-accent: color-mix(in srgb, var(--rating-award-icon) 70%, var(--list-gold));
+  --registry-tint: color-mix(in srgb, var(--place-gold-bg) 35%, var(--list-surface));
+  --registry-border: color-mix(in srgb, var(--registry-accent) 34%, var(--list-surface));
+  --registry-ink: #7a4b00;
+  --registry-on-accent: var(--registry-ink);
+  --registry-active-background: color-mix(in srgb, var(--place-gold-bg) 75%, var(--list-surface));
+  --registry-active-border: var(--registry-border);
+  --athlete-title-on-accent: var(--registry-accent);
+}
+
+.title-registry-header h1 {
+  scroll-margin-top: calc(var(--portal-header-height) + var(--space-4));
+  color: var(--color-text);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  margin: 0;
+}
+
+.title-registry-header p {
+  color: var(--color-muted);
+  margin: var(--space-2) 0 0;
+  max-width: 42rem;
+}
+
+.title-registry-layout {
+  align-items: start;
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: clamp(15rem, 24vw, 20rem) minmax(0, 1fr);
+}
+
+.title-registry-sidebar {
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--portal-header-height) + var(--space-4));
+}
+
+.title-registry-sidebar-title {
+  color: var(--list-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .06em;
+  margin: 0 0 var(--space-2);
+  text-transform: uppercase;
+}
+
+.title-registry-categories {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.title-registry-category {
+  align-items: center;
+  background: var(--list-surface);
+  border: 1px solid var(--list-border);
+  border-radius: var(--list-radius);
+  color: var(--list-text);
+  display: grid;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  text-align: start;
+}
+
+.title-registry-category:hover {
+  background: var(--registry-tint);
+  border-color: var(--registry-border);
+}
+
+.title-registry-category.active {
+  background: var(--registry-active-background);
+  border-color: var(--registry-active-border);
+  color: var(--registry-on-accent);
+}
+
+.title-registry-category:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
+}
+
+.title-registry-category-badge {
+  background: var(--registry-tint);
+  border-radius: var(--space-2);
+  color: var(--registry-ink);
+  font-size: var(--text-xs);
+  min-width: 2.75rem;
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.title-registry-category.active .title-registry-category-badge {
+  background: color-mix(in srgb, var(--list-surface) 22%, transparent);
+  color: inherit;
+}
+
+.title-registry-category-name {
+  overflow-wrap: anywhere;
+}
+
+.title-registry-category-chevron {
+  opacity: .75;
+}
+
+.title-registry-select,
+.title-registry-top-link {
+  display: none;
+}
+
+.title-registry-player-count,
+.title-registry-empty {
+  color: var(--list-muted);
+}
+
+.title-registry-group-header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.title-registry-group-header h2 {
+  color: var(--color-text);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  margin: 0;
+}
+
+.title-registry-player-count {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.title-registry-empty p {
+  margin: 0;
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  .title-registry-content .athlete-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .title-registry-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .title-registry-sidebar {
+    position: static;
+  }
+
+  .title-registry-select:not([hidden]) {
+    background-color: var(--registry-tint);
+    border-color: var(--registry-border);
+    border-radius: var(--list-radius);
+    color: var(--registry-ink);
+    display: block;
+    font-weight: 700;
+    min-height: 3rem;
+  }
+
+  .title-registry-select:focus {
+    border-color: var(--registry-accent);
+    box-shadow: 0 0 0 3px var(--registry-tint);
+  }
+
+  .title-registry-select:not([hidden]) + .title-registry-categories {
+    display: none;
+  }
+
+  .title-registry-categories {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .title-registry-category {
+    flex: 0 0 min(18rem, 85%);
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .title-registry-category-chevron {
+    display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .title-registry-top-link {
+    --bs-btn-color: var(--registry-ink);
+    --bs-btn-border-color: var(--registry-border);
+    --bs-btn-hover-color: var(--registry-ink);
+    --bs-btn-hover-bg: var(--registry-tint);
+    --bs-btn-hover-border-color: var(--registry-accent);
+    aspect-ratio: 1;
+    display: inline-grid;
+    justify-self: end;
+    min-width: 2.75rem;
+    place-items: center;
+  }
+}

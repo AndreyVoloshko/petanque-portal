@@ -3784,3 +3784,15 @@ msgstr "Дізнавайтеся про турніри й події з <a href=
 #, python-format
 msgid "Want to try pétanque? <a href=\"%(clubs_url)s\">Find a club near you</a>. When you are ready to compete, <a href=\"%(register_url)s\">register on the portal</a>."
 msgstr "Хочете спробувати петанк? <a href=\"%(clubs_url)s\">Знайдіть клуб поруч</a>. А коли будете готові до змагань, <a href=\"%(register_url)s\">зареєструйтеся на порталі</a>."
+
+msgid "Footer navigation"
+msgstr "Навігація у футері"
+
+msgid "Federation news"
+msgstr "Новини федерації"
+
+msgid "Feedback"
+msgstr "Зворотний зв’язок"
+
+msgid "Back to top"
+msgstr "До початку сторінки"

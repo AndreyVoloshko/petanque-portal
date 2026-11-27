@@ -4,23 +4,26 @@
 
 <section class="title-registry-page title-registry-page--{{ title_registry.route_type }}" aria-labelledby="title-registry-page-title">
     <header class="title-registry-header">
-        <div class="title-registry-header-copy">
-            <h1 id="title-registry-page-title">{{ title_registry.page_title }}</h1>
-            <p>{{ title_registry.page_subtitle }}</p>
-        </div>
+        <h1 id="title-registry-page-title" tabindex="-1">{{ title_registry.page_title }}</h1>
+        <p>{{ title_registry.page_subtitle }}</p>
     </header>
 
     {% if title_registry.groups %}
         <div class="title-registry-layout">
             <aside class="title-registry-sidebar" aria-label="{{ title_registry.sidebar_title }}">
-                <p class="title-registry-sidebar-title">{{ title_registry.sidebar_title }}</p>
-                <div class="title-registry-categories nav" id="{{ title_registry.route_type }}RegistryTabs" role="tablist">
+                <p class="title-registry-sidebar-title" id="title-registry-categories-title">{{ title_registry.sidebar_title }}</p>
+                <select class="form-select title-registry-select" aria-labelledby="title-registry-categories-title" hidden>
                     {% for group in title_registry.groups %}
-                        <button class="title-registry-category nav-link{% if group.is_active %} active{% endif %}"
+                        <option value="{{ title_registry.route_type }}-{{ group.key }}-tab"{% if group.is_active %} selected{% endif %}>{{ group.label }}</option>
+                    {% endfor %}
+                </select>
+                <div class="title-registry-categories" role="tablist" aria-labelledby="title-registry-categories-title">
+                    {% for group in title_registry.groups %}
+                        <button class="title-registry-category{% if group.is_active %} active{% endif %}"
                                 id="{{ title_registry.route_type }}-{{ group.key }}-tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#{{ title_registry.route_type }}-{{ group.key }}"
-                                type="button"
+                                type="button"{% if not group.is_active %} tabindex="-1"{% endif %}
                                 role="tab"
                                 aria-controls="{{ title_registry.route_type }}-{{ group.key }}"
                                 aria-selected="{% if group.is_active %}true{% else %}false{% endif %}">
@@ -32,9 +35,9 @@
                 </div>
             </aside>
 
-            <div class="title-registry-content tab-content" id="{{ title_registry.route_type }}RegistryTabsContent">
+            <div class="title-registry-content tab-content">
                 {% for group in title_registry.groups %}
-                    <section class="title-registry-group tab-pane fade{% if group.is_active %} show active{% endif %}"
+                    <section class="tab-pane{% if group.is_active %} show active{% endif %}"
                              id="{{ title_registry.route_type }}-{{ group.key }}"
                              role="tabpanel"
                              aria-labelledby="{{ title_registry.route_type }}-{{ group.key }}-tab"
@@ -44,24 +47,21 @@
                             <span class="title-registry-player-count">{{ group.players_count_label }}</span>
                         </div>
 
-                        <div class="title-registry-card-grid">
+                        <div class="athlete-card-grid">
                             {% for entry in group.items %}
-                                {% include "common/athlete_card.html" with item=entry.player hide_rating_place=1 title_status_short=entry.title_short title_status_label=entry.title_label title_status_icon_class=entry.title_icon_class card_extra_class="title-registry-player-card" %}
+                                {% include "common/athlete_card.html" with item=entry.player hide_rating_place=1 title_status_short=entry.title_short title_status_label=entry.title_label title_status_icon_class=entry.title_icon_class %}
                             {% endfor %}
                         </div>
                     </section>
                 {% endfor %}
             </div>
         </div>
+        <a class="btn btn-outline-secondary title-registry-top-link" href="#title-registry-page-title" aria-label="{% trans 'Back to top' %}">
+            <i class="bi bi-arrow-up" aria-hidden="true"></i>
+        </a>
     {% else %}
-        <div class="title-registry-empty">
+        <div class="portal-panel title-registry-empty">
             <p>{% trans "No athletes to show yet." %}</p>
         </div>
     {% endif %}
 </section>
-
-<script>
-    $(function() {
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    });
-</script>

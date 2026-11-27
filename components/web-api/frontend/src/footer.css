@@ -1,56 +1,79 @@
 .portal-footer {
+  background: var(--portal-control-surface);
   border-top: 1px solid var(--list-border);
+  color: var(--list-muted);
   flex-shrink: 0;
-  padding-top: 0;
-  width: 100%;
 }
 
 .portal-footer-inner {
   align-items: center;
   display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
-  line-height: 1.4;
-}
-
-.portal-footer-muted {
-  color: var(--list-muted);
-  white-space: nowrap;
-}
-
-.portal-footer a {
-  font-weight: 400;
+  font-size: var(--text-sm);
+  gap: var(--space-6);
+  line-height: 1.5;
+  padding-block: var(--space-3);
 }
 
 .portal-footer-brand,
 .portal-footer-credit {
-  align-items: baseline;
-  display: flex;
-  gap: var(--space-1);
+  margin: 0;
 }
 
-@media (max-width: 575.98px) {
+.portal-footer-brand {
+  margin-inline-end: auto;
+}
 
-  .portal-footer .footer {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
+.portal-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-4);
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
+.portal-footer-nav a {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 500;
+  min-height: 2rem;
+}
+
+.portal-footer a {
+  color: inherit;
+}
+
+.portal-footer-brand a {
+  color: var(--list-ink);
+  font-weight: 600;
+}
+
+.portal-footer a:is(:hover, :focus-visible) {
+  color: var(--link-action-hover);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.portal-footer-credit {
+  border-inline-start: 1px solid var(--list-border);
+  font-size: var(--text-xs);
+  padding-inline-start: var(--space-6);
+}
+
+@media (max-width: 991.98px) {
   .portal-footer-inner {
-    align-items: center;
     flex-direction: column;
     gap: var(--space-1);
     text-align: center;
   }
 
-  .portal-footer-brand,
-  .portal-footer-credit {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
+  .portal-footer-brand {
+    margin-inline-end: 0;
   }
 
   .portal-footer-credit {
-    white-space: nowrap;
+    border-inline-start: 0;
+    padding-inline-start: 0;
   }
 }

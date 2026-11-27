@@ -1,3 +1,4 @@
+<!doctype html>
 {% load static i18n vite_assets %}
 <html data-bs-theme="light">
     <head>
@@ -30,8 +31,9 @@
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" integrity="sha384-WyOxWvTyr1QaMPfiPJSv76iReVthorl5uWlFtZPyK0IEB0hGzo9y5Bp9mYanr8Bu" crossorigin="anonymous"></script>
 
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        {% if not portal_ui.directory %}
+            <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        {% endif %}
 
         {% vite_stylesheet "src/shell.css" %}
         {% if not ratings_pilot %}
@@ -57,6 +59,9 @@
             {% vite_stylesheet "src/clubs.css" %}
         {% elif portal_ui.tournament_detail %}
             {% vite_stylesheet "src/tournament-detail.css" %}
+        {% elif portal_ui.directory %}
+            {% vite_stylesheet "src/directories.css" %}
+            <script defer src="{% static 'directory-tabs.js' %}?v={{ static_asset_versions.directory_tabs }}"></script>
         {% elif portal_ui.home_page %}
             {% vite_stylesheet "src/home.css" %}
         {% elif portal_ui.club_profile %}
@@ -80,6 +85,8 @@
             <script defer src="{% static 'home-carousel.js' %}?v={{ static_asset_versions.home_carousel }}"></script>
         {% endif %}
         <script defer src="{% static 'header.js' %}?v={{ static_asset_versions.header }}"></script>
-        <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
+        {% if not portal_ui.directory %}
+            <script src="{% static 'portal-ui.js' %}?v={{ static_asset_versions.portal_ui }}"></script>
+        {% endif %}
     </head>
     <body class="d-flex flex-column min-vh-100" style="min-height: 100vh; display: flex; flex-direction: column;">
